@@ -20,8 +20,8 @@ Multipass/P0、Full 预测以及正式 APO 提示均不会被改写或重新评�
 | 角色 | 模型与端点 | 参数 |
 |---|---|---|
 | 任务模型 | `hy3`，`/v1/chat/completions` | temperature=0，top_p=0.95，thinking=disabled，reasoning_effort=none，max_tokens=4096 |
-| Critic | `muse-spark-1.3-contributor`，`/v1/responses` | temperature=0.1，top_p=1，reasoning_effort=high，max_output_tokens=16384 |
-| Editor | `muse-spark-1.3-contributor`，`/v1/responses` | temperature=0.1，top_p=1，reasoning_effort=high，max_output_tokens=8192 |
+| Critic | `muse-spark-1.3-contributor`，`/v1/responses` | temperature=0.1，top_p=1，reasoning_effort=xhigh，max_output_tokens=16384 |
+| Editor | `muse-spark-1.3-contributor`，`/v1/responses` | temperature=0.1，top_p=1，reasoning_effort=xhigh，max_output_tokens=8192 |
 
 4096 的 Editor 预算在真实候选提示上出现过推理预算耗尽，因此没有采用。
 Pilot 中 Critic 的一次 8192 high 推理也触及预算上限并由重试恢复，因此最终

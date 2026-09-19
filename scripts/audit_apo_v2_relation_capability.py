@@ -189,10 +189,10 @@ def run_preflight(output_path: Path = DEFAULT_OUTPUT) -> dict:
             raise ValueError("preflight_requires_muse_spark_1_3_contributor")
         if AO.EDITOR_MODEL != AO.OPTIMIZER_MODEL:
             raise ValueError("critic_editor_model_mismatch")
-        if AO.OPTIMIZER_REASONING_EFFORT != "high":
-            raise ValueError("critic_requires_high_reasoning")
-        if AO.EDITOR_REASONING_EFFORT != "high":
-            raise ValueError("editor_requires_high_reasoning")
+        if AO.OPTIMIZER_REASONING_EFFORT != "xhigh":
+            raise ValueError("critic_requires_xhigh_reasoning")
+        if AO.EDITOR_REASONING_EFFORT != "xhigh":
+            raise ValueError("editor_requires_xhigh_reasoning")
         if AO.OPTIMIZER_MAX_TOKENS < 16384:
             raise ValueError("critic_requires_16384_output_tokens")
         if AO.EDITOR_MAX_TOKENS < 8192:

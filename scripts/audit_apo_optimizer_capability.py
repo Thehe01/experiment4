@@ -170,9 +170,9 @@ def run_preflight(source_run: Path, output_path: Path | None = None) -> dict:
         "critic_fallback": AO.CRITIC_FALLBACK_REASONING_EFFORT,
         "editor": AO.EDITOR_REASONING_EFFORT,
     }
-    if any(value != "high" for value in required_efforts.values()):
+    if any(value != "xhigh" for value in required_efforts.values()):
         raise ValueError(
-            f"optimizer_preflight_requires_high_reasoning:{required_efforts}"
+            f"optimizer_preflight_requires_xhigh_reasoning:{required_efforts}"
         )
     if not AO.OPTIMIZER_MODEL:
         raise ValueError("optimizer_preflight_requires_nonempty_model")
@@ -291,8 +291,8 @@ def run_preflight(source_run: Path, output_path: Path | None = None) -> dict:
         audit1 = _candidate_checks(round1_candidates, 1, prompt0)
         audit2 = _candidate_checks(round2_candidates, 2, parent)
         all_checks = {
-            "high_reasoning_configured": all(
-                value == "high" for value in required_efforts.values()
+            "xhigh_reasoning_configured": all(
+                value == "xhigh" for value in required_efforts.values()
             ),
             "round1_gradient_route_passed": True,
             "round2_gradient_route_passed": True,

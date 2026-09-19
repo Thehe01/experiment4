@@ -447,9 +447,9 @@ class V6PackageTest(unittest.TestCase):
         os.environ.setdefault("V6_API_KEY", "v6-offline-test-key")
         sys.path.insert(0, str(PACKAGE / "scripts"))
         import apo_optimizer as optimizer
-        self.assertEqual(optimizer.OPTIMIZER_REASONING_EFFORT, "high")
-        self.assertEqual(optimizer.EDITOR_REASONING_EFFORT, "high")
-        self.assertEqual(optimizer.CRITIC_FALLBACK_REASONING_EFFORT, "high")
+        self.assertEqual(optimizer.OPTIMIZER_REASONING_EFFORT, "xhigh")
+        self.assertEqual(optimizer.EDITOR_REASONING_EFFORT, "xhigh")
+        self.assertEqual(optimizer.CRITIC_FALLBACK_REASONING_EFFORT, "xhigh")
 
         preset = optimizer.APO_PRESETS["stage1_all_entity_recall_p0"]
         self.assertEqual(

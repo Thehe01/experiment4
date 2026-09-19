@@ -48,7 +48,7 @@
 - 所有方法从同一 P0 开始，并新增等预算的提示搜索范围比较：`constrained` 臂冻结标签语义、实体/关系边界、few-shot 示例、输入占位符和 JSON schema，Muse 只能改写 operational guidance；`unconstrained` 臂允许 Muse 改写完整语义提示与示例，仅固定评价器必需的输入占位符和 JSON 接口；
 - 无约束臂属于搜索空间消融，其候选准入只代表运行接口可解析，不代表与第三章边界同步；程序需保存冻结契约精确匹配审计，最终提示还需单独进行边界漂移复核；
 - 每轮候选扩展、筛选和停止均由程序自动完成，不允许人工阅读后挑选或改写候选；搜索期间只使用 Train，全部轮次结束后才在冻结 Dev 上统一决选一次；
-- 任务模型固定为 OpenCode `hy3`（temperature=0，reasoning effort=none），Critic 与 Editor 固定为 `muse-spark-1.3-contributor`（temperature=0.1，reasoning effort=high）；
+- 任务模型固定为 OpenCode `hy3`（temperature=0，reasoning effort=none），Critic 与 Editor 固定为 `muse-spark-1.3-contributor`（temperature=0.1，reasoning effort=xhigh）；
 - 主方法和 Uniform 消融使用相同的每轮 64 pulls、每次 8 windows；候选先在相同的 candidate-local 共享批次上至少评估 2 次，再分配剩余预算；
 - Stage 1 冻结 P_E* 后，以其预测构建带哈希的 Train/Dev 实体缓存；Stage 2 缓存缺失、哈希不一致或不含关系 Gold 时直接终止，不能回退到 Gold 实体；
 - 2026-09-16 以前的首次 Stage 1 ProTeGi 产物未通过事后语义与 provenance 审计，仅保留为失败样本；修复版尚未运行，不能写入正式结果。

@@ -320,7 +320,7 @@ def call_openai_compatible(prompt: str, system_prompt: str, config: dict) -> str
                 config.get('max_output_tokens', config.get('max_tokens', 4096))
             ),
             'top_p': float(config.get('top_p', 1.0)),
-            'reasoning': {'effort': str(config.get('reasoning_effort') or 'high').strip().lower() or 'high'}
+            'reasoning': {'effort': str(config.get('reasoning_effort') or 'xhigh').strip().lower() or 'xhigh'}
         }
         resp = requests.post(endpoint_url, headers=headers, json=payload, timeout=float(config.get('timeout', 180)))
 

@@ -293,7 +293,7 @@ def make_extractor(
             and "contributor" in model.casefold()
             and not reasoning_effort
         ):
-            reasoning_effort = "high"
+            reasoning_effort = "xhigh"
     endpoint = (
         "/v1/responses"
         if "muse-spark" in model.casefold()

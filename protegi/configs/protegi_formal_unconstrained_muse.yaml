@@ -30,6 +30,6 @@ task_max_tokens: 4096
 optimizer_model: "muse-spark-1.3-contributor"
 optimizer_temperature: 0.1
 optimizer_thinking: "disabled"
-optimizer_reasoning_effort: "high"
+optimizer_reasoning_effort: "xhigh"
 optimizer_top_p: 1.0
 optimizer_max_tokens: 16384

@@ -23,7 +23,7 @@
     "top_p": 1.0,
     "optimizer_max_tokens": 16384,
     "editor_max_tokens": 8192,
-    "reasoning_effort": "high",
+    "reasoning_effort": "xhigh",
     "train_documents": 63,
     "selection_dev_documents": 14,
     "full_dev_documents": 21,

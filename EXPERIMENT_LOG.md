@@ -99,3 +99,17 @@
 | **Full 增强方案** | - | - | - | - | - | - | - |
 | **ProTeGi** | - | - | - | - | - | - | - |
 | **ProTeGi_Full** | - | - | - | - | - | - | - |
+
+---
+
+## 优化器运行时参数调整（2026-09-19）
+
+- **模型**：`muse-spark-1.3-contributor`（Critic / Editor / Optimizer）
+- **推理强度升级**：由 `high` 全面升级为 `xhigh`（超高推理强度）。
+- **同步范围**：
+  - `config/runtime_profile.json` (`apo.reasoning_effort="xhigh"`)；
+  - `protegi/configs/*.yaml`（全量 10 个配置文件的 `optimizer_reasoning_effort` 统一设为 `"xhigh"`）；
+  - `scripts/provider_config.py`、`scripts/llm_methods.py`、`scripts/llm_extractor.py`、`scripts/apo_optimizer.py`；
+  - 门禁脚本与单测校验（`audit_apo_optimizer_capability.py`、`audit_apo_v2_relation_capability.py`、`run_apo_v2_opencode.ps1`、`probe_opencode_apo_v2_models.py`、`test_v6_package.py`）。
+- **实测验证**：已通过 OpenCode `/v1/responses` 端点实测验证 `{"reasoning": {"effort": "xhigh"}}`，端到端调用通畅返回。
+

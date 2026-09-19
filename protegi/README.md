@@ -70,7 +70,7 @@ Text ───(P_E*)───> Entities ───(P_R*)───> Relations
 | `protegi` | **主方法 (Full ProTeGi)** | 4 | $\le 20$ | 52 (R1: 13) | **64 pulls** | **512 windows** | 每候选先在相同共享批次上获得至少 2 pulls，再由 UCB 自适应分配余量 ($c=2.0$) |
 | `protegi_uniform` | 均匀分配消融基线 | 4 | $\le 20$ | 52 (R1: 13) | **64 pulls** | **512 windows** | 相同共享批次、相同总预算与最低 pulls，仅将余量改为均匀轮转 |
 
-> **注**：正式配置显式固定任务模型 `hy3`（temperature=0, reasoning effort=none）与优化模型 `muse-spark-1.3-contributor`（temperature=0.1, reasoning effort=high）。每轮 Train 窗口经固定种子洗牌，candidate-local pull index 对应同一共享批次；不再使用固定文件前缀。
+> **注**：正式配置显式固定任务模型 `hy3`（temperature=0, reasoning effort=none）与优化模型 `muse-spark-1.3-contributor`（temperature=0.1, reasoning effort=xhigh）。每轮 Train 窗口经固定种子洗牌，candidate-local pull index 对应同一共享批次；不再使用固定文件前缀。
 > 所有 ProTeGi 配置显式设置 `task_max_workers=8`。任务模型窗口在 Train、Dev 和实体缓存生成时统一以最多 8 路并发执行；Muse 的梯度—编辑—释义依赖链仍按搜索顺序执行。
 
 ---

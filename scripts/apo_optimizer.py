@@ -109,12 +109,12 @@ OPTIMIZER_THINKING = os.environ.get(
 ).strip().lower()
 # The shared runtime profile and provider defaults are covered by the frozen
 # Rule/Multipass/Full manifest.  Keep them byte-identical.  OpenCode Go exposes
-# `high` as the validated effort for the Muse Spark Contributor optimizer.
-OPTIMIZER_REASONING_EFFORT = "high"
+# `xhigh` as the validated effort for the Muse Spark Contributor optimizer.
+OPTIMIZER_REASONING_EFFORT = "xhigh"
 CRITIC_FALLBACK_THINKING = os.environ.get(
     "V3_APO_CRITIC_FALLBACK_THINKING", "disabled"
 ).strip().lower()
-CRITIC_FALLBACK_REASONING_EFFORT = "high"
+CRITIC_FALLBACK_REASONING_EFFORT = "xhigh"
 OPTIMIZER_MAX_TOKENS = int(
     os.environ.get("V3_APO_OPTIMIZER_MAX_TOKENS", "8192")
 )
@@ -122,7 +122,7 @@ EDITOR_MODEL = os.environ.get("V3_APO_EDITOR_MODEL", OPTIMIZER_MODEL).strip()
 EDITOR_THINKING = os.environ.get(
     "V3_APO_EDITOR_THINKING", "disabled"
 ).strip().lower()
-EDITOR_REASONING_EFFORT = "high"
+EDITOR_REASONING_EFFORT = "xhigh"
 EDITOR_MAX_TOKENS = int(
     os.environ.get("V3_APO_EDITOR_MAX_TOKENS", "4096")
 )

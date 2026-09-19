@@ -43,6 +43,8 @@ $env:V3_APO_OPTIMIZER_TOP_P = '1.0'
 $env:V3_APO_EDITOR_TOP_P = '1.0'
 $env:V3_APO_OPTIMIZER_MAX_TOKENS = '16384'
 $env:V3_APO_EDITOR_MAX_TOKENS = '8192'
+$env:V3_APO_OPTIMIZER_REASONING_EFFORT = 'xhigh'
+$env:V3_APO_EDITOR_REASONING_EFFORT = 'xhigh'
 $env:V3_APO_CANDIDATE_GENERATION_MAX_ATTEMPTS = '4'
 
 # APO-v2 allows only small paired-dev regressions on individual labels and on
@@ -84,7 +86,7 @@ if (
     $probe.selected_parameters.critic_editor.endpoint -ne '/responses' -or
     $probe.selected_parameters.critic_editor.temperature -ne 0.1 -or
     $probe.selected_parameters.critic_editor.top_p -ne 1.0 -or
-    $probe.selected_parameters.critic_editor.reasoning_effort -ne 'high' -or
+    $probe.selected_parameters.critic_editor.reasoning_effort -ne 'xhigh' -or
     $probe.selected_parameters.critic_editor.critic_max_tokens -ne 16384 -or
     $probe.selected_parameters.critic_editor.editor_max_tokens -ne 8192
 ) {
@@ -95,9 +97,9 @@ if (
     $semantic.run_kind -ne 'apo_v2_stage1_relation_optimizer_capability_preflight' -or
     $semantic.model -ne 'muse-spark-1.3-contributor' -or
     $semantic.endpoint -ne '/v1/responses' -or
-    $semantic.runtime.critic_reasoning_effort -ne 'high' -or
+    $semantic.runtime.critic_reasoning_effort -ne 'xhigh' -or
     $semantic.runtime.critic_max_output_tokens -ne 16384 -or
-    $semantic.runtime.editor_reasoning_effort -ne 'high' -or
+    $semantic.runtime.editor_reasoning_effort -ne 'xhigh' -or
     $semantic.runtime.editor_max_output_tokens -ne 8192 -or
     $semantic.optimizer_script_sha256 -ne $optimizerHash -or
     $semantic.preflight_script_sha256 -ne $semanticAuditHash -or

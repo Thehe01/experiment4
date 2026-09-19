@@ -210,7 +210,7 @@ def run_probe(output: Path, timeout: float = 90.0) -> dict:
         _request(
             base_url=base_url,
             key=key,
-            name="muse_1_3_responses_high",
+            name="muse_1_3_responses_xhigh",
             endpoint="/responses",
             body={
                 "model": OPTIMIZER_MODEL,
@@ -218,14 +218,14 @@ def run_probe(output: Path, timeout: float = 90.0) -> dict:
                 "temperature": 0.1,
                 "top_p": 1.0,
                 "max_output_tokens": 512,
-                "reasoning": {"effort": "high"},
+                "reasoning": {"effort": "xhigh"},
             },
             timeout=timeout,
         ),
         _request(
             base_url=base_url,
             key=key,
-            name="muse_1_3_chat_high",
+            name="muse_1_3_chat_xhigh",
             endpoint="/chat/completions",
             body={
                 "model": OPTIMIZER_MODEL,
@@ -234,7 +234,7 @@ def run_probe(output: Path, timeout: float = 90.0) -> dict:
                 "top_p": 1.0,
                 "max_tokens": 512,
                 "thinking": {"type": "disabled"},
-                "reasoning_effort": "high",
+                "reasoning_effort": "xhigh",
             },
             timeout=timeout,
         ),
@@ -242,7 +242,7 @@ def run_probe(output: Path, timeout: float = 90.0) -> dict:
 
     required = {
         "hy3_chat_reasoning_none",
-        "muse_1_3_responses_high",
+        "muse_1_3_responses_xhigh",
     }
     passed_cases = {
         item["name"]
@@ -287,7 +287,7 @@ def run_probe(output: Path, timeout: float = 90.0) -> dict:
                     "model": OPTIMIZER_MODEL,
                     "temperature": 0.1,
                     "top_p": 1.0,
-                    "reasoning_effort": "high",
+                    "reasoning_effort": "xhigh",
                     "critic_max_tokens": 16384,
                     "editor_max_tokens": 8192,
                 },
