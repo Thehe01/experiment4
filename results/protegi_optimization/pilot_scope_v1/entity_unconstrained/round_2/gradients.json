@@ -1,0 +1,16 @@
+[
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The Configuration wording invites both over-extraction and under-extraction because it couples entity identity to a future relation judgment without operational span tests. Strengthen the optimizable guidance to define eligibility as a canonical product/component substring only, require stripping instance numerals, deployment qualifiers, plural inflection and version-like suffixes from the emitted span, explicitly forbid generic infrastructure-role nouns, incidental tools, files and deployment-specific labels even when adjacent to vulnerability context, clarify when a multi-token suite name should be kept whole versus reduced to its base product, and constrain normalized_id to a verified base-product lookup with null fallback rather than concatenating qualifiers, supported by contrastive positive and negative illustrations.",
+    "round_idx": 0
+  },
+  {
+    "gradient_id": "grad_c_r1_p0_g0_para_0_0_0",
+    "parent_prompt_id": "c_r1_p0_g0_para_0",
+    "error_group_id": "G1_0",
+    "gradient_text": "The Configuration definition is over-broad and under-specified, which drives systematic false-positives and span errors. Tighten it from \"any product/platform/component\" to only in-scope system under analysis, with explicit allow vs deny guidance: define positive as installed OS / application / firmware / hardware that can be vulnerable or targeted, and explicitly forbid dual-use command-line utilities, attacker proxy/transfer/scan tooling, defender scanner products, cloud/service providers, generic application families, file names, commands, IPs/ports, and bare versions. Make span selection deterministic: require shortest self-identifying core, mandatory stripping of leading vendor when product alone is distinctive, mandatory stripping of trailing versions/builds/patches so a version token can never be part of the span, no merging of product + feature/module chain, and suppression of a Configuration tag when the surface form is functioning as the technique label immediately adjacent to its technique code. Add contrastive negative guiding samples showing tool-like and scanner-like mentions getting no tag and showing vendor-prefixed vs bare-product and version-inclusive vs version-stripped spans, so the model learns boundaries instead of generalizing from only clean positive examples.",
+    "round_idx": 1
+  }
+]

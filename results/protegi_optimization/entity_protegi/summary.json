@@ -1,0 +1,49 @@
+{
+  "stage": "entity",
+  "method": "protegi",
+  "winner_candidate_id": "c_r6_p3_g2_edit",
+  "winner_round": 6,
+  "winner_metrics": {
+    "dev_f1": 0.9111602908631047,
+    "dev_precision": 0.8786585365853659,
+    "dev_recall": 0.9461588969139856
+  },
+  "winner_prompt_sha256": "37e4d4bde713ba91301dd2337ba496f1f45ee40176afe8f44b2bd4db6c67cccd",
+  "initial_p0_metrics": {
+    "dev_f1": 0.5829615466326747,
+    "dev_precision": 0.43090452261306533,
+    "dev_recall": 0.9008535784635587
+  },
+  "total_candidates_registered": 170,
+  "call_stats": {
+    "task_model_calls": 6011,
+    "optimizer_model_calls": 271,
+    "task_input_tokens": 0,
+    "task_output_tokens": 0,
+    "optimizer_input_tokens": 1232605,
+    "optimizer_output_tokens": 503874,
+    "num_generated_candidates": 249,
+    "num_evaluated_candidates": 0,
+    "num_duplicate_candidates": 1,
+    "num_evaluated_samples": 6011
+  },
+  "config": {
+    "optimization_steps": 6,
+    "beam_width": 4,
+    "minibatch_size": 64,
+    "errors_per_group": 4,
+    "gradients_per_error_group": 4,
+    "max_error_groups": 1,
+    "edits_per_gradient": 1,
+    "paraphrases_per_edit": 2,
+    "successors_per_parent": 8,
+    "total_pull_budget_per_round": 64,
+    "eval_batch_size": 8,
+    "ucb_c": 2.0,
+    "seed": 42,
+    "optimizer_temperature": 0.7,
+    "optimizer_thinking": "disabled"
+  },
+  "start_time_utc": "2026-09-15T17:43:05.139784+00:00",
+  "end_time_utc": "2026-09-16T08:15:43.788210+00:00"
+}

@@ -1,0 +1,64 @@
+Act as a cybersecurity threat intelligence annotation specialist.
+Identify named entities in the provided text strictly using the following four categories:
+- Vulnerability: a specific CVE identifier (e.g., CVE-YYYY-NNNN).
+- Weakness: a specific CWE identifier (e.g., CWE-89) or fundamental flaw type.
+- Configuration: a specific product, software, component, device, or CPE identifier that may be impacted by vulnerabilities.
+- AttackTechnique: a verbatim MITRE ATT&CK technique ID or sub-technique ID appearing exactly as a substring in the input. Permitted formats are exactly:
+   * Technique ID: "T" followed by exactly 4 digits (e.g., T1190, T1583). Pattern: T\d{4}
+   * Sub-technique ID: "T" followed by 4 digits, a dot, then exactly 3 digits (e.g., T1585.002, T1566.001). Pattern: T\d{4}\.\d{3}
+   Only exact pattern matches count as AttackTechnique entities. Do NOT extract ATT&CK tactic IDs (e.g., TA0043, TA0011, TAxxxx), campaign IDs, group IDs, or other ATT&CK identifier categories. Do NOT guess, normalize, or fill in partial strings (e.g., "1585.001" lacking "T" is NOT a valid AttackTechnique). Do NOT extract both a technique and its sub-technique from the same or overlapping span unless they are clearly separate verbatim occurrences.
+
+Constraints:
+1. Each entity text MUST be copied verbatim from the input text as an exact substring.
+2. Output 0-based start and end character offsets based on the input text. end is exclusive so that text[start:end] equals the entity text.
+3. For normalized_id, supply the canonical identifier when possible (e.g., standard CVE ID, CWE-xxx, canonical CPE 2.3 URI for products, or T-code for ATT&CK); else null.
+4. Avoid repeating identical mention spans.
+
+Illustrative Examples:
+<example>
+<text>
+Attackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).
+</text>
+<entities>
+[
+  {"id": "E1", "text": "CVE-2021-44228", "type": "Vulnerability", "start": 20, "end": 34, "normalized_id": "CVE-2021-44228"},
+  {"id": "E2", "text": "Log4j", "type": "Configuration", "start": 42, "end": 47, "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*"},
+  {"id": "E3", "text": "T1190", "type": "AttackTechnique", "start": 124, "end": 129, "normalized_id": "T1190"}
+]
+</entities>
+</example>
+
+<example>
+<text>
+CVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.
+</text>
+<entities>
+[
+  {"id": "E1", "text": "CVE-2021-26855", "type": "Vulnerability", "start": 0, "end": 14, "normalized_id": "CVE-2021-26855"},
+  {"id": "E2", "text": "server-side request forgery", "type": "Weakness", "start": 20, "end": 47, "normalized_id": "CWE-918"},
+  {"id": "E3", "text": "CWE-918", "type": "Weakness", "start": 49, "end": 56, "normalized_id": "CWE-918"},
+  {"id": "E4", "text": "Microsoft Exchange Server", "type": "Configuration", "start": 75, "end": 100, "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*"}
+]
+</entities>
+</example>
+
+<example>
+<text>
+The actor used T1589.001 for reconnaissance and T1190 for initial access. TA0043 is a tactic, not a technique.
+</text>
+<entities>
+[
+  {"id": "E1", "text": "T1589.001", "type": "AttackTechnique", "start": 14, "end": 23, "normalized_id": "T1589.001"},
+  {"id": "E2", "text": "T1190", "type": "AttackTechnique", "start": 48, "end": 53, "normalized_id": "T1190"}
+]
+</entities>
+</example>
+
+Input text:
+<text>
+{{text}}
+</text>
+
+Output exactly one valid JSON object:
+{"entities": [{"id": "E1", "text": "exact substring", "type": "Vulnerability", "start": 0, "end": 14, "normalized_id": "CVE-..."}]}
+Output JSON only.

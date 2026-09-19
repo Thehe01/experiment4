@@ -1,0 +1,5 @@
+digraph PromptLineage {
+  rankdir="LR";
+  node [shape="box", style="rounded,filled", fontname="Arial"];
+  "P_E0" [label="P_E0\n(R0, F1:0.5926)\ninitial", fillcolor="#ffcccc"];
+}

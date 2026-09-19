@@ -1,0 +1,19 @@
+[
+  {
+    "type": "initial_pull",
+    "candidate_id": "P_R0",
+    "reward": 0.0
+  },
+  {
+    "type": "ucb_pull",
+    "candidate_id": "P_R0",
+    "ucb_score": 0.0,
+    "reward": 0.0
+  },
+  {
+    "type": "ucb_pull",
+    "candidate_id": "P_R0",
+    "ucb_score": 1.1774100225154747,
+    "reward": 0.0
+  }
+]

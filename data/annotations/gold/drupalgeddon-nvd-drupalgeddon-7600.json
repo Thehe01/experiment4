@@ -1,0 +1,173 @@
+{
+  "doc_id": "drupalgeddon-nvd-drupalgeddon-7600",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "notes": "",
+  "text": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*\n\nReferences:\n- http://www.securityfocus.com/bid/103534\n- http://www.securitytracker.com/id/1040598\n- https://badpackets.net/over-100000-drupal-websites-vulnerable-to-drupalgeddon-2-cve-2018-7600/\n- https://blog.appsecco.com/remote-code-execution-with-drupal-core-sa-core-2018-002-95e6ecc0c714\n- https://github.com/a2u/CVE-2018-7600\n- https://github.com/g0rx/CVE-2018-7600-Drupal-RCE\n- https://greysec.net/showthread.php?tid=2912&pid=10561\n- https://groups.drupal.org/security/faq-2018-002\n- https://lists.debian.org/debian-lts-announce/2018/03/msg00028.html\n- https://research.checkpoint.com/uncovering-drupalgeddon-2/\n",
+  "entities": [
+    {
+      "id": "E1",
+      "type": "Vulnerability",
+      "text": "CVE-2018-7600",
+      "start": 0,
+      "end": 13,
+      "normalized_id": "CVE-2018-7600",
+      "evidence": "CVE-2018-7600"
+    },
+    {
+      "id": "E2",
+      "type": "Weakness",
+      "text": "CWE-20",
+      "start": 401,
+      "end": 407,
+      "normalized_id": "CWE-20",
+      "evidence": "CWE-20"
+    },
+    {
+      "id": "E3",
+      "type": "Configuration",
+      "text": "Drupal",
+      "start": 159,
+      "end": 165,
+      "normalized_id": "cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations."
+    },
+    {
+      "id": "E4",
+      "type": "Configuration",
+      "text": "cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*",
+      "start": 591,
+      "end": 630,
+      "normalized_id": "cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E5",
+      "type": "Configuration",
+      "text": "cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*",
+      "start": 633,
+      "end": 680,
+      "normalized_id": "cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E6",
+      "type": "Configuration",
+      "text": "cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*",
+      "start": 683,
+      "end": 730,
+      "normalized_id": "cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E7",
+      "type": "Configuration",
+      "text": "cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*",
+      "start": 733,
+      "end": 780,
+      "normalized_id": "cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E8",
+      "type": "Vulnerability",
+      "text": "cve-2018-7600",
+      "start": 962,
+      "end": 975,
+      "normalized_id": "CVE-2018-7600",
+      "evidence": "cve-2018-7600"
+    },
+    {
+      "id": "E9",
+      "type": "Vulnerability",
+      "text": "CVE-2018-7600",
+      "start": 1099,
+      "end": 1112,
+      "normalized_id": "CVE-2018-7600",
+      "evidence": "CVE-2018-7600"
+    },
+    {
+      "id": "E10",
+      "type": "Vulnerability",
+      "text": "CVE-2018-7600",
+      "start": 1139,
+      "end": 1152,
+      "normalized_id": "CVE-2018-7600",
+      "evidence": "CVE-2018-7600"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "instantiates",
+      "head": "E1",
+      "tail": "E2",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20",
+      "evidence_start": 0,
+      "evidence_end": 407,
+      "adjudication_basis": "NVD structured record explicitly maps CVE-2018-7600 to CWE-20 in its Weaknesses field"
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E3",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.",
+      "evidence_start": 0,
+      "evidence_end": 385,
+      "adjudication_basis": "NVD affected-configurations record explicitly maps CVE-2018-7600 to Drupal"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E4",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 630,
+      "adjudication_basis": "NVD affected-configurations record explicitly maps CVE-2018-7600 to the Drupal CPE"
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E5",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 680,
+      "adjudication_basis": "NVD affected-configurations record explicitly maps CVE-2018-7600 to Debian Linux 7.0"
+    },
+    {
+      "id": "R5",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E6",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 730,
+      "adjudication_basis": "NVD affected-configurations record explicitly maps CVE-2018-7600 to Debian Linux 8.0"
+    },
+    {
+      "id": "R6",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E7",
+      "evidence": "CVE-2018-7600\n\nPublished: 2018-03-29T07:29:00.260\nLast modified: 2025-10-31T22:05:42.410\nSource identifier: mlhess@drupal.org\nStatus: Analyzed\n\nDescription:\n- Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations.\n\nWeaknesses:\n- CWE-20\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*\n- cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 780,
+      "adjudication_basis": "NVD affected-configurations record explicitly maps CVE-2018-7600 to Debian Linux 9.0"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

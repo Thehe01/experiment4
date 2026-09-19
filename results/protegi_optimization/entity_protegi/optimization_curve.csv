@@ -1,0 +1,8 @@
+stage,method,round,best_score,mean_beam_score,num_candidates,task_model_calls,optimizer_model_calls
+entity,protegi,0,0.666667,0.666667,1,8,0
+entity,protegi,1,0.90411,0.855774,8,576,13
+entity,protegi,2,0.97931,0.947907,32,1344,65
+entity,protegi,3,0.970588,0.957808,32,2112,117
+entity,protegi,4,0.976,0.968314,32,2880,169
+entity,protegi,5,0.97931,0.977413,32,3648,221
+entity,protegi,6,0.979079,0.975952,32,4416,271

@@ -1,0 +1,346 @@
+{
+  "total_nodes": 6,
+  "total_edges": 5,
+  "final_candidate_id": "c_r2_p0_g0_para_0",
+  "trace_to_root": [
+    "P_E0",
+    "c_r2_p0_g0_edit",
+    "c_r2_p0_g0_para_0"
+  ],
+  "nodes": {
+    "P_E0": {
+      "candidate_id": "P_E0",
+      "parent_id": null,
+      "round_idx": 0,
+      "generation_type": "initial",
+      "gradient_id": null,
+      "gradient_text": null,
+      "estimated_reward": 0.852564,
+      "selection_status": "final_not_selected",
+      "num_evaluations": 3,
+      "samples_seen": 24,
+      "tp": 133,
+      "fp": 24,
+      "fn": 22,
+      "ucb_score": 2.463323819408016,
+      "metrics": {
+        "train_f1": 0.8405797101449274,
+        "train_precision": 0.8656716417910447,
+        "train_recall": 0.8169014084507042,
+        "train_sample_ids": [
+          "aa25-266a_w6",
+          "aa25-266a_w2",
+          "fortios-sslvpn-rapid7-fortinet-targeting_w2",
+          "aa25-266a_w9",
+          "aa25-266a_w8",
+          "aa23-339a-coldfusion-cve-26360_w1",
+          "aa23-339a-coldfusion-cve-26360_w0",
+          "aa25-266a_w0"
+        ],
+        "prompt_scope_audit": {
+          "configured_scope": "constrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": true,
+          "frozen_contract_reasons": []
+        },
+        "dev_f1": 0.8372093023255814,
+        "dev_precision": 0.8044692737430168,
+        "dev_recall": 0.8727272727272727,
+        "dev_by_type": {
+          "AttackTechnique": {
+            "tp": 46,
+            "fp": 6,
+            "fn": 0,
+            "precision": 0.884615,
+            "recall": 1.0,
+            "f1": 0.938776,
+            "details": {},
+            "gold_support": 46,
+            "predicted_support": 52,
+            "applicable": true
+          },
+          "Configuration": {
+            "tp": 7,
+            "fp": 18,
+            "fn": 19,
+            "precision": 0.28,
+            "recall": 0.269231,
+            "f1": 0.27451,
+            "details": {},
+            "gold_support": 26,
+            "predicted_support": 25,
+            "applicable": true
+          },
+          "Vulnerability": {
+            "tp": 86,
+            "fp": 10,
+            "fn": 0,
+            "precision": 0.895833,
+            "recall": 1.0,
+            "f1": 0.945055,
+            "details": {},
+            "gold_support": 86,
+            "predicted_support": 96,
+            "applicable": true
+          },
+          "Weakness": {
+            "tp": 5,
+            "fp": 1,
+            "fn": 2,
+            "precision": 0.833333,
+            "recall": 0.714286,
+            "f1": 0.769231,
+            "details": {},
+            "gold_support": 7,
+            "predicted_support": 6,
+            "applicable": true
+          }
+        },
+        "dev_normalization": {
+          "correct": 139,
+          "total": 144,
+          "accuracy": 0.9652777777777778,
+          "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+        }
+      },
+      "prompt_sha256": "931a2afb5f106214720f6d66f24d58acd39680581be87ba5cfe962b781e27c56",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nScan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Apply the frozen definitions conservatively and check every emitted span against the source before returning JSON.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    },
+    "c_r1_p0_g0_edit": {
+      "candidate_id": "c_r1_p0_g0_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The OPTIMIZABLE_GUIDANCE states to apply frozen definitions conservatively but provides no operational decision procedure for Configuration handling. It needs explicit steps for selecting the shortest independently identifiable product tail versus longer vendor-prefixed or component-qualified strings, for rejecting generic feature, capability, or module labels that cannot serve as a directly supported affect tail, for enforcing exhaustive full-document checking of every distinct mention including headers, prose, and reference sections rather than stopping after salient hits, and for constructing a verified normalized product identifier versus returning null when part value or product token is uncertain. Without that, the model over-extracts long spans and generic components, misses valid early mentions, and hallucinates normalized values.",
+      "estimated_reward": 0.0,
+      "selection_status": "not_sampled",
+      "num_evaluations": 0,
+      "samples_seen": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "constrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": true,
+          "frozen_contract_reasons": []
+        }
+      },
+      "prompt_sha256": "961c3bbba4c7a58d586367d84dc217602846f4345adcab7be276a98f0e400324",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nScan sequentially to the end of the document without early stopping, covering opening headers, body prose, tables, lists, captions, footnotes, and closing reference sections.\nFor each product-component candidate apply in order:\n1. Reduce to the shortest tail that remains independently identifiable alone; strip leading vendor or org tokens and trailing variant, component, or deployment qualifiers unless removal breaks independent identifiability, and discard any longer encompassing span once the minimal tail is retained.\n2. Reject the candidate if it denotes only a generic feature, capability, function, or module that cannot stand alone as a directly supported affected tail.\n3. Verify each retained span character-for-character against the source before keeping it.\nAssign a verified normalized product value only when part and product token are certain; otherwise leave normalization empty and never synthesize a token by concatenating qualifiers or guessing part.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    },
+    "c_r1_p0_g0_para_0": {
+      "candidate_id": "c_r1_p0_g0_para_0",
+      "parent_id": "c_r1_p0_g0_edit",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The OPTIMIZABLE_GUIDANCE states to apply frozen definitions conservatively but provides no operational decision procedure for Configuration handling. It needs explicit steps for selecting the shortest independently identifiable product tail versus longer vendor-prefixed or component-qualified strings, for rejecting generic feature, capability, or module labels that cannot serve as a directly supported affect tail, for enforcing exhaustive full-document checking of every distinct mention including headers, prose, and reference sections rather than stopping after salient hits, and for constructing a verified normalized product identifier versus returning null when part value or product token is uncertain. Without that, the model over-extracts long spans and generic components, misses valid early mentions, and hallucinates normalized values.",
+      "estimated_reward": 0.808163,
+      "selection_status": "dropped",
+      "num_evaluations": 2,
+      "samples_seen": 16,
+      "tp": 99,
+      "fp": 26,
+      "fn": 21,
+      "ucb_score": 2.7809329675548735,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "constrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": true,
+          "frozen_contract_reasons": []
+        }
+      },
+      "prompt_sha256": "4135d269ac84d229b57bc1c44e042015f139c0a86f40f19cdd93e7452682c94e",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nProceed linearly through the full document to its conclusion with no premature termination, encompassing introductory headers, narrative body, tables, lists, captions, footnotes, and terminal reference portions.\nEvaluate every product-component candidate sequentially as follows:\n1. Shorten to the most concise trailing form that stays uniquely recognizable on its own; remove preceding vendor or organization names and following version, component, or deployment descriptors except where deletion would destroy standalone recognizability, and eliminate any broader containing span after the minimal tail is kept.\n2. Discard the candidate when it represents merely a general feature, capability, function, or module lacking capacity to serve by itself as a directly supported impacted tail.\n3. Confirm each kept span exactly character by character against the source prior to retention.\nProvide a checked normalized product value solely where both part and product token are confident; if not, keep normalization blank and do not create a token by joining qualifiers or inferring part.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    },
+    "c_r2_p0_g0_edit": {
+      "candidate_id": "c_r2_p0_g0_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The optimizable guidance lacks any operational decision procedure for enforcing the frozen Configuration boundaries, leaving the model with only a vague instruction to be conservative. It should be expanded to direct a step-by-step product-vs-deployment test: isolate the shortest independently identifiable product/component substring, strip instance numbers and deployment qualifiers, reject generic infrastructure role descriptors and plural/collective inflections unless the singular product form remains, and reject incidental surrounding mentions that cannot serve as the tail of a directly supported affected-product fact. This would curb systematic over-extraction of non-product mentions while preserving recall of true product types.",
+      "estimated_reward": 0.0,
+      "selection_status": "not_sampled",
+      "num_evaluations": 0,
+      "samples_seen": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "constrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": true,
+          "frozen_contract_reasons": []
+        }
+      },
+      "prompt_sha256": "aca38296bf34aab68c7318fea187e9b2dc46c7de09c8ca18287768de874422d2",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nScan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Check every emitted span against the source before returning.\nFor each product-like candidate, execute this accept-reject test in order and keep only full passes:\n1. Shrink to the shortest standalone substring that still independently identifies the item; remove trailing instance numbers, qualifiers, and deployment context.\n2. Reject if what remains is only a generic role, function, or collective inflection without a preserved singular identifiable form.\n3. Reject if the immediate local block does not directly support it as an affected item; discard incidental, contextual, or tool-only mentions.\n4. Re-verify exact character equality with the source before keeping.\nWhen uncertain, discard the candidate.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    },
+    "c_r2_p0_g0_para_0": {
+      "candidate_id": "c_r2_p0_g0_para_0",
+      "parent_id": "c_r2_p0_g0_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The optimizable guidance lacks any operational decision procedure for enforcing the frozen Configuration boundaries, leaving the model with only a vague instruction to be conservative. It should be expanded to direct a step-by-step product-vs-deployment test: isolate the shortest independently identifiable product/component substring, strip instance numbers and deployment qualifiers, reject generic infrastructure role descriptors and plural/collective inflections unless the singular product form remains, and reject incidental surrounding mentions that cannot serve as the tail of a directly supported affected-product fact. This would curb systematic over-extraction of non-product mentions while preserving recall of true product types.",
+      "estimated_reward": 0.845426,
+      "selection_status": "final_winner",
+      "num_evaluations": 3,
+      "samples_seen": 24,
+      "tp": 134,
+      "fp": 28,
+      "fn": 21,
+      "ucb_score": 2.802037994931678,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "constrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": true,
+          "frozen_contract_reasons": []
+        },
+        "dev_f1": 0.8445747800586509,
+        "dev_precision": 0.8181818181818182,
+        "dev_recall": 0.8727272727272727,
+        "dev_by_type": {
+          "AttackTechnique": {
+            "tp": 46,
+            "fp": 4,
+            "fn": 0,
+            "precision": 0.92,
+            "recall": 1.0,
+            "f1": 0.958333,
+            "details": {},
+            "gold_support": 46,
+            "predicted_support": 50,
+            "applicable": true
+          },
+          "Configuration": {
+            "tp": 8,
+            "fp": 20,
+            "fn": 18,
+            "precision": 0.285714,
+            "recall": 0.307692,
+            "f1": 0.296296,
+            "details": {},
+            "gold_support": 26,
+            "predicted_support": 28,
+            "applicable": true
+          },
+          "Vulnerability": {
+            "tp": 85,
+            "fp": 7,
+            "fn": 1,
+            "precision": 0.923913,
+            "recall": 0.988372,
+            "f1": 0.955056,
+            "details": {},
+            "gold_support": 86,
+            "predicted_support": 92,
+            "applicable": true
+          },
+          "Weakness": {
+            "tp": 5,
+            "fp": 1,
+            "fn": 2,
+            "precision": 0.833333,
+            "recall": 0.714286,
+            "f1": 0.769231,
+            "details": {},
+            "gold_support": 7,
+            "predicted_support": 6,
+            "applicable": true
+          }
+        },
+        "dev_normalization": {
+          "correct": 139,
+          "total": 144,
+          "accuracy": 0.9652777777777778,
+          "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+        }
+      },
+      "prompt_sha256": "92099f834763e57f33a3e76f34de885df69971ea00bd1ea72de03f2d741f9452",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nExamine the complete source across all formats — narrative text, tables, lists, captions, and identifiers split across lines. Validate each output span against the original before finalizing.\nFor every product-like mention, apply this sequential accept-reject filter and retain only candidates that pass all steps:\n1. Reduce to the minimal self-contained phrase that still uniquely names the item; strip trailing instance counts, descriptive qualifiers, and deployment details.\n2. Exclude if the reduced form is merely a generic role, function, or plural/collective variant lacking a distinct singular identifiable version.\n3. Exclude if the surrounding local passage does not explicitly present it as an impacted item; ignore passing, background, or tool-only references.\n4. Confirm verbatim character-level match to the source prior to retention.\nIf in doubt, drop the candidate.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    },
+    "c_r2_p1_g0_edit": {
+      "candidate_id": "c_r2_p1_g0_edit",
+      "parent_id": "c_r1_p0_g0_para_0",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g0_para_0_0_0",
+      "gradient_text": "The OPTIMIZABLE_GUIDANCE Configuration vetting is under-specified relative to the contract's tail-of-supported-fact definition: step 1 permits retaining vendor prefixes, trailing version/build descriptors, and feature-qualified spans via a vague recognizability exception, and step 2 only filters feature/capability/function/module while omitting the contract's other exclusions for tools, services, generic placeholders, incidental mentions, and version/patch/build tokens, with no test for local vulnerability anchoring. Add an explicit sequential decision procedure: keep a candidate only if the same local fact block contains an explicit vulnerability identifier that directly affects it, otherwise discard as unanchored; then strip any leading vendor/organization qualifier and any trailing version, build, deployment, component, or feature qualifier to the shortest standalone concrete product/component/device token and discard if what remains is only a generic class, tool, service, feature, function, file, or infrastructure token; forbid forming a normalized value by joining qualifiers or inferring part, requiring null when part and product token are not both confidently verified.",
+      "estimated_reward": 0.0,
+      "selection_status": "invalid_contract",
+      "num_evaluations": 0,
+      "samples_seen": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "constrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "Stage 1 guidance 不得引入关系类型: affects"
+          ]
+        },
+        "rejection_reason": "Stage 1 guidance 不得引入关系类型: affects"
+      },
+      "prompt_sha256": "7d1c3b5bf10204daa34b99f0e14cc5fb0d034ca406ac78d613c15fcfb3a73b30",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nProceed linearly through the full document to its conclusion with no premature termination, encompassing introductory headers, narrative body, tables, lists, captions, footnotes, and terminal reference portions.\nEvaluate every product-component candidate sequentially as follows:\n1. Anchoring test: keep only if the same local fact block contains an explicit vulnerability identifier that directly affects it; otherwise discard as unanchored incidental mention.\n2. Stripping test: remove any leading vendor or organization qualifier and any trailing version, patch, build, deployment, component, or feature qualifier to the shortest standalone concrete product, component, or device token; do not retain an extended span.\n3. Exclusion test: discard if what remains is only a generic class, placeholder, tool, service, feature, capability, function, module, filename, address, port, or infrastructure token without capacity to serve by itself as a directly supported impacted tail.\n4. Verification: confirm each kept span exactly character by character against the source prior to retention and eliminate any broader containing span after the minimal tail is kept.\nLeave normalization as null when part and product token are not both confidently verified; never create a value by joining qualifiers or inferring part.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    }
+  },
+  "edges": [
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g0_edit",
+      "target": "c_r1_p0_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r2_p0_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "c_r2_p0_g0_edit",
+      "target": "c_r2_p0_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g0_para_0",
+      "target": "c_r2_p1_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g0_para_0_0_0"
+    }
+  ]
+}

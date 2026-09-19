@@ -1,0 +1,291 @@
+{
+  "schema_version": "chapter3-no-capec-v1",
+  "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "boundary_contract_version": "chapter3-boundary-sync-v2",
+  "cpe_normalization_contract_version": "cpe-gold-audit-v1",
+  "status": "frozen_mcpu_v2_pending_human_iaa_and_new_final_test",
+  "frozen_at_utc": "2026-09-19T08:16:40.376540+00:00",
+  "gate_status": "gate_passed",
+  "controlled_test_rerun_ready": false,
+  "formal_experiment_ready": false,
+  "formal_experiment_blocker": "verifiable human IAA results and a newly reserved unseen final test are not yet available",
+  "base_manifest": {
+    "path": "../v5/data/dataset_freeze_manifest_v5.json",
+    "sha256": "cc7641f653344f711a7b0094ea65ff03d0910eff5aaf4124e4b30b47796814a6",
+    "dataset_version": "v5-v4.5-gold-v8-cpe-audit-v1"
+  },
+  "split_file": "data/train_dev_test_split_v7.json",
+  "split_sha256": "6cbef622b5e9075e7173559c01d733336adb60195fbc9490ecdbe92c368f5da5",
+  "split_membership_changed": true,
+  "partition_stats": {
+    "train": {
+      "documents": 63,
+      "entities": {
+        "AttackTechnique": 2327,
+        "Configuration": 258,
+        "Vulnerability": 632,
+        "Weakness": 104
+      },
+      "entity_total": 3321,
+      "relations": {
+        "affects": 296,
+        "exploited_by": 27,
+        "instantiates": 103
+      },
+      "relation_total": 426,
+      "relation_documents": {
+        "affects": 39,
+        "exploited_by": 17,
+        "instantiates": 7
+      }
+    },
+    "dev": {
+      "documents": 21,
+      "entities": {
+        "AttackTechnique": 852,
+        "Configuration": 70,
+        "Vulnerability": 346,
+        "Weakness": 23
+      },
+      "entity_total": 1291,
+      "relations": {
+        "affects": 98,
+        "exploited_by": 9,
+        "instantiates": 22
+      },
+      "relation_total": 129,
+      "relation_documents": {
+        "affects": 15,
+        "exploited_by": 6,
+        "instantiates": 4
+      }
+    },
+    "test": {
+      "documents": 21,
+      "entities": {
+        "AttackTechnique": 523,
+        "Configuration": 78,
+        "Vulnerability": 153,
+        "Weakness": 15
+      },
+      "entity_total": 769,
+      "relations": {
+        "affects": 93,
+        "exploited_by": 18,
+        "instantiates": 15
+      },
+      "relation_total": 126,
+      "relation_documents": {
+        "affects": 12,
+        "exploited_by": 7,
+        "instantiates": 3
+      }
+    }
+  },
+  "gold_directory": "data/annotations/gold",
+  "gold_document_count": 105,
+  "gold_aggregate_sha256": "340615e8332e55b30141a9eaee07dc327c87240e5be976c4ac869bec3f9ff44f",
+  "gold_document_sha256": {
+    "aa20-259a-iran-citrix-vpn-cve-19781": "b294fc01f60eddfb415a62ace9f6caffa867d179e9d553294c9f262e50a507ba",
+    "aa21-200a": "a4866cc347515617f848106927f5642fd35492511680b460485abf8f17eaa446",
+    "aa21-200b": "05d3b05db6bad5ff4fca39bfd0cdf77c73c7ceabec8d6beb67bf3b8479703a0b",
+    "aa22-074a": "0b49664bdb2ed8ce2f5b5dde3c31013fd3736cd20bf4a9b94e2d8b3e77ab5e74",
+    "aa22-137a": "b2b9d181d52afc6ba2f4e7436fe2b20dc65f80b333c69d53db67fdb86d928c05",
+    "aa22-138b-vmware-cve-22954": "47b4b774e3c320a0059cf76360a789a06a6c0682260b9a3d86daf814679ca399",
+    "aa22-174a-log4shell-vmware-cve-44228": "a1fa2ba046d7e13df854ee7d8782880bbe21f9cd5b43f6f56bcd0fd369a0f1dc",
+    "aa22-181a": "d5f1590ab8e4ecab557e1d779a5fd8aa46cf5b29fbb91ead2040a78ffb7dfcf2",
+    "aa22-187a": "190f0fa01e67c762c6f23f98d4ffe79f30e790a048a842e1b14bb260436a68f7",
+    "aa22-216a": "425c831c06030d2bc7221e9017a1f64c7c5bfbc01fcd2e7eec4d555cd419128f",
+    "aa22-223a": "16245f3682be7d6faeffe5cb37c13324a823033641624ac96b237d08051628c0",
+    "aa22-228a": "c68ee30e2664bc3abb724efc8a63e7edbceb6cd4cddded5656a4dbbfb3fe883b",
+    "aa22-249a": "29b46eac11e739996ac26736cda7efebdc8ca29d94ceca9eb6f36afff663d99f",
+    "aa22-257a": "28658915245c452c339c873932ef9fa341a7bedcd1c2539d1faec1baf67f13e7",
+    "aa22-264a": "ab14c878bf1483e9999d29165c9e333f4246bd30cab88707229e731066c8a31e",
+    "aa22-265a": "f40a35028abf3307b866ba57cc84e4c33d9ac4d0e5409a6402a375a7bfec7e3d",
+    "aa22-277a": "11bd7c356225a315a52b97b3d5ef018b0cbe04533f4793594ad81a0d50cab031",
+    "aa22-294a": "42a5d75e5d153941f20a6bd11562698d49111466cbf4ca1f783010211f2443fa",
+    "aa22-320a": "5eee853b95f886173461a6ad1a3be5db9fee8d3620cb33e24d612d53980b6268",
+    "aa22-321a": "7b15502ce74a9db204a73c16680bb5592023b2533e60701a0305179e28ce0116",
+    "aa22-321a-hive-exchange": "76dfd17e6bd033e74c27b672ce95120abd9c5348ae2d293a642a0886f07ee38c",
+    "aa22-335a": "81ef7959e4ee030745ccf0ab1cd4a787206fef01f48a874a2db4836b4d5cd8bb",
+    "aa23-025a": "e5ba505536fa9adce213f32c744f8962f07ff2aa108386da33c358759c182637",
+    "aa23-039a": "9ab739dc519dd8b0f33ebf6c75021287641a05521d62611effab08bec3503527",
+    "aa23-040a": "d54e2ff044289e493884ed13403a7f358bbcee680ec0bd03e12dc101e531e9af",
+    "aa23-059a": "00e52b72131ba99bcab01620acc3981a44cd82a5441ee45637d9ca7af61dd66b",
+    "aa23-061a": "5b19881a1c0410421f8d1f4ba4456a0659bd1fcc933bf5b1b00de7aec99c61a5",
+    "aa23-074a": "905739913fc1475c25050f0a55353dfb8111cdc5d1222a6f72f1438b3be10c9c",
+    "aa23-074a-telerik-cve-18935": "8008b9a029b6e89d6ac963d51bfb25fc080ee533d572e277d66fba1c4e4e9dde",
+    "aa23-075a": "226237556949775349e901b19d2438ba2a7251f395af36bff63a3f199ed8e40e",
+    "aa23-108": "5d41f5ec348d1fc6710debb47fe827000eb21a5d05bcb42118d5d81144c9e1c9",
+    "aa23-129a": "e9a9cefc8d12734518fdb89bf892a9392e827c9947e465aeeb16c295c1128280",
+    "aa23-131a": "4f3835c78bce13f1957eeb5d4bf24f6a2030a8ba4e000e94201c0f9f8b43f1cc",
+    "aa23-136a": "7aa9c7eff08cf78564dae82aeb25d1c31690613db5422455c642bd75aa239f3f",
+    "aa23-158a": "e5ab067276906d958117e64f57d6489970a18a5900469eb36b59e55c198333ad",
+    "aa23-165a": "216817f92da7989cd85ac4738837a749a3100aeef720049eb172a4563b64615f",
+    "aa23-187a": "bf87306cd27fa5866b97788417b4a2fa676e0143d77d64adf971eb30ebcb22bc",
+    "aa23-193a": "609bbe7f2bc8197beb34ebc13b8d370d438191d852f6f6e5c8a2460b4eee27e9",
+    "aa23-201a": "109586aab6778037cd73ec48630e780ac029483cc6da597c4b339020ee443eeb",
+    "aa23-208a": "2c650a2ec1688d6b4bc9b2b2a64f4b8f8c061e0bcbd9c133680b2935b1b6124c",
+    "aa23-213a": "85bd97575e8995785349cff826bab8e1c972f5c6d713e270e3e880a9f3c9732d",
+    "aa23-215a": "af0970ac1a070f433e7cc28faaeefbc100d66aea2c34d1a68ffba11765055107",
+    "aa23-242a": "6436eda55ced93baa73434f52996d0b7cfae8aaab7720888bf74bf4ddbb83385",
+    "aa23-250a": "f3f720378fdf36c384b6c25b2a9edb9f6c641102d128e5bf99b6b52b790d756b",
+    "aa23-250a-manageengine-cve-47966": "178e68472ede81a3af0ff463ad3fa03e4d7cb5135a074f7c2a97d122b31f7851",
+    "aa23-263a": "c1e6039b258fb9828d580364999039e51050274c4bc9d194b066a44edaaf212e",
+    "aa23-278a": "04ec23d4753d173d8a5998c43282dd4d1d6dd8d9eabac93f8428dec5f9db16db",
+    "aa23-284a": "5a091afd337e9ebc1f0b8b0dbebfb170a01eeb63e0549b03fa02a0f8fee65d31",
+    "aa23-289a": "ec767bcc6c1122cec2adb66d1e896d806a3fdcb46531900e7d2d488148e6109e",
+    "aa23-319a": "b464aa25397dcc700a8f16e00f7ab853e4d68e33543e550dd90b102f640aa59b",
+    "aa23-320a": "73f1400ccb44a9ae04776442a8468fbeded348d3b9a748b358628c5469e68bab",
+    "aa23-325a": "dace6fc64c9c2afc39c73d289d286a1918f9f9a4ce5450df9d2fa8f1b0fcf989",
+    "aa23-325a-citrix-bleed-cve-4966": "eef7fa9bbd92d2304f6dfa417551510fcc7197b0fc637638f80f3420c18ae562",
+    "aa23-335a": "ded3ad20c3b8a80140b3aa242e7aa5126ff2b203572d9e1825d7cd60ea36143e",
+    "aa23-339a": "7ad11642a412de24a19ddb64a21e324549b03d63cb83bc92d55b3b62792f29aa",
+    "aa23-339a-coldfusion-cve-26360": "4536c06515717d081601fd5a801adfbe4c1d74e851264335d4458180a2a6b20b",
+    "aa23-341a": "6f18fed53e3396c429816d20ce73bebb262396016c3dcea43bff4e554c1aa2a7",
+    "aa23-347a": "caaa546b202acd25903dfc852d0744373598dd0612f2dccba04671a2bb156868",
+    "aa23-347a-play-ransomware": "0ac9c429f58c28873afaab97090528bc3d4371d664757d6714d64ecc95358949",
+    "aa23-349a": "479aa2e3cd5cfcf6d54d43de69829aca9373b23324d50d02ec0d39cc21cf7069",
+    "aa23-352a": "787fce80536849134e6dc57db9e9b6e63de033523e210b3a68e1bb157ed09168",
+    "aa23-353a": "53b91c0bc1f7f587cff0d84cb21d06fb4be3e29cdf97c3497159bad17c22609c",
+    "aa24-016a": "471945935950c07aa975957aede7c0c78fb0bc390b5cf951119b99fd8b58634a",
+    "aa24-016a-androxgh0st": "ffac5cda5f997cc4b90de4657b324a65b467bc23e56ff587dccc7eac601a767f",
+    "aa24-038a": "1317c88f8b3c3db90b8f77142fe27a3a25f590cc2fa9e3b7514ce105fb0dc895",
+    "aa24-038a-volt-typhoon": "bc1b99681ca480c77c765523d6aba2e40a1b43c22a26c4490dc76009b461fe0a",
+    "aa24-046a": "fb1268b57bce4771c3a268bd99944f34b74b6f5c6b30cf223eeac89a99b30742",
+    "aa24-057a": "402c2c99fc8b334b60e1f464fc8fea4a03cb25f71bb0f7daa05563bb4587c691",
+    "aa24-060a": "414b29bc13ecf346137be0a651b535e3480efb994c4c2bc85cb6b2ae61511f47",
+    "aa24-060b": "57b4516587be217ea322fa67864ed306085884c5a8902c45de87646280d79ff0",
+    "aa24-109a": "c71a41cec84d11d7be6b3c279678ae2ce05e8704bce7248d73f031d2fbc59e90",
+    "aa24-131a": "cf0940ae13e813faabfb6cfa1200082fbd799903444945126917c45607df408c",
+    "aa24-131a-black-basta-cve-1709": "d72b02e875ac5f26442f14afa8042088e7bad878bb0e83dc79034dcb9a1e930c",
+    "aa24-193a": "fc9fade22a03cb268672825f7de952245deef230f0f2ba0accef6821843604ec",
+    "aa24-207a": "662f4cee338bc36b0d17d12aa8656fc981f713a8f8163dede9e475a6c577d863",
+    "aa24-241a": "4d51cca1acb24d62e6cd4e31e81f3f2683deaf4a7ebd99ecdabe1d414c3bdf21",
+    "aa24-242a": "0357f14b7eadf2af2cfd5ed5dead2c7b7aa6727f59f913be93437c1afa18abcc",
+    "aa24-249a": "7ef584268dcd15d2543ea4798542aec75dc4fd6088099192eb96f9f3235c01de",
+    "aa24-290a": "b826fc7812d111d711f24edaedb5242c5816cfa1448b564e4ff5f4b54ad11cb8",
+    "aa24-317a": "1f6bc8fcc8fd6798e7375d9ac9f08398ad7e3c1ff93a1dc95739c140101e521a",
+    "aa24-326a": "b889746f9f77ef4e7a00f0cddde072d64316fb09f13f03c9c174f0f3009fe77d",
+    "aa25-022a": "5ffadce6c1aab07fda37e69c070a1483f943d7a5621f1b7fb75c25c00742bbf1",
+    "aa25-050a": "76a201914a15a2d11675904fa9682ea80a27a4010e2966a3c06c178ba89f4abd",
+    "aa25-071a": "0d6d693ff19cb08af6aee3410d7f234daa58765c1b9116cb8ffae16259448c82",
+    "aa25-141b": "ef17f1ce78c344b7d93aff871dc593327f2835cd00ed05ae1a2f6684d099ee96",
+    "aa25-163a": "8e00bb5ee11e347046f29ad71a268a86934c4030ca8eec5f626b1ca8e4d9cc22",
+    "aa25-203a": "9e6fa52fd0267a52c858f272446a7288f04a2e0a4f5fb448aa0c478dd54c6f7d",
+    "aa25-239a": "5127362f0234a41fc24eda260f74cf842099f86115e14d98b4e56d794d5c6e4f",
+    "aa25-266a": "8864246f6fa53dd52f3755957cfa044b900f6d2c371717eb6cd9db613c0ddb80",
+    "aa25-343a": "5779cbfc6cea87cf5daedf9995fd5bc96ffb1297cdb042b0808f1205e2a69a39",
+    "aa26-097a": "c963b3c59330766c7e0cf4dd347b740f46907f75530339544fa5e073c9704fc0",
+    "accellion-fta-google-accellion-data-theft-extortion": "8ef37c177776f9cde2ceb7874b9b2a1d6638c4e2fc67dfeb7cbb5be383e1a8e2",
+    "accellion-fta-nvd-accellion-27101": "f4e8c0f62ff07c5ce6c0cdf543000237837148f84996569ad59654acc8668bfa",
+    "apache-httpd-41773-tenable-httpd-41773": "037963110d1307a5eb7fb8646cfc1aae42f8fe74e3d09418994705577d3b3bcb",
+    "bluekeep-rapid7-bluekeep-metasploit": "2cbe32c0cd0c73ed3cb85cbd40040d8cb9d546beb500a3a3a0603c3c4bdf81f7",
+    "citrix-adc-cisa-citrix-3519-webshells": "cd75e47058e47100859d84be6e92b4ddefc494f25cba17a46bd42948dc0863e8",
+    "citrix-adc-tenable-citrix-19781-cve": "f3f32346c7ac2790d65d4b13ddb9f6344713306ccf84d578cdea5f0a0ec02b1c",
+    "confluence-nvd-confluence-26084": "bf032986cf02c0a94089ecdf61bd4dfb199770f88d6c28f2f12899b4a566fffb",
+    "drupalgeddon-nvd-drupalgeddon-7600": "5cd945b5e990086814173739f05b8f29074cfffa6d10ab38352f4342287f9384",
+    "eternalblue-expressvpn-eternalblue": "97b5c27c97f037cf917cae7984a9b4d564f6ae24267656b925ae6daf8902be5f",
+    "follina-huntress-follina": "3081f0586ef5e5c94b9895201c68089d99fae84e97dc1ddb335574582eb79d45",
+    "fortios-sslvpn-rapid7-fortinet-targeting": "9067a59ffeecb77680fa7e2987e7b3be440c46d3258eca5d3112379d0668c765",
+    "goanywhere-nvd-goanywhere-0669": "d3d90e0e564b4df74d5205e1a12f3f758df4ed94e0b56be74e9884882fbb2a7a",
+    "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities": "82744c13b491ea0c55e63dd4642ee5902411d2cb6cc8c8ad6b402cc3ab6e70a2",
+    "proxylogon-microsoft-hafnium-exchange": "bfe4646c6e8dea95bac09983620bf2b646b5af7bc138932a0c4b615acc1ffd53"
+  },
+  "supporting_evidence": {
+    "review_receipt": {
+      "path": "results/human_reannotation_gold_status.json",
+      "sha256": "4e26722311292dc8b6120f1c0e400054054d431b936a89f48c6ce54aed25ba37"
+    },
+    "audit_report": {
+      "path": "results/gold_strategy_audit_v6_v7.json",
+      "sha256": "b33f4e9ce6898ee8b2427601fd7817023d78dd1a6cdc82e46f2210047d9d1763"
+    },
+    "boundary_audit_report": {
+      "path": "results/boundary_sync_audit_v1.json",
+      "sha256": "6fdde222bdd64f8316a45f0a0d177abb68d6fcce8830bde7021bd6601317e9eb"
+    },
+    "leakage_report": {
+      "path": "results/split_leakage_audit_v6_v7.json",
+      "sha256": "002a87c3487fbfb50c366519988209b51c7d7afb049439fec2d732a9dad1dc3f"
+    },
+    "guideline": {
+      "path": "ANNOTATION_GUIDELINE.md",
+      "sha256": "761f25c9addb5a00aac6eca581940015ddf8beefff5ba623feb30da2e4a49784"
+    },
+    "boundary_review_csv": {
+      "path": "results/boundary_sync_review_v1.csv",
+      "sha256": "4b1c78aef6fc10d736871924348d956cfb5364c876c681c556ec80e53fb6e1ea"
+    },
+    "boundary_review_md": {
+      "path": "results/boundary_sync_review_v1.md",
+      "sha256": "b274dea4a62988183cf96b55e39c8f484478d6c992f600ece711271eb061e491"
+    },
+    "boundary_contract_v1": {
+      "path": "config/boundary_contract_v1.json",
+      "sha256": "07fa23d1206b6962e5165eea5aa34bc6d265f520d4953950886ecda30620f091"
+    },
+    "boundary_contract": {
+      "path": "config/boundary_contract_v2.json",
+      "sha256": "fc765dd3903f4eb85ff6fdd0ce2bfa2538e60f6c043a4d36263470f788909a73"
+    },
+    "configuration_mcpu_policy": {
+      "path": "config/configuration_boundary_mcpu_v2.json",
+      "sha256": "195c5176dbea9bf8512e51d167a1ef8cc1b8aa418cfd3a29ba5da407e56b1dc5"
+    },
+    "configuration_mcpu_audit": {
+      "path": "results/configuration_boundary_mcpu_v2_audit.json",
+      "sha256": "cdc69235152e63d2c0890852fd166b0298462f2fcb66e409540c11e543586281"
+    },
+    "configuration_mcpu_receipt": {
+      "path": "results/configuration_boundary_mcpu_v2_receipt.json",
+      "sha256": "1f844fc647c2f0db965ae7907c3dc15bd6d5327d63048f37e0ae3dbd68bc29b2"
+    },
+    "configuration_mcpu_review_csv": {
+      "path": "results/configuration_boundary_mcpu_v2_review.csv",
+      "sha256": "721bf4ae4bbcc9d488a35901ea3e9d1557e2836a4ec1ad6d5889474e0aaf5a61"
+    },
+    "configuration_mcpu_review_md": {
+      "path": "results/configuration_boundary_mcpu_v2_review.md",
+      "sha256": "87623cdc216d65a4843f74a0b0794b243284056582514610f0d16e85c90fc4e9"
+    },
+    "boundary_quarantine": {
+      "path": "data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "sha256": "288020a1c076595853dfe3419961d1f23f84279adcb09f150781ada94d21081c"
+    },
+    "cpe_corrections": {
+      "path": "config/cpe_gold_corrections_v1.json",
+      "sha256": "77b29eace78244634766d176ed23d01e576bd66feac346fccbaac373018a5c1c"
+    },
+    "cpe_nvd_evidence": {
+      "path": "results/cpe_gold_nvd_evidence_v1.json",
+      "sha256": "42f02c33db3e1a37d0bc57077fcca799c071ab6d2e8f7e4676156952b39e2105"
+    },
+    "cpe_audit_pre": {
+      "path": "results/cpe_gold_audit_pre_v1.json",
+      "sha256": "a11bcf560aa6244fb72fc19cb499a0d6fe2ea21413c6b62e33c96e52588a46c4"
+    },
+    "cpe_audit": {
+      "path": "results/cpe_gold_audit_v1.json",
+      "sha256": "9ea851634d371f6de8b7233a104b076205e907f94e1138eb2f6a826f67a8d419"
+    },
+    "cpe_review_receipt": {
+      "path": "results/cpe_gold_review_v1.json",
+      "sha256": "4c19125fea37a729cd16cbf26b7f456e61eca791c5198156bfcd1584030b79fc"
+    },
+    "cpe_review_csv": {
+      "path": "results/cpe_gold_review_v1.csv",
+      "sha256": "f45b0fdd5fd8bb7c2e7c393ce1a0a5a4606352f442a9dcf5dde7f2cbeedbf8c2"
+    },
+    "cpe_review_md": {
+      "path": "results/cpe_gold_review_v1.md",
+      "sha256": "df11a8b585deef039b1936f655a643125762e4dd0e8f54bc4a7ca6ecb4e902fa"
+    },
+    "cpe_quarantine": {
+      "path": "data/annotations/quarantine/cpe-gold-audit-v1/rejected_items.json",
+      "sha256": "41d8e19de59e920d3085330dfaaad518795d1d0be44887ac212e10f6f6c3e6ca"
+    }
+  },
+  "provenance_refreshed_at_utc": "2026-09-19T08:16:40.376540+00:00"
+}

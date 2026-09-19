@@ -1,0 +1,413 @@
+﻿doc_id,entity_id,decision,surface,start,end,normalized_id,cpe_version,flags,basis
+aa20-259a-iran-citrix-vpn-cve-19781,E42,KEEP,Citrix NetScaler,7158,7174,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-074a,E2,KEEP,Windows Print Spooler,2146,2167,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-138b-vmware-cve-22954,E6,KEEP,VMware Workspace ONE Access,1372,1399,cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-138b-vmware-cve-22954,E7,KEEP,VMware Identity Manager,1401,1424,cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-138b-vmware-cve-22954,E74,KEEP,VMware vRealize Automation,1433,1459,cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-138b-vmware-cve-22954,E75,KEEP,VMware Cloud Foundation,1467,1490,cpe:2.3:a:vmware:cloud_foundation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-138b-vmware-cve-22954,E76,KEEP,vRealize Suite Lifecycle Manager,1496,1528,cpe:2.3:a:vmware:vrealize_suite_lifecycle_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-174a-log4shell-vmware-cve-44228,E4,KEEP,Unified Access Gateway,1753,1775,cpe:2.3:a:vmware:unified_access_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-174a-log4shell-vmware-cve-44228,E20,KEEP,VMware Horizon,1733,1747,cpe:2.3:a:vmware:horizon:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-216a,E2,KEEP,Microsoft MSHTML,6918,6934,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E11,KEEP,Zimbra Collaboration,1486,1506,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E43,KEEP,ZCS,4393,4396,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E44,KEEP,ZCS,4727,4730,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E45,KEEP,ZCS,4956,4959,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E47,KEEP,MailboxImportServlet,5208,5228,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E48,KEEP,RARLAB UnRAR,5370,5382,cpe:2.3:a:rarlab:unrar:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E50,KEEP,ZCS,5539,5542,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E51,KEEP,ZCS,5710,5713,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E52,KEEP,ZCS,6270,6273,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-228a,E53,REVISE_SPAN,ZCS,6389,6392,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Remove the generic deployment/class suffix; ZCS is the independently identifiable affected product mention.
+aa22-257a,E26,KEEP,Fortinet FortiOS,13920,13936,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-257a,E29,KEEP,VMware Horizon,5873,5887,cpe:2.3:a:vmware:horizon:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-257a,E31,KEEP,VMware Horizon,7641,7655,cpe:2.3:a:vmware:horizon:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-257a,E71,KEEP,Microsoft Exchange,6812,6830,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-257a,E72,KEEP,Microsoft Exchange,7177,7195,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-257a,E73,KEEP,Microsoft Exchange,13451,13469,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-257a,E74,KEEP,Microsoft Exchange,13596,13614,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-264a,E2,KEEP,Microsoft SharePoint,4035,4055,cpe:2.3:a:microsoft:sharepoint_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-277a,E41,KEEP,Exchange Server,5011,5026,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-320a,E19,KEEP,VMware Horizon,3497,3511,cpe:2.3:a:vmware:horizon:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a,E29,KEEP,FortiOS,3881,3888,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a,E30,KEEP,Microsoft Exchange,4399,4417,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a,E31,KEEP,Microsoft Exchange,4482,4500,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a,E32,KEEP,Microsoft Exchange,4563,4581,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a,E33,KEEP,Microsoft Exchange,10763,10781,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a-hive-exchange,E6,KEEP,FortiOS,3496,3503,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a-hive-exchange,E18,KEEP,Microsoft Exchange,4019,4037,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a-hive-exchange,E19,KEEP,Microsoft Exchange,4101,4119,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a-hive-exchange,E20,KEEP,Microsoft Exchange,4181,4199,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-321a-hive-exchange,E21,KEEP,Microsoft Exchange,10159,10177,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa22-335a,E26,KEEP,Windows Common Log File System (CLFS) driver,5271,5315,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a,E21,KEEP,Progress Telerik,1330,1346,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a,E77,KEEP,Telerik UI for ASP.NET AJAX,3231,3258,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a,E79,KEEP,Telerik UI for ASP.NET AJAX,3917,3944,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a,E80,KEEP,Telerik UI for ASP.NET AJAX DialogHandler,4241,4282,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a,E81,KEEP,Telerik,9355,9362,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a,E82,KEEP,Telerik UI for ASP.NET AJAX,9921,9948,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a-telerik-cve-18935,E14,KEEP,Telerik UI for ASP.NET AJAX,2974,3001,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a-telerik-cve-18935,E15,KEEP,Telerik UI for ASP.NET AJAX,1013,1040,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a-telerik-cve-18935,E16,KEEP,Telerik UI for ASP.NET AJAX,3661,3688,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a-telerik-cve-18935,E81,REVISE_SPAN,Progress Telerik user interface (UI) for ASP.NET AJAX,445,498,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Progress is an immediately adjacent vendor token in the same continuous product noun phrase.
+aa23-074a-telerik-cve-18935,E83,KEEP,Telerik UI for ASP.NET AJAX,3992,4019,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-074a-telerik-cve-18935,E84,KEEP,Telerik UI for ASP.NET AJAX,9644,9671,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-131a,E16,KEEP,PaperCut NG,1003,1014,cpe:2.3:a:papercut:papercut_ng:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-131a,E17,KEEP,PaperCut MF,1019,1030,cpe:2.3:a:papercut:papercut_mf:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-136a,E102,KEEP,Windows 10 and 11,6903,6920,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-136a,E103,KEEP,Windows 10 and 11,23176,23193,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-136a,E104,KEEP,Netlogon,11386,11394,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-136a,E105,KEEP,NetLogon,19853,19861,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-136a,E106,KEEP,NetLogon,45392,45400,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E35,KEEP,GoAnywhere MFT,5397,5411,cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E56,KEEP,MOVEit,62,68,cpe:2.3:a:progress:moveit_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E57,KEEP,MOVEit,602,608,cpe:2.3:a:progress:moveit_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E58,KEEP,MOVEit Transfer,2567,2582,cpe:2.3:a:progress:moveit_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E59,KEEP,MOVEIT TRANSFER,8806,8821,cpe:2.3:a:progress:moveit_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E60,KEEP,MOVEit Transfer,9162,9177,cpe:2.3:a:progress:moveit_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-158a,E62,KEEP,MOVEit Transfer,24509,24524,cpe:2.3:a:progress:moveit_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E83,KEEP,F5 iControl REST,24530,24546,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E84,KEEP,Fortra GoAnyhwere Managed File Transfer (MFT),24659,24704,cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E85,KEEP,Apache Log4j2,24907,24920,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E86,KEEP,F5 BIG-IP,24976,24985,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E87,KEEP,BIG-IQ Centralized Management,24990,25019,cpe:2.3:a:f5:big-iq_centralized_management:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E88,KEEP,NetLogon,25088,25096,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E89,KEEP,Microsoft Remote Desktop Services,25150,25183,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-165a,E90,KEEP,Fortinet FortiOS,25243,25259,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-187a,E93,KEEP,Netwrix Auditor,30447,30462,cpe:2.3:a:netwrix:auditor:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-187a,E94,KEEP,Netwrix Auditor,2177,2192,cpe:2.3:a:netwrix:auditor:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-187a,E95,KEEP,Netwrix Auditor,4852,4867,cpe:2.3:a:netwrix:auditor:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-201a,E110,KEEP,NetScaler (formerly Citrix) Application Delivery Controller (ADC),1239,1304,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-201a,E111,KEEP,NetScaler Gateway,1309,1326,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-201a,E112,KEEP,NetScaler ADC,3504,3517,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-201a,E113,KEEP,NetScaler ADC,4171,4184,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-201a,E114,KEEP,NetScaler Gateway,4189,4206,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-201a,E115,KEEP,NetScaler ADC,14478,14491,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E66,KEEP,Ivanti Endpoint Manager Mobile (EPMM),2035,2072,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E67,KEEP,EPMM,2312,2316,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E69,KEEP,Ivanti Endpoint Manager Mobile (EPMM),4747,4784,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E70,KEEP,EPMM,5396,5400,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E71,KEEP,EPMM,6493,6497,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E72,KEEP,EPMM,7516,7520,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E73,KEEP,Ivanti EPMM,8576,8587,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E74,KEEP,EPMM,8817,8821,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-213a,E75,KEEP,EPMM,9016,9020,cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E165,REVISE_SPAN,Microsoft Exchange,5374,5392,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retain the adjacent vendor-product identity and remove the generic email-server class suffix.
+aa23-215a,E166,KEEP,Zoho ManageEngine ADSelfService Plus,5898,5934,cpe:2.3:a:zohocorp:manageengine_adselfservice_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E167,KEEP,Atlassian Confluence,6147,6167,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E168,REVISE_SPAN,Apache’s Log4j,6652,6666,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retain the adjacent vendor-product identity and remove the generic library class suffix.
+aa23-215a,E169,KEEP,VMware Workspace ONE Access,7388,7415,cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E170,KEEP,Identity Manager,7417,7433,cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E171,KEEP,F5 BIG-IP,7854,7863,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E172,KEEP,Microsoft Support Diagnostic Tool (MSDT),7958,7998,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E173,KEEP,Atlassian Confluence,8178,8198,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E174,KEEP,FortiOS,8548,8555,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E175,KEEP,FortiProxy,8560,8570,cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E176,KEEP,Exchange Server,8724,8739,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E177,KEEP,Exchange Server,8826,8841,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E178,KEEP,Exchange Server,8991,9006,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E179,KEEP,ADSelfService Plus,9095,9113,cpe:2.3:a:zohocorp:manageengine_adselfservice_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E180,KEEP,Confluence,9198,9208,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E181,KEEP,Log4j2,9398,9404,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E182,KEEP,Workspace ONE Access,9681,9701,cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E183,KEEP,Identity Manager,9706,9722,cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E184,KEEP,Workspace ONE Access,9814,9834,cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E185,KEEP,Identity Manager,9836,9852,cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E186,KEEP,vRealize Automation,9858,9877,cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E187,KEEP,BIG-IP,9972,9978,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E188,KEEP,Confluence,10153,10163,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E189,KEEP,Exchange Server,10735,10750,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E190,KEEP,Pulse Connect Secure,10892,10912,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E191,KEEP,Remote Desktop Services,11047,11070,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E192,KEEP,Application Delivery Controller,11121,11152,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E193,KEEP,Gateway,11157,11164,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E194,KEEP,BIG-IP,11303,11309,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E195,KEEP,WebLogic Server,11531,11546,cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E196,KEEP,WebLogic Server,11585,11600,cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E197,KEEP,SMA100,11649,11655,cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E198,KEEP,Exchange Server,11801,11816,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E199,KEEP,Exchange Server,11903,11918,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E200,KEEP,Exchange Server,12048,12063,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E201,KEEP,Exchange Server,12118,12133,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E202,KEEP,Email Security,12206,12220,cpe:2.3:a:sonicwall:email_security:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E203,KEEP,HTTP Server,12317,12328,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E204,KEEP,HTTP Server,12423,12434,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E205,KEEP,HTTP Server,12566,12577,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E206,REVISE_SPAN,SMA 100 Series,12712,12726,cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,SMA 100 Series is the product-family identity; Appliances is a generic class suffix in this occurrence.
+aa23-215a,E207,KEEP,Log4j,12854,12859,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E208,KEEP,FortiOS,13016,13023,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E209,KEEP,Collaboration Suite,13102,13121,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E210,KEEP,Internet Communication Manager (ICM),13257,13293,cpe:2.3:a:sap:internet_communication_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E211,KEEP,Spring Cloud,13435,13447,cpe:2.3:a:vmware:spring_cloud_function:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E212,KEEP,Zimbra Collaboration Suite,13767,13793,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E213,KEEP,Windows CSRSS,13944,13957,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E214,KEEP,QNAP NAS,14040,14048,cpe:2.3:h:qnap:nas:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E215,KEEP,Exchange Server,14179,14194,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E216,KEEP,FortiOS,14252,14259,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E217,KEEP,FortiProxy,14261,14271,cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E218,KEEP,FortiSwitchManager,14273,14291,cpe:2.3:a:fortinet:fortiswitchmanager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E219,KEEP,Office,25891,25897,cpe:2.3:a:microsoft:office:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E220,KEEP,FortiOS,26008,26015,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E221,KEEP,FortiProxy,26020,26030,cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E222,KEEP,Pulse Connect Secure,26640,26660,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E223,KEEP,Remote Desktop Services,27305,27328,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E224,REVISE_SPAN,SD-WAN WANOP,27729,27741,cpe:2.3:a:citrix:sd-wan:*:*:*:*:*:*:*:*,*,,Remove the generic appliance class suffix while retaining the named SD-WAN WANOP product form.
+aa23-215a,E225,KEEP,BIG IP,28261,28267,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E226,KEEP,Windows Server,28515,28529,cpe:2.3:o:microsoft:windows_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E227,KEEP,WebLogic Server,28961,28976,cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E228,KEEP,WebLogic Server,29123,29138,cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E229,KEEP,SSLVPN SMA100,29288,29301,cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E230,KEEP,Exchange Server,29425,29440,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E231,KEEP,Exchange Server,29626,29641,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E232,KEEP,Exchange Server,29827,29842,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E233,KEEP,Email Security,30212,30226,cpe:2.3:a:sonicwall:email_security:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E234,KEEP,Exchange Server,30376,30391,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E235,KEEP,Confluence,30667,30677,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E236,KEEP,Exchange Server,31019,31034,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E237,KEEP,Microsoft Exchange Server,31311,31336,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E238,KEEP,Confluence,31676,31686,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E239,KEEP,ManageEngine ADSelfService Plus,32035,32066,cpe:2.3:a:zohocorp:manageengine_adselfservice_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E240,KEEP,HTTP Server,32278,32289,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E241,KEEP,Apache HTTP Server,32323,32341,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E242,KEEP,Apache HTTP Server,32412,32430,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E243,KEEP,SMA 100 Series,32504,32518,cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E244,KEEP,Log4j,32846,32851,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E245,KEEP,Log4j,33386,33391,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E246,KEEP,FortiOS,33468,33475,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E247,KEEP,FortiProxy,33595,33605,cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E248,KEEP,Zimbra Collaboration Suite,33725,33751,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E249,KEEP,NetWeaver Application Server ABAP,33887,33920,cpe:2.3:a:sap:netweaver_application_server_abap:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E250,KEEP,SAP NetWeaver Application Server Java,33922,33959,cpe:2.3:a:sap:netweaver_application_server_java:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E251,KEEP,ABAP Platform,33961,33974,cpe:2.3:a:sap:abap_platform:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E252,KEEP,SAP Content Server,33976,33994,cpe:2.3:a:sap:content_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E253,KEEP,SAP Web Dispatcher,34005,34023,cpe:2.3:a:sap:web_dispatcher:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E254,KEEP,Spring Cloud Function,34345,34366,cpe:2.3:a:vmware:spring_cloud_function:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E255,KEEP,Workspace ONE Access,34539,34559,cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E256,KEEP,Identity Manager,34617,34633,cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E257,KEEP,vRealize Automation,34668,34687,cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E258,KEEP,VMware Cloud Foundation,34705,34728,cpe:2.3:a:vmware:cloud_foundation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E259,KEEP,vRealize Suite Lifecycle Manager,34743,34775,cpe:2.3:a:vmware:vrealize_suite_lifecycle_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E260,KEEP,Workspace ONE Access,34886,34906,cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E261,KEEP,Identity Manager,34960,34976,cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E262,KEEP,vRealize Automation,34988,35007,cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E263,KEEP,VMware Cloud Foundation,35075,35098,cpe:2.3:a:vmware:cloud_foundation:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E264,KEEP,vRealize Suite Lifecycle Manager,35150,35182,cpe:2.3:a:vmware:vrealize_suite_lifecycle_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E265,KEEP,WSO2 API Manager,35241,35257,cpe:2.3:a:wso2:api_manager:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E266,KEEP,WSO2 Identity Server,35290,35310,cpe:2.3:a:wso2:identity_server:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E267,KEEP,WSO2 Identity Server Analytics,35345,35375,cpe:2.3:a:wso2:identity_server_analytics:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E268,KEEP,WSO2 Identity Server as Key Manager,35409,35444,cpe:2.3:a:wso2:identity_server_as_key_manager:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E269,KEEP,WSO2 Enterprise Integrator,35479,35505,cpe:2.3:a:wso2:enterprise_integrator:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E270,KEEP,Zimbra Collaboration Suite,35588,35614,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E271,KEEP,F5 BIG-IP,35715,35724,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E272,KEEP,Exchange Server,36043,36058,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E273,KEEP,QNAP NAS,36339,36347,cpe:2.3:h:qnap:nas:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E274,KEEP,Photo Station,36356,36369,cpe:2.3:a:qnap:photo_station:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E275,KEEP,Exchange Server,36474,36489,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E276,KEEP,FortiOS,36822,36829,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E277,KEEP,FortiProxy,36883,36893,cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-215a,E278,KEEP,FortiSwitchManager,36944,36962,cpe:2.3:a:fortinet:fortiswitchmanager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E95,KEEP,Zoho ManageEngine ServiceDesk Plus,3440,3474,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E97,KEEP,Apache Log4j,17077,17089,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E98,KEEP,Zoho ManageEngine ServiceDesk Plus,1470,1504,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E99,KEEP,Zoho ManageEngine ServiceDesk Plus,4299,4333,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E100,KEEP,Zoho ManageEngine ServiceDesk Plus,10422,10456,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E101,KEEP,Zoho ManageEngine ServiceDesk Plus,27424,27458,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E102,KEEP,Apache Log4j,27501,27513,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a,E103,KEEP,Zoho ManageEngine ServiceDesk Plus,36515,36549,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E99,KEEP,Zoho ManageEngine ServiceDesk Plus,9909,9943,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E100,KEEP,Apache Log4j,16303,16315,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E101,KEEP,Zoho ManageEngine ServiceDesk Plus,3213,3247,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E102,KEEP,Zoho ManageEngine ServiceDesk Plus,4073,4107,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E103,KEEP,Zoho ManageEngine ServiceDesk Plus,26213,26247,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E104,KEEP,Apache Log4j,26290,26302,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E105,KEEP,Zoho ManageEngine ServiceDesk Plus,34966,35000,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-250a-manageengine-cve-47966,E106,KEEP,Zoho ManageEngine ServiceDesk Plus,1548,1582,cpe:2.3:a:zohocorp:manageengine_servicedesk_plus:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-278a,E92,KEEP,"Telerik
+®
+ UI for ASP.NET",20568,20593,cpe:2.3:a:progress:telerik_ui_for_asp.net_ajax:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-278a,E93,KEEP,"VMware
+®
+ Horizon",20676,20693,cpe:2.3:a:vmware:horizon:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-278a,E94,KEEP,"Zimbra
+®
+ Collaboration Suite",20820,20849,cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-289a,E1,KEEP,Atlassian Confluence,1094,1114,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-289a,E16,KEEP,Atlassian Confluence Data Center and Server,1513,1556,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-289a,E17,KEEP,Atlassian Confluence Data Center and Server,3069,3112,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E11,KEEP,Citrix NetScaler ADC,4887,4907,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E12,REVISE_SPAN,NetScaler Gateway,4912,4929,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,NetScaler Gateway is the formal product identity; appliances is a descriptive plural suffix.
+aa23-325a,E20,REVISE_SPAN,Citrix NetScaler,2192,2208,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retain the adjacent vendor-product identity and remove the explanatory product-class gloss.
+aa23-325a,E21,KEEP,NetScaler Gateway,2252,2269,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E22,KEEP,NetScaler Gateway,6164,6181,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E23,KEEP,NetScaler Gateway,6224,6241,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E24,KEEP,NetScaler Gateway,6285,6302,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E25,KEEP,NetScaler Gateway,6346,6363,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E26,KEEP,NetScaler ADC,6146,6159,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E27,KEEP,NetScaler ADC,6206,6219,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E28,KEEP,NetScaler ADC,6267,6280,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E29,KEEP,NetScaler ADC,6328,6341,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E30,KEEP,NetScaler ADC,6385,6398,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E31,KEEP,NetScaler ADC,6429,6442,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a,E32,KEEP,NetScaler ADC,6474,6487,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a-citrix-bleed-cve-4966,E21,KEEP,Citrix NetScaler ADC,4610,4630,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a-citrix-bleed-cve-4966,E22,KEEP,NetScaler Gateway,4635,4652,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-325a-citrix-bleed-cve-4966,E23,REVISE_SPAN,Citrix NetScaler,1815,1831,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retain the adjacent vendor-product identity and remove the explanatory product-class gloss.
+aa23-325a-citrix-bleed-cve-4966,E24,KEEP,NetScaler Gateway,1875,1892,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a,E25,KEEP,Adobe ColdFusion,4271,4287,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a,E53,KEEP,Adobe ColdFusion,966,982,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a,E54,KEEP,Adobe ColdFusion,1366,1382,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a,E56,REVISE_SPAN_AND_CPE,ColdFusion,1482,1492,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,2016 is an ordinary ColdFusion release version and is excluded from the product surface. MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence.
+aa23-339a,E57,REVISE_SPAN_AND_CPE,ColdFusion,1502,1512,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,11 is an ordinary ColdFusion release version and is excluded from the product surface. MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence.
+aa23-339a,E58,KEEP,Adobe ColdFusion,2712,2728,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a,E59,KEEP,Adobe ColdFusion,9370,9386,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a-coldfusion-cve-26360,E3,REVISE_SPAN_AND_CPE,Adobe ColdFusion,431,447,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retain the adjacent vendor-product identity and exclude the ordinary release phrase versions 2018. MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence.
+aa23-339a-coldfusion-cve-26360,E4,REVISE_CPE,Adobe ColdFusion,1997,2013,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,The surface is a product-family mention; do not encode an ordinary runtime release as the entity identity.
+aa23-339a-coldfusion-cve-26360,E5,REVISE_CPE,Adobe ColdFusion,1468,1484,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,The surface is a product-family mention; do not encode an ordinary runtime release as the entity identity.
+aa23-339a-coldfusion-cve-26360,E43,KEEP,Adobe ColdFusion,22,38,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-339a-coldfusion-cve-26360,E44,REVISE_SPAN_AND_CPE,ColdFusion,547,557,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,2016 is an ordinary ColdFusion release version and is excluded from the product surface. MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence.
+aa23-339a-coldfusion-cve-26360,E45,REVISE_SPAN_AND_CPE,ColdFusion,567,577,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,11 is an ordinary ColdFusion release version and is excluded from the product surface. MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence.
+aa23-339a-coldfusion-cve-26360,E46,KEEP,Adobe ColdFusion,942,958,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a,E80,KEEP,JetBrains TeamCity,1695,1713,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a,E81,KEEP,TeamCity,7813,7821,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a,E82,KEEP,JetBrains TeamCity,8841,8859,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a,E83,KEEP,JetBrains TeamCity,21641,21659,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a-play-ransomware,E78,KEEP,JetBrains TeamCity,1293,1311,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a-play-ransomware,E79,KEEP,TeamCity,7438,7446,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a-play-ransomware,E80,KEEP,JetBrains TeamCity,8477,8495,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-347a-play-ransomware,E81,KEEP,JetBrains TeamCity,20700,20718,cpe:2.3:a:jetbrains:teamcity:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-349a,E62,KEEP,SMB version 1,18964,18977,cpe:2.3:a:microsoft:server_message_block:1.0:*:*:*:*:*:*:*,1.0,numeric_product_or_generation|approved_non_wildcard_cpe,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-352a,E6,KEEP,FortiOS,5188,5195,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-352a,E7,KEEP,Microsoft Exchange,5236,5254,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa23-352a,E8,KEEP,SimpleHelp,5692,5702,cpe:2.3:a:simple-help:simplehelp:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a,E8,KEEP,PHPUnit,4017,4024,cpe:2.3:a:phpunit_project:phpunit:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a,E9,KEEP,Laravel,6471,6478,cpe:2.3:a:laravel:laravel:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a,E10,KEEP,Apache HTTP Server,6828,6846,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a,E41,KEEP,PHPUnit,16671,16678,cpe:2.3:a:phpunit_project:phpunit:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a-androxgh0st,E8,KEEP,PHPUnit,3811,3818,cpe:2.3:a:phpunit_project:phpunit:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a-androxgh0st,E9,KEEP,Laravel,6226,6233,cpe:2.3:a:laravel:laravel:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a-androxgh0st,E10,KEEP,Apache HTTP Server,6587,6605,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-016a-androxgh0st,E42,KEEP,PHPUnit,15602,15609,cpe:2.3:a:phpunit_project:phpunit:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-038a,E135,KEEP,FortiGate 300D,22588,22602,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-038a-volt-typhoon,E2,KEEP,FortiGate 300D,16576,16590,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-046a,E6,KEEP,Log4J,8007,8012,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E21,KEEP,Ivanti Connect Secure,2748,2769,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E22,KEEP,Ivanti Policy Secure,2774,2794,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E24,KEEP,Ivanti Connect Secure,7266,7287,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E25,KEEP,Ivanti Policy Secure,7300,7320,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E26,KEEP,Ivanti Neurons for ZTA,7338,7360,cpe:2.3:a:ivanti:neurons_for_zero-trust_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E28,KEEP,Ivanti Connect Secure,7506,7527,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E29,KEEP,Ivanti Policy Secure,7541,7561,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E30,KEEP,ZTA gateways,7579,7591,cpe:2.3:a:ivanti:zero_trust_access_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E32,KEEP,Ivanti Connect Secure,7758,7779,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E33,KEEP,Ivanti Policy Secure,7784,7804,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E34,KEEP,Ivanti Connect Secure,6230,6251,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-060b,E35,KEEP,Ivanti Policy Secure,6256,6276,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-109a,E75,KEEP,SonicWall,6986,6995,cpe:2.3:o:sonicwall:sonicos:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-109a,E77,KEEP,Veeam,8089,8094,cpe:2.3:a:veeam:veeam_backup_\&_replication:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-193a,E62,KEEP,Oracle Web Applications Desktop Integrator,13642,13684,cpe:2.3:a:oracle:web_applications_desktop_integrator:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-207a,E108,REVISE_SPAN,Apache’s Log4j,17433,17447,cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retain the adjacent vendor-product identity and remove the generic software-library class suffix.
+aa24-241a,E68,KEEP,Check Point Security Gateways,8332,8361,cpe:2.3:o:checkpoint:quantum_security_gateway_firmware:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E69,KEEP,Palo Alto Networks PAN-OS,8510,8535,cpe:2.3:o:paloaltonetworks:pan-os:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E70,KEEP,Citrix Netscaler,8780,8796,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E71,KEEP,BIG-IP F5,8827,8836,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E72,KEEP,Citrix Netscaler,9168,9184,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E73,KEEP,F5 BIG-IP,9221,9230,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E74,KEEP,PanOS,9311,9316,cpe:2.3:o:paloaltonetworks:pan-os:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E76,KEEP,Citrix Netscaler,14585,14601,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E77,KEEP,F5 BIG-IP,14640,14649,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E78,KEEP,PanOS,14712,14717,cpe:2.3:o:paloaltonetworks:pan-os:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-241a,E79,KEEP,Check Point Security Gateways,14746,14775,cpe:2.3:o:checkpoint:quantum_security_gateway_firmware:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E17,KEEP,Netlogon,7463,7471,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E18,KEEP,Confluence,5976,5986,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E19,KEEP,FortiOS,5011,5018,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E20,KEEP,Apache ActiveMQ,5450,5465,cpe:2.3:a:apache:activemq:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E67,KEEP,Citrix ADC,4591,4601,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E68,KEEP,FortiProxy,5125,5135,cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E69,KEEP,BIG-IP,6479,6485,cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E70,KEEP,Fortinet FortiClientEMS,6797,6820,cpe:2.3:a:fortinet:forticlient_enterprise_management_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-242a,E71,KEEP,Microsoft Windows,7011,7028,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-249a,E95,KEEP,Windows Server,9529,9543,cpe:2.3:o:microsoft:windows_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-249a,E96,KEEP,Atlassian Confluence,9563,9583,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-249a,E97,KEEP,Polkit,9716,9722,cpe:2.3:a:polkit_project:polkit:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-249a,E98,KEEP,Atlassian Confluence,10111,10131,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-249a,E99,KEEP,Atlassian Confluence,10174,10194,cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-249a,E100,KEEP,Sophos: Firewall,10236,10252,cpe:2.3:a:sophos:firewall:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-290a,E62,KEEP,Microsoft’s Netlogon,6719,6739,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-290a,E63,KEEP,Microsoft’s Netlogon,18835,18855,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa24-290a,E64,KEEP,Microsoft’s Netlogon,19343,19363,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-022a,E1,KEEP,Ivanti Cloud Service Appliances,1593,1624,cpe:2.3:a:ivanti:cloud_services_appliance:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-050a,E1,KEEP,Fortinet FortiOS,5003,5019,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-050a,E2,KEEP,Adobe ColdFusion,5065,5081,cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-050a,E3,KEEP,Microsoft SharePoint,5118,5138,cpe:2.3:a:microsoft:sharepoint_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-050a,E4,KEEP,Microsoft Exchange,5160,5178,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-071a,E1,KEEP,ScreenConnect,4833,4846,cpe:2.3:a:connectwise:screenconnect:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-071a,E2,KEEP,Fortinet EMS,4947,4959,cpe:2.3:a:fortinet:forticlient_enterprise_management_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-163a,E5,KEEP,SimpleHelp RMM,1748,1762,cpe:2.3:a:simple-help:simplehelp:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-163a,E7,KEEP,SimpleHelp,1525,1535,cpe:2.3:a:simple-help:simplehelp:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E55,KEEP,Ivanti Connect Secure,78188,78209,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E58,KEEP,Palo Alto Networks PAN-OS GlobalProtect,78337,78376,cpe:2.3:o:paloaltonetworks:pan-os:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E60,KEEP,Cisco IOS XE,78585,78597,cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E62,KEEP,Cisco IOS XE,78796,78808,cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E64,KEEP,Cisco IOS,78906,78915,cpe:2.3:o:cisco:ios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E120,KEEP,Ivanti Connect Secure,14379,14400,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E121,KEEP,Ivanti Policy Secure,14405,14425,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E122,KEEP,Palo Alto Networks PAN-OS GlobalProtect,14553,14592,cpe:2.3:o:paloaltonetworks:pan-os:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E123,KEEP,Cisco Internetworking Operating System (IOS) XE,14995,15042,cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E124,KEEP,Cisco IOS XE,15260,15272,cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E125,KEEP,Cisco IOS,16251,16260,cpe:2.3:o:cisco:ios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E126,KEEP,IOS XE,16265,16271,cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-239a,E127,KEEP,IOS XE,78920,78926,cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-266a,E1,KEEP,GeoServer,5629,5638,cpe:2.3:a:geoserver:geoserver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-266a,E2,KEEP,Linux kernel,11783,11795,cpe:2.3:o:linux:linux_kernel:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-266a,E63,KEEP,GeoServer,8233,8242,cpe:2.3:a:geoserver:geoserver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+aa25-266a,E64,KEEP,GeoServer,10416,10425,cpe:2.3:a:geoserver:geoserver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+accellion-fta-google-accellion-data-theft-extortion,E11,KEEP,Accellion FTA,2899,2912,cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+accellion-fta-nvd-accellion-27101,E3,KEEP,cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*,539,578,cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*,*,literal_cpe_surface|numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+accellion-fta-nvd-accellion-27101,E6,KEEP,Accellion FTA,156,169,cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+apache-httpd-41773-tenable-httpd-41773,E8,KEEP,Apache HTTP Server,2069,2087,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+apache-httpd-41773-tenable-httpd-41773,E16,KEEP,HTTP Server,257,268,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+apache-httpd-41773-tenable-httpd-41773,E17,KEEP,HTTP Server,2699,2710,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+apache-httpd-41773-tenable-httpd-41773,E18,KEEP,HTTP Server,3300,3311,cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+citrix-adc-cisa-citrix-3519-webshells,E19,KEEP,NetScaler ADC,13932,13945,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+citrix-adc-cisa-citrix-3519-webshells,E126,KEEP,NetScaler ADC,3734,3747,cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+citrix-adc-cisa-citrix-3519-webshells,E127,KEEP,NetScaler Gateway,3752,3769,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+citrix-adc-tenable-citrix-19781-cve,E3,KEEP,Citrix Application Delivery Controller,59,97,cpe:2.3:a:citrix:application_delivery_controller:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+citrix-adc-tenable-citrix-19781-cve,E5,KEEP,Gateway,108,115,cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+confluence-nvd-confluence-26084,E3,KEEP,cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*,746,804,cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*,*,literal_cpe_surface|numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+confluence-nvd-confluence-26084,E7,KEEP,cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*,807,860,cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*,*,literal_cpe_surface|numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+drupalgeddon-nvd-drupalgeddon-7600,E3,KEEP,Drupal,159,165,cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+drupalgeddon-nvd-drupalgeddon-7600,E4,KEEP,cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*,591,630,cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*,*,literal_cpe_surface|numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+drupalgeddon-nvd-drupalgeddon-7600,E5,KEEP,cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*,633,680,cpe:2.3:o:debian:debian_linux:7.0:*:*:*:*:*:*:*,7.0,literal_cpe_surface|numeric_product_or_generation|approved_non_wildcard_cpe,Retained after the full Configuration inventory audit under MCPU v2.
+drupalgeddon-nvd-drupalgeddon-7600,E6,KEEP,cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*,683,730,cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*,8.0,literal_cpe_surface|numeric_product_or_generation|approved_non_wildcard_cpe,Retained after the full Configuration inventory audit under MCPU v2.
+drupalgeddon-nvd-drupalgeddon-7600,E7,KEEP,cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*,733,780,cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*,9.0,literal_cpe_surface|numeric_product_or_generation|approved_non_wildcard_cpe,Retained after the full Configuration inventory audit under MCPU v2.
+eternalblue-expressvpn-eternalblue,E4,KEEP,SMBv3,9062,9067,cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*,*,numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E12,KEEP,SAP NetWeaver,4313,4326,cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E13,KEEP,SAP CRM,5772,5779,cpe:2.3:a:sap:customer_relationship_management:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E14,KEEP,SAP Solution Manager,4456,4476,cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E18,KEEP,FortiOS,1835,1842,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E19,KEEP,FortiOS,2341,2348,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E20,KEEP,FortiOS,2550,2557,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E21,KEEP,SAP NetWeaver,6070,6083,cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E22,KEEP,SAP NetWeaver,6323,6336,cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E23,KEEP,SAP NetWeaver,6566,6579,cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E30,KEEP,FortiOS,461,468,cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E31,KEEP,SAP NetWeaver,4657,4670,cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+fortios-sslvpn-rapid7-fortinet-targeting,E32,KEEP,SAP’s Solution Manager,5184,5206,cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+goanywhere-nvd-goanywhere-0669,E3,KEEP,cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*,544,609,cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*,*,literal_cpe_surface|numeric_product_or_generation,Retained after the full Configuration inventory audit under MCPU v2.
+goanywhere-nvd-goanywhere-0669,E6,KEEP,GoAnywhere MFT,187,201,cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E26,KEEP,Ivanti Connect Secure,2021,2042,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E27,KEEP,Ivanti Policy Secure,2047,2067,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E28,KEEP,Ivanti Connect Secure,6670,6691,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E29,KEEP,Ivanti Policy Secure,6704,6724,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E30,KEEP,Ivanti Neurons for ZTA,6742,6764,cpe:2.3:a:ivanti:neurons_for_zero-trust_access:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E31,KEEP,Ivanti Connect Secure,6908,6929,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E32,KEEP,Ivanti Policy Secure,6943,6963,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E33,KEEP,ZTA gateways,6981,6993,cpe:2.3:a:ivanti:zero_trust_access_gateway:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E34,KEEP,Ivanti Connect Secure,7158,7179,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E35,KEEP,Ivanti Policy Secure,7184,7204,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E36,KEEP,Ivanti Connect Secure,5630,5651,cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities,E37,KEEP,Ivanti Policy Secure,5656,5676,cpe:2.3:a:ivanti:policy_secure:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+proxylogon-microsoft-hafnium-exchange,E16,KEEP,Exchange,5194,5202,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+proxylogon-microsoft-hafnium-exchange,E18,KEEP,Unified Messaging service,5370,5395,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+proxylogon-microsoft-hafnium-exchange,E21,KEEP,Exchange,5749,5757,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.
+proxylogon-microsoft-hafnium-exchange,E30,KEEP,Exchange,6103,6111,cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*,*,,Retained after the full Configuration inventory audit under MCPU v2.

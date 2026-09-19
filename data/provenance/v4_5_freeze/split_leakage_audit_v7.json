@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "split_file": "D:\\BRON\\experiments\\v4.5\\data\\train_dev_test_split_v7.json",
+  "threshold": 0.75,
+  "partitions": {
+    "train": 63,
+    "dev": 21,
+    "test": 21
+  },
+  "exact_cross_pairs": 0,
+  "near_cross_pairs": 0,
+  "errors": []
+}

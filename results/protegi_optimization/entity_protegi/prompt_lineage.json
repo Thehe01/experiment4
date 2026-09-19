@@ -1,0 +1,2902 @@
+{
+  "total_nodes": 170,
+  "total_edges": 169,
+  "final_candidate_id": "c_r6_p3_g2_edit",
+  "trace_to_root": [
+    "P_E0",
+    "c_r1_p0_g3_para_1",
+    "c_r2_p3_g3_para_0",
+    "c_r3_p0_g2_edit",
+    "c_r4_p1_g3_para_1",
+    "c_r5_p1_g0_edit",
+    "c_r6_p3_g2_edit"
+  ],
+  "nodes": {
+    "P_E0": {
+      "candidate_id": "P_E0",
+      "parent_id": null,
+      "round_idx": 0,
+      "generation_type": "initial",
+      "gradient_id": null,
+      "gradient_text": null,
+      "estimated_reward": 0.666667,
+      "selection_status": "selected",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r1_p0_g3_edit": {
+      "candidate_id": "c_r1_p0_g3_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r1_p0_g3_para_0": {
+      "candidate_id": "c_r1_p0_g3_para_0",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat-intel annotation specialist. From the provided text, identify named entities restricted to..."
+    },
+    "c_r1_p0_g2_para_0": {
+      "candidate_id": "c_r1_p0_g2_para_0",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a specialist in cyber threat intelligence annotation. Identify named entities from the provided text using EXCLUS..."
+    },
+    "c_r1_p0_g0_para_1": {
+      "candidate_id": "c_r1_p0_g0_para_1",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat-intel annotation specialist. From the provided text, pull out named entities restricted st..."
+    },
+    "c_r1_p0_g3_para_1": {
+      "candidate_id": "c_r1_p0_g3_para_1",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the provided text using EXC..."
+    },
+    "c_r1_p0_g2_para_1": {
+      "candidate_id": "c_r1_p0_g2_para_1",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the provided text strictly ..."
+    },
+    "c_r1_p0_g2_edit": {
+      "candidate_id": "c_r1_p0_g2_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r1_p0_g1_para_1": {
+      "candidate_id": "c_r1_p0_g1_para_1",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are an expert in cybersecurity threat intelligence annotation. From the provided text, identify named entities using..."
+    },
+    "c_r2_p0_g1_para_1": {
+      "candidate_id": "c_r2_p0_g1_para_1",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat-intelligence annotation expert. From the given text, extract named entities li..."
+    },
+    "c_r2_p0_g0_edit": {
+      "candidate_id": "c_r2_p0_g0_edit",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat-intel annotation specialist. From the provided text, identify named entities restricted to..."
+    },
+    "c_r2_p0_g2_para_0": {
+      "candidate_id": "c_r2_p0_g2_para_0",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat-intelligence annotation expert. From the given text, extract named entities li..."
+    },
+    "c_r2_p0_g2_para_1": {
+      "candidate_id": "c_r2_p0_g2_para_1",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat-intelligence annotation expert. Read the supplied text and extract named entities limi..."
+    },
+    "c_r2_p0_g3_edit": {
+      "candidate_id": "c_r2_p0_g3_edit",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat-intel annotation specialist. From the provided text, identify named entities restricted to..."
+    },
+    "c_r2_p0_g1_para_0": {
+      "candidate_id": "c_r2_p0_g1_para_0",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat-intel annotation expert. Given the input text, extract named entities limited to these..."
+    },
+    "c_r2_p0_g3_para_1": {
+      "candidate_id": "c_r2_p0_g3_para_1",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat-intel labeling expert. From the given text, extract named entities limited to these fo..."
+    },
+    "c_r2_p0_g0_para_0": {
+      "candidate_id": "c_r2_p0_g0_para_0",
+      "parent_id": "c_r1_p0_g3_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat-intelligence annotation expert. Given the input text, extract named entities l..."
+    },
+    "c_r2_p1_g2_para_1": {
+      "candidate_id": "c_r2_p1_g2_para_1",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are an expert in annotating cyber threat intelligence data. From the provided input text, identify named entities us..."
+    },
+    "c_r2_p1_g1_para_1": {
+      "candidate_id": "c_r2_p1_g1_para_1",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a security threat intelligence labeling specialist. Identify named entities in the provided text using EXCLUSIVEL..."
+    },
+    "c_r2_p1_g2_edit": {
+      "candidate_id": "c_r2_p1_g2_edit",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r2_p1_g0_edit": {
+      "candidate_id": "c_r2_p1_g0_edit",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r2_p1_g2_para_0": {
+      "candidate_id": "c_r2_p1_g2_para_0",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence labeling specialist. Identify named entities in the provided text strictly us..."
+    },
+    "c_r2_p1_g1_para_0": {
+      "candidate_id": "c_r2_p1_g1_para_0",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are an expert in cybersecurity intelligence annotation. From the provided input text, identify named entities using ..."
+    },
+    "c_r2_p1_g0_para_1": {
+      "candidate_id": "c_r2_p1_g0_para_1",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided input text, identify named entities ..."
+    },
+    "c_r2_p1_g0_para_0": {
+      "candidate_id": "c_r2_p1_g0_para_0",
+      "parent_id": "c_r1_p0_g3_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a specialist in cyber threat intelligence annotation. From the provided text, identify named entities restricted ..."
+    },
+    "c_r2_p2_g3_para_0": {
+      "candidate_id": "c_r2_p2_g3_para_0",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r2_p2_g2_edit": {
+      "candidate_id": "c_r2_p2_g2_edit",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a specialist in cyber threat intelligence annotation. Identify named entities from the provided text using EXCLUS..."
+    },
+    "c_r2_p2_g3_para_1": {
+      "candidate_id": "c_r2_p2_g3_para_1",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r2_p2_g2_para_0": {
+      "candidate_id": "c_r2_p2_g2_para_0",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r2_p2_g0_para_0": {
+      "candidate_id": "c_r2_p2_g0_para_0",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r2_p2_g0_para_1": {
+      "candidate_id": "c_r2_p2_g0_para_1",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r2_p2_g0_edit": {
+      "candidate_id": "c_r2_p2_g0_edit",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a specialist in cyber threat intelligence annotation. Identify named entities from the provided text using EXCLUS..."
+    },
+    "c_r2_p2_g2_para_1": {
+      "candidate_id": "c_r2_p2_g2_para_1",
+      "parent_id": "c_r1_p0_g2_para_0",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r2_p3_g0_para_1": {
+      "candidate_id": "c_r2_p3_g0_para_1",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r2_p3_g1_para_0": {
+      "candidate_id": "c_r2_p3_g1_para_0",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intel annotation expert. From the given text, extract named entities using ONLY these ..."
+    },
+    "c_r2_p3_g2_para_0": {
+      "candidate_id": "c_r2_p3_g2_para_0",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. Extract named entities from the given text using ONLY..."
+    },
+    "c_r2_p3_g0_para_0": {
+      "candidate_id": "c_r2_p3_g0_para_0",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r2_p3_g3_edit": {
+      "candidate_id": "c_r2_p3_g3_edit",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the provided text using EXC..."
+    },
+    "c_r2_p3_g3_para_1": {
+      "candidate_id": "c_r2_p3_g3_para_1",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the supplied text ..."
+    },
+    "c_r2_p3_g1_para_1": {
+      "candidate_id": "c_r2_p3_g1_para_1",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r2_p3_g3_para_0": {
+      "candidate_id": "c_r2_p3_g3_para_0",
+      "parent_id": "c_r1_p0_g3_para_1",
+      "round_idx": 2,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p0_g0_para_0": {
+      "candidate_id": "c_r3_p0_g0_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r3_p0_g1_edit": {
+      "candidate_id": "c_r3_p0_g1_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p0_g3_edit": {
+      "candidate_id": "c_r3_p0_g3_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p0_g3_para_1": {
+      "candidate_id": "c_r3_p0_g3_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r3_p0_g2_para_1": {
+      "candidate_id": "c_r3_p0_g2_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r3_p0_g0_edit": {
+      "candidate_id": "c_r3_p0_g0_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p0_g3_para_0": {
+      "candidate_id": "c_r3_p0_g3_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using O..."
+    },
+    "c_r3_p0_g2_edit": {
+      "candidate_id": "c_r3_p0_g2_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p1_g1_edit": {
+      "candidate_id": "c_r3_p1_g1_edit",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided input text, identify named entities ..."
+    },
+    "c_r3_p1_g2_para_0": {
+      "candidate_id": "c_r3_p1_g2_para_0",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the input text supplied, extract named en..."
+    },
+    "c_r3_p1_g0_para_1": {
+      "candidate_id": "c_r3_p1_g0_para_1",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given input text, extract named entit..."
+    },
+    "c_r3_p1_g3_para_0": {
+      "candidate_id": "c_r3_p1_g3_para_0",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. From the given input text, extract named entities usi..."
+    },
+    "c_r3_p1_g0_para_0": {
+      "candidate_id": "c_r3_p1_g0_para_0",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Given the input text, extract named entities u..."
+    },
+    "c_r3_p1_g1_para_0": {
+      "candidate_id": "c_r3_p1_g1_para_0",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Given the input text, extract named entities u..."
+    },
+    "c_r3_p1_g3_edit": {
+      "candidate_id": "c_r3_p1_g3_edit",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided input text, identify named entities ..."
+    },
+    "c_r3_p1_g3_para_1": {
+      "candidate_id": "c_r3_p1_g3_para_1",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the supplied input text, extract named en..."
+    },
+    "c_r3_p2_g2_edit": {
+      "candidate_id": "c_r3_p2_g2_edit",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p2_g3_para_1": {
+      "candidate_id": "c_r3_p2_g3_para_1",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r3_p2_g0_para_0": {
+      "candidate_id": "c_r3_p2_g0_para_0",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r3_p2_g1_para_0": {
+      "candidate_id": "c_r3_p2_g1_para_0",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using O..."
+    },
+    "c_r3_p2_g1_para_1": {
+      "candidate_id": "c_r3_p2_g1_para_1",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r3_p2_g0_para_1": {
+      "candidate_id": "c_r3_p2_g0_para_1",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r3_p2_g1_edit": {
+      "candidate_id": "c_r3_p2_g1_edit",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r3_p2_g2_para_0": {
+      "candidate_id": "c_r3_p2_g2_para_0",
+      "parent_id": "c_r2_p3_g0_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r3_p3_g1_para_0": {
+      "candidate_id": "c_r3_p3_g1_para_0",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. From the provided text, extract named entities using ONLY thes..."
+    },
+    "c_r3_p3_g0_edit": {
+      "candidate_id": "c_r3_p3_g0_edit",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r3_p3_g0_para_1": {
+      "candidate_id": "c_r3_p3_g0_para_1",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. From the provided text, extract named entities using ONLY thes..."
+    },
+    "c_r3_p3_g2_para_0": {
+      "candidate_id": "c_r3_p3_g2_para_0",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. Identify named entities in the provided text using EXCLUSIVELY..."
+    },
+    "c_r3_p3_g3_para_0": {
+      "candidate_id": "c_r3_p3_g3_para_0",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence labeling specialist. From the provided text, pull out named entities using EXCLUSIVEL..."
+    },
+    "c_r3_p3_g0_para_0": {
+      "candidate_id": "c_r3_p3_g0_para_0",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. From the provided text, identify named entities using ONLY the..."
+    },
+    "c_r3_p3_g3_edit": {
+      "candidate_id": "c_r3_p3_g3_edit",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r3_p3_g2_edit": {
+      "candidate_id": "c_r3_p3_g2_edit",
+      "parent_id": "c_r2_p2_g3_para_1",
+      "round_idx": 3,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r4_p0_g1_para_1": {
+      "candidate_id": "c_r4_p0_g1_para_1",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given input text, extract named entit..."
+    },
+    "c_r4_p0_g2_para_0": {
+      "candidate_id": "c_r4_p0_g2_para_0",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given input text, extract named entit..."
+    },
+    "c_r4_p0_g3_edit": {
+      "candidate_id": "c_r4_p0_g3_edit",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided input text, identify named entities ..."
+    },
+    "c_r4_p0_g3_para_0": {
+      "candidate_id": "c_r4_p0_g3_para_0",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. From the given input text, extract named entities usi..."
+    },
+    "c_r4_p0_g2_edit": {
+      "candidate_id": "c_r4_p0_g2_edit",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided input text, identify named entities ..."
+    },
+    "c_r4_p0_g1_edit": {
+      "candidate_id": "c_r4_p0_g1_edit",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided input text, identify named entities ..."
+    },
+    "c_r4_p0_g2_para_1": {
+      "candidate_id": "c_r4_p0_g2_para_1",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given input text, extract named entit..."
+    },
+    "c_r4_p0_g3_para_1": {
+      "candidate_id": "c_r4_p0_g3_para_1",
+      "parent_id": "c_r2_p1_g0_para_1",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given input text, extract named entit..."
+    },
+    "c_r4_p1_g0_para_1": {
+      "candidate_id": "c_r4_p1_g0_para_1",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, extract named entities using O..."
+    },
+    "c_r4_p1_g0_edit": {
+      "candidate_id": "c_r4_p1_g0_edit",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r4_p1_g1_para_0": {
+      "candidate_id": "c_r4_p1_g1_para_0",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r4_p1_g1_para_1": {
+      "candidate_id": "c_r4_p1_g1_para_1",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as an expert in cybersecurity threat intelligence annotation. From the supplied text, extract named entities using E..."
+    },
+    "c_r4_p1_g3_edit": {
+      "candidate_id": "c_r4_p1_g3_edit",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r4_p1_g3_para_0": {
+      "candidate_id": "c_r4_p1_g3_para_0",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r4_p1_g3_para_1": {
+      "candidate_id": "c_r4_p1_g3_para_1",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as an expert in cybersecurity threat intelligence annotation. From the provided text, extract named entities using E..."
+    },
+    "c_r4_p1_g0_para_0": {
+      "candidate_id": "c_r4_p1_g0_para_0",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r4_p2_g1_para_0": {
+      "candidate_id": "c_r4_p2_g1_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r4_p2_g3_para_1": {
+      "candidate_id": "c_r4_p2_g3_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. You are conducting MODEL INFERENCE ONLY to identify na..."
+    },
+    "c_r4_p2_g0_edit": {
+      "candidate_id": "c_r4_p2_g0_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r4_p2_g3_para_0": {
+      "candidate_id": "c_r4_p2_g3_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Adopt the persona of a cybersecurity threat intelligence annotation specialist. You are conducting MODEL INFERENCE ONLY ..."
+    },
+    "c_r4_p2_g2_para_0": {
+      "candidate_id": "c_r4_p2_g2_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r4_p2_g0_para_1": {
+      "candidate_id": "c_r4_p2_g0_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r4_p2_g2_edit": {
+      "candidate_id": "c_r4_p2_g2_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r4_p2_g2_para_1": {
+      "candidate_id": "c_r4_p2_g2_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r4_p3_g2_para_1": {
+      "candidate_id": "c_r4_p3_g2_para_1",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r4_p3_g2_edit": {
+      "candidate_id": "c_r4_p3_g2_edit",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. Identify named entities in the provided text using EXCLUSIVELY..."
+    },
+    "c_r4_p3_g1_edit": {
+      "candidate_id": "c_r4_p3_g1_edit",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. Identify named entities in the provided text using EXCLUSIVELY..."
+    },
+    "c_r4_p3_g0_para_0": {
+      "candidate_id": "c_r4_p3_g0_para_0",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence labeling expert. Extract named entities from the given text using ONLY th..."
+    },
+    "c_r4_p3_g3_para_0": {
+      "candidate_id": "c_r4_p3_g3_para_0",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r4_p3_g1_para_1": {
+      "candidate_id": "c_r4_p3_g1_para_1",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r4_p3_g0_para_1": {
+      "candidate_id": "c_r4_p3_g0_para_1",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Extract named entities from the given text using ONLY ..."
+    },
+    "c_r4_p3_g3_edit": {
+      "candidate_id": "c_r4_p3_g3_edit",
+      "parent_id": "c_r3_p3_g2_para_0",
+      "round_idx": 4,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cyber threat intelligence annotation specialist. Identify named entities in the provided text using EXCLUSIVELY..."
+    },
+    "c_r5_p0_g2_para_0": {
+      "candidate_id": "c_r5_p0_g2_para_0",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. You are performing MODEL INFERENCE ONLY to extract na..."
+    },
+    "c_r5_p0_g0_para_0": {
+      "candidate_id": "c_r5_p0_g0_para_0",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. You are performing MODEL INFERENCE ONLY to extract na..."
+    },
+    "c_r5_p0_g0_para_1": {
+      "candidate_id": "c_r5_p0_g0_para_1",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. You are performing MODEL INFERENCE ONLY to extract na..."
+    },
+    "c_r5_p0_g2_edit": {
+      "candidate_id": "c_r5_p0_g2_edit",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Adopt the persona of a cybersecurity threat intelligence annotation specialist. You are conducting MODEL INFERENCE ONLY ..."
+    },
+    "c_r5_p0_g1_edit": {
+      "candidate_id": "c_r5_p0_g1_edit",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Adopt the persona of a cybersecurity threat intelligence annotation specialist. You are conducting MODEL INFERENCE ONLY ..."
+    },
+    "c_r5_p0_g3_para_0": {
+      "candidate_id": "c_r5_p0_g3_para_0",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intel annotation expert performing MODEL INFERENCE ONLY to extract named entities from the..."
+    },
+    "c_r5_p0_g3_para_1": {
+      "candidate_id": "c_r5_p0_g3_para_1",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. You are performing MODEL INFERENCE ONLY to extract na..."
+    },
+    "c_r5_p0_g1_para_0": {
+      "candidate_id": "c_r5_p0_g1_para_0",
+      "parent_id": "c_r4_p2_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. You are performing MODEL INFERENCE ONLY to ext..."
+    },
+    "c_r5_p1_g3_para_0": {
+      "candidate_id": "c_r5_p1_g3_para_0",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. Given the input text, identify named enti..."
+    },
+    "c_r5_p1_g0_para_1": {
+      "candidate_id": "c_r5_p1_g0_para_1",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. Given the input text, identify named enti..."
+    },
+    "c_r5_p1_g0_para_0": {
+      "candidate_id": "c_r5_p1_g0_para_0",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cyber threat intelligence labeling. Read the given text and pull out named entities u..."
+    },
+    "c_r5_p1_g2_para_0": {
+      "candidate_id": "c_r5_p1_g2_para_0",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. From the given text, identify named entit..."
+    },
+    "c_r5_p1_g3_para_1": {
+      "candidate_id": "c_r5_p1_g3_para_1",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. From the given text, identify named entit..."
+    },
+    "c_r5_p1_g2_para_1": {
+      "candidate_id": "c_r5_p1_g2_para_1",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. Given the input text, identify named enti..."
+    },
+    "c_r5_p1_g0_edit": {
+      "candidate_id": "c_r5_p1_g0_edit",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as an expert in cybersecurity threat intelligence annotation. From the provided text, extract named entities using E..."
+    },
+    "c_r5_p1_g1_para_0": {
+      "candidate_id": "c_r5_p1_g1_para_0",
+      "parent_id": "c_r4_p1_g3_para_1",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. From the given text, identify named entit..."
+    },
+    "c_r5_p2_g3_para_0": {
+      "candidate_id": "c_r5_p2_g3_para_0",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, identify named entities using ..."
+    },
+    "c_r5_p2_g1_para_0": {
+      "candidate_id": "c_r5_p2_g1_para_0",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, extract named entities using O..."
+    },
+    "c_r5_p2_g0_para_0": {
+      "candidate_id": "c_r5_p2_g0_para_0",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r5_p2_g3_para_1": {
+      "candidate_id": "c_r5_p2_g3_para_1",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r5_p2_g2_para_1": {
+      "candidate_id": "c_r5_p2_g2_para_1",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r5_p2_g1_para_1": {
+      "candidate_id": "c_r5_p2_g1_para_1",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the provided text using EXC..."
+    },
+    "c_r5_p2_g2_edit": {
+      "candidate_id": "c_r5_p2_g2_edit",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r5_p2_g0_edit": {
+      "candidate_id": "c_r5_p2_g0_edit",
+      "parent_id": "c_r3_p0_g2_edit",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r5_p3_g1_edit": {
+      "candidate_id": "c_r5_p3_g1_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r5_p3_g3_para_0": {
+      "candidate_id": "c_r5_p3_g3_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r5_p3_g0_edit": {
+      "candidate_id": "c_r5_p3_g0_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r5_p3_g3_para_1": {
+      "candidate_id": "c_r5_p3_g3_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r5_p3_g2_para_0": {
+      "candidate_id": "c_r5_p3_g2_para_0",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, extract named entities using E..."
+    },
+    "c_r5_p3_g3_edit": {
+      "candidate_id": "c_r5_p3_g3_edit",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the given text usi..."
+    },
+    "c_r5_p3_g2_para_1": {
+      "candidate_id": "c_r5_p3_g2_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, extract named entities using O..."
+    },
+    "c_r5_p3_g0_para_1": {
+      "candidate_id": "c_r5_p3_g0_para_1",
+      "parent_id": "c_r2_p3_g3_para_0",
+      "round_idx": 5,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r6_p0_g3_para_0": {
+      "candidate_id": "c_r6_p0_g3_para_0",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Given the provided text, extract named entities using ..."
+    },
+    "c_r6_p0_g1_para_0": {
+      "candidate_id": "c_r6_p0_g1_para_0",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Given the provided text, extract named entitie..."
+    },
+    "c_r6_p0_g2_edit": {
+      "candidate_id": "c_r6_p0_g2_edit",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r6_p0_g2_para_1": {
+      "candidate_id": "c_r6_p0_g2_para_1",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the provided text, extract named entities..."
+    },
+    "c_r6_p0_g2_para_0": {
+      "candidate_id": "c_r6_p0_g2_para_0",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Given the provided text, extract named entitie..."
+    },
+    "c_r6_p0_g3_edit": {
+      "candidate_id": "c_r6_p0_g3_edit",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r6_p0_g1_para_1": {
+      "candidate_id": "c_r6_p0_g1_para_1",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cyber threat intelligence annotation expert. Given the provided text, extract named entities using ..."
+    },
+    "c_r6_p0_g0_edit": {
+      "candidate_id": "c_r6_p0_g0_edit",
+      "parent_id": "c_r5_p3_g0_para_1",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the supplied text, identify named entities using ..."
+    },
+    "c_r6_p1_g2_para_1": {
+      "candidate_id": "c_r6_p1_g2_para_1",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. Extract named entities from the given text using ONLY..."
+    },
+    "c_r6_p1_g2_edit": {
+      "candidate_id": "c_r6_p1_g2_edit",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r6_p1_g3_para_1": {
+      "candidate_id": "c_r6_p1_g3_para_1",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. Extract named entities from the given text using ONLY..."
+    },
+    "c_r6_p1_g1_para_1": {
+      "candidate_id": "c_r6_p1_g1_para_1",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. From the given text, extract named entities using ONL..."
+    },
+    "c_r6_p1_g1_edit": {
+      "candidate_id": "c_r6_p1_g1_edit",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r6_p1_g0_edit": {
+      "candidate_id": "c_r6_p1_g0_edit",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the supplied text using EXC..."
+    },
+    "c_r6_p1_g0_para_1": {
+      "candidate_id": "c_r6_p1_g0_para_1",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. Extract named entities from the given text using ONLY..."
+    },
+    "c_r6_p1_g0_para_0": {
+      "candidate_id": "c_r6_p1_g0_para_0",
+      "parent_id": "c_r5_p2_g0_para_0",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. Extract named entities from the provided text ..."
+    },
+    "c_r6_p2_g2_para_0": {
+      "candidate_id": "c_r6_p2_g2_para_0",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. From the given text, identify named entities using ON..."
+    },
+    "c_r6_p2_g1_para_1": {
+      "candidate_id": "c_r6_p2_g1_para_1",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given text, extract named entities us..."
+    },
+    "c_r6_p2_g2_edit": {
+      "candidate_id": "c_r6_p2_g2_edit",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r6_p2_g0_para_0": {
+      "candidate_id": "c_r6_p2_g0_para_0",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given text, identify named entities u..."
+    },
+    "c_r6_p2_g3_para_1": {
+      "candidate_id": "c_r6_p2_g3_para_1",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intelligence annotation expert. From the given text, extract named entities us..."
+    },
+    "c_r6_p2_g1_para_0": {
+      "candidate_id": "c_r6_p2_g1_para_0",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. From the given text, identify named entities using ST..."
+    },
+    "c_r6_p2_g3_edit": {
+      "candidate_id": "c_r6_p2_g3_edit",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. From the provided text, extract named entities using E..."
+    },
+    "c_r6_p2_g3_para_0": {
+      "candidate_id": "c_r6_p2_g3_para_0",
+      "parent_id": "c_r5_p2_g2_para_1",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_3",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a cybersecurity threat intel annotation expert. From the given text, identify named entities using ON..."
+    },
+    "c_r6_p3_g3_edit": {
+      "candidate_id": "c_r6_p3_g3_edit",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_3",
+      "gradient_text": "The prompt’s Weaknes category permits extraction of \"fundamental flaw class explicitly described… (e.g., server-side request forgery)\" and the model in Error Example 3 extracted \"SQL injection\", \"improper input validation\" as Weakness with CWE IDs, but gold omitted all Weaknesses. This shows the prompt does not constrain Weakness extraction to cases where a CWE token is present or where the task explicitly requires it; it also does not state that some samples may exclude Weakness entirely. Additionally, the prompt does not define interaction between Vulnerability and Weakness when a CVE is described by a flaw class (e.g., \"path traversal vulnerability\" in Error Example 1) – the model added Weakness \"path traversal\" but gold did not. Improvement direction: State clearly that Weakness entities should only be extracted when a CWE-xxx identifier appears OR when the sample’s gold explicitly includes flaw-class spans, and provide negative examples showing CVE-associated flaw descriptions that must NOT be tagged as Weakness to prevent over-extraction.",
+      "estimated_reward": 0.0,
+      "selection_status": "invalid_contract",
+      "prompt_text_preview": "<START> Act as an expert in cybersecurity threat intelligence annotation. From the provided text, extract named entities..."
+    },
+    "c_r6_p3_g1_edit": {
+      "candidate_id": "c_r6_p3_g1_edit",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as an expert in cybersecurity threat intelligence annotation. From the provided text, extract named entities using E..."
+    },
+    "c_r6_p3_g0_para_1": {
+      "candidate_id": "c_r6_p3_g0_para_1",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. Given the input text, identify named enti..."
+    },
+    "c_r6_p3_g2_para_1": {
+      "candidate_id": "c_r6_p3_g2_para_1",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cybersecurity threat intelligence labeling. Given the input text, identify named enti..."
+    },
+    "c_r6_p3_g0_edit": {
+      "candidate_id": "c_r6_p3_g0_edit",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as an expert in cybersecurity threat intelligence annotation. From the provided text, extract named entities using E..."
+    },
+    "c_r6_p3_g2_para_0": {
+      "candidate_id": "c_r6_p3_g2_para_0",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cyber threat intelligence labeling. From the supplied text, identify named entities u..."
+    },
+    "c_r6_p3_g1_para_1": {
+      "candidate_id": "c_r6_p3_g1_para_1",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_1",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cyber threat intelligence labeling. Read the given text and pull out named entities u..."
+    },
+    "c_r6_p3_g0_para_0": {
+      "candidate_id": "c_r6_p3_g0_para_0",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Assume the role of a specialist in cyber threat intelligence labeling. Read the supplied text and pull out named entitie..."
+    },
+    "c_r6_p3_g2_edit": {
+      "candidate_id": "c_r6_p3_g2_edit",
+      "parent_id": "c_r5_p1_g0_edit",
+      "round_idx": 6,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_2",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as an expert in cybersecurity threat intelligence annotation. From the provided text, extract named entities using E..."
+    }
+  },
+  "edges": [
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_3"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_3"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_2"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_3"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_2"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_2"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r1_p0_g3_para_0",
+      "target": "c_r2_p0_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_0"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_0"
+    },
+    {
+      "source": "c_r1_p0_g3_edit",
+      "target": "c_r2_p1_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_edit_0_0"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_3"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_2"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_3"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_2"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g2_para_0",
+      "target": "c_r2_p2_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g2_para_0_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_2"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_1"
+    },
+    {
+      "source": "c_r1_p0_g3_para_1",
+      "target": "c_r2_p3_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r1_p0_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r3_p0_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r3_p1_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p3_g0_para_1",
+      "target": "c_r3_p2_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p2_g3_para_1",
+      "target": "c_r3_p3_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p2_g3_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r2_p1_g0_para_1",
+      "target": "c_r4_p0_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p1_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r4_p1_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r4_p2_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_2"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_2"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_1"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_0"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_3"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_1"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_0"
+    },
+    {
+      "source": "c_r3_p3_g2_para_0",
+      "target": "c_r4_p3_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p3_g2_para_0_0_3"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r4_p2_g3_para_0",
+      "target": "c_r5_p0_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p2_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_2"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_3"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_2"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_0"
+    },
+    {
+      "source": "c_r4_p1_g3_para_1",
+      "target": "c_r5_p1_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r4_p1_g3_para_1_0_1"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_3"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_2"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_1"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_2"
+    },
+    {
+      "source": "c_r3_p0_g2_edit",
+      "target": "c_r5_p2_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r3_p0_g2_edit_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_1"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_3"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_2"
+    },
+    {
+      "source": "c_r2_p3_g3_para_0",
+      "target": "c_r5_p3_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r2_p3_g3_para_0_0_0"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_2"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_3"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_1"
+    },
+    {
+      "source": "c_r5_p3_g0_para_1",
+      "target": "c_r6_p0_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p3_g0_para_1_0_0"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_2"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_2"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_3"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_1"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_1"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_0"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_0"
+    },
+    {
+      "source": "c_r5_p2_g0_para_0",
+      "target": "c_r6_p1_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g0_para_0_0_0"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_2"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_1"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_2"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_0"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g3_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_3"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g1_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_1"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_3"
+    },
+    {
+      "source": "c_r5_p2_g2_para_1",
+      "target": "c_r6_p2_g3_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p2_g2_para_1_0_3"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g3_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_3"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g1_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_1"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g0_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_0"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g2_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_2"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_0"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g2_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_2"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g1_para_1",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_1"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_0"
+    },
+    {
+      "source": "c_r5_p1_g0_edit",
+      "target": "c_r6_p3_g2_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_c_r5_p1_g0_edit_0_2"
+    }
+  ]
+}

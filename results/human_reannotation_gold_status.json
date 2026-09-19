@@ -1,0 +1,15 @@
+{
+  "package_version": "v5",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.5-mention-fact-dual-layer-v1",
+  "status": "complete",
+  "gold_provenance": "human reannotation and adjudication",
+  "gold_directory": "data/annotations/gold",
+  "document_count": 105,
+  "adjudication_complete": true,
+  "prediction_outputs_used_for_gold_changes": false,
+  "human_iaa_complete": false,
+  "annotator_identity_recorded": false,
+  "recorded_date": "2026-08-31",
+  "note": "The current Gold is the result of human reannotation and adjudication. Annotator identities and a verifiable human IAA result file have not yet been recorded, so no human IAA metric is claimed."
+}

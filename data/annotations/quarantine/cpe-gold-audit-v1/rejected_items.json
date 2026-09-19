@@ -1,0 +1,78 @@
+{
+  "schema_version": "cpe-gold-quarantine-v1",
+  "created_at_utc": "2026-09-14T16:52:08.681091+00:00",
+  "prediction_outputs_used": false,
+  "source_corrections": "experiments\\v5\\config\\cpe_gold_corrections_v1.json",
+  "rejected_count": 2,
+  "items": [
+    {
+      "doc_id": "aa24-249a",
+      "entity": {
+        "id": "E101",
+        "text": "Dahua IP cameras",
+        "type": "Configuration",
+        "start": 11337,
+        "end": 11353,
+        "normalized_id": "cpe:2.3:h:dahua:ip_camera:*:*:*:*:*:*:*:*",
+        "notes": "v4.3 source-adjudicated structured CVE-product fact",
+        "evidence": " networks. In one instance, Unit 29155 cyber actors exploited CVE-2021-33044 and CVE-2021- 33045 on Dahua IP cameras"
+      },
+      "relations": [
+        {
+          "id": "R11",
+          "type": "affects",
+          "head": "E44",
+          "tail": "E101",
+          "evidence": "CVE-2021-33044 and CVE-2021- 33045 on Dahua IP cameras",
+          "evidence_start": 11299,
+          "evidence_end": 11353,
+          "adjudication_basis": "same-row CVE-product structure or self-contained CVE-product vulnerability title"
+        },
+        {
+          "id": "R12",
+          "type": "affects",
+          "head": "E93",
+          "tail": "E101",
+          "evidence": "CVE-2021- 33045 on Dahua IP cameras",
+          "evidence_start": 11318,
+          "evidence_end": 11353,
+          "adjudication_basis": "same-row CVE-product structure or self-contained CVE-product vulnerability title"
+        }
+      ],
+      "reason": "原 vendor=dahua、product=ip_camera 无正式 CPE；CVE-2021-33044/33045 展开为 dahuasecurity 下多个互不等价的 IPC/TPC 型号族，原文仅说 Dahua IP cameras，不能唯一选定一个 CPE。",
+      "source_urls": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2021-33044",
+        "https://nvd.nist.gov/vuln/detail/CVE-2021-33045"
+      ]
+    },
+    {
+      "doc_id": "aa26-097a",
+      "entity": {
+        "id": "E10",
+        "text": "Logix Controllers",
+        "type": "Configuration",
+        "start": 10027,
+        "end": 10044,
+        "normalized_id": "cpe:2.3:a:rockwellautomation:logix_controllers:*:*:*:*:*:*:*:*",
+        "notes": "v4.3 source-adjudicated structured CVE-product fact",
+        "evidence": "ional technology deployments: PN1550 | CVE-2021-22681: Authentication Bypass Vulnerability Found in Logix Controllers"
+      },
+      "relations": [
+        {
+          "id": "R1",
+          "type": "affects",
+          "head": "E1",
+          "tail": "E10",
+          "evidence": "CVE-2021-22681: Authentication Bypass Vulnerability Found in Logix Controllers",
+          "evidence_start": 9966,
+          "evidence_end": 10044,
+          "adjudication_basis": "same-row CVE-product structure or self-contained CVE-product vulnerability title"
+        }
+      ],
+      "reason": "logix_controllers 不是正式单一 CPE；CVE-2021-22681 涵盖多个 ControlLogix/CompactLogix/GuardLogix 等硬件族及工程软件，原文泛称 Logix Controllers，不能唯一归一化。",
+      "source_urls": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2021-22681"
+      ]
+    }
+  ]
+}

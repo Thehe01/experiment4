@@ -1,0 +1,854 @@
+{
+  "doc_id": "aa24-242a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "cpe_audit": {
+      "version": "cpe-gold-audit-v1",
+      "prediction_outputs_used": false,
+      "decision_count": 1
+    },
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "#StopRansomware: RansomHub Ransomware | CISA\nSkip to main content\n \nOfficial websites use .gov\n A \n.gov\n website belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\n A \nlock\n (\n) or \nhttps://\n means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nStaying Secure at Events\nno-cost Cyber Services\nSecure by design \nSecure Your Business\nReport A Cyber Issue\n \nShare:\nCybersecurity Advisory\n#StopRansomware: RansomHub Ransomware\nRelease Date\nAugust 29, 2024\nAlert Code\nAA24-242A\n Related topics:\nCyber Threats and Response\n ,\nIncident Response\n ,\nMalware, Phishing, and Ransomware\nActions to take today to mitigate cyber threats from ransomware:\nInstall updates for operating systems, software, and firmware as soon as they are released.\nRequire phishing-resistant MFA (i.e., non-SMS text based) for as many services as possible.\nTrain users to recognize and report phishing attempts.\nSummary\nNote:\n This joint Cybersecurity Advisory is part of an ongoing #StopRansomware effort to publish advisories for network defenders that detail various ransomware variants and ransomware threat actors. These #StopRansomware advisories include recently and historically observed tactics, techniques, and procedures (TTPs) and indicators of compromise (IOCs) to help organizations protect against ransomware. Visit \nstopransomware.gov\n to see all #StopRansomware advisories and to learn more about other ransomware threats and no-cost resources.\nThe Federal Bureau of Investigation (FBI), the Cybersecurity and Infrastructure Security Agency (CISA), the Multi-State Information Sharing and Analysis Center (MS-ISAC), and the Department of Health and Human Services (HHS) (hereafter referred to as the authoring organizations) are releasing this joint advisory to disseminate known RansomHub ransomware IOCs and TTPs. These have been identified through FBI threat response activities and third-party reporting as recently as August 2024. RansomHub is a ransomware-as-a-service variant—formerly known as Cyclops and Knight—that has established itself as an efficient and successful service model (recently attracting high-profile affiliates from other prominent variants such as LockBit and ALPHV).\nSince its inception in February 2024, RansomHub has encrypted and exfiltrated data from at least 210 victims representing the water and wastewater, information technology, government services and facilities, healthcare and public health, emergency services, food and agriculture, financial services, commercial facilities, critical manufacturing, transportation, and communications critical infrastructure sectors.\nThe affiliates leverage a double-extortion model by encrypting systems and exfiltrating data to extort victims. It should be noted that data exfiltration methods are dependent on the affiliate conducting the network compromise. The ransom note dropped during encryption does not generally include an initial ransom demand or payment instructions. Instead, the note provides victims with a client ID and instructs them to contact the ransomware group via a unique \n.onion\n URL (reachable through the Tor browser). The ransom note typically gives victims between three and 90 days to pay the ransom (depending on the affiliate) before the ransomware group publishes their data on the RansomHub Tor data leak site.\nThe authoring organizations encourage network defenders to implement the recommendations in the \nMitigations\n section of this cybersecurity advisory to reduce the likelihood and impact of ransomware incidents.\nDownload the PDF version of this report:\nAA24-242A #StopRansomware: RansomHub Ransomware\n(PDF, 825.67 KB\n )\nFor a downloadable copy of IOCs, see:\nAA24-242A STIX XML\n(XML, 133.74 KB\n )\nAA24-242A STIX JSON\n(JSON, 109.41 KB\n )\nTechnical Details\nNote:\n This advisory uses the \nMITRE ATT&CK\n®\n Matrix for Enterprise\n framework, version 15. See the MITRE ATT&CK Tactics and Techniques section for a table of the threat actors’ activity mapped to MITRE ATT&CK tactics and techniques.\nInitial Access\nRansomHub affiliates typically compromise internet facing systems and user endpoints by using methods such as phishing emails [\nT1566\n], exploitation of known vulnerabilities [\nT1190\n], and password spraying [\nT1110.003\n]. Password spraying targets accounts compromised through data breaches. Proof-of-concept exploits are obtained from sources such as ExploitDB and GitHub [\nT1588.005\n]. Exploits based on the following CVEs have been observed:\nCVE-2023-3519\n (\nCWE-94\n)\nCitrix ADC (NetScaler) Remote Code Execution. A vulnerability exists within Citrix ADC that allows an unauthenticated attacker to trigger a stack buffer overflow of the NSPPE (NetScaler Packet Processing Engine) process by making a specially crafted HTTP GET request. Successful exploitation results in remote code execution as root.\nCVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.\nCVE-2023-46604\n (\nCWE-502\n)\nThe Java OpenWire protocol marshaller, such as in Apache ActiveMQ, is vulnerable to Remote Code Execution. This vulnerability may allow a remote attacker with network access to open either a Java-based OpenWire broker or client to run arbitrary shell commands by manipulating serialized class types in the OpenWire protocol to cause either the client or the broker (respectively) to instantiate any class on the classpath. Upgrading both brokers and clients to version 5.15.16, 5.16.7, 5.17.6, or 5.18.3 fixes this issue.\nCVE-2023-22515\nA vulnerability in publicly accessible Confluence Data Center and Server instances that allows the creation of unauthorized Confluence administrator accounts and access to Confluence instances. Atlassian Cloud sites are not affected by this vulnerability. If your Confluence site is accessed via an atlassian.net domain, it is hosted by Atlassian and is not vulnerable to this issue.\nCVE-2023-46747\n (\nCWE-306\n | \nCWE-288\n)\nUndisclosed requests may bypass configuration utility authentication, allowing an attacker with network access to the BIG-IP system through the management port and/or self IP addresses to execute arbitrary system commands. \nNote:\n Software versions which have reached End of Technical Support (EoTS) are not evaluated.\nCVE-2023-48788\n (\nCWE-89\n)\nAn improper neutralization of special elements used in an SQL command (SQL injection') in Fortinet FortiClientEMS version 7.2.0 through 7.2.2 and FortiClientEMS 7.0.1 through 7.0.10 allows attacker to execute unauthorized code or commands via specially crafted packets.\nCVE-2017-0144\nThe SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2 and R2 SP1; Windows 7 SP1; Windows 8.1; Windows Server 2012 Gold and R2; Windows RT 8.1; and Windows 10 Gold, 1511, and 1607; and Windows Server 2016 allows remote attackers to execute arbitrary code via crafted packets, also known as “Windows SMB Remote Code Execution Vulnerability” [\nT1210\n].\nCVE-2020-1472\nAn elevation of privilege vulnerability exists when an attacker establishes a vulnerable Netlogon secure channel connection to a domain controller using the Netlogon Remote Protocol (MS-NRPC).\nCVE-2020-0787\nThis vulnerability was also potentially exploited along with the Zerologon privilege escalation vulnerability.\nDiscovery\nRansomHub affiliates conduct network scanning with tools such as AngryIPScanner, Nmap, and PowerShell-based living off the land methods with PowerShell to conduct network scanning [\nT1018\n][\nT1046\n][\nT1059.001\n].\nDefense Evasion\nCybersecurity researchers have observed affiliates renaming the ransomware executable with innocuous file names, such as \nWindows.exe\n, left on the user’s desktop (\nC:\\Users\\%USERNAME%\\Desktop\n) or downloads (\nC:\\Users\\%USERNAME%\\Downloads\n) [\nT1036\n]. The affiliates have also cleared Windows and Linux system logs to inhibit any potential incident response [\nT1070\n]. Affiliates used Windows Management Instrumentation [\nT1047\n] to disable antivirus products. In some instances, RansomHub-specific tools were deployed to disable endpoint detection and response (EDR) tooling [\nT1562.001\n].\nPrivilege Escalation and Lateral Movement\nFollowing initial access, RansomHub affiliates created user accounts for persistence [\nT1136\n], reenabled disabled accounts [\nT1098\n], and used Mimikatz [\nS0002\n] on Windows systems to gather credentials [\nT1003\n] and escalate privileges to SYSTEM [\nT1068\n]. Affiliates then moved laterally inside the network through methods including Remote Desktop Protocol (RDP) [\nT1021.001\n], PsExec [\nS0029\n], Anydesk [\nT1219\n], Connectwise, N-Able, Cobalt Strike [\nS0154\n], Metasploit, or other widely used command-and-control (C2) methods.\nData Exfiltration\nData exfiltration methods depend heavily on the affiliate conducting the network compromise. The ransomware binary does not normally include any mechanism for data exfiltration. Data exfiltration has been observed through the usage of tools such as PuTTY [\nT1048.002\n], Amazon AWS S3 buckets/tools [\nT1537\n], HTTP POST requests [\nT1048.003\n], WinSCP, Rclone, Cobalt Strike, Metasploit, and other methods.\nEncryption\nRansomHub ransomware has typically leveraged an Elliptic Curve Encryption algorithm called Curve 25519 to encrypt user accessible files on the system [\nT1486\n]. Curve 25519 uses a public/private key that is unique to each victim organization. To successfully encrypt files that are currently in use, the ransomware binary will typically attempt to stop the following processes:\n\"vmms.exe\"\n\"msaccess.exe\"\n\"mspub.exe\"\n\"svchost.exe\"\n\"vmcompute.exe\"\n\"notepad.exe\"\n\"ocautoupds.exe\"\n\"ocomm.exe\"\n\"ocssd.exe\"\n\"oracle.exe\"\n\"onenote.exe\"\n\"outlook.exe\"\n\"powerpnt.exe\"\n\"explorer.exe\"\n\"sql.exe\"\n\"steam.exe\"\n\"synctime.exe\"\n\"vmwp.exe\"\n\"thebat.exe\"\n\"thunderbird.exe\"\n\"visio.exe\"\n\"winword.exe\"\n\"wordpad.exe\"\n\"xfssvccon.exe\"\n\"TeamViewer.exe\"\n\"agntsvc.exe\"\n\"dbsnmp.exe\"\n\"dbeng50.exe\"\n\"encsvc.exe\"\nThe ransomware binary will attempt to encrypt any files that the user has access to, including user files and networked shares.\nRansomHub implements intermittent encryption, encrypting files in 0x100000 byte chunks and skipping every 0x200000 bytes of data in between encrypted chunks. Files smaller than 0x100000 bytes in size are completely encrypted. Files are appended with 58 (0x3A) bytes of data at the end. This data contains a value which is likely part of an encryption/decryption key. The structure of the appended 0x3A bytes is listed below with images from three different encrypted files.\n \nFigure 1: The first eight bytes are the size of the encrypted file.\nThe next eight bytes are the size of encrypted blocks. If the entire file is encrypted, this section is all zeros. In this example, each encrypted section is 0x100000 bytes long, with 0x100000 bytes between each encrypted block. This number was observed changing based on the size of the encrypted file.\n \nFigure 2: The size of encrypted blocks.\nThe next two bytes were always seen to be 0x0001.\n \nFigure 3: The next two bytes are always 0x0001.\nThe next 32 bytes are the public encryption key for the file.\n \nFigure 4: Public encryption key for the file.\nThe next four bytes are a checksum value.\n \nFigure 5: Checksum value.\nThe last four bytes are always seen to be the sequence 0x00ABCDEF.\n \nFigure 6: The last four bytes.\nThe ransomware executable does not typically encrypt executable files. A random file extension is added to file names and a ransom note generally titled \nHow To Restore Your Files.txt\n is left on the compromised system. To further inhibit system recovery, the ransomware executable typically leverages the \nvssadmin.exe\n program to delete volume shadow copies [\nT1490\n].\nLeveraged Tools\nSee \nTable 1\n for publicly available tools and applications used by RansomHub affiliates. This includes legitimate tools repurposed for their operations.\nDisclaimer:\n Use of these tools and applications should not be attributed as malicious without analytical evidence to support threat actor use and/or control.\nTable 1: Tools Used by RansomHub Affiliates\nTool Name\nDescription\nBITSAdmin\nA command-line utility that manages downloads/uploads between a client and server by using the Background Intelligent Transfer Service (BITS) to perform asynchronous file transfers.\nCobalt Strike [\nS0154\n]\nA penetration testing tool used by security professionals to test the security of networks and systems. RansomHub affiliates have used it to assist with lateral movement and file execution.\nMimikatz [\nS0002\n]\nA tool that allows users to view and save authentication credentials such as Kerberos tickets. RansomHub affiliates have used it to aid privilege escalation.\nPSExec [\nS0029\n]\nA tool designed to run programs and execute commands on remote systems.\nPowerShell\nCross-platform task automation solution made up of a command line shell, a scripting language, and a configuration management framework, which runs on Windows, Linux, and macOS.\nRClone\nA command line program used to sync files with cloud storage services.\nSliver\nA penetration testing toolset which allows for remote command and control of systems.\nSMBExec\nA tool designed to manipulate SMB services for remote code execution.\nWinSCP\nWindows Secure Copy is a free and open source SSH File Transfer Protocol, File Transfer Protocol, WebDAV, Amazon S3, and secure copy protocol client. Affiliates have used it to transfer data from a compromised network to actor-controlled accounts.\nCrackMapExec\nPentest Toolset\nKerberoast\nKerberos Brute force and Exploitation Tool\nAngryIPScanner\nNetwork Scanner\nIndicators of Compromise\nDisclaimer:\n Several of these IP addresses were first observed as early as 2020, although most date from 2022 or 2023 and have been historically linked to QakBot. The authoring organizations recommend organizations investigate or vet these IP addresses prior to taking action (such as blocking).\nSee \nTable 2–Table 5\n for IOCs obtained from FBI investigations.\nTable 2: Directory Structure TTPs\nFilename\nDescription\nC:\\Users\\%USERNAME%\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\crackmapexec.exe\nCrackMapExec\nC:\\Users\\%USERNAME%\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\kerbrute.exe\nKerberoasting\nC:\\Users\\%USERNAME%\\Downloads\\Anydesk.exe\nAnydesk C2\nC:\\Users\\%USERNAME%\\Desktop\\IamBatMan.exe\nRansomware\nC:\\Users\\backupexec\\Desktop\\stealer_cli_v2.exe\nInfo Stealer\nC:\\Users\\%USERNAME%\\Downloads\\nmap-7.94-setup.exe\nNmap\nC:\\Program Files (x86)\\Nmap\\nmap.exe\nNmap\nC:\\Users\\%USERNAME%\\Downloads\\mimikatz_trunk\\x64\\mimikatz.exe\nMimikatz\nC:\\Users\\backupexec\\Downloads\\x64\\mimikatz.exe\nMimikatz\nDisclaimer\n: The authoring organizations recommend network defenders investigate or vet IP addresses prior to taking action, such as blocking. Many cyber actors are known to change IP addresses, sometimes daily, and some IP addresses may host valid domains.\nTable 3: Known IPs Related to Malicious Activity (2023-2024)\nIP Address\n8.211.2[.]97\n45.95.67[.]41\n45.134.140[.]69\n45.135.232[.]2\n89.23.96[.]203\n188.34.188[.]7\n193.106.175[.]107\n193.124.125[.]78\n193.233.254[.]21\nTable 4: Known URLs Related to Malicious Activity (2023-2024)\nWeb Requests\nhttp[:]//188.34.188[.]7/555\nhttp[:]//188.34.188[.]7/555/\nhttp[:]//188.34.188[.]7/555/amba16.ico\nhttp[:]//188.34.188[.]7/555/bcrypt.dll\nhttp[:]//188.34.188[.]7/555/CRYPTSP.dll\nhttp[:]//188.34.188[.]7/555/en\nhttp[:]//188.34.188[.]7/555/en-US\nhttp[:]//188.34.188[.]7/555/NEWOFFICIALPROGRAMCAUSEOFNEWUPDATE.exe\nhttp[:]//188.34.188[.]7/555/NEWOFFICIALPROGRAMCAUSEOFNEWUPDATE.exe.Config\nhttp[:]//188.34.188[.]7/555/NEWOFFICIALPROGRAMCAUSEOFNEWUPDATE.INI\nhttp[:]//89.23.96[.]203/\nhttp[:]//89.23.96[.]203/333\nhttp[:]//89.23.96[.]203/333/\nhttp[:]//89.23.96[.]203/333/1.exe\nhttp[:]//89.23.96[.]203/333/1.exe.Config\nhttp[:]//89.23.96[.]203/333/10.exe\nhttp[:]//89.23.96[.]203/333/12.exe\nhttp[:]//89.23.96[.]203/333/12.exe.Config\nhttp[:]//89.23.96[.]203/333/2.exe\nhttp[:]//89.23.96[.]203/333/2.exe.Config\nhttp[:]//89.23.96[.]203/333/2wrRR6sW6XJtsXyPzuhWhDG7qwN4es.exe\nhttp[:]//89.23.96[.]203/333/2wrRR6sW6XJtsXyPzuhWhDG7qwN4es.exe.Config\nhttp[:]//89.23.96[.]203/333/3.exe\nhttp[:]//89.23.96[.]203/333/3.exe.Config\nhttp[:]//89.23.96[.]203/333/4.exe\nhttp[:]//89.23.96[.]203/333/4.exe.Config\nhttp[:]//89.23.96[.]203/333/5.exe\nhttp[:]//89.23.96[.]203/333/5.exe.Config\nhttp[:]//89.23.96[.]203/333/6.exe\nhttp[:]//89.23.96[.]203/333/7.exe\nhttp[:]//89.23.96[.]203/333/8.exe\nhttp[:]//89.23.96[.]203/333/9.exe\nhttp[:]//89.23.96[.]203/333/92.exe\nhttp[:]//89.23.96[.]203/333/AmbaPDF.ico\nhttp[:]//89.23.96[.]203/333/ambapdf.ico.DLL\nhttp[:]//89.23.96[.]203/333/bcrypt.dll\nhttp[:]//89.23.96[.]203/333/Cabinet.dll\nhttp[:]//89.23.96[.]203/333/CRYPTBASE.DLL\nhttp[:]//89.23.96[.]203/333/cryptnet.dll\nhttp[:]//89.23.96[.]203/333/CRYPTSP.dll\nhttp[:]//89.23.96[.]203/333/cv4TCGxUjvS.exe\nhttp[:]//89.23.96[.]203/333/DPAPI.DLL\nhttp[:]//89.23.96[.]203/333/en\nhttp[:]//89.23.96[.]203/333/en/d%E5%AD%97%E5%AD%97.resources.dll\nhttp[:]//89.23.96[.]203/333/en/d%E5%AD%97%E5%AD%97.resources.exe\nhttp[:]//89.23.96[.]203/333/en/d%E5%AD%97%E5%AD%97.resources/d%E5%AD%97%E5%AD%97.resources.dll\nhttp[:]//89.23.96[.]203/333/en/d%E5%AD%97%E5%AD%97.resources/d%E5%AD%97%E5%AD%97.resources.exe\nhttp[:]//89.23.96[.]203/333/en-US\nhttp[:]//89.23.96[.]203/333/en-US/d%E5%AD%97%E5%AD%97.resources.dll\nhttp[:]//89.23.96[.]203/333/en-US/d%E5%AD%97%E5%AD%97.resources.exe\nhttp[:]//89.23.96[.]203/333/en-US/d%E5%AD%97%E5%AD%97.resources/d%E5%AD%97%E5%AD%97.resources.dll\nhttp[:]//89.23.96[.]203/333/en-US/d%E5%AD%97%E5%AD%97.resources/d%E5%AD%97%E5%AD%97.resources.exe\nhttp[:]//89.23.96[.]203/333/iertutil.dll\nhttp[:]//89.23.96[.]203/333/information.exe\nhttp[:]//89.23.96[.]203/333/information.exe.Config\nhttp[:]//89.23.96[.]203/333/information.INI\nhttp[:]//89.23.96[.]203/333/IPHLPAPI.DLL\nhttp[:]//89.23.96[.]203/333/mshtml.dll\nhttp[:]//89.23.96[.]203/333/msi.dll\nhttp[:]//89.23.96[.]203/333/SspiCli.dll\nhttp[:]//89.23.96[.]203/333/TmsLA6kdcU8jxKzpMvbUVweTeF5YcR.exe\nhttp[:]//89.23.96[.]203/333/TmsLA6kdcU8jxKzpMvbUVweTeF5YcR.exe.Config\nhttp[:]//89.23.96[.]203/333/2wrRR6sW6XJtsXyPzuhWhDG7qwN4es.exe\nhttp[:]//89.23.96[.]203/333/xwenxub285p83ecrzvft.exe\nhttp[:]//89.23.96[.]203/333/cv4TCGxUjvS.exe\nhttp[:]//89.23.96[.]203/333/urlmon.dll\nhttp[:]//89.23.96[.]203/333/USERENV.dll\nhttp[:]//89.23.96[.]203/333/webio.dll\nhttp[:]//89.23.96[.]203/333/winhttp.dll\nhttp[:]//89.23.96[.]203/333/WININET.dll\nhttp[:]//89.23.96[.]203/333/WINMM.dll\nhttp[:]//89.23.96[.]203/333/WINMMBASE.dll\nhttp[:]//89.23.96[.]203/333/winnlsres.dll\nhttp[:]//89.23.96[.]203/333/xwenxub285p83ecrzvft.exe\nhttp[:]//89.23.96[.]203/333/xwenxub285p83ecrzvft.exe.Config\nhttp[:]//temp.sh/KnCqD/superloop.exe\nhttps[:]//grabify.link/Y33YXP\nhttps[:]//\ni.ibb.co\n/2KBydfw/112882618.png\nhttps[:]//i.ibb.co/4g6jH2J/2773036704.png\nhttps[:]//i.ibb.co/b1bZBpg/2615174623.png\nhttps[:]//i.ibb.co/Fxhyq6t/2077411869.png\nhttps[:]//i.ibb.co/HK0jV1G/534475006.png\nhttps[:]//i.ibb.co/nbMNnW4/2501108160.png\nhttps[:]//i.ibb.co/p1RCtpy/2681232755.png\nhttps[:]//i.ibb.co/SxQLwYm/1038436121.png\nhttps[:]//i.ibb.co/v1bn9ZK/369210627.png\nhttps[:]//i.ibb.co/V3Kj1c2/1154761258.png\nhttps[:]//i.ibb.co/X2FR8Kz/2113791011.png\nhttps[:]//i.ibb.com:443/V3Kj1c2/1154761258.png\nhttps[:]//12301230[.]co/npm/module.tripadvisor/module.tripadvisor.css\nhttps[:]//12301230[.]co/npm/module.external/jquery.min.js\nhttps[:]//12301230[.]co/npm/module.external/moment.min.js\nhttps[:]//12301230[.]co/npm/module.external/client.min.js\nhttps[:]//\n12301230[.]co\n/npm/module.tripadvisor/module.tripadvisor.js\nhttps[:]//samuelelena[.]co/npm/module.tripadvisor/module.tripadvisor.js\nhttps[:]//samuelelena[.]co/npm/module.external/jquery.min.js\nhttps[:]//samuelelena[.]co/npm/module.external/moment.min.js\nhttps[:]//samuelelena[.]co/npm/module.external/client.min.js\nhttps[:]//samuelelena[.]co/\nhttp[:]//samuelelena[.]co/\nhttps[:]//samuelelena[.]co/npm\nhttps[:]//samuelelena[.]co/npm/module.tripadvisor/module.tripadvisor.js\nhttp[:]//samuelelena[.]co/npm/\nhttp[:]//samuelelena[.]co/npm/module.tripadvisor/module.tripadvisor.js\nhttp[:]//samuelelena[.]co/npm/module.external/client.min.js\nhttps[:]//samuelelena[.]co/npm/module.tripadvisor/module.tripadvisor.\nhttps[:]//samuelelena[.]co/npm/module.external/jquery.min.js\nhttps[:]//samuelelena[.]co/npm/module.external\nhttps[:]//samuelelena[.]co\n/np\nhttps[:]/samuelelena[.]co/npm/module.tripadvisor/module.tripadvisor.js\nhttps[:]//samuelelena[.]co/npm/module[.]tripadvisor/module[.]tripadvisor[.]js\nhttps[:]//samuelelena[.]co/npm/module[.]external/client.min.js\nhttps[:]//samuelelena[.]co/npm/module.external/jquery.min.js&nbsp;\nhttp[:]//samuelelena[.]co:443/\nhttp[:]//samuelelena[.]co/npm/module.external/jquery.min.js\nhttps[:]//40031[.]co\n/npm/module.tripadvisor/module.tripadvisor.css\nhttps[:]//40031[.]co/npm/module.external/jquery.min.js\nhttps[:]//40031[.]co/npm/module.external/moment.min.js\nhttps[:]//40031[.]co/npm/module.external/client.min.js\nhttps[:]//40031[.]co/npm/module.tripadvisor/module.tripadvisor.js\nTable 5: Emails Related to RansomHub (2023-2024)\nEmail Addresses\nbrahma2023[@]onionmail.org\n<victim_organization_name>[@]protonmail.com\nMITRE ATT&CK Tactics and Techniques\nSee \nTable 6–Table 17 \nfor all referenced threat actor tactics and techniques in this advisory. For assistance with mapping malicious cyber activity to the MITRE ATT&CK framework, see CISA and MITRE ATT&CK’s \nBest Practices for MITRE ATT&CK Mapping\n and CISA’s \nDecider Tool\n.\nTable 6: Resource Development\nTechnique Title\nID\nUse\nObtain Capabilities: Exploits\nT1588.005\nRansomHub affiliates may buy, steal, or download exploits that can be used during targeting.\nTable 7: Initial Access\nTechnique Title\nID\nUse\nPhishing\nT1566\nRansomHub affiliates used mass phishing and spear-phishing emails to obtain initial access.\nExploit Public-Facing Application\nT1190\nRansomHub affiliates may exploit known vulnerabilities to obtain initial access.\nTable 8: Execution\nTechnique Title\nID\nUse\nCommand and Scripting Interpreter\nT1059.001\nRansomHub affiliates used PowerShell and Scripts to quickly run and automate intrusion.\nWindows Management Instrumentation\nT1047\nRansomHub affiliates may abuse Windows Management Instrumentation to execute malicious commands and payloads.\nTable 9: Persistence\nTechnique Title \nID\nUse\nCommand and Scripting Interpreter\nT1059.001\nRansomHub affiliates used PowerShell and Scripts to quickly run and automate intrusion.\nCreate Account\nT1136\nRansomHub affiliates may create an account to maintain access to victim systems.\nTable 10: Privilege Escalation\nTechnique Title\nID\nUse\nAccount Manipulation\nT1098\nRansomHub affiliates may manipulate accounts to maintain and/or elevate access to victim systems.\nRemote Services: Remote Desktop Protocol\nT1021.001\nRansomHub affiliates may log onto systems using the Remote Desk Protocol, then perform actions as the logged-on user.\nTable 11: Defense Evasion\nTechnique Title\nID\nUse\nMasquerading\nT1036\nRansomHub affiliates may hide binaries by renaming executable names.\nIndicator Removal on Host\nT1070\nRansomHub affiliates may remove logs to inhibit cybersecurity response.\nImpair Defenses: Disable or Modify Tools\nT1562.001\nRansomHub affiliates may disable endpoint detection and response (EDR) tooling to avoid detection.\nTable 12: Credential Access\nTechnique Title\nID\nUse\nOS Credential Dumping\nT1003\nRansomHub affiliates used Mimikatz on Windows systems to gather credentials.\nBrute Force: Password Spraying\nT1110.003\nRansomHub affiliates may use password spraying to obtain initial access.\nTable 13: Discovery\nTechnique Title\nID\nUse\nRemote System Discovery\nT1018\nRansomHub affiliates may attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system. \nNetwork Service Discovery\nT1046\nRansomHub affiliates may attempt to get a listing of services running on remote hosts and local network infrastructure devices,\nTable 14: Lateral Movement\nTechnique Title\nID\nUse\nExploitation of Remote Services\nT1210\nRansomHub affiliates may exploit remote service to gain unauthorized access to internal systems once inside of a network. \nTable 15: Command and Control\nTechnique Title\nID\nUse\nRemote Access Software\nT1219\nRansomHub affiliates may use Anydesk, a legitimate desktop support and remote access software to establish an interactive command and control channel to target systems within networks.\nTable 16: Exfiltration\nTechnique Title\nID\nUse\nExfiltration Over Alternative Protocol: Exfiltration Over Asymmetric Encrypted Non-C2 Protocol\nT1048.002\nRansomHub affiliates may steal data by exfiltrating it over an asymmetrically encrypted network protocol other than that of the existing command and control channel.\nTransfer Data to Cloud Account\nT1537\nRansomHub affiliates may exfiltrate data by transferring the data, including through sharing/syncing and creating backups of cloud environments, to another cloud account they control on the same service.\nExfiltration Over Alternative Protocol: Exfiltration Over Asymmetric Unencrypted Non-C2 Protocol\nT1048.003\nRansomHub affiliates may steal data by exfiltrating it over an un-encrypted network protocol other than that of the existing command and control channel.\nTable 17: Impact\nTechnique Title\nID\nUse\nData Encrypted for Impact\nT1486\nRansomHub affiliates used encryption for ransomware operations.\nInhibit System Recovery\nT1490\nRansomHub ransomware deleted volume shadow copies and affiliates removed backups for ransomware operations.\nIncident Response\nIf compromise is detected, organizations should:\nQuarantine or take potentially affected hosts offline.\nReimage compromised hosts.\nProvision new account credentials.\nCollect and review artifacts such as running processes/services, unusual authentications, and recent network connections.\nReport the compromise to CISA via CISA’s 24/7 Operations Center (\nreport@cisa.gov\n or 1-844-Say-CISA). State, local, tribal, or territorial government entities can also report to the Multi-State Information Sharing and Analysis Center (MS-ISAC) (\nSOC@cisecurity.org\n or 866-787-4722).\nMitigations\nNetwork Defenders\nThe authoring organizations recommend organizations implement the mitigations below to improve cybersecurity posture based on RansomHub’s activity. These mitigations align with the Cross-Sector Cybersecurity Performance Goals (CPGs) developed by CISA and the National Institute of Standards and Technology (NIST). The CPGs provide a minimum set of practices and protections that CISA and NIST recommend all organizations implement. CISA and NIST based the CPGs on existing cybersecurity frameworks and guidance to protect against the most common and impactful threats, tactics, techniques, and procedures. Visit CISA’s \nCross-Sector Cybersecurity Performance Goals\n for more information on the CPGs, including additional recommended baseline protections.\nImplement a recovery plan to maintain and retain multiple copies of sensitive or proprietary data and servers in a physically separate, segmented, and secure location (i.e., hard drive, storage device, the cloud).\nRequire all accounts with password logins\n(e.g., service accounts, admin accounts, and domain admin accounts) to comply with \nNational Institute for Standards and Technology (NIST) standards\n for developing and managing password policies.\nUse longer passwords consisting of at least 8 characters and no more than 64 characters in length;\nStore passwords in hashed format using industry-recognized password managers;\nAdd password user “salts” to shared login credentials;\nAvoid reusing passwords;\nImplement multiple failed login attempt account lockouts;\nDisable password “hints”; and\nRefrain from requiring password changes more frequently than once per year.\nNote:\n NIST guidance suggests favoring longer passwords instead of requiring regular and frequent password resets. Frequent password resets are more likely to result in users developing password “patterns” cyber criminals can easily decipher.\nRequire administrator credentials to install software.\nKeep all operating systems, software, and firmware up to date\n [\nCPG 1.E\n]. Timely patching is one of the most efficient and cost-effective steps an organization can take to minimize its exposure to cybersecurity threats. Prioritize patching known exploited vulnerabilities in internet-facing systems.\nRequire Phishing-Resistant multifactor authentication to administrator accounts\n [\nCPG 2.H\n] and require standard MFA for all services to the extent possible (particularly for webmail, virtual private networks, and accounts that access critical systems).\nSegment networks\n [\nCPG 2.F\n] to prevent the spread of ransomware. Network segmentation can help prevent the spread of ransomware by controlling traffic flows between—and access to—various subnetworks and by restricting adversary lateral movement.\nIdentify, detect, and investigate abnormal activity and potential traversal of the indicated ransomware with a networking monitoring tool\n [\nCPG 3.A\n]. To aid in detecting the ransomware, implement a tool that logs and reports all network traffic, including lateral movement activity on a network. Endpoint detection and response (EDR) tools are particularly useful for detecting lateral connections as they have insight into common and uncommon network connections for each host.\nInstall, regularly update, and enable real time detection for antivirus\nsoftware on all hosts.\nImplement Secure Logging Collection and Storage Practices \n[\nCPG 2.T\n].\n \nLearn more about logging best practices by referencing \nCISA’s Logging Made Easy\n resources.\nReview domain controllers, servers, workstations, and active directories\n for new and/or unrecognized accounts.\nAudit user accounts\n with administrative privileges and configure access controls according to the principle of least privilege.\nDisable unused ports.\nImplement and enforce email security policies\n [\nCPG 2.M\n].\nDisable macros by default\n [\nCPG 2.N\n].\nConsider adding an email banner to emails\n received from outside your organization.\nDisable hyperlinks in received emails.\nImplement time-based access for accounts set at the admin level and higher.\n For example, the Just-in-Time (JIT) access method provisions privileged access when needed and can support enforcement of the principle of least privilege (as well as the Zero Trust model). This is a process where a network-wide policy is set in place to automatically disable admin accounts at the Active Directory level when the account is not in direct need. Individual users may submit their requests through an automated process that grants them access to a specified system for a set timeframe when they need to support the completion of a certain task.\nDisable command-line and scripting activities and permissions.\n Privilege escalation and lateral movement often depend on software utilities running from the command line. If threat actors are not able to run these tools, they will have difficulty escalating privileges and/or moving laterally.\nMaintain offline backups of data, and regularly maintain backup and restoration\n [\nCPG 2.R\n]. By instituting this practice, the organization ensures they will not be severely interrupted, and/or only have irretrievable data.\nEnsure all backup data is encrypted,\n immutable (i.e., cannot be altered or deleted), and covers the entire organization’s data infrastructure.\nSoftware Manufacturers\nThe above mitigations apply to enterprises and critical infrastructure organizations with on-premises or hybrid environments. Recognizing that insecure software is the root cause of many of these flaws and that the responsibility should not be on the end user, CISA urges software manufacturers to implement the following to reduce the prevalence of identified or exploited issues (e.g., misconfigurations, weak passwords, and other weaknesses identified and exploited through the assessment team):\nEmbed security into product architecture\n throughout the entire software development lifecycle (SDLC).\nMandate MFA, ideally phishing-resistant MFA, for privileged users\n and make MFA a default, rather than opt-in, feature.\nThese mitigations align with tactics provided in the joint guide \nShifting the Balance of Cybersecurity Risk: Principles and Approaches for Secure by Design Software\n. CISA urges software manufacturers to take ownership of improving the security outcomes of their customers by applying these and other secure by design tactics. By using secure by design tactics, software manufacturers can make their product lines secure “out of the box” without requiring customers to spend additional resources making configuration changes, purchasing security software and logs, monitoring, and making routine updates.\nFor more information on secure by design, see CISA’s \nSecure by Design\n webpage.\nValidate Security Controls\nIn addition to applying mitigations, CISA recommends exercising, testing, and validating your organization’s security program against the threat behaviors mapped to the MITRE ATT&CK for Enterprise framework in this advisory. The authoring organizations recommend testing your existing security controls inventory to assess how they perform against the ATT&CK techniques described in this advisory.\nTo get started:\nSelect an ATT&CK technique described in this advisory (see\n Table 6–Table 17\n).\nAlign your security technologies against the technique.\nTest your technologies against the technique.\nAnalyze your detection and prevention technologies’ performance.\nRepeat the process for all security technologies to obtain a set of comprehensive performance data.\nTune your security program, including people, processes, and technologies, based on the data generated by this process.\nCISA, FBI, MS-ISAC, and HHS recommend continually testing your security program, at scale, in a production environment to ensure optimal performance against the MITRE ATT&CK techniques identified in this advisory.\nResources\n#\nStopRansomware\n is a whole-of-government approach that gives one central location for ransomware resources and alerts.\nResource to reduce the risk of a ransomware attack: \n#StopRansomware Guide\n.\nNo-cost cyber hygiene services: \nCyber Hygiene Services\n and \nRansomware Readiness Assessment\n.\nHealth and Human Services \nHPH Cybersecurity Gateway\n hosts the HPH CPGs and links to HHS cybersecurity resources.\nReferences\nRansomware Roundup - Knight | FortiGuard Labs (fortinet.com)\nKnight Ransomware - X-Industry - Red Sky Alliance\nCyclops Ransomware and Stealer Combo: Exploring a Dual Threat (uptycs.com)\nKnight ransomware distributed in fake Tripadvisor complaint emails (bleepingcomputer.com)\nReporting\nYour organization has no obligation to respond or provide information to the FBI in response to this joint advisory. If, after reviewing the information provided, your organization decides to provide information to the FBI, reporting must be consistent with applicable state and federal laws.\nThe FBI is interested in any information that can be shared, to include boundary logs showing communication to and from foreign IP addresses, a sample ransom note, communications with threat actors, Bitcoin wallet information, decryptor files, and/or a benign sample of an encrypted file.\nAdditional details of interest include a targeted company point of contact, status and scope of infection, estimated loss, operational impact, transaction IDs, date of infection, date detected, initial attack vector, and host- and network-based indicators.\nThe authoring organizations do not encourage paying a ransom, as payment does not guarantee victim files will be recovered. Furthermore, payment may also embolden adversaries to target additional organizations, encourage other criminal actors to engage in the distribution of ransomware, and/or fund illicit activities. Regardless of whether you or your organization have decided to pay the ransom, the FBI and CISA urge you to promptly report ransomware incidents to the FBI’s \nInternet Crime Complain Center (IC3)\n, a \nlocal FBI Field Office\n, or CISA via the agency’s \nIncident Reporting System\n or its 24/7 Operations Center (\nreport@cisa.gov\n) or by calling 1-844-Say-CISA (1-844-729-2472).\nDisclaimer\nThe information in this report is being provided “as is” for informational purposes only. The authoring organizations do not endorse any commercial entity, product, company, or service, including any entities, products, or services linked within this document. Any reference to specific commercial entities, products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply endorsement, recommendation, or favoring by the authoring organizations.\nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nTags\nCo-Sealers and Partners\n:\n Federal Bureau of Investigation,\n Multi-State Information Sharing and Analysis Center\nMITRE ATT&CK TTP\n:\n Command and Control (TA0011),\n Credential Access (TA0006),\n Defense Evasion (TA0005),\n Discovery (TA0007),\n Execution (TA0002),\n Exfiltration (TA0010),\n Impact (TA0040),\n Initial Access (TA0001),\n Lateral Movement (TA0008),\n Persistence (TA0003),\n Privilege Escalation (TA0004),\n Resource Development (TA0042)\nSector\n:\nCommercial Facilities Sector\n,\nCommunications Sector\n,\nCritical Manufacturing Sector\n,\nEmergency Services Sector\n,\nFinancial Services Sector\n,\nFood and Agriculture Sector\n,\nGovernment Services and Facilities Sector\n,\nHealthcare and Public Health Sector\n,\nInformation Technology Sector\n,\nTransportation Systems Sector\n,\nWater and Wastewater Systems\nTopics\n:\nCyber Threats and Response\n,\nCybersecurity Best Practices\n,\nIncident Response\n,\nMalware, Phishing, and Ransomware\nPlease share your thoughts\nWe recently updated our anonymous \nproduct survey\n; we welcome your feedback.\nRelated Advisories\nApr 23, 2026\nCybersecurity Advisory | AA26-113A\nDefending Against China-Nexus Covert Networks of Compromised Devices\n \nApr 07, 2026\nCybersecurity Advisory | AA26-097A\nIranian-Affiliated Cyber Actors Exploit Programmable Logic Controllers Across US Critical Infrastructure\n \nDec 09, 2025\nCybersecurity Advisory | AA25-343A\nPro-Russia Hacktivists Conduct Opportunistic Attacks Against US and Global Critical Infrastructure\n \nSep 23, 2025\nCybersecurity Advisory | AA25-266A\nCISA Shares Lessons Learned from an Incident Response Engagement",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2023-27997",
+      "type": "Vulnerability",
+      "start": 4925,
+      "end": 4939,
+      "normalized_id": "CVE-2023-27997",
+      "evidence": "CVE-2023-27997\n"
+    },
+    {
+      "id": "E2",
+      "text": "CVE-2020-0787",
+      "type": "Vulnerability",
+      "start": 7567,
+      "end": 7580,
+      "normalized_id": "CVE-2020-0787",
+      "evidence": "CVE-2020-0787\n"
+    },
+    {
+      "id": "E3",
+      "text": "CVE-2023-46604",
+      "type": "Vulnerability",
+      "start": 5372,
+      "end": 5386,
+      "normalized_id": "CVE-2023-46604",
+      "evidence": "CVE-2023-46604\n"
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2023-46747",
+      "type": "Vulnerability",
+      "start": 6321,
+      "end": 6335,
+      "normalized_id": "CVE-2023-46747",
+      "evidence": "CVE-2023-46747\n"
+    },
+    {
+      "id": "E5",
+      "text": "CVE-2020-1472",
+      "type": "Vulnerability",
+      "start": 7360,
+      "end": 7373,
+      "normalized_id": "CVE-2020-1472",
+      "evidence": "CVE-2020-1472\n"
+    },
+    {
+      "id": "E6",
+      "text": "CVE-2023-48788",
+      "type": "Vulnerability",
+      "start": 6680,
+      "end": 6694,
+      "normalized_id": "CVE-2023-48788",
+      "evidence": "CVE-2023-48788\n"
+    },
+    {
+      "id": "E7",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 4565,
+      "end": 4578,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "CVE-2023-3519\n"
+    },
+    {
+      "id": "E8",
+      "text": "CVE-2017-0144",
+      "type": "Vulnerability",
+      "start": 6977,
+      "end": 6990,
+      "normalized_id": "CVE-2017-0144",
+      "evidence": "CVE-2017-0144\n"
+    },
+    {
+      "id": "E9",
+      "text": "CVE-2023-22515",
+      "type": "Vulnerability",
+      "start": 5922,
+      "end": 5936,
+      "normalized_id": "CVE-2023-22515",
+      "evidence": "CVE-2023-22515\n"
+    },
+    {
+      "id": "E10",
+      "text": "CWE-306",
+      "type": "Weakness",
+      "start": 6339,
+      "end": 6346,
+      "normalized_id": "CWE-306",
+      "evidence": "CWE-306\n"
+    },
+    {
+      "id": "E11",
+      "text": "CWE-94",
+      "type": "Weakness",
+      "start": 4582,
+      "end": 4588,
+      "normalized_id": "CWE-94",
+      "evidence": "CWE-94\n"
+    },
+    {
+      "id": "E12",
+      "text": "CWE-288",
+      "type": "Weakness",
+      "start": 6351,
+      "end": 6358,
+      "normalized_id": "CWE-288",
+      "evidence": "CWE-288\n"
+    },
+    {
+      "id": "E13",
+      "text": "CWE-787",
+      "type": "Weakness",
+      "start": 4943,
+      "end": 4950,
+      "normalized_id": "CWE-787",
+      "evidence": "CWE-787\n"
+    },
+    {
+      "id": "E14",
+      "text": "CWE-122",
+      "type": "Weakness",
+      "start": 4955,
+      "end": 4962,
+      "normalized_id": "CWE-122",
+      "evidence": "CWE-122\n"
+    },
+    {
+      "id": "E15",
+      "text": "CWE-502",
+      "type": "Weakness",
+      "start": 5390,
+      "end": 5397,
+      "normalized_id": "CWE-502",
+      "evidence": "CWE-502\n"
+    },
+    {
+      "id": "E16",
+      "text": "CWE-89",
+      "type": "Weakness",
+      "start": 6698,
+      "end": 6704,
+      "normalized_id": "CWE-89",
+      "evidence": "CWE-89\n"
+    },
+    {
+      "id": "E17",
+      "text": "Netlogon",
+      "type": "Configuration",
+      "start": 7463,
+      "end": 7471,
+      "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-1472\nAn elevation of privilege vulnerability exists when an attacker establishes a vulnerable Netlogon secure channel connection to a domain controller using the Netlogon Remote Protocol (MS-NRPC)."
+    },
+    {
+      "id": "E18",
+      "text": "Confluence",
+      "type": "Configuration",
+      "start": 5976,
+      "end": 5986,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-22515\nA vulnerability in publicly accessible Confluence Data Center and Server instances that allows the creation of unauthorized Confluence administrator accounts and access to Confluence instances."
+    },
+    {
+      "id": "E19",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 5011,
+      "end": 5018,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests."
+    },
+    {
+      "id": "E20",
+      "text": "Apache ActiveMQ",
+      "type": "Configuration",
+      "start": 5450,
+      "end": 5465,
+      "normalized_id": "cpe:2.3:a:apache:activemq:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-46604\n (\nCWE-502\n)\nThe Java OpenWire protocol marshaller, such as in Apache ActiveMQ, is vulnerable to Remote Code Execution."
+    },
+    {
+      "id": "E21",
+      "text": "T1136",
+      "type": "AttackTechnique",
+      "start": 8652,
+      "end": 8657,
+      "normalized_id": "T1136",
+      "evidence": "T1136\n"
+    },
+    {
+      "id": "E22",
+      "text": "T1003",
+      "type": "AttackTechnique",
+      "start": 8771,
+      "end": 8776,
+      "normalized_id": "T1003",
+      "evidence": "T1003\n"
+    },
+    {
+      "id": "E23",
+      "text": "T1018",
+      "type": "AttackTechnique",
+      "start": 7884,
+      "end": 7889,
+      "normalized_id": "T1018",
+      "evidence": "T1018\n"
+    },
+    {
+      "id": "E24",
+      "text": "T1098",
+      "type": "AttackTechnique",
+      "start": 8691,
+      "end": 8696,
+      "normalized_id": "T1098",
+      "evidence": "T1098\n"
+    },
+    {
+      "id": "E25",
+      "text": "T1219",
+      "type": "AttackTechnique",
+      "start": 8974,
+      "end": 8979,
+      "normalized_id": "T1219",
+      "evidence": "T1219\n"
+    },
+    {
+      "id": "E26",
+      "text": "T1490",
+      "type": "AttackTechnique",
+      "start": 12068,
+      "end": 12073,
+      "normalized_id": "T1490",
+      "evidence": "T1490\n"
+    },
+    {
+      "id": "E27",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 8933,
+      "end": 8942,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n"
+    },
+    {
+      "id": "E28",
+      "text": "T1110.003",
+      "type": "AttackTechnique",
+      "start": 4329,
+      "end": 4338,
+      "normalized_id": "T1110.003",
+      "evidence": "T1110.003\n"
+    },
+    {
+      "id": "E29",
+      "text": "T1566",
+      "type": "AttackTechnique",
+      "start": 4247,
+      "end": 4252,
+      "normalized_id": "T1566",
+      "evidence": "T1566\n"
+    },
+    {
+      "id": "E30",
+      "text": "T1046",
+      "type": "AttackTechnique",
+      "start": 7893,
+      "end": 7898,
+      "normalized_id": "T1046",
+      "evidence": "T1046\n"
+    },
+    {
+      "id": "E31",
+      "text": "T1068",
+      "type": "AttackTechnique",
+      "start": 8815,
+      "end": 8820,
+      "normalized_id": "T1068",
+      "evidence": "T1068\n"
+    },
+    {
+      "id": "E32",
+      "text": "T1537",
+      "type": "AttackTechnique",
+      "start": 9414,
+      "end": 9419,
+      "normalized_id": "T1537",
+      "evidence": "T1537\n"
+    },
+    {
+      "id": "E33",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 7351,
+      "end": 7356,
+      "normalized_id": "T1210",
+      "evidence": "T1210\n"
+    },
+    {
+      "id": "E34",
+      "text": "T1047",
+      "type": "AttackTechnique",
+      "start": 8354,
+      "end": 8359,
+      "normalized_id": "T1047",
+      "evidence": "T1047\n"
+    },
+    {
+      "id": "E35",
+      "text": "T1036",
+      "type": "AttackTechnique",
+      "start": 8175,
+      "end": 8180,
+      "normalized_id": "T1036",
+      "evidence": "T1036\n"
+    },
+    {
+      "id": "E36",
+      "text": "T1048.002",
+      "type": "AttackTechnique",
+      "start": 9371,
+      "end": 9380,
+      "normalized_id": "T1048.002",
+      "evidence": "T1048.002\n"
+    },
+    {
+      "id": "E37",
+      "text": "T1588.005",
+      "type": "AttackTechnique",
+      "start": 4495,
+      "end": 4504,
+      "normalized_id": "T1588.005",
+      "evidence": "T1588.005\n"
+    },
+    {
+      "id": "E38",
+      "text": "T1486",
+      "type": "AttackTechnique",
+      "start": 9682,
+      "end": 9687,
+      "normalized_id": "T1486",
+      "evidence": "T1486\n"
+    },
+    {
+      "id": "E39",
+      "text": "T1562.001",
+      "type": "AttackTechnique",
+      "start": 8510,
+      "end": 8519,
+      "normalized_id": "T1562.001",
+      "evidence": "T1562.001\n"
+    },
+    {
+      "id": "E40",
+      "text": "T1048.003",
+      "type": "AttackTechnique",
+      "start": 9444,
+      "end": 9453,
+      "normalized_id": "T1048.003",
+      "evidence": "T1048.003\n"
+    },
+    {
+      "id": "E41",
+      "text": "T1070",
+      "type": "AttackTechnique",
+      "start": 8292,
+      "end": 8297,
+      "normalized_id": "T1070",
+      "evidence": "T1070\n"
+    },
+    {
+      "id": "E42",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 4296,
+      "end": 4301,
+      "normalized_id": "T1190",
+      "evidence": "T1190\n"
+    },
+    {
+      "id": "E43",
+      "text": "T1059.001",
+      "type": "AttackTechnique",
+      "start": 7902,
+      "end": 7911,
+      "normalized_id": "T1059.001",
+      "evidence": "T1059.001\n"
+    },
+    {
+      "id": "E44",
+      "text": "T1588.005",
+      "type": "AttackTechnique",
+      "start": 21862,
+      "end": 21871,
+      "normalized_id": "T1588.005",
+      "evidence": "T1588.005\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E45",
+      "text": "T1566",
+      "type": "AttackTechnique",
+      "start": 22021,
+      "end": 22026,
+      "normalized_id": "T1566",
+      "evidence": "T1566\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E46",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 22153,
+      "end": 22158,
+      "normalized_id": "T1190",
+      "evidence": "T1190\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E47",
+      "text": "T1059.001",
+      "type": "AttackTechnique",
+      "start": 22316,
+      "end": 22325,
+      "normalized_id": "T1059.001",
+      "evidence": "T1059.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E48",
+      "text": "T1047",
+      "type": "AttackTechnique",
+      "start": 22449,
+      "end": 22454,
+      "normalized_id": "T1047",
+      "evidence": "T1047\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E49",
+      "text": "T1059.001",
+      "type": "AttackTechnique",
+      "start": 22644,
+      "end": 22653,
+      "normalized_id": "T1059.001",
+      "evidence": "T1059.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E50",
+      "text": "T1136",
+      "type": "AttackTechnique",
+      "start": 22757,
+      "end": 22762,
+      "normalized_id": "T1136",
+      "evidence": "T1136\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E51",
+      "text": "T1098",
+      "type": "AttackTechnique",
+      "start": 22919,
+      "end": 22924,
+      "normalized_id": "T1098",
+      "evidence": "T1098\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E52",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 23064,
+      "end": 23073,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E53",
+      "text": "T1036",
+      "type": "AttackTechnique",
+      "start": 23254,
+      "end": 23259,
+      "normalized_id": "T1036",
+      "evidence": "T1036\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E54",
+      "text": "T1070",
+      "type": "AttackTechnique",
+      "start": 23355,
+      "end": 23360,
+      "normalized_id": "T1070",
+      "evidence": "T1070\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E55",
+      "text": "T1562.001",
+      "type": "AttackTechnique",
+      "start": 23474,
+      "end": 23483,
+      "normalized_id": "T1562.001",
+      "evidence": "T1562.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E56",
+      "text": "T1003",
+      "type": "AttackTechnique",
+      "start": 23656,
+      "end": 23661,
+      "normalized_id": "T1003",
+      "evidence": "T1003\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E57",
+      "text": "T1110.003",
+      "type": "AttackTechnique",
+      "start": 23770,
+      "end": 23779,
+      "normalized_id": "T1110.003",
+      "evidence": "T1110.003\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E58",
+      "text": "T1018",
+      "type": "AttackTechnique",
+      "start": 23920,
+      "end": 23925,
+      "normalized_id": "T1018",
+      "evidence": "T1018\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E59",
+      "text": "T1046",
+      "type": "AttackTechnique",
+      "start": 24149,
+      "end": 24154,
+      "normalized_id": "T1046",
+      "evidence": "T1046\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E60",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 24365,
+      "end": 24370,
+      "normalized_id": "T1210",
+      "evidence": "T1210\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E61",
+      "text": "T1219",
+      "type": "AttackTechnique",
+      "start": 24570,
+      "end": 24575,
+      "normalized_id": "T1219",
+      "evidence": "T1219\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E62",
+      "text": "T1048.002",
+      "type": "AttackTechnique",
+      "start": 24902,
+      "end": 24911,
+      "normalized_id": "T1048.002",
+      "evidence": "T1048.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E63",
+      "text": "T1537",
+      "type": "AttackTechnique",
+      "start": 25109,
+      "end": 25114,
+      "normalized_id": "T1537",
+      "evidence": "T1537\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E64",
+      "text": "T1048.003",
+      "type": "AttackTechnique",
+      "start": 25416,
+      "end": 25425,
+      "normalized_id": "T1048.003",
+      "evidence": "T1048.003\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E65",
+      "text": "T1486",
+      "type": "AttackTechnique",
+      "start": 25646,
+      "end": 25651,
+      "normalized_id": "T1486",
+      "evidence": "T1486\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E66",
+      "text": "T1490",
+      "type": "AttackTechnique",
+      "start": 25740,
+      "end": 25745,
+      "normalized_id": "T1490",
+      "evidence": "T1490\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E67",
+      "text": "Citrix ADC",
+      "type": "Configuration",
+      "start": 4591,
+      "end": 4601,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-3519\n (\nCWE-94\n)\nCitrix ADC (NetScaler) Remote Code Execution. A vulnerability exists within Citrix ADC that allows an unauthenticated attacker to trigger a stack buffer overflow of the NSPPE (NetScaler Packet Processing Engine) process by making a specially crafted HTTP GET request. Successful exploitation results in remote code execution as root.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E68",
+      "text": "FortiProxy",
+      "type": "Configuration",
+      "start": 5125,
+      "end": 5135,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E69",
+      "text": "BIG-IP",
+      "type": "Configuration",
+      "start": 6479,
+      "end": 6485,
+      "normalized_id": "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-46747\n (\nCWE-306\n | \nCWE-288\n)\nUndisclosed requests may bypass configuration utility authentication, allowing an attacker with network access to the BIG-IP system through the management port and/or self IP addresses to execute arbitrary system commands.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E70",
+      "text": "Fortinet FortiClientEMS",
+      "type": "Configuration",
+      "start": 6797,
+      "end": 6820,
+      "normalized_id": "cpe:2.3:a:fortinet:forticlient_enterprise_management_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-48788\n (\nCWE-89\n)\nAn improper neutralization of special elements used in an SQL command (SQL injection') in Fortinet FortiClientEMS version 7.2.0 through 7.2.2 and FortiClientEMS 7.0.1 through 7.0.10 allows attacker to execute unauthorized code or commands via specially crafted packets.",
+      "notes": "FortiClient EMS 的正式 product 字段是 forticlient_enterprise_management_server。"
+    },
+    {
+      "id": "E71",
+      "text": "Microsoft Windows",
+      "type": "Configuration",
+      "start": 7011,
+      "end": 7028,
+      "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2017-0144\nThe SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2 and R2 SP1; Windows 7 SP1; Windows 8.1; Windows Server 2012 Gold and R2; Windows RT 8.1; and Windows 10 Gold, 1511, and 1607; and Windows Server 2016 allows remote attackers to execute arbitrary code via crafted packets, also known as “Windows SMB Remote Code Execution Vulnerability” [\nT1210\n].",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "affects",
+      "head": "E5",
+      "tail": "E17",
+      "evidence": "CVE-2020-1472\nAn elevation of privilege vulnerability exists when an attacker establishes a vulnerable Netlogon secure channel connection to a domain controller using the Netlogon Remote Protocol (MS-NRPC).",
+      "evidence_start": 7360,
+      "evidence_end": 7566,
+      "adjudication_basis": "complete direct Netlogon CVE item"
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E9",
+      "tail": "E18",
+      "evidence": "CVE-2023-22515\nA vulnerability in publicly accessible Confluence Data Center and Server instances that allows the creation of unauthorized Confluence administrator accounts and access to Confluence instances.",
+      "evidence_start": 5922,
+      "evidence_end": 6130,
+      "adjudication_basis": "complete direct Confluence CVE sentence"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E19",
+      "evidence": "CVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.",
+      "evidence_start": 4925,
+      "evidence_end": 5371,
+      "adjudication_basis": "complete FortiOS/FortiProxy CVE item"
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E3",
+      "tail": "E20",
+      "evidence": "CVE-2023-46604\n (\nCWE-502\n)\nThe Java OpenWire protocol marshaller, such as in Apache ActiveMQ, is vulnerable to Remote Code Execution.",
+      "evidence_start": 5372,
+      "evidence_end": 5506,
+      "adjudication_basis": "complete ActiveMQ CVE item"
+    },
+    {
+      "id": "R7",
+      "type": "affects",
+      "head": "E7",
+      "tail": "E67",
+      "evidence": "CVE-2023-3519\n (\nCWE-94\n)\nCitrix ADC (NetScaler) Remote Code Execution. A vulnerability exists within Citrix ADC that allows an unauthenticated attacker to trigger a stack buffer overflow of the NSPPE (NetScaler Packet Processing Engine) process by making a specially crafted HTTP GET request. Successful exploitation results in remote code execution as root.",
+      "evidence_start": 4565,
+      "evidence_end": 4924,
+      "adjudication_basis": "direct CVE item"
+    },
+    {
+      "id": "R8",
+      "type": "instantiates",
+      "head": "E7",
+      "tail": "E11",
+      "evidence": "CVE-2023-3519\n (\nCWE-94\n)\nCitrix ADC (NetScaler) Remote Code Execution. A vulnerability exists within Citrix ADC that allows an unauthenticated attacker to trigger a stack buffer overflow of the NSPPE (NetScaler Packet Processing Engine) process by making a specially crafted HTTP GET request. Successful exploitation results in remote code execution as root.",
+      "evidence_start": 4565,
+      "evidence_end": 4924,
+      "adjudication_basis": "explicit adjacent CWE-94"
+    },
+    {
+      "id": "R9",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E68",
+      "evidence": "CVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.",
+      "evidence_start": 4925,
+      "evidence_end": 5371,
+      "adjudication_basis": "direct affected product list"
+    },
+    {
+      "id": "R10",
+      "type": "instantiates",
+      "head": "E1",
+      "tail": "E13",
+      "evidence": "CVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.",
+      "evidence_start": 4925,
+      "evidence_end": 5371,
+      "adjudication_basis": "adjacent explicit CWE list"
+    },
+    {
+      "id": "R11",
+      "type": "instantiates",
+      "head": "E1",
+      "tail": "E14",
+      "evidence": "CVE-2023-27997\n (\nCWE-787\n | \nCWE-122\n)\nA heap-based buffer overflow vulnerability in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.",
+      "evidence_start": 4925,
+      "evidence_end": 5371,
+      "adjudication_basis": "adjacent explicit CWE list"
+    },
+    {
+      "id": "R12",
+      "type": "instantiates",
+      "head": "E3",
+      "tail": "E15",
+      "evidence": "CVE-2023-46604\n (\nCWE-502\n)\nThe Java OpenWire protocol marshaller, such as in Apache ActiveMQ, is vulnerable to Remote Code Execution.",
+      "evidence_start": 5372,
+      "evidence_end": 5506,
+      "adjudication_basis": "adjacent explicit CWE-502"
+    },
+    {
+      "id": "R13",
+      "type": "affects",
+      "head": "E4",
+      "tail": "E69",
+      "evidence": "CVE-2023-46747\n (\nCWE-306\n | \nCWE-288\n)\nUndisclosed requests may bypass configuration utility authentication, allowing an attacker with network access to the BIG-IP system through the management port and/or self IP addresses to execute arbitrary system commands.",
+      "evidence_start": 6321,
+      "evidence_end": 6583,
+      "adjudication_basis": "direct BIG-IP CVE item"
+    },
+    {
+      "id": "R14",
+      "type": "instantiates",
+      "head": "E4",
+      "tail": "E10",
+      "evidence": "CVE-2023-46747\n (\nCWE-306\n | \nCWE-288\n)\nUndisclosed requests may bypass configuration utility authentication, allowing an attacker with network access to the BIG-IP system through the management port and/or self IP addresses to execute arbitrary system commands.",
+      "evidence_start": 6321,
+      "evidence_end": 6583,
+      "adjudication_basis": "adjacent explicit CWE list"
+    },
+    {
+      "id": "R15",
+      "type": "instantiates",
+      "head": "E4",
+      "tail": "E12",
+      "evidence": "CVE-2023-46747\n (\nCWE-306\n | \nCWE-288\n)\nUndisclosed requests may bypass configuration utility authentication, allowing an attacker with network access to the BIG-IP system through the management port and/or self IP addresses to execute arbitrary system commands.",
+      "evidence_start": 6321,
+      "evidence_end": 6583,
+      "adjudication_basis": "adjacent explicit CWE list"
+    },
+    {
+      "id": "R16",
+      "type": "affects",
+      "head": "E6",
+      "tail": "E70",
+      "evidence": "CVE-2023-48788\n (\nCWE-89\n)\nAn improper neutralization of special elements used in an SQL command (SQL injection') in Fortinet FortiClientEMS version 7.2.0 through 7.2.2 and FortiClientEMS 7.0.1 through 7.0.10 allows attacker to execute unauthorized code or commands via specially crafted packets.",
+      "evidence_start": 6680,
+      "evidence_end": 6976,
+      "adjudication_basis": "direct FortiClientEMS CVE item"
+    },
+    {
+      "id": "R17",
+      "type": "instantiates",
+      "head": "E6",
+      "tail": "E16",
+      "evidence": "CVE-2023-48788\n (\nCWE-89\n)\nAn improper neutralization of special elements used in an SQL command (SQL injection') in Fortinet FortiClientEMS version 7.2.0 through 7.2.2 and FortiClientEMS 7.0.1 through 7.0.10 allows attacker to execute unauthorized code or commands via specially crafted packets.",
+      "evidence_start": 6680,
+      "evidence_end": 6976,
+      "adjudication_basis": "adjacent explicit CWE-89"
+    },
+    {
+      "id": "R18",
+      "type": "affects",
+      "head": "E8",
+      "tail": "E71",
+      "evidence": "CVE-2017-0144\nThe SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2 and R2 SP1; Windows 7 SP1; Windows 8.1; Windows Server 2012 Gold and R2; Windows RT 8.1; and Windows 10 Gold, 1511, and 1607; and Windows Server 2016 allows remote attackers to execute arbitrary code via crafted packets, also known as “Windows SMB Remote Code Execution Vulnerability” [\nT1210\n].",
+      "evidence_start": 6977,
+      "evidence_end": 7359,
+      "adjudication_basis": "direct Windows CVE item"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

@@ -1,0 +1,117 @@
+{
+  "stage": "entity",
+  "method": "protegi",
+  "created_at_utc": "2026-09-16T12:35:22.540660+00:00",
+  "final_prompt_file": "final_entity_prompt.txt",
+  "final_prompt_sha256_canonical_lf": "92099f834763e57f33a3e76f34de885df69971ea00bd1ea72de03f2d741f9452",
+  "files": {
+    "final_beam_dev.json": {
+      "sha256_raw_bytes": "0405f325b3267280e0f25c8e51d5c366f7557a325973112741b8c3b4b1b845ba",
+      "size_bytes": 13172
+    },
+    "final_dev_evaluations.json": {
+      "sha256_raw_bytes": "5d1996c4f3835b7dae9b34c3be53ec333e831e3c56bc5f775d3c50a6b4bdfc38",
+      "size_bytes": 286399
+    },
+    "final_entity_prompt.txt": {
+      "sha256_raw_bytes": "92099f834763e57f33a3e76f34de885df69971ea00bd1ea72de03f2d741f9452",
+      "size_bytes": 4201
+    },
+    "optimization_curve.csv": {
+      "sha256_raw_bytes": "d0b34241ca369a9251d4139b7b152593adb1d72780b65473034eed2f4b0d4d89",
+      "size_bytes": 269
+    },
+    "prompt_lineage.dot": {
+      "sha256_raw_bytes": "9889b43f56fde2d5b3b2d7e96885b1f0ca2ef285f65fa593688c2115fbb3bac2",
+      "size_bytes": 1116
+    },
+    "prompt_lineage.json": {
+      "sha256_raw_bytes": "16baf1e0c1324f229738f75c248e63088109fd3fb22991d76de433b10d2214b1",
+      "size_bytes": 42185
+    },
+    "round_0/beam.json": {
+      "sha256_raw_bytes": "8b4d3fc379bf170bb69a39cce3e2a6b975059d807897f0f44237f6afa840b47b",
+      "size_bytes": 4826
+    },
+    "round_0/candidates.json": {
+      "sha256_raw_bytes": "8b4d3fc379bf170bb69a39cce3e2a6b975059d807897f0f44237f6afa840b47b",
+      "size_bytes": 4826
+    },
+    "round_0/error_examples.json": {
+      "sha256_raw_bytes": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "size_bytes": 2
+    },
+    "round_0/generated_candidates.json": {
+      "sha256_raw_bytes": "8b4d3fc379bf170bb69a39cce3e2a6b975059d807897f0f44237f6afa840b47b",
+      "size_bytes": 4826
+    },
+    "round_0/gradient_minibatches.json": {
+      "sha256_raw_bytes": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "size_bytes": 2
+    },
+    "round_0/gradients.json": {
+      "sha256_raw_bytes": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "size_bytes": 2
+    },
+    "round_1/beam.json": {
+      "sha256_raw_bytes": "576df05b8ceba1f98f5f6ad4c41eefce0fc3c137ff99c1d14716c277906a1623",
+      "size_bytes": 10150
+    },
+    "round_1/candidates.json": {
+      "sha256_raw_bytes": "8cc8ba7d34a2823955008cca8af98032f6346f712d4c3ad0a9c07f70ff40389a",
+      "size_bytes": 10150
+    },
+    "round_1/error_examples.json": {
+      "sha256_raw_bytes": "f725b74516726e087dde8b24aa6392683e0e58d3b628ecf04c0b6341f09b4a58",
+      "size_bytes": 35447
+    },
+    "round_1/generated_candidates.json": {
+      "sha256_raw_bytes": "2d2a2eab227c94f835e3b99be2da86a803e7e767d194e13f9c9de286138f33b6",
+      "size_bytes": 10499
+    },
+    "round_1/gradient_minibatches.json": {
+      "sha256_raw_bytes": "ca4dd7d2b5c25d4e2cb5a9fe891b2342f170c474c712f262ab20cc6a3098ac20",
+      "size_bytes": 514
+    },
+    "round_1/gradients.json": {
+      "sha256_raw_bytes": "bc7acd66ad8906a35c19efa71a2f9c6952e3a8f98240d27e9f1a1ce0d21b4508",
+      "size_bytes": 1011
+    },
+    "round_1/selector_history.json": {
+      "sha256_raw_bytes": "a69884f200036dc601f7aa9c2c4a470fb79af94a9a547f9a9744c93774f9d033",
+      "size_bytes": 3146
+    },
+    "round_2/beam.json": {
+      "sha256_raw_bytes": "4a73c473644accbb225b296dddd59f533fb0dc1889e32c0c430d91832c2a0d1c",
+      "size_bytes": 9949
+    },
+    "round_2/candidates.json": {
+      "sha256_raw_bytes": "1c099a1c566b7997f0cf212434a8e700aeef38bb2812de5bf520433e548cfdfb",
+      "size_bytes": 15262
+    },
+    "round_2/error_examples.json": {
+      "sha256_raw_bytes": "05467448d6050e0d42ecf0bfa75b521c23fe40692e6d0ec73e6e961699c37e9a",
+      "size_bytes": 93398
+    },
+    "round_2/generated_candidates.json": {
+      "sha256_raw_bytes": "d63180afe5cdf67e4d5a676e9c29e6ff5fbe6f50d9acbc27585492494109c08d",
+      "size_bytes": 15843
+    },
+    "round_2/gradient_minibatches.json": {
+      "sha256_raw_bytes": "9d67a2089217ca3766033db52a409b00a35df76c6399ede8e31fb1ba908e4b6e",
+      "size_bytes": 1007
+    },
+    "round_2/gradients.json": {
+      "sha256_raw_bytes": "46558e2a475814cb78d27f63a5d754143a1680ab566694ec639550471f387b27",
+      "size_bytes": 2281
+    },
+    "round_2/selector_history.json": {
+      "sha256_raw_bytes": "136e955135f6fbe7a9aec8115684c38ccd2019c1d73274271559fb3bf0f772fc",
+      "size_bytes": 3550
+    },
+    "summary.json": {
+      "sha256_raw_bytes": "017ad9885898f0a3f2e128e974bf3579f8ce26f963c8c906cf055b69fb96c468",
+      "size_bytes": 9409
+    }
+  }
+}

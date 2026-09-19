@@ -1,0 +1,307 @@
+{
+  "doc_id": "proxylogon-microsoft-hafnium-exchange",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "Update [03/16/2021] : Microsoft released updated tools and investigation guidance to help IT Pros and incident response teams identify, remediate, defend against associated attacks: Guidance for responders: Investigating and remediating on-premises Exchange Server vulnerabilities .\nUpdate [03/15/2021] : Microsoft released a new one-click mitigation tool, the Microsoft Exchange On-Premises Mitigation Tool , to help customers who do not have dedicated security or IT teams to apply security updates for Microsoft Exchange Server.\nUpdate [03/08/2021] : Microsoft continues to see multiple actors taking advantage of unpatched systems to attack organizations with on-premises Exchange Server. To aid defenders in investigating these attacks where Microsoft security products and tooling may not be deployed, we are releasing a feed of observed indicators of compromise (IOCs). The feed of malware hashes and known malicious file paths observed in related attacks is available in both JSON and CSV formats at the below GitHub links. This information is being shared as TLP:WHITE: CSV format | JSON format\nUpdate [03/05/2021] : Microsoft sees increased use of these vulnerabilities in attacks targeting unpatched systems by multiple malicious actors beyond HAFNIUM. To aid customers in investigating these attacks, Microsoft Security Response Center (MSRC) has provided additional resources, including new mitigation guidance: Microsoft Exchange Server Vulnerabilities Mitigations – March 2021\nUpdate [03/04/2021] : The Exchange Server team released a script for checking HAFNIUM indicators of compromise (IOCs). See Scan Exchange log files for indicators of compromise .\nMicrosoft has detected multiple 0-day exploits being used to attack on-premises versions of Microsoft Exchange Server in limited and targeted attacks. In the attacks observed, the threat actor used these vulnerabilities to access on-premises Exchange servers which enabled access to email accounts, and allowed installation of additional malware to facilitate long-term access to victim environments. Microsoft Threat Intelligence Center (MSTIC) attributes this campaign with high confidence to HAFNIUM , a group assessed to be state-sponsored and operating out of China, based on observed victimology, tactics and procedures.\nThe vulnerabilities recently being exploited were CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065, all of which were addressed in today’s Microsoft Security Response Center (MSRC) release – Multiple Security Updates Released for Exchange Server . We strongly urge customers to update on-premises systems immediately. Exchange Online is not affected. We have established a resource center that is constantly updated as more information becomes available at https://aka.ms/ExchangeVulns .\nWe are sharing this information with our customers and the security community to emphasize the critical nature of these vulnerabilities and the importance of patching all affected systems immediately to protect against these exploits and prevent future abuse across the ecosystem. This blog also continues our mission to shine a light on malicious actors and elevate awareness of the sophisticated tactics and techniques used to target our customers. The related IOCs, Azure Sentinel advanced hunting queries, and Microsoft Defender for Endpoint product detections and queries shared in this blog will help SOCs proactively hunt for related activity in their environments and elevate any alerts for remediation.\nMicrosoft would like to thank our industry colleagues at Volexity and Dubex for reporting different parts of the attack chain and their collaboration in the investigation. Volexity has also published a blog post with their analysis. It is this level of proactive communication and intelligence sharing that allows the community to come together to get ahead of attacks before they spread and improve security for all.\nWho is HAFNIUM?\nHAFNIUM primarily targets entities in the United States across a number of industry sectors, including infectious disease researchers, law firms, higher education institutions, defense contractors, policy think tanks, and NGOs.\nHAFNIUM has previously compromised victims by exploiting vulnerabilities in internet-facing servers, and has used legitimate open-source frameworks, like Covenant , for command and control. Once they’ve gained access to a victim network, HAFNIUM typically exfiltrates data to file sharing sites like MEGA .\nIn campaigns unrelated to these vulnerabilities, Microsoft has observed HAFNIUM interacting with victim Office 365 tenants. While they are often unsuccessful in compromising customer accounts, this reconnaissance activity helps the adversary identify more details about their targets’ environments.\nHAFNIUM operates primarily from leased virtual private servers (VPS) in the United States.\nTechnical details\nMicrosoft is providing the following details to help our customers understand the techniques used by HAFNIUM to exploit these vulnerabilities and enable more effective defense against any future attacks against unpatched systems.\nCVE-2021-26855 is a server-side request forgery (SSRF) vulnerability in Exchange which allowed the attacker to send arbitrary HTTP requests and authenticate as the Exchange server.\nCVE-2021-26857 is an insecure deserialization vulnerability in the Unified Messaging service. Insecure deserialization is where untrusted user-controllable data is deserialized by a program. Exploiting this vulnerability gave HAFNIUM the ability to run code as SYSTEM on the Exchange server. This requires administrator permission or another vulnerability to exploit.\nCVE-2021-26858 is a post-authentication arbitrary file write vulnerability in Exchange. If HAFNIUM could authenticate with the Exchange server then they could use this vulnerability to write a file to any path on the server. They could authenticate by exploiting the CVE-2021-26855 SSRF vulnerability or by compromising a legitimate admin’s credentials.\nCVE-2021-27065 is a post-authentication arbitrary file write vulnerability in Exchange. If HAFNIUM could authenticate with the Exchange server then they could use this vulnerability to write a file to any path on the server. They could authenticate by exploiting the CVE-2021-26855 SSRF vulnerability or by compromising a legitimate admin’s credentials.\nAttack details\nAfter exploiting these vulnerabilities to gain initial access, HAFNIUM operators deployed web shells on the compromised server. Web shells potentially allow attackers to steal data and perform additional malicious actions that lead to further compromise. One example of a web shell deployed by HAFNIUM, written in ASP, is below:\nFollowing web shell deployment, HAFNIUM operators performed the following post-exploitation activity:\nUsing Procdump to dump the LSASS process memory:\nUsing 7-Zip to compress stolen data into ZIP files for exfiltration:\nAdding and using Exchange PowerShell snap-ins to export mailbox data:\nUsing the Nishang Invoke-PowerShellTcpOneLine reverse shell:\nDownloading PowerCat from GitHub, then using it to open a connection to a remote server:\nHAFNIUM operators were also able to download the Exchange offline address book from compromised systems, which contains information about an organization and its users.\nOur blog, Defending Exchange servers under attack , offers advice for improving defenses against Exchange server compromise. Customers can also find additional guidance about web shell attacks in our blog Web shell attacks continue to rise.\nCan I determine if I have been compromised by this activity?\nThe below sections provide indicators of compromise (IOCs), detection guidance, and advanced hunting queries to help customers investigate this activity using Exchange server logs, Azure Sentinel, Microsoft Defender for Endpoint, and Microsoft 365 Defender. We encourage our customers to conduct investigations and implement proactive detections to identify possible prior campaigns and prevent future campaigns that may target their systems.\nCheck patch levels of Exchange Server\nThe Microsoft Exchange Server team has published a blog post on these new Security Updates providing a script to get a quick inventory of the patch-level status of on-premises Exchange servers and answer some basic questions around installation of these patches.\nScan Exchange log files for indicators of compromise\nThe Exchange Server team has created a script to run a check for HAFNIUM IOCs to address performance and memory concerns. That script is available here: https://github.com/microsoft/CSS-Exchange/tree/main/Security .\nCVE-2021-26855 exploitation can be detected via the following Exchange HttpProxy logs: These logs are located in the following directory: %PROGRAMFILES%\\Microsoft\\Exchange Server\\V15\\Logging\\HttpProxy Exploitation can be identified by searching for log entries where the AuthenticatedUser is empty and the AnchorMailbox contains the pattern of ServerInfo~*/* Here is an example PowerShell command to find these log entries:\nThese logs are located in the following directory: %PROGRAMFILES%\\Microsoft\\Exchange Server\\V15\\Logging\\HttpProxy\nExploitation can be identified by searching for log entries where the AuthenticatedUser is empty and the AnchorMailbox contains the pattern of ServerInfo~*/* Here is an example PowerShell command to find these log entries:\nHere is an example PowerShell command to find these log entries:\nCVE-2021-26858 exploitation can be detected via the Exchange log files: C:\\Program Files\\Microsoft\\Exchange Server\\V15\\Logging\\OABGeneratorLog Files should only be downloaded to the %PROGRAMFILES%\\Microsoft\\Exchange Server\\V15\\ClientAccess\\OAB\\Temp directory In case of exploitation, files are downloaded to other directories (UNC or local paths) Windows command to search for potential exploitation:\nC:\\Program Files\\Microsoft\\Exchange Server\\V15\\Logging\\OABGeneratorLog\nFiles should only be downloaded to the %PROGRAMFILES%\\Microsoft\\Exchange Server\\V15\\ClientAccess\\OAB\\Temp directory In case of exploitation, files are downloaded to other directories (UNC or local paths)\nIn case of exploitation, files are downloaded to other directories (UNC or local paths)\nWindows command to search for potential exploitation:\nCVE-2021-26857 exploitation can be detected via the Windows Application event logs Exploitation of this deserialization bug will create Application events with the following properties: Source: MSExchange Unified Messaging EntryType: Error Event Message Contains: System.InvalidCastException Following is PowerShell command to query the Application Event Log for these log entries:\nExploitation of this deserialization bug will create Application events with the following properties: Source: MSExchange Unified Messaging EntryType: Error Event Message Contains: System.InvalidCastException\nSource: MSExchange Unified Messaging\nEntryType: Error\nEvent Message Contains: System.InvalidCastException\nFollowing is PowerShell command to query the Application Event Log for these log entries:\nCVE-2021-27065 exploitation can be detected via the following Exchange log files: C:\\Program Files\\Microsoft\\Exchange Server\\V15\\Logging\\ECP\\Server\nC:\\Program Files\\Microsoft\\Exchange Server\\V15\\Logging\\ECP\\Server\nAll Set-<AppName>VirtualDirectory properties should never contain script. InternalUrl and ExternalUrl should only be valid Uris.\nHost IOCs\nMicrosoft is releasing a feed of observed indicators of compromise (IOCs) in related attacks. This feed is available in both CSV and JSON formats. This information is being shared as TLP:WHITE.\nHashes\nWeb shell hashes\nb75f163ca9b9240bf4b37ad92bc7556b40a17e27c2b8ed5c8991385fe07d17d0\n097549cf7d0f76f0d99edf8b2d91c60977fd6a96e4b8c3c94b0b1733dc026d3e\n2b6f1ebb2208e93ade4a6424555d6a8341fd6d9f60c25e44afe11008f5c1aad1\n65149e036fff06026d80ac9ad4d156332822dc93142cf1a122b1841ec8de34b5\n511df0e2df9bfa5521b588cc4bb5f8c5a321801b803394ebc493db1ef3c78fa1\n4edc7770464a14f54d17f36dc9d0fe854f68b346b27b35a6f5839adf1f13f8ea\n811157f9c7003ba8d17b45eb3cf09bef2cecd2701cedb675274949296a6a183d\n1631a90eb5395c4e19c7dbcbf611bbe6444ff312eb7937e286e4637cb9e72944\nPaths\nWe observed web shells in the following paths:\nC:\\inetpub\\wwwroot\\aspnet_client\\\nC:\\inetpub\\wwwroot\\aspnet_client\\system_web\\\nIn Microsoft Exchange Server installation paths such as: %PROGRAMFILES%\\Microsoft\\Exchange Server\\V15\\FrontEnd\\HttpProxy\\owa\\auth\\ C:\\Exchange\\FrontEnd\\HttpProxy\\owa\\auth\\\n%PROGRAMFILES%\\Microsoft\\Exchange Server\\V15\\FrontEnd\\HttpProxy\\owa\\auth\\\nC:\\Exchange\\FrontEnd\\HttpProxy\\owa\\auth\\\nThe web shells we detected had the following file names:\nweb.aspx\nhelp.aspx\ndocument.aspx\nerrorEE.aspx\nerrorEEE.aspx\nerrorEW.aspx\nerrorFF.aspx\nhealthcheck.aspx\naspnet_www.aspx\naspnet_client.aspx\nxx.aspx\nshell.aspx\naspnet_iisstart.aspx\none.aspx\nCheck for suspicious .zip, .rar, and .7z files in C:\\ProgramData\\ , which may indicate possible data exfiltration.\nCustomers should monitor these paths for LSASS dumps:\nC:\\windows\\temp\\\nC:\\root\\\nTools\nProcdump\nNishang\nPowerCat\nMany of the following detections are for post-breach techniques used by HAFNIUM. So while these help detect some of the specific current attacks that Microsoft has observed it remains very important to apply the recently released updates for CVE-2021-26855, CVE-2021-26857, CVE-2021-27065 and CVE-2021-26858.\nMicrosoft Defender Antivirus detections\nPlease note that some of these detections are generic detections and not unique to this campaign or these exploits.\nExploit:Script/Exmann.A!dha\nBehavior:Win32/Exmann.A\nBackdoor:ASP/SecChecker.A\nBackdoor:JS/Webshell (not unique)\nTrojan:JS/Chopper!dha (not unique)\nBehavior:Win32/DumpLsass.A!attk (not unique)\nBackdoor:HTML/TwoFaceVar.B (not unique)\nMicrosoft Defender for Endpoint detections\nSuspicious Exchange UM process creation\nSuspicious Exchange UM file creation\nPossible web shell installation (not unique)\nProcess memory dump (not unique)\nAzure Sentinel detections\nHAFNIUM Suspicious Exchange Request\nHAFNIUM UM Service writing suspicious file\nHAFNIUM New UM Service Child Process\nHAFNIUM Suspicious UM Service Errors\nHAFNIUM Suspicious File Downloads\nAdvanced hunting queries\nTo locate possible exploitation activity related to the contents of this blog, you can run the following advanced hunting queries via Microsoft Defender for Endpoint and Azure Sentinel:\nMicrosoft Defender for Endpoint advanced hunting queries\nMicrosoft 365 Defender customers can find related hunting queries below or at this GitHub location: https://github.com/microsoft/Microsoft-365-Defender-Hunting-Queries/\nAdditional queries and information are available via Threat Analytics portal for Microsoft Defender customers.\nUMWorkerProcess.exe in Exchange creating abnormal content\nLook for Microsoft Exchange Server’s Unified Messaging service creating non-standard content on disk, which could indicate web shells or other malicious content, suggesting exploitation of CVE-2021-26858 vulnerability:\nUMWorkerProcess.exe spawning\nLook for Microsoft Exchange Server’s Unified Messaging service spawning abnormal subprocesses, suggesting exploitation of CVE-2021-26857 vulnerability:\nPlease note excessive spawning of wermgr.exe and WerFault.exe could be an indicator of compromise due to the service crashing during deserialization.\nAzure Sentinel advanced hunting queries\nAzure Sentinel customers can find a Sentinel query containing these indicators in the Azure Sentinel Portal or at this GitHub location: https://github.com/Azure/Azure-Sentinel/tree/master/Detections/MultipleDataSources/ .\nLook for Nishang Invoke-PowerShellTcpOneLine in Windows Event Logging:\nLook for downloads of PowerCat in cmd and Powershell command line logging in Windows Event Logs:\nLook for Exchange PowerShell Snapin being loaded. This can be used to export mailbox data, subsequent command lines should be inspected to verify usage:",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 2347,
+      "end": 2361,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "The vulnerabilities recently being exploited were CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065, all of which were addressed in today’s Microsoft Security Response"
+    },
+    {
+      "id": "E2",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 2363,
+      "end": 2377,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "The vulnerabilities recently being exploited were CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065, all of which were addressed in today’s Microsoft Security Response Center (MSRC) r"
+    },
+    {
+      "id": "E3",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 2379,
+      "end": 2393,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "The vulnerabilities recently being exploited were CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065, all of which were addressed in today’s Microsoft Security Response Center (MSRC) release – Multipl"
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 2399,
+      "end": 2413,
+      "normalized_id": "CVE-2021-27065",
+      "evidence": "The vulnerabilities recently being exploited were CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065, all of which were addressed in today’s Microsoft Security Response Center (MSRC) release – Multiple Security Updates R"
+    },
+    {
+      "id": "E9",
+      "text": "web shell",
+      "type": "AttackTechnique",
+      "start": 6484,
+      "end": 6493,
+      "normalized_id": "T1505.003",
+      "evidence": "After exploiting these vulnerabilities to gain initial access, HAFNIUM operators deployed web shells on the compromised server."
+    },
+    {
+      "id": "E10",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 5122,
+      "end": 5136,
+      "normalized_id": "CVE-2021-26855",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2021-26855 is a server-side request forgery (SSRF) vulnerability in Exchange which allowed the attacker to send arbitrary HTTP req"
+    },
+    {
+      "id": "E11",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 5303,
+      "end": 5317,
+      "normalized_id": "CVE-2021-26857",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2021-26857 is an insecure deserialization vulnerability in the Unified Messaging service."
+    },
+    {
+      "id": "E12",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 5671,
+      "end": 5685,
+      "normalized_id": "CVE-2021-26858",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2021-26858 is a post-authentication arbitrary file write vulnerability in Exchange."
+    },
+    {
+      "id": "E13",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 6025,
+      "end": 6039,
+      "normalized_id": "CVE-2021-27065",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2021-27065 is a post-authentication arbitrary file write vulnerability in Exchange."
+    },
+    {
+      "id": "E15",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 8647,
+      "end": 8661,
+      "normalized_id": "CVE-2021-26855",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2021-26855 exploitation can be detected via the following Exchange HttpProxy logs: These logs are located in the following directo"
+    },
+    {
+      "id": "E17",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 15143,
+      "end": 15157,
+      "normalized_id": "CVE-2021-26857",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "ok for Microsoft Exchange Server’s Unified Messaging service spawning abnormal subprocesses, suggesting exploitation of CVE-2021-26857 vulnerability:\n"
+    },
+    {
+      "id": "E19",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 14962,
+      "end": 14976,
+      "normalized_id": "CVE-2021-26858",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "ng non-standard content on disk, which could indicate web shells or other malicious content, suggesting exploitation of CVE-2021-26858 vulnerability:\n"
+    },
+    {
+      "id": "E20",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 11078,
+      "end": 11092,
+      "normalized_id": "CVE-2021-27065",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2021-27065 exploitation can be detected via the following Exchange log files: C:\\Program Files\\Microsoft\\Exchange Server\\V15\\Loggi"
+    },
+    {
+      "id": "E22",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 5938,
+      "end": 5952,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "They could authenticate by exploiting the CVE-2021-26855 SSRF vulnerability or by compromising a legitimate admin’s credentials.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E23",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 6292,
+      "end": 6306,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "They could authenticate by exploiting the CVE-2021-26855 SSRF vulnerability or by compromising a legitimate admin’s credentials.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E24",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 9473,
+      "end": 9487,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "CVE-2021-26858 exploitation can be detected via the Exchange log files: C:\\Program Files\\Microsoft\\Exchange Server\\V15\\Logging\\OABGene",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E25",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 10291,
+      "end": 10305,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "CVE-2021-26857 exploitation can be detected via the Windows Application event logs Exploitation of this deserialization bug will creat",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E26",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 13301,
+      "end": 13315,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "ecific current attacks that Microsoft has observed it remains very important to apply the recently released updates for CVE-2021-26855, CVE-2021-26857, CVE-2021-27065 and CVE-2021-26858.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E27",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 13317,
+      "end": 13331,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "ttacks that Microsoft has observed it remains very important to apply the recently released updates for CVE-2021-26855, CVE-2021-26857, CVE-2021-27065 and CVE-2021-26858.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E28",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 13333,
+      "end": 13347,
+      "normalized_id": "CVE-2021-27065",
+      "evidence": "osoft has observed it remains very important to apply the recently released updates for CVE-2021-26855, CVE-2021-26857, CVE-2021-27065 and CVE-2021-26858.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E29",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 13352,
+      "end": 13366,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "it remains very important to apply the recently released updates for CVE-2021-26855, CVE-2021-26857, CVE-2021-27065 and CVE-2021-26858.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E16",
+      "text": "Exchange",
+      "type": "Configuration",
+      "start": 5194,
+      "end": 5202,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "notes": "v4.3 reanchored to direct technical-description fact",
+      "evidence": "CVE-2021-26855 is a server-side request forgery (SSRF) vulnerability in Exchange"
+    },
+    {
+      "id": "E18",
+      "text": "Unified Messaging service",
+      "type": "Configuration",
+      "start": 5370,
+      "end": 5395,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "notes": "v4.3 reanchored to direct technical-description fact",
+      "evidence": "CVE-2021-26857 is an insecure deserialization vulnerability in the Unified Messaging service."
+    },
+    {
+      "id": "E21",
+      "text": "Exchange",
+      "type": "Configuration",
+      "start": 5749,
+      "end": 5757,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "notes": "v4.3 reanchored to direct technical-description fact",
+      "evidence": "CVE-2021-26858 is a post-authentication arbitrary file write vulnerability in Exchange."
+    },
+    {
+      "id": "E30",
+      "text": "Exchange",
+      "type": "Configuration",
+      "start": 6103,
+      "end": 6111,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "notes": "v4.3 reanchored to direct technical-description fact",
+      "evidence": "CVE-2021-27065 is a post-authentication arbitrary file write vulnerability in Exchange."
+    }
+  ],
+  "relations": [
+    {
+      "id": "R5",
+      "type": "affects",
+      "head": "E10",
+      "tail": "E16",
+      "evidence": "CVE-2021-26855 is a server-side request forgery (SSRF) vulnerability in Exchange",
+      "evidence_start": 5122,
+      "evidence_end": 5202,
+      "adjudication_basis": "direct CVE vulnerability-in-product sentence"
+    },
+    {
+      "id": "R6",
+      "type": "affects",
+      "head": "E11",
+      "tail": "E18",
+      "evidence": "CVE-2021-26857 is an insecure deserialization vulnerability in the Unified Messaging service",
+      "evidence_start": 5303,
+      "evidence_end": 5395,
+      "adjudication_basis": "direct CVE vulnerability-in-product sentence"
+    },
+    {
+      "id": "R7",
+      "type": "affects",
+      "head": "E12",
+      "tail": "E21",
+      "evidence": "CVE-2021-26858 is a post-authentication arbitrary file write vulnerability in Exchange",
+      "evidence_start": 5671,
+      "evidence_end": 5757,
+      "adjudication_basis": "direct CVE vulnerability-in-product sentence"
+    },
+    {
+      "id": "R8",
+      "type": "affects",
+      "head": "E13",
+      "tail": "E30",
+      "evidence": "CVE-2021-27065 is a post-authentication arbitrary file write vulnerability in Exchange",
+      "evidence_start": 6025,
+      "evidence_end": 6111,
+      "adjudication_basis": "direct CVE vulnerability-in-product sentence"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

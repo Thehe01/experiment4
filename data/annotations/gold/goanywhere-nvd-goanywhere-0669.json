@@ -1,0 +1,110 @@
+{
+  "doc_id": "goanywhere-nvd-goanywhere-0669",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.\n\nWeaknesses:\n- CWE-502\n\nSeverity:\n- CVSS 3.1; base score 7.2; HIGH; CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H\n\nAffected configurations:\n- cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*\n\nReferences:\n- http://packetstormsecurity.com/files/171789/Goanywhere-Encryption-Helper-7.1.1-Remote-Code-Execution.html\n- https://attackerkb.com/topics/mg883Nbeva/cve-2023-0669/rapid7-analysis\n- https://duo.com/decipher/fortra-patches-actively-exploited-zero-day-in-goanywhere-mft\n- https://frycos.github.io/vulns4free/2023/02/06/goanywhere-forgotten.html\n- https://github.com/rapid7/metasploit-framework/pull/17607\n- https://infosec.exchange/@briankrebs/109795710941843934\n- https://my.goanywhere.com/webclient/ViewSecurityAdvisories.xhtml#zerodayfeb1\n- https://www.rapid7.com/blog/post/2023/02/03/exploitation-of-goanywhere-mft-zero-day-vulnerability/\n- https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2023-0669\n",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2023-0669",
+      "type": "Vulnerability",
+      "start": 0,
+      "end": 13,
+      "normalized_id": "CVE-2023-0669",
+      "evidence": "CVE-2023-0669\n"
+    },
+    {
+      "id": "E2",
+      "text": "CWE-502",
+      "type": "Weakness",
+      "start": 418,
+      "end": 425,
+      "normalized_id": "CWE-502",
+      "evidence": "- CWE-502\n"
+    },
+    {
+      "id": "E3",
+      "text": "cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*",
+      "type": "Configuration",
+      "start": 544,
+      "end": 609,
+      "normalized_id": "cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*",
+      "notes": "v4.2 explicit affected-CPE priority",
+      "evidence": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.\n\nWeaknesses:\n- CWE-502\n\nSeverity:\n- CVSS 3.1; base score 7.2; HIGH; CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H\n\nAffected configurations:\n- cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E4",
+      "text": "cve-2023-0669",
+      "type": "Vulnerability",
+      "start": 774,
+      "end": 787,
+      "normalized_id": "CVE-2023-0669",
+      "evidence": "- https://attackerkb.com/topics/mg883Nbeva/cve-2023-0669/rapid7-analysis\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E5",
+      "text": "CVE-2023-0669",
+      "type": "Vulnerability",
+      "start": 1338,
+      "end": 1351,
+      "normalized_id": "CVE-2023-0669",
+      "evidence": "- https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2023-0669\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E6",
+      "text": "GoAnywhere MFT",
+      "type": "Configuration",
+      "start": 187,
+      "end": 201,
+      "normalized_id": "cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "instantiates",
+      "head": "E1",
+      "tail": "E2",
+      "evidence": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.\n\nWeaknesses:\n- CWE-502\n",
+      "evidence_start": 0,
+      "evidence_end": 426,
+      "adjudication_basis": "NVD structured record explicitly lists CWE-502 for CVE-2023-0669"
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E3",
+      "evidence": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.\n\nWeaknesses:\n- CWE-502\n\nSeverity:\n- CVSS 3.1; base score 7.2; HIGH; CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H\n\nAffected configurations:\n- cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 609,
+      "adjudication_basis": "CVE header plus explicit Affected configurations CPE list"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E6",
+      "evidence": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.",
+      "evidence_start": 0,
+      "evidence_end": 402,
+      "adjudication_basis": "record header and description directly scope this CVE to GoAnywhere MFT"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

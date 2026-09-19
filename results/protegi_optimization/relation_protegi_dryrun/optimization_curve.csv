@@ -1,0 +1,5 @@
+stage,method,round,best_score,mean_beam_score,num_candidates,task_model_calls,optimizer_model_calls
+relation,protegi,0,0.0,0.0,1,2,0
+relation,protegi,1,0.0,0.0,0,12,0
+relation,protegi,0,0.0,0.0,1,2,0
+relation,protegi,1,0.0,0.0,0,10,0

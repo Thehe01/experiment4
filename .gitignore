@@ -1,0 +1,20 @@
+# Secrets must never be committed.
+.*_key
+*_key
+*.key
+.*_api_key
+*_api_key
+.api_key
+.opencode_key
+commandcode_key
+commandcode/_key
+.env*
+*.env
+
+# Runtime outputs are reproducible but can be large.
+results/raw_predictions/
+results/apo_optimization_v5/_task_cache/
+results/apo_optimization_v5/candidates/
+*.log
+__pycache__/
+*.py[cod]

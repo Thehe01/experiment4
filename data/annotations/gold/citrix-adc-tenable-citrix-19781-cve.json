@@ -1,0 +1,85 @@
+{
+  "doc_id": "citrix-adc-tenable-citrix-19781-cve",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "cpe_audit": {
+      "version": "cpe-gold-audit-v1",
+      "prediction_outputs_used": false,
+      "decision_count": 2
+    },
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "CVE-2019-19781\nInformation\nCPEs\nAn issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal.\nPublished: 2020-01-17\nFollowing the release of exploit scripts for a critical flaw in Citrix Application Delivery Controller (ADC) and Gateway, attackers launch attacks against vulnerable hosts, while Citrix announces release date for patches UPDATE 01/24/2020: This blog post has been updated to reflect the availability of patches released by Citrix. Background Attacks Increase After Exploit Scripts Released\nPublished: 2020-01-11\nAttackers are actively probing for vulnerable Citrix Application Delivery Controller (ADC) and Gateway hosts, while multiple proof-of-concept scripts are released, emphasizing the importance of mitigating this flaw immediately.\nPublished: 2019-12-23\nCitrix urges customers to apply mitigation steps for CVE-2019-19781, a remote code execution vulnerability exploitable through specially crafted HTTP requests to vulnerable devices.\nAdvisories",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2019-19781",
+      "type": "Vulnerability",
+      "start": 0,
+      "end": 14,
+      "normalized_id": "CVE-2019-19781",
+      "evidence": "CVE-2019-19781\n"
+    },
+    {
+      "id": "E3",
+      "text": "Citrix Application Delivery Controller",
+      "type": "Configuration",
+      "start": 59,
+      "end": 97,
+      "normalized_id": "cpe:2.3:a:citrix:application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-19781\nInformation\nCPEs\nAn issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal."
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2019-19781",
+      "type": "Vulnerability",
+      "start": 919,
+      "end": 933,
+      "normalized_id": "CVE-2019-19781",
+      "evidence": "Citrix urges customers to apply mitigation steps for CVE-2019-19781, a remote code execution vulnerability exploitable through specially crafted HTTP requests to vulnerable devices.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E5",
+      "text": "Gateway",
+      "type": "Configuration",
+      "start": 108,
+      "end": 115,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-19781\nInformation\nCPEs\nAn issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E3",
+      "evidence": "CVE-2019-19781\nInformation\nCPEs\nAn issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal.",
+      "evidence_start": 0,
+      "evidence_end": 181,
+      "adjudication_basis": "single record header and direct description block"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E5",
+      "evidence": "CVE-2019-19781\nInformation\nCPEs\nAn issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal.",
+      "evidence_start": 0,
+      "evidence_end": 181,
+      "adjudication_basis": "description explicitly lists ADC and Gateway"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

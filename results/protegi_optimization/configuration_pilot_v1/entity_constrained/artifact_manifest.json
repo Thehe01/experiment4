@@ -1,0 +1,117 @@
+{
+  "stage": "entity",
+  "method": "protegi",
+  "created_at_utc": "2026-09-16T16:40:32.862985+00:00",
+  "final_prompt_file": "final_entity_prompt.txt",
+  "final_prompt_sha256_canonical_lf": "931a2afb5f106214720f6d66f24d58acd39680581be87ba5cfe962b781e27c56",
+  "files": {
+    "final_beam_dev.json": {
+      "sha256_raw_bytes": "b64fb9a71539574c7d24491a8c81dce6ae28536b8635939dbc300805f80e468c",
+      "size_bytes": 22896
+    },
+    "final_dev_evaluations.json": {
+      "sha256_raw_bytes": "9161efada6691e03859789635e802ffc6eb517557da8d10bf8b2f1012311e7d3",
+      "size_bytes": 487333
+    },
+    "final_entity_prompt.txt": {
+      "sha256_raw_bytes": "931a2afb5f106214720f6d66f24d58acd39680581be87ba5cfe962b781e27c56",
+      "size_bytes": 3526
+    },
+    "optimization_curve.csv": {
+      "sha256_raw_bytes": "315aa63a814f90aa47b63d6daba7c3aa7ce97aaa9cbebc6c479e981b099498b7",
+      "size_bytes": 271
+    },
+    "prompt_lineage.dot": {
+      "sha256_raw_bytes": "435b06176e1bc38e17ac285acbac09b3d7da7ee7c7002298587a36885ecfe258",
+      "size_bytes": 1273
+    },
+    "prompt_lineage.json": {
+      "sha256_raw_bytes": "173e432e127ce9a2a77809b8e7c3d5688b1d3cf2a80d48c24fd24d48ccb45b9b",
+      "size_bytes": 52978
+    },
+    "round_0/beam.json": {
+      "sha256_raw_bytes": "157d49ff167c19f2ebffba0c172a7ac9ebac0cda7ada0dbf4c07bdecf8bfbe5d",
+      "size_bytes": 4925
+    },
+    "round_0/candidates.json": {
+      "sha256_raw_bytes": "157d49ff167c19f2ebffba0c172a7ac9ebac0cda7ada0dbf4c07bdecf8bfbe5d",
+      "size_bytes": 4925
+    },
+    "round_0/error_examples.json": {
+      "sha256_raw_bytes": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "size_bytes": 2
+    },
+    "round_0/generated_candidates.json": {
+      "sha256_raw_bytes": "157d49ff167c19f2ebffba0c172a7ac9ebac0cda7ada0dbf4c07bdecf8bfbe5d",
+      "size_bytes": 4925
+    },
+    "round_0/gradient_minibatches.json": {
+      "sha256_raw_bytes": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "size_bytes": 2
+    },
+    "round_0/gradients.json": {
+      "sha256_raw_bytes": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "size_bytes": 2
+    },
+    "round_1/beam.json": {
+      "sha256_raw_bytes": "4552080cbd7716eaad86fab356fd5f8063a9664f92ecfaea673e3b82f28e4dd0",
+      "size_bytes": 9975
+    },
+    "round_1/candidates.json": {
+      "sha256_raw_bytes": "4552080cbd7716eaad86fab356fd5f8063a9664f92ecfaea673e3b82f28e4dd0",
+      "size_bytes": 9975
+    },
+    "round_1/error_examples.json": {
+      "sha256_raw_bytes": "fd48b86a3784ed9f0905a9581da0a4de40eaff584c1d21daca9a67944fdaa8ed",
+      "size_bytes": 32702
+    },
+    "round_1/generated_candidates.json": {
+      "sha256_raw_bytes": "81b213c24f285fc9d0a03f052768ab97abba32f767c84dddc1f64c56ab623e45",
+      "size_bytes": 9985
+    },
+    "round_1/gradient_minibatches.json": {
+      "sha256_raw_bytes": "cac752a0cc48300e77eacf88969b5dc02979444f219184eedd5a3b24b91c401e",
+      "size_bytes": 610
+    },
+    "round_1/gradients.json": {
+      "sha256_raw_bytes": "b264433d5b4291e881dd53ad92f56a8f463d2e7c2972e192c6abb008d197a87d",
+      "size_bytes": 1028
+    },
+    "round_1/selector_history.json": {
+      "sha256_raw_bytes": "4a6c8323e87d8f31eae30848c71cf42421eb79f3f047b98e8d038e618c8f48be",
+      "size_bytes": 3488
+    },
+    "round_2/beam.json": {
+      "sha256_raw_bytes": "332f40906fdc082d788743d2d8c779b27c7045b47c2d919fcf5318d9824d4fed",
+      "size_bytes": 10088
+    },
+    "round_2/candidates.json": {
+      "sha256_raw_bytes": "66962fc67dcb3ea2cc835e80a1890ed9fb16e128f1e7d0e0cd5f49987256e8ce",
+      "size_bytes": 20517
+    },
+    "round_2/error_examples.json": {
+      "sha256_raw_bytes": "d7d9a12d3111b5389acd9084e0c4358eb6af42b5a2e969553e2fe62661d03185",
+      "size_bytes": 67191
+    },
+    "round_2/generated_candidates.json": {
+      "sha256_raw_bytes": "9ccb893740519a308007279abdbf7680b5f0fbefdbd896c24be8d4f9d50af771",
+      "size_bytes": 20958
+    },
+    "round_2/gradient_minibatches.json": {
+      "sha256_raw_bytes": "69da028a94ecda73e73df24d771a8adddd5f7da103b8a93258b67b404008b02d",
+      "size_bytes": 1128
+    },
+    "round_2/gradients.json": {
+      "sha256_raw_bytes": "a8c2e94b133e68a9a5f111473830852113a2734ee82a2c67444b2e357fba37e1",
+      "size_bytes": 2019
+    },
+    "round_2/selector_history.json": {
+      "sha256_raw_bytes": "522f4d234661373c2d73f227d213693370ee07d00dd1aa930d4db00c27383241",
+      "size_bytes": 4008
+    },
+    "summary.json": {
+      "sha256_raw_bytes": "cf7ce6cee9f969952917f49948d7ae96d961ed5c037e0d933cea3b253333f820",
+      "size_bytes": 12415
+    }
+  }
+}

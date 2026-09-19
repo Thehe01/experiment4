@@ -1,0 +1,76 @@
+{
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol": "4.5-mention-fact-dual-layer-v1",
+  "review_type": "source_only_dual_model_assisted_adjudication",
+  "disclaimer": "This review represents source-grounded dual-model (Gemini 3.1 Pro & Muse Spark 1.2) chain verification and protocol-based expert adjudication. It is not equivalent to independent multi-annotator human IAA.",
+  "review_date": "2026-08-29",
+  "models_used": [
+    "Gemini 3.1 Pro (Native Deep Thinking)",
+    "Muse Spark 1.2 Contributor (/v1/responses + high effort)"
+  ],
+  "total_moved_documents": 7,
+  "total_reviewed_relations": 99,
+  "total_accepted_relations": 96,
+  "rejected_relations_count": 3,
+  "rejected_relations_detail": "R13 and R16 (CVE-2023-35081 -> T1059 Command and Scripting Interpreter) and R18 (CVE-2023-35078 -> T1087.002 Account Discovery) in aa23-213a were rejected as post-exploitation co-occurrences and deleted from Gold.",
+  "nominal_consensus_rate": "83.84%",
+  "fact_level_consensus_rate": "97.0%",
+  "documents": [
+    {
+      "doc_id": "aa24-242a",
+      "gold_file": "data/annotations/v3_text_grounded/aa24-242a.json",
+      "gold_sha256": "baeeca0283c97fc6f4c4839d38e9593b885a08da50f2da985835ebacf529548c",
+      "relations_count": 16,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV",
+      "adjudication_basis": "16/16 关系双模型全 PASS。验证 Netlogon, Confluence, FortiOS, ActiveMQ, Citrix ADC, BIG-IP 明确受影响关系与 CWE 弱点映射。"
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "gold_file": "data/annotations/v3_text_grounded/accellion-fta-google-accellion-data-theft-extortion.json",
+      "gold_sha256": "38674cfc04f03b5e17a4fac581ff5dbce390926da379441222c45a4c361150dc",
+      "relations_count": 8,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV",
+      "adjudication_basis": "8/8 关系双模型全 PASS。验证 Accellion FTA 4 大核心漏洞及 SQL injection, OS command execution, SSRF 弱点实例化。"
+    },
+    {
+      "doc_id": "aa23-213a",
+      "gold_file": "data/annotations/v3_text_grounded/aa23-213a.json",
+      "gold_sha256": "2b63905b0a34883e33222270eaac167925facc7be0d21c00998735959ef29779",
+      "relations_count": 15,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV (15 accepted, 3 post-exploitation deleted from Gold)",
+      "adjudication_basis": "15 条关系通过并接受入 Dev；3 条利用后共现关系 (R13/R16 T1059 命令执行，R18 T1087.002 账户发现) 双模型一致 REJECT，并已从 Gold 中彻底删除。"
+    },
+    {
+      "doc_id": "aa22-257a",
+      "gold_file": "data/annotations/v3_text_grounded/aa22-257a.json",
+      "gold_sha256": "76a45a884112b543fb66cffb82032fdd2069b7a97c88de996f4224e93974ca41",
+      "relations_count": 23,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV",
+      "adjudication_basis": "23 条关系事实层 100% 确认有效。9 处前段叙述性推测词 (likely) 在后文以零模糊并列形式完全确认，图谱事实三元组无误。"
+    },
+    {
+      "doc_id": "aa24-207a",
+      "gold_file": "data/annotations/v3_text_grounded/aa24-207a.json",
+      "gold_sha256": "5cecfb797eb2340c6b58f4e2151b6db072b02d94281b01c2afec6307943515a4",
+      "relations_count": 1,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV",
+      "adjudication_basis": "1/1 关系双模型全 PASS。报告聚焦核心 CVE-2021-44228 影响 Apache Log4j 事实确凿。"
+    },
+    {
+      "doc_id": "aa22-228a",
+      "gold_file": "data/annotations/v3_text_grounded/aa22-228a.json",
+      "gold_sha256": "5b5942c664de06c6aaa73791a388a83eac316dcec33dcbb7bb8b9caf25d38c4e",
+      "relations_count": 19,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV",
+      "adjudication_basis": "19 条关系中 16 条双模型 PASS。ZCS 与 UnRAR 实体 affects 关系由独立主谓句完整支撑，粒度清晰。"
+    },
+    {
+      "doc_id": "aa24-109a",
+      "gold_file": "data/annotations/v3_text_grounded/aa24-109a.json",
+      "gold_sha256": "192cd24cb6b9cef3b819a111a71eec9b1538e281a23447f8899523f0160c1521",
+      "relations_count": 14,
+      "adjudication_verdict": "ACCEPTED_INTO_DEV",
+      "adjudication_basis": "14 条关系事实层 100% 确认。T1068 (Exploitation for Privilege Escalation) 与 CVE-2023-27532/CVE-2024-40711 强句法绑定成立，CWE 矩阵全部通过。"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "relation",
+  "method": "protegi",
+  "winner_candidate_id": "P_R0",
+  "winner_round": 0,
+  "winner_metrics": {
+    "train_f1": 0.0,
+    "train_precision": 0.0,
+    "train_recall": 0.0,
+    "dev_f1": 0.0,
+    "dev_precision": 0.0,
+    "dev_recall": 0.0
+  },
+  "winner_prompt_sha256": "671800a66468d1426e427b55ebfac22918b521f5dd4d74373419fe836764baeb",
+  "total_candidates_registered": 1,
+  "call_stats": {
+    "task_model_calls": 12,
+    "optimizer_model_calls": 0,
+    "task_input_tokens": 0,
+    "task_output_tokens": 0,
+    "optimizer_input_tokens": 0,
+    "optimizer_output_tokens": 0,
+    "num_generated_candidates": 0,
+    "num_evaluated_candidates": 0,
+    "num_duplicate_candidates": 0,
+    "num_evaluated_samples": 12
+  },
+  "config": {
+    "optimization_steps": 1,
+    "beam_width": 1,
+    "minibatch_size": 8,
+    "errors_per_group": 1,
+    "gradients_per_error_group": 1,
+    "edits_per_gradient": 1,
+    "paraphrases_per_edit": 1,
+    "successors_per_parent": 2,
+    "total_eval_budget": 2,
+    "eval_batch_size": 2,
+    "eval_batches_per_candidate": 1,
+    "ucb_c": 2.0,
+    "seed": 42,
+    "max_docs_train": 2,
+    "max_docs_dev": 2,
+    "optimizer_temperature": 0.7,
+    "optimizer_thinking": "disabled"
+  },
+  "start_time_utc": "2026-09-15T16:27:14.433794+00:00",
+  "end_time_utc": "2026-09-15T16:28:05.142486+00:00"
+}

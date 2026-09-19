@@ -1,0 +1,987 @@
+"""Unit tests for the ProTeGi framework in experiments/v6/protegi.
+
+Tests all pure-logic components without external network or LLM calls.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import threading
+import time
+import unittest
+from pathlib import Path
+
+V6_ROOT = Path(__file__).resolve().parents[1]
+if str(V6_ROOT) not in sys.path:
+    sys.path.insert(0, str(V6_ROOT))
+
+from protegi.models import (
+    CallStats,
+    ErrorExample,
+    EvaluationResult,
+    PromptCandidate,
+    PromptGradient,
+)
+from protegi.metrics import (
+    aggregate_micro_f1,
+    calc_same_type_jaccard_overlap_counts,
+    calc_strict_entity_sample_counts,
+    calc_strict_relation_sample_counts,
+)
+from protegi.selectors import UCBPromptSelector, UniformPromptSelector
+from protegi.mutators import (
+    PromptEditor,
+    _extract_blocks,
+    format_error_examples_for_prompt,
+    deduplicate_and_sample_successors,
+)
+from protegi.lineage import PromptLineageTracker
+from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
+from protegi.prompts_p0 import (
+    ENTITY_PROMPT_P0,
+    RELATION_PROMPT_P0,
+    extract_immutable_contract,
+    extract_optimizable_guidance,
+    replace_optimizable_guidance,
+)
+from protegi.contract_validator import PromptContractValidator
+from protegi.evaluator import TaskEvaluator, focus_entity_error_examples
+from protegi.document_context import (
+    extract_explicit_abbreviation_pairs,
+    format_abbreviation_context,
+)
+from protegi.optimizer import select_final_candidate
+from schema import (
+    EXTRACTION_ENTITY_TYPES,
+    EXTRACTION_RELATION_TYPES,
+    EXTRACTION_RELATION_ARGUMENT_TYPES,
+)
+
+
+class TestProTeGiCore(unittest.TestCase):
+
+    def test_task_evaluator_uses_eight_way_window_concurrency(self):
+        class ConcurrentFakeClient:
+            config = {}
+
+            def __init__(self):
+                self.lock = threading.Lock()
+                self.active = 0
+                self.max_active = 0
+
+            def call_fn(self, **kwargs):
+                with self.lock:
+                    self.active += 1
+                    self.max_active = max(self.max_active, self.active)
+                time.sleep(0.02)
+                with self.lock:
+                    self.active -= 1
+                return '{"entities": []}'
+
+        client = ConcurrentFakeClient()
+        evaluator = TaskEvaluator(task_client=client, max_workers=8)
+        samples = [
+            {"sample_id": f"s{i}", "text": f"sample {i}", "gold_entities": []}
+            for i in range(8)
+        ]
+        result, errors = evaluator.evaluate_stage1_batch(
+            samples,
+            ENTITY_PROMPT_P0,
+        )
+        self.assertEqual(evaluator.max_workers, 8)
+        self.assertEqual(evaluator.call_count, 8)
+        self.assertGreater(client.max_active, 1)
+        self.assertLessEqual(client.max_active, 8)
+        self.assertEqual((result.tp, result.fp, result.fn), (0, 0, 0))
+        self.assertEqual(errors, [])
+
+    def test_metrics_strict_entity_calculation(self):
+        gold = [
+            {"id": "E1", "type": "Vulnerability", "start": 10, "end": 20},
+            {"id": "E2", "type": "Configuration", "start": 30, "end": 40},
+        ]
+        pred = [
+            {"id": "p1", "type": "Vulnerability", "start": 10, "end": 20},  # TP
+            {"id": "p2", "type": "Configuration", "start": 30, "end": 45},  # FP (boundary mismatch)
+        ]
+        tp, fp, fn = calc_strict_entity_sample_counts(pred, gold)
+        self.assertEqual(tp, 1)
+        self.assertEqual(fp, 1)
+        self.assertEqual(fn, 1)
+
+        result = aggregate_micro_f1(tp, fp, fn)
+        self.assertEqual(result.precision, 0.5)
+        self.assertEqual(result.recall, 0.5)
+        self.assertEqual(result.f1, 0.5)
+
+    def test_metrics_strict_relation_calculation(self):
+        gold_ents = [
+            {"id": "E1", "type": "Configuration", "start": 0, "end": 10},
+            {"id": "E2", "type": "Vulnerability", "start": 20, "end": 30},
+        ]
+        gold_rels = [
+            {"id": "R1", "type": "affects", "head": "E1", "tail": "E2"}
+        ]
+        pred_ents = [
+            {"id": "E1", "type": "Configuration", "start": 0, "end": 10},
+            {"id": "E2", "type": "Vulnerability", "start": 20, "end": 30},
+        ]
+        pred_rels = [
+            {"id": "r1", "type": "affects", "head": "E1", "tail": "E2"}
+        ]
+        tp, fp, fn = calc_strict_relation_sample_counts(
+            pred_ents, pred_rels, gold_ents, gold_rels
+        )
+        self.assertEqual(tp, 1)
+        self.assertEqual(fp, 0)
+        self.assertEqual(fn, 0)
+
+    def test_ucb_selector(self):
+        selector = UCBPromptSelector(c=2.0, total_pull_budget_per_round=4, batch_size=2)
+        c1 = PromptCandidate(candidate_id="c1", prompt_text="prompt 1")
+        c2 = PromptCandidate(candidate_id="c2", prompt_text="prompt 2")
+
+        # Initial state
+        self.assertEqual(c1.num_evaluations, 0)
+        selector.compute_ucb_scores([c1, c2], total_t=1)
+        self.assertEqual(c1.ucb_score, float("inf"))
+
+        # Update c1 with batch (1 TP, 0 FP, 0 FN -> F1 = 1.0)
+        res1 = EvaluationResult(tp=1, fp=0, fn=0, precision=1.0, recall=1.0, f1=1.0)
+        selector.update_candidate_with_batch(c1, res1, samples_count=2)
+        self.assertEqual(c1.num_evaluations, 1)
+        self.assertEqual(c1.estimated_reward, 1.0)
+
+        # Update c2 with batch (0 TP, 1 FP, 1 FN -> F1 = 0.0)
+        res2 = EvaluationResult(tp=0, fp=1, fn=1, precision=0.0, recall=0.0, f1=0.0)
+        selector.update_candidate_with_batch(c2, res2, samples_count=2)
+        self.assertEqual(c2.estimated_reward, 0.0)
+
+        # Rank Top-1
+        top = selector.rank_and_select_top_k([c1, c2], top_k=1)
+        self.assertEqual(len(top), 1)
+        self.assertEqual(top[0].candidate_id, "c1")
+        self.assertEqual(c1.selection_status, "selected")
+        self.assertEqual(c2.selection_status, "dropped")
+
+    def test_uniform_selector(self):
+        selector = UniformPromptSelector(total_pull_budget_per_round=4, batch_size=2)
+        c1 = PromptCandidate(candidate_id="c1", prompt_text="short")
+        c2 = PromptCandidate(candidate_id="c2", prompt_text="longer prompt")
+
+        # Give both equal evaluation batches
+        res1 = EvaluationResult(tp=2, fp=0, fn=0, precision=1.0, recall=1.0, f1=1.0)
+        selector.update_candidate_with_batch(c1, res1, 2)
+        selector.update_candidate_with_batch(c2, res1, 2)
+
+        # Tie-breaker should prefer shorter prompt
+        top = selector.rank_and_select_top_k([c1, c2], top_k=1)
+        self.assertEqual(top[0].candidate_id, "c1")
+
+    def test_mutators_block_extraction(self):
+        raw = "Here is feedback:\n<START>\nDirection 1: fix weakness span\n<END>\n<START>\nDirection 2: fix cpe\n<END>"
+        blocks = _extract_blocks(raw, "<START>", "<END>")
+        self.assertEqual(len(blocks), 2)
+        self.assertEqual(blocks[0], "Direction 1: fix weakness span")
+        self.assertEqual(blocks[1], "Direction 2: fix cpe")
+
+    def test_deduplication_and_sampling(self):
+        parent = PromptCandidate(candidate_id="p0", prompt_text="original prompt")
+        s1 = PromptCandidate(candidate_id="s1", prompt_text="new prompt A")
+        s2 = PromptCandidate(candidate_id="s2", prompt_text="new prompt A")  # Duplicate of s1
+        s3 = PromptCandidate(candidate_id="s3", prompt_text="original prompt")  # Duplicate of parent
+        s4 = PromptCandidate(candidate_id="s4", prompt_text="new prompt B")
+
+        sampled, stats = deduplicate_and_sample_successors(parent, [s1, s2, s3, s4], max_successors=2, seed=42)
+        self.assertEqual(len(sampled), 2)
+        self.assertEqual(stats["duplicate_count"], 2)
+        self.assertEqual(stats["unique_count"], 2)
+
+    def test_lineage_tracker(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker = PromptLineageTracker()
+            c0 = PromptCandidate(candidate_id="P0", prompt_text="root", round_idx=0)
+            c1 = PromptCandidate(candidate_id="C1", prompt_text="child", parent_id="P0", round_idx=1)
+            tracker.register_candidate(c0)
+            tracker.register_candidate(c1)
+            tracker.register_candidate(c1)
+
+            json_out = Path(tmpdir) / "lineage.json"
+            dot_out = Path(tmpdir) / "lineage.dot"
+            tracker.export_json(json_out, final_candidate_id="C1")
+            tracker.export_dot(dot_out, final_candidate_id="C1")
+
+            self.assertTrue(json_out.is_file())
+            self.assertTrue(dot_out.is_file())
+            data = json.loads(json_out.read_text(encoding="utf-8"))
+            self.assertEqual(data["total_nodes"], 2)
+            self.assertEqual(data["final_candidate_id"], "C1")
+            self.assertEqual(data["trace_to_root"], ["P0", "C1"])
+            self.assertEqual(data["total_edges"], 1)
+            self.assertEqual(data["nodes"]["C1"]["prompt_text"], "child")
+
+    def test_entity_cache_manager(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache_dir = Path(tmpdir)
+            manager = EntityCacheManager(cache_dir)
+
+            class MockEvaluator:
+                max_workers = 8
+
+                def predict_stage1_window(self, text, prompt):
+                    return [{"id": "E1", "type": "Vulnerability", "start": 0, "end": 4}]
+
+            samples = [{
+                "sample_id": "doc1_w0",
+                "text": "text sample",
+                "gold_entities": [],
+                "gold_relations": [{"type": "affects", "head": "E1", "tail": "E2"}],
+            }]
+            prompt = "Sample prompt"
+            cache_file = manager.build_and_save_cache(MockEvaluator(), prompt, samples, "train")
+            self.assertTrue(cache_file.is_file())
+
+            # Load matching hash
+            loaded = manager.load_cache(
+                "train",
+                expected_prompt_hash=compute_prompt_hash(prompt),
+                require_gold_relations=True,
+                expected_task_max_workers=8,
+            )
+            self.assertEqual(len(loaded), 1)
+            self.assertEqual(loaded[0]["fixed_entities"][0]["id"], "E1")
+
+            # Mismatched hash raises ValueError
+            with self.assertRaises(ValueError):
+                manager.load_cache("train", expected_prompt_hash="wrong_hash")
+
+            self.assertEqual(compute_prompt_hash("a\r\nb\n"), compute_prompt_hash("a\nb"))
+
+    def test_entity_p0_schema_consistency(self):
+        """验证 ENTITY_PROMPT_P0 与 schema.py 中定义的实体类型完全一致。"""
+        val_res = PromptContractValidator.validate_entity_prompt(ENTITY_PROMPT_P0)
+        self.assertTrue(val_res.is_valid, f"ENTITY_PROMPT_P0 结构校验失败: {val_res.error_message}")
+        for ent_type in EXTRACTION_ENTITY_TYPES:
+            self.assertIn(ent_type.lower(), ENTITY_PROMPT_P0.lower())
+
+    def test_relation_p0_schema_consistency(self):
+        """验证 RELATION_PROMPT_P0 与 schema.py 中定义的关系类型完全一致。"""
+        val_res = PromptContractValidator.validate_relation_prompt(RELATION_PROMPT_P0)
+        self.assertTrue(val_res.is_valid, f"RELATION_PROMPT_P0 结构校验失败: {val_res.error_message}")
+        for rel_type in EXTRACTION_RELATION_TYPES:
+            self.assertIn(rel_type.lower(), RELATION_PROMPT_P0.lower())
+
+    def test_relation_direction_consistency(self):
+        """验证 RELATION_PROMPT_P0 中的关系方向严格匹配 schema.py 定义：
+        affects: Vulnerability -> Configuration
+        instantiates: Vulnerability -> Weakness
+        exploited_by: Vulnerability -> AttackTechnique
+        """
+        for rel, (head, tail) in EXTRACTION_RELATION_ARGUMENT_TYPES.items():
+            expected_pattern = f"{head} -> {tail}"
+            self.assertIn(
+                expected_pattern.lower(),
+                RELATION_PROMPT_P0.lower(),
+                f"关系 {rel} 未在 RELATION_PROMPT_P0 中找到标准方向定义 {expected_pattern}"
+            )
+
+    def test_required_placeholders(self):
+        """验证输入占位符在 P0 提示词中正确保留。"""
+        self.assertIn("{text}", ENTITY_PROMPT_P0)
+        self.assertIn("{text}", RELATION_PROMPT_P0)
+        self.assertIn("{entities}", RELATION_PROMPT_P0)
+
+    def test_candidate_contract_validator(self):
+        """测试 PromptContractValidator 能准确拦截结构缺陷或方向倒置的非法 Prompt。"""
+        # 1. 正常合法 Prompt 应通过
+        self.assertTrue(PromptContractValidator.validate_entity_prompt(ENTITY_PROMPT_P0).is_valid)
+        self.assertTrue(PromptContractValidator.validate_relation_prompt(RELATION_PROMPT_P0).is_valid)
+
+        # 2. 缺少 {text} 占位符应被拦截
+        bad_entity = ENTITY_PROMPT_P0.replace("{text}", "NO_PLACEHOLDER")
+        val_missing_text = PromptContractValidator.validate_entity_prompt(bad_entity)
+        self.assertFalse(val_missing_text.is_valid)
+        self.assertTrue(any("冻结契约" in r for r in val_missing_text.reasons))
+
+        # 3. 故意反转关系方向：affects: Configuration -> Vulnerability 必须被严密拦截
+        inverted_relation = RELATION_PROMPT_P0.replace(
+            "affects: Vulnerability -> Configuration",
+            "affects: Configuration -> Vulnerability"
+        )
+        val_inverted = PromptContractValidator.validate_relation_prompt(inverted_relation)
+        self.assertFalse(val_inverted.is_valid, "未能拦截反转关系方向 Configuration -> Vulnerability！")
+        self.assertTrue(any("冻结契约" in r for r in val_inverted.reasons))
+
+        # 4. Stage 1 guidance 不得引入关系输出或重定义标签。
+        leaked_relation = replace_optimizable_guidance(
+            ENTITY_PROMPT_P0,
+            "affects: Vulnerability -> Configuration; output source and target.",
+        )
+        self.assertFalse(
+            PromptContractValidator.validate_entity_prompt(leaked_relation).is_valid
+        )
+
+    def test_unconstrained_scope_keeps_only_runtime_interface(self):
+        """无约束臂允许语义契约变化，但必须保留固定评价接口。"""
+        rewritten = ENTITY_PROMPT_P0.replace(
+            "A description-only phrase without a locally explicit CWE is out of scope.",
+            "A description-only phrase may be inferred from context.",
+        )
+        self.assertFalse(
+            PromptContractValidator.validate_candidate(
+                "entity", rewritten, prompt_scope="constrained"
+            ).is_valid
+        )
+        self.assertTrue(
+            PromptContractValidator.validate_candidate(
+                "entity", rewritten, prompt_scope="unconstrained"
+            ).is_valid
+        )
+
+        missing_placeholder = rewritten.replace("{text}", "TEXT_HERE")
+        invalid = PromptContractValidator.validate_candidate(
+            "entity", missing_placeholder, prompt_scope="unconstrained"
+        )
+        self.assertFalse(invalid.is_valid)
+        self.assertTrue(any("{text}" in reason for reason in invalid.reasons))
+
+    def test_prompt_editor_only_replaces_guidance(self):
+        class FakeClient:
+            config = {}
+
+            @staticmethod
+            def call_fn(**kwargs):
+                return "<START>Check all spans, then apply the frozen rules conservatively.</END>"
+
+        parent = PromptCandidate(candidate_id="P_E0", prompt_text=ENTITY_PROMPT_P0)
+        gradient = PromptGradient(
+            gradient_id="g1",
+            parent_prompt_id="P_E0",
+            error_group_id="eg1",
+            gradient_text="The guidance lacks an explicit verification pass.",
+            round_idx=0,
+        )
+        edited = PromptEditor(FakeClient()).edit_prompt(parent, gradient, [])
+        self.assertIsNotNone(edited)
+        self.assertEqual(
+            extract_immutable_contract(edited.prompt_text),
+            extract_immutable_contract(ENTITY_PROMPT_P0),
+        )
+        self.assertNotEqual(
+            extract_optimizable_guidance(edited.prompt_text),
+            extract_optimizable_guidance(ENTITY_PROMPT_P0),
+        )
+
+    def test_unconstrained_prompt_editor_rewrites_complete_prompt(self):
+        rewritten_prompt = ENTITY_PROMPT_P0.replace(
+            "Apply the frozen definitions conservatively",
+            "Apply the task definitions with a two-pass verification procedure",
+        )
+
+        class FakeClient:
+            config = {}
+
+            @staticmethod
+            def call_fn(**kwargs):
+                return f"<START>{rewritten_prompt}<END>"
+
+        parent = PromptCandidate(candidate_id="P_E0", prompt_text=ENTITY_PROMPT_P0)
+        gradient = PromptGradient(
+            gradient_id="g_full",
+            parent_prompt_id="P_E0",
+            error_group_id="eg_full",
+            gradient_text="The complete prompt lacks a verification procedure.",
+            round_idx=0,
+        )
+        edited = PromptEditor(
+            FakeClient(), prompt_scope="unconstrained"
+        ).edit_prompt(parent, gradient, [])
+        self.assertIsNotNone(edited)
+        self.assertEqual(edited.prompt_text, rewritten_prompt)
+        self.assertEqual(edited.generation_type, "gradient_edit_full")
+        self.assertTrue(
+            PromptContractValidator.validate_candidate(
+                "entity", edited.prompt_text, prompt_scope="unconstrained"
+            ).is_valid
+        )
+
+    def test_relation_evaluator_uses_gold_entity_mapping(self):
+        class FakeClient:
+            config = {}
+
+        evaluator = TaskEvaluator(task_client=FakeClient())
+        evaluator.predict_stage2_window = lambda text, entities, prompt: [
+            {"type": "affects", "head": "P1", "tail": "P2"}
+        ]
+        sample = {
+            "sample_id": "s1",
+            "text": "CVE product",
+            "fixed_entities": [
+                {"id": "P1", "type": "Vulnerability", "start": 0, "end": 3},
+                {"id": "P2", "type": "Configuration", "start": 4, "end": 11},
+            ],
+            "gold_entities": [
+                {"id": "G1", "type": "Vulnerability", "start": 0, "end": 3},
+                {"id": "G2", "type": "Configuration", "start": 4, "end": 11},
+            ],
+            "gold_relations": [{"type": "affects", "head": "G1", "tail": "G2"}],
+        }
+        result, _ = evaluator.evaluate_stage2_batch([sample], "prompt", collect_errors=False)
+        self.assertEqual((result.tp, result.fp, result.fn), (1, 0, 0))
+
+    def test_ucb_total_budget(self):
+        """确认 UCB 评估拉动总数严格等于 total_pull_budget_per_round。"""
+        selector = UCBPromptSelector(
+            c=2.0,
+            total_pull_budget_per_round=64,
+            batch_size=8,
+            min_pulls_per_candidate=2,
+        )
+        cands = [PromptCandidate(candidate_id=f"c_{i}", prompt_text=f"prompt {i}") for i in range(10)]
+        def mock_eval(c, pull_idx):
+            return EvaluationResult(tp=1, fp=0, fn=0, precision=1.0, recall=1.0, f1=1.0)
+        history = selector.execute_evaluation_budget(cands, mock_eval)
+        self.assertEqual(len(history), 64)
+        self.assertEqual(sum(c.num_evaluations for c in cands), 64)
+        for cand in cands:
+            first_indices = [
+                item["candidate_pull_index"]
+                for item in history
+                if item["candidate_id"] == cand.candidate_id
+            ][:2]
+            self.assertEqual(first_indices, [0, 1])
+
+    def test_ucb_rejects_insufficient_minimum_budget(self):
+        selector = UCBPromptSelector(
+            total_pull_budget_per_round=3,
+            min_pulls_per_candidate=2,
+        )
+        candidates = [
+            PromptCandidate(candidate_id="c1", prompt_text="p1"),
+            PromptCandidate(candidate_id="c2", prompt_text="p2"),
+        ]
+        with self.assertRaises(ValueError):
+            selector.execute_evaluation_budget(candidates, lambda c, i: None)
+
+    def test_uniform_total_budget(self):
+        """确认 Uniform 评估拉动总数严格等于 total_pull_budget_per_round。"""
+        selector = UniformPromptSelector(total_pull_budget_per_round=64, batch_size=8)
+        cands = [PromptCandidate(candidate_id=f"c_{i}", prompt_text=f"prompt {i}") for i in range(10)]
+        def mock_eval(c, pull_idx):
+            return EvaluationResult(tp=1, fp=0, fn=0, precision=1.0, recall=1.0, f1=1.0)
+        history = selector.execute_evaluation_budget(cands, mock_eval)
+        self.assertEqual(len(history), 64)
+        self.assertEqual(sum(c.num_evaluations for c in cands), 64)
+
+    def test_uniform_equal_allocation(self):
+        """确认 Uniform 在候选之间拉动次数最大差距不超过 1。"""
+        selector = UniformPromptSelector(total_pull_budget_per_round=64, batch_size=8)
+        cands = [PromptCandidate(candidate_id=f"c_{i}", prompt_text=f"prompt {i}") for i in range(10)]
+        def mock_eval(c, pull_idx):
+            return EvaluationResult(tp=1, fp=0, fn=0, precision=1.0, recall=1.0, f1=1.0)
+        selector.execute_evaluation_budget(cands, mock_eval)
+        pulls = [c.num_evaluations for c in cands]
+        # 64 pulls among 10 candidates -> 4 candidates get 7, 6 candidates get 6 -> diff == 1
+        self.assertLessEqual(max(pulls) - min(pulls), 1)
+        self.assertEqual(sum(pulls), 64)
+
+    def test_ucb_uniform_same_total_budget(self):
+        """确认在相同候选集与配置下，UCB 与 Uniform 的总 Pull 数完全相等。"""
+        total_budget = 64
+        ucb_selector = UCBPromptSelector(c=2.0, total_pull_budget_per_round=total_budget, batch_size=8)
+        uni_selector = UniformPromptSelector(total_pull_budget_per_round=total_budget, batch_size=8)
+        ucb_cands = [PromptCandidate(candidate_id=f"ucb_{i}", prompt_text=f"p {i}") for i in range(16)]
+        uni_cands = [PromptCandidate(candidate_id=f"uni_{i}", prompt_text=f"p {i}") for i in range(16)]
+        def mock_eval(c, pull_idx):
+            return EvaluationResult(tp=1, fp=0, fn=0, precision=1.0, recall=1.0, f1=1.0)
+        ucb_hist = ucb_selector.execute_evaluation_budget(ucb_cands, mock_eval)
+        uni_hist = uni_selector.execute_evaluation_budget(uni_cands, mock_eval)
+        self.assertEqual(len(ucb_hist), total_budget)
+        self.assertEqual(len(uni_hist), total_budget)
+        self.assertEqual(sum(c.num_evaluations for c in ucb_cands), sum(c.num_evaluations for c in uni_cands))
+        self.assertEqual(sum(c.num_evaluations for c in ucb_cands), total_budget)
+
+    def test_p0_not_in_final_protegi_selection(self):
+        """确保 Initial P0 baseline 绝不进入 Full ProTeGi 的最终决选（杜绝 APO-v2 回退 P0 逻辑）。"""
+        p0 = PromptCandidate(
+            candidate_id="P_E0",
+            prompt_text="p0 text",
+            generation_type="initial",
+            metrics={"dev_f1": 0.99},
+        )
+        evolved_1 = PromptCandidate(
+            candidate_id="c_edit_1",
+            prompt_text="evolved 1",
+            generation_type="gradient_edit",
+            metrics={"dev_f1": 0.85},
+        )
+        evolved_2 = PromptCandidate(
+            candidate_id="c_para_2",
+            prompt_text="evolved 2",
+            generation_type="paraphrase",
+            metrics={"dev_f1": 0.88},
+        )
+        beam = [p0, evolved_1, evolved_2]
+
+        finalists = [c for c in beam if c.generation_type != "initial"]
+        def final_sort_key(c: PromptCandidate):
+            dev_f1 = c.metrics.get("dev_f1", 0.0)
+            dev_prec = c.metrics.get("dev_precision", 0.0)
+            return (dev_f1, dev_prec, -len(c.prompt_text), c.candidate_id)
+
+        winner = max(finalists, key=final_sort_key)
+        self.assertNotEqual(winner.candidate_id, "P_E0")
+        self.assertEqual(winner.candidate_id, "c_para_2")
+
+    def test_explicit_abbreviation_context_is_lexical_only(self):
+        text = (
+            "Acme Secure Gateway (ASG) was assessed. ASG remained online. "
+            "NCE (Network Control Engine) was mentioned separately."
+        )
+        pairs = extract_explicit_abbreviation_pairs(text)
+        self.assertEqual(
+            [(item["short_form"], item["long_form"]) for item in pairs],
+            [
+                ("ASG", "Acme Secure Gateway"),
+                ("NCE", "Network Control Engine"),
+            ],
+        )
+        self.assertEqual(extract_explicit_abbreviation_pairs("ASG remained online."), [])
+        rendered = format_abbreviation_context(pairs)
+        self.assertIn("ASG = Acme Secure Gateway", rendered)
+        self.assertNotIn("Configuration", rendered)
+
+    def test_document_context_is_fixed_runtime_input(self):
+        class CapturingClient:
+            config = {}
+
+            def __init__(self):
+                self.prompt = None
+
+            def call_fn(self, **kwargs):
+                self.prompt = kwargs["prompt"]
+                return '{"entities": []}'
+
+        client = CapturingClient()
+        evaluator = TaskEvaluator(task_client=client)
+        evaluator.predict_stage1_window(
+            "ASG is affected.",
+            ENTITY_PROMPT_P0,
+            "ASG = Acme Secure Gateway",
+        )
+        self.assertIn("explicit-abbreviation-context-v1", client.prompt)
+        self.assertIn("not automatically a Configuration", client.prompt)
+        self.assertIn("ASG is affected.", client.prompt)
+
+    def test_configuration_overlap_metric_is_diagnostic(self):
+        gold = [{"type": "Configuration", "start": 10, "end": 20}]
+        pred = [{"type": "Configuration", "start": 10, "end": 18}]
+        self.assertEqual(
+            calc_strict_entity_sample_counts(
+                pred, gold, allowed_types={"Configuration"}
+            ),
+            (0, 1, 1),
+        )
+        self.assertEqual(
+            calc_same_type_jaccard_overlap_counts(
+                pred,
+                gold,
+                allowed_types={"Configuration"},
+                threshold=0.5,
+            ),
+            (1, 0, 0),
+        )
+
+    def test_configuration_error_focus_projects_other_types_away(self):
+        error = ErrorExample(
+            sample_id="s1",
+            input_text="CVE-1 affects Acme Gateway.",
+            gold_output={"entities": [
+                {"type": "Vulnerability", "start": 0, "end": 5},
+                {"type": "Configuration", "start": 14, "end": 26},
+            ]},
+            predicted_output={"entities": [
+                {"type": "Weakness", "start": 0, "end": 5},
+                {"type": "Configuration", "start": 14, "end": 21},
+            ]},
+        )
+        focused = focus_entity_error_examples([error], "Configuration")
+        self.assertEqual(len(focused), 1)
+        self.assertEqual(
+            {entity["type"] for entity in focused[0].gold_output["entities"]},
+            {"Configuration"},
+        )
+        self.assertEqual(
+            focused[0].error_details["boundary_overlap_pairs"],
+            1,
+        )
+        self.assertEqual(focused[0].error_details["source_split"], "train")
+
+    def test_selector_can_use_configuration_strict_f1(self):
+        selector = UCBPromptSelector(
+            total_pull_budget_per_round=2,
+            batch_size=1,
+            objective_entity_type="Configuration",
+        )
+        candidate = PromptCandidate(candidate_id="c1", prompt_text="prompt")
+        result = EvaluationResult(
+            tp=10,
+            fp=0,
+            fn=0,
+            precision=1.0,
+            recall=1.0,
+            f1=1.0,
+            details={"by_type": {
+                "Configuration": {
+                    "tp": 1,
+                    "fp": 1,
+                    "fn": 1,
+                    "f1": 0.5,
+                }
+            }},
+        )
+        selector.update_candidate_with_batch(candidate, result, 1)
+        self.assertEqual((candidate.tp, candidate.fp, candidate.fn), (1, 1, 1))
+        self.assertEqual(candidate.estimated_reward, 0.5)
+
+    def test_final_selection_uses_strict_configuration_and_guardrails(self):
+        p0 = PromptCandidate("P_E0", "p0", generation_type="initial")
+        unsafe = PromptCandidate("unsafe", "unsafe prompt")
+        safe = PromptCandidate("safe", "safe prompt")
+
+        def result(config_f1, vulnerability_f1, overall_f1):
+            return EvaluationResult(
+                tp=8,
+                fp=2,
+                fn=2,
+                precision=0.8,
+                recall=0.8,
+                f1=overall_f1,
+                details={"by_type": {
+                    "Configuration": {"f1": config_f1, "applicable": True},
+                    "Vulnerability": {
+                        "f1": vulnerability_f1,
+                        "applicable": True,
+                    },
+                    "Weakness": {"f1": 0.7, "applicable": True},
+                    "AttackTechnique": {"f1": 0.8, "applicable": True},
+                }},
+            )
+
+        winner, audits = select_final_candidate(
+            [p0, unsafe, safe],
+            {
+                "P_E0": result(0.30, 0.90, 0.80),
+                "unsafe": result(0.60, 0.80, 0.86),
+                "safe": result(0.45, 0.89, 0.83),
+            },
+            p0_candidate_id="P_E0",
+            objective_entity_type="Configuration",
+            guardrail_entity_types=[
+                "Vulnerability",
+                "Weakness",
+                "AttackTechnique",
+            ],
+            guardrail_max_f1_drop=0.02,
+        )
+        self.assertEqual(winner.candidate_id, "safe")
+        self.assertFalse(audits["unsafe"]["eligible"])
+        self.assertFalse(audits["safe"]["overlap_metrics_used_for_selection"])
+
+    def test_retry_api_call_success(self):
+        from protegi.retry_utils import retry_api_call
+
+        attempts = 0
+
+        def flaky_call():
+            nonlocal attempts
+            attempts += 1
+            if attempts < 3:
+                raise ConnectionResetError("Remote disconnected")
+            return "success"
+
+        res = retry_api_call(flaky_call, max_retries=4, initial_delay=0.01, backoff_factor=1.5)
+        self.assertEqual(res, "success")
+        self.assertEqual(attempts, 3)
+
+    def test_retry_api_call_fatal_error(self):
+        from protegi.retry_utils import retry_api_call
+
+        def fatal_call():
+            raise ValueError("Invalid format")
+
+        with self.assertRaises(ValueError):
+            retry_api_call(fatal_call, max_retries=3, initial_delay=0.01)
+
+    def test_normalize_configuration_entity(self):
+        from protegi.entity_backfill import normalize_configuration_entity
+
+        # Trailing noise should be trimmed
+        raw_ent = {
+            "id": "E1",
+            "text": "Microsoft Exchange application",
+            "type": "Configuration",
+            "start": 10,
+            "end": 40,
+        }
+        cleaned = normalize_configuration_entity(raw_ent)
+        self.assertEqual(cleaned["text"], "Microsoft Exchange")
+        self.assertEqual(cleaned["end"], 28)
+
+        # Protected official Server product should be preserved intact
+        protected_win = {
+            "id": "E2",
+            "text": "Windows Server",
+            "type": "Configuration",
+            "start": 50,
+            "end": 64,
+        }
+        self.assertEqual(normalize_configuration_entity(protected_win), protected_win)
+
+        protected_ex = {
+            "id": "E3",
+            "text": "Exchange Server",
+            "type": "Configuration",
+            "start": 0,
+            "end": 15,
+        }
+        self.assertEqual(normalize_configuration_entity(protected_ex), protected_ex)
+
+        # Non-configuration should not be touched
+        vuln_ent = {
+            "id": "E4",
+            "text": "CVE-2021-1234 server",
+            "type": "Vulnerability",
+            "start": 0,
+            "end": 20,
+        }
+        self.assertEqual(normalize_configuration_entity(vuln_ent), vuln_ent)
+
+    def test_vulnerability_anchored_backfill_logic(self):
+        from protegi.entity_backfill import vulnerability_anchored_backfill
+
+        samples = [
+            {
+                "sample_id": "doc1_w0",
+                "doc_id": "doc1",
+                "text": "Attackers targeted Microsoft Exchange application in 2021.\n\nCVE-2021-26855 affects Exchange severely.",
+            },
+            {
+                "sample_id": "doc1_w1",
+                "doc_id": "doc1",
+                "text": "Administrators should review Exchange logs. Moreover, CVE-2021-26858 in Exchange allows file writes.",
+            },
+            {
+                "sample_id": "doc2_w0",
+                "doc_id": "doc2",
+                "text": "CVE-2023-1234 was found in unknown product.",
+            },
+        ]
+
+        # Model predicted "Microsoft Exchange application" in doc1_w0
+        # and nothing in doc1_w1 or doc2_w0
+        predictions = [
+            [
+                {
+                    "id": "E1",
+                    "text": "Microsoft Exchange application",
+                    "type": "Configuration",
+                    "start": 19,
+                    "end": 49,
+                    "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+                }
+            ],
+            [],
+            [],
+        ]
+
+        updated = vulnerability_anchored_backfill(samples, predictions, enabled=True)
+
+        # In doc1_w0: "Microsoft Exchange application" trimmed to "Microsoft Exchange" (19:37).
+        # Also in doc1_w0: second sentence has CVE-2021-26855 and "Exchange".
+        self.assertEqual(updated[0][0]["text"], "Microsoft Exchange")
+        self.assertEqual(updated[0][0]["end"], 37)
+        self.assertTrue(any(e["text"] == "Exchange" and e.get("_source") == "cve_anchored_backfill" for e in updated[0]))
+
+        # In doc1_w1:
+        # Sentence 1: "Administrators should review Exchange logs." (NO CVE -> NO backfill!)
+        # Sentence 2: "Moreover, CVE-2021-26858 in Exchange allows file writes." (HAS CVE -> BACKFILLED!)
+        self.assertEqual(len(updated[1]), 1)
+        self.assertEqual(updated[1][0]["text"], "Exchange")
+        self.assertEqual(updated[1][0]["_source"], "cve_anchored_backfill")
+        self.assertEqual(updated[1][0]["normalized_id"], "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*")
+
+        # In doc2_w0:
+        # doc2 has NO seed -> no backfill, len is 0 (no cross-doc leakage!)
+        self.assertEqual(len(updated[2]), 0)
+
+    def test_task_evaluator_backfill_integration(self):
+        class FakeClient:
+            config = {}
+
+        evaluator = TaskEvaluator(
+            task_client=FakeClient(),
+            vulnerability_anchored_backfill=True,
+        )
+        evaluator.predict_stage1_texts = lambda texts, prompt, document_abbreviations=None: [
+            [{"id": "E1", "text": "Microsoft Exchange application", "type": "Configuration", "start": 0, "end": 30}],
+            [],
+        ]
+        samples = [
+            {"sample_id": "docA_w0", "doc_id": "docA", "text": "Microsoft Exchange application in action."},
+            {"sample_id": "docA_w1", "doc_id": "docA", "text": "CVE-2021-1234 affects Exchange today."},
+        ]
+        res, _ = evaluator.evaluate_stage1_batch(samples, "prompt", capture_predictions=True)
+        preds = res.details["predictions"]
+        # w0 entity trimmed to Microsoft Exchange
+        self.assertEqual(preds[0]["pred_entities"][0]["text"], "Microsoft Exchange")
+        # w1 entity backfilled with Exchange
+        self.assertEqual(len(preds[1]["pred_entities"]), 1)
+        self.assertEqual(preds[1]["pred_entities"][0]["text"], "Exchange")
+        self.assertEqual(preds[1]["pred_entities"][0]["_source"], "cve_anchored_backfill")
+
+    def test_snap_to_sentence_boundary_prefers_cve_and_paragraphs(self):
+        from llm_methods import snap_to_sentence_boundary
+
+        sample_text = (
+            "Prefix filler text that occupies some length.\n"
+            "CVE-2023-9999\n"
+            " (CWE-100)\n"
+            "An arbitrary code execution in Acme System allows remote attackers."
+        )
+        # raw_start points into middle of "Acme System allows..."
+        raw_idx = sample_text.find("allows")
+        snapped = snap_to_sentence_boundary(
+            sample_text,
+            raw_start=raw_idx,
+            min_start=0,
+            max_start=len(sample_text),
+            radius=200,
+        )
+        # Should snap backward to the start of "CVE-2023-9999"
+        expected_cve_start = sample_text.find("CVE-2023-9999")
+        self.assertEqual(snapped, expected_cve_start)
+
+    def test_build_text_windows_sentence_snapping_avoids_headless_fragments(self):
+        from llm_methods import build_text_windows
+
+        # Construct text where raw jump would cut a sentence in half
+        block1 = "P" * 2800 + ".\n"
+        cve_sentence = "CVE-2023-1234 is a severe vulnerability in Acme Gateway and below.\n"
+        block2 = "S" * 2000 + ".\n"
+        full_text = block1 + cve_sentence + block2
+
+        # 1. Legacy mode (snap_sentence_boundary=False)
+        legacy_windows = build_text_windows(full_text, max_chars=3000, overlap=400, snap_sentence_boundary=False)
+        # 2. Snapped mode (snap_sentence_boundary=True)
+        snapped_windows = build_text_windows(full_text, max_chars=3000, overlap=400, snap_sentence_boundary=True)
+
+        self.assertGreaterEqual(len(snapped_windows), 2)
+        # Snapped window 1 should start cleanly at a sentence or CVE boundary
+        win1_text = snapped_windows[1]["text"]
+        self.assertTrue(win1_text.startswith("CVE-2023-1234") or win1_text.startswith("P") or win1_text.startswith("S"))
+
+    def test_backfill_3char_acronym_and_abbreviation_pairing(self):
+        from protegi.entity_backfill import (
+            harvest_document_configuration_seeds,
+            vulnerability_anchored_backfill,
+            is_valid_configuration_seed,
+        )
+
+        # 1. Validation test
+        self.assertTrue(is_valid_configuration_seed("ZCS"))
+        self.assertFalse(is_valid_configuration_seed("rdp"))
+        self.assertFalse(is_valid_configuration_seed("ssh"))
+        self.assertFalse(is_valid_configuration_seed("cve"))
+
+        # 2. Abbreviation pairing test: seed long form -> short form derived
+        items = [
+            (
+                {
+                    "sample_id": "docZ_w0",
+                    "doc_id": "docZ",
+                    "text": "Zimbra Collaboration Suite (ZCS) is vulnerable.",
+                    "document_abbreviations": "- ZCS = Zimbra Collaboration Suite",
+                },
+                [
+                    {
+                        "id": "E1",
+                        "text": "Zimbra Collaboration Suite",
+                        "type": "Configuration",
+                        "normalized_id": "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*",
+                    }
+                ],
+            )
+        ]
+        seeds = harvest_document_configuration_seeds(items)
+        self.assertIn("Zimbra Collaboration Suite", seeds)
+        self.assertIn("ZCS", seeds)
+        self.assertEqual(seeds["ZCS"], "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*")
+
+        # 3. CVE backfill with 3-character acronym and optional CVE whitespace
+        samples = [
+            items[0][0],
+            {
+                "sample_id": "docZ_w1",
+                "doc_id": "docZ",
+                "text": "Threat actors targeted CVE - 2022-27925 in unpatched ZCS deployments.",
+            },
+        ]
+        preds = [items[0][1], []]
+        updated = vulnerability_anchored_backfill(samples, preds, enabled=True)
+        self.assertEqual(len(updated[1]), 1)
+        self.assertEqual(updated[1][0]["text"], "ZCS")
+        self.assertEqual(updated[1][0]["_source"], "cve_anchored_backfill")
+        self.assertEqual(updated[1][0]["normalized_id"], "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*")
+
+    def test_backfill_server_product_dual_derivation(self):
+        from protegi.entity_backfill import (
+            harvest_document_configuration_seeds,
+            vulnerability_anchored_backfill,
+        )
+
+        items = [
+            (
+                {
+                    "sample_id": "docEx_w0",
+                    "doc_id": "docEx",
+                    "text": "Microsoft Exchange Server has multiple zero-day vulnerabilities.",
+                },
+                [
+                    {
+                        "id": "E1",
+                        "text": "Microsoft Exchange Server",
+                        "type": "Configuration",
+                        "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+                    }
+                ],
+            )
+        ]
+        seeds = harvest_document_configuration_seeds(items)
+        # Should derive Exchange Server, Microsoft Exchange, and Exchange
+        self.assertIn("Microsoft Exchange Server", seeds)
+        self.assertIn("Microsoft Exchange", seeds)
+        self.assertIn("Exchange Server", seeds)
+        self.assertIn("Exchange", seeds)
+
+        # Backfill window with only "Exchange" and CVE
+        samples = [
+            items[0][0],
+            {
+                "sample_id": "docEx_w1",
+                "doc_id": "docEx",
+                "text": "A remote code execution CVE-2021-26855 in Exchange was observed in the wild.",
+            },
+        ]
+        preds = [items[0][1], []]
+        updated = vulnerability_anchored_backfill(samples, preds, enabled=True)
+        self.assertEqual(len(updated[1]), 1)
+        self.assertEqual(updated[1][0]["text"], "Exchange")
+        self.assertEqual(updated[1][0]["_source"], "cve_anchored_backfill")
+
+
+if __name__ == "__main__":
+    unittest.main()
+

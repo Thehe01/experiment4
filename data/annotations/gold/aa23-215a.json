@@ -1,0 +1,4359 @@
+{
+  "doc_id": "aa23-215a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "cpe_audit": {
+      "version": "cpe-gold-audit-v1",
+      "prediction_outputs_used": false,
+      "decision_count": 7
+    },
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "2022 Top Routinely Exploited Vulnerabilities | CISA\nSkip to main content\n \nOfficial websites use .gov\n A \n.gov\n website belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\n A \nlock\n (\n) or \nhttps://\n means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nStaying Secure at Events\nno-cost Cyber Services\nSecure by design \nSecure Your Business\nReport A Cyber Issue\n \nShare:\nCybersecurity Advisory\n2022 Top Routinely Exploited Vulnerabilities\nRelease Date\nAugust 03, 2023\nAlert Code\nAA23-215A\n Related topics:\nCybersecurity Best Practices\nSUMMARY\nThe following cybersecurity agencies coauthored this joint Cybersecurity Advisory (CSA):\nUnited States: The Cybersecurity and Infrastructure Security Agency (CISA), National Security Agency (NSA), and Federal Bureau of Investigation (FBI)\nAustralia: Australian Signals Directorate’s Australian Cyber Security Centre (ACSC)\nCanada: Canadian Centre for Cyber Security (CCCS)\nNew Zealand: New Zealand National Cyber Security Centre (NCSC-NZ) and Computer Emergency Response Team New Zealand (CERT NZ)\nUnited Kingdom: National Cyber Security Centre (NCSC-UK)\nThis advisory provides details on the Common Vulnerabilities and Exposures (CVEs) routinely and frequently exploited by malicious cyber actors in 2022 and the associated Common Weakness Enumeration(s) (CWE). In 2022, malicious cyber actors exploited older software vulnerabilities more frequently than recently disclosed vulnerabilities and targeted unpatched, internet-facing systems.\nThe authoring agencies strongly encourage vendors, designers, developers, and end-user organizations to implement the recommendations found within the Mitigations section of this advisory—including the following—to reduce the risk of compromise by malicious cyber actors.\nVendors, designers, and developers\n: Implement \nsecure-by-design and -default principles and tactics\n to reduce the prevalence of vulnerabilities in your software.\nFollow the Secure Software Development Framework (SSDF)\n, also known as \nSP 800-218\n, and implement secure design practices into each stage of the software development life cycle (SDLC). As part of this, establish a coordinated vulnerability disclosure program that includes processes to determine root causes of discovered vulnerabilities.\nPrioritize secure-by-default configurations\n, such as eliminating default passwords, or requiring addition configuration changes to enhance product security.\nEnsure that published CVEs include the proper CWE field\n identifying the root cause of the vulnerability.\nEnd-user organizations\n:\nApply timely patches to systems\n. \nNote\n: First check for signs of compromise if CVEs identified in this CSA have not been patched.\nImplement a centralized patch management system.\nUse security tools, such as endpoint detection and response (EDR), web application firewalls, and network protocol analyzers\n.\nAsk your software providers to discuss their secure by design program\n and to provide links to information about how they are working to remove classes of vulnerabilities and to set secure default settings.\nDownload the PDF version of this report:\nAA23-215A PDF\n(PDF, 980.90 KB\n )\nTECHNICAL DETAILS\nKey Findings\nIn 2022, malicious cyber actors exploited older software vulnerabilities more frequently than recently disclosed vulnerabilities and targeted unpatched, internet-facing systems. Proof of concept (PoC) code was publicly available for many of the software vulnerabilities or vulnerability chains, likely facilitating exploitation by a broader range of malicious cyber actors.\nMalicious cyber actors generally have the most success exploiting known vulnerabilities within the first two years of public disclosure—the value of such vulnerabilities gradually decreases as software is patched or upgraded. Timely patching reduces the effectiveness of known, exploitable vulnerabilities, possibly decreasing the pace of malicious cyber actor operations and forcing pursuit of more costly and time-consuming methods (such as developing zero-day exploits or conducting software supply chain operations).\nMalicious cyber actors likely prioritize developing exploits for severe and globally prevalent CVEs. While sophisticated actors also develop tools to exploit other vulnerabilities, developing exploits for critical, wide-spread, and publicly known vulnerabilities gives actors low-cost, high-impact tools they can use for several years. Additionally, cyber actors likely give higher priority to vulnerabilities that are more prevalent in their specific targets’ networks. Multiple CVE or CVE chains require the actor to send a malicious web request to the vulnerable device, which often includes unique signatures that can be detected through deep packet inspection.\nTop Routinely Exploited Vulnerabilities\nTable 1 shows the top 12 vulnerabilities the co-authors observed malicious cyber actors routinely exploiting in 2022:\nCVE-2018-13379\n. \nThis vulnerability, affecting Fortinet SSL VPNs, was also \nroutinely exploited in 2020\n and \n2021\n. The continued exploitation indicates that many organizations failed to patch software in a timely manner and remain vulnerable to malicious cyber actors.\nCVE-2021-34473\n, \nCVE-2021-31207\n, \nCVE-2021-34523\n.\n These vulnerabilities, known as ProxyShell, affect Microsoft Exchange email servers. In combination, successful exploitation enables a remote actor to execute arbitrary code. These vulnerabilities reside within the Microsoft Client Access Service (CAS), which typically runs on port 443 in Microsoft Internet Information Services (IIS) (e.g., Microsoft’s web server). CAS is commonly exposed to the internet to enable users to access their email via mobile devices and web browsers.\nCVE-2021-40539\n.\n This vulnerability enables unauthenticated remote code execution (RCE) in Zoho ManageEngine ADSelfService Plus and was linked to the usage of an outdated third-party dependency. Initial exploitation of this vulnerability \nbegan in late 2021\n and \ncontinued throughout 2022\n.\nCVE-2021-26084\n.\n This vulnerability, affecting Atlassian Confluence Server and Data Center (a web-based collaboration tool used by governments and private companies) could enable an unauthenticated cyber actor to execute arbitrary code on vulnerable systems. This vulnerability quickly became one of the most routinely exploited vulnerabilities after a PoC was released within a week of its disclosure. Attempted mass exploitation of this vulnerability was observed in September 2021.\nCVE-2021- 44228\n.\n This vulnerability, known as Log4Shell, affects Apache’s Log4j library, an open-source logging framework incorporated into thousands of products worldwide. An actor can exploit this vulnerability by submitting a specially crafted request to a vulnerable system, causing the execution of arbitrary code. The request allows a cyber actor to take full control of a system. The actor can then steal information, launch ransomware, or conduct other malicious activity.\n[1\n] Malicious cyber actors began exploiting the vulnerability after it was publicly disclosed in December 2021, and continued to show high interest in CVE-2021- 44228 through the first half of 2022.\nCVE-2022-22954\n, \nCVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access, Identity Manager, and other VMware products. A malicious cyber actor with network access could trigger a server-side template injection that may result in remote code execution\n. \nExploitation of CVE-2022-22954 and CVE-2022-22960 \nbegan in early 2022\n and attempts continued throughout the remainder of the year.\nCVE-2022-1388\n.\n This vulnerability allows unauthenticated malicious cyber actors to bypass iControl REST authentication\non F5 BIG-IP application delivery and security software\n.\nCVE-2022-30190\n.\n This vulnerability impacts the Microsoft Support Diagnostic Tool (MSDT) in Windows. A remote, unauthenticated cyber actor could exploit this vulnerability to take control of an affected system.\nCVE-2022-26134\n. This critical RCE vulnerability affects Atlassian Confluence and Data Center. The vulnerability, which was likely initially exploited as a zero-day before public disclosure in June 2022, is related to an older Confluence vulnerability (\nCVE-2021-26084\n), which cyber actors also exploited in 2022.\nTable 1: Top 12 Routinely Exploited Vulnerabilities in 2022\nCVE\nVendor\nProduct\nType\nCWE\nCVE-2018-13379\nFortinet\nFortiOS and FortiProxy\nSSL VPN credential exposure\nCWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2021-34473\n(Proxy Shell)\nMicrosoft\nExchange Server\nRCE\nCWE-918 Server-Side Request Forgery (SSRF)\nCVE-2021-31207\n(Proxy Shell)\nMicrosoft\nExchange Server\nSecurity Feature Bypass\nCWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2021-34523\n(Proxy Shell)\nMicrosoft\nExchange Server\nElevation of Privilege\nCWE-287 Improper Authentication\nCVE-2021-40539\nZoho ManageEngine\nADSelfService Plus\nRCE/\nAuthentication Bypass\nCWE-287 Improper Authentication\nCVE-2021-26084\nAtlassian\nConfluence Server and Data Center\nArbitrary code execution\nCWE-74 Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')\nCVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2\nRCE\nCWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\n \nCWE-20 Improper Input Validation\n \nCWE-400 Uncontrolled Resource Consumption\n \nCWE-502 Deserialization of Untrusted Data\nCVE-2022-22954\nVMware\nWorkspace ONE Access and Identity Manager\nRCE\nCWE-94 Improper Control of Generation of Code ('Code Injection')\nCVE-2022-22960\nVMware\nWorkspace ONE Access, Identity Manager, and vRealize Automation\nImproper Privilege Management\nCWE-269 Improper Privilege Management\nCVE-2022-1388\nF5 Networks\nBIG-IP\nMissing Authentication Vulnerability\nCWE-306 Missing Authentication for Critical Function\nCVE-2022-30190\nMicrosoft\nMultiple Products\nRCE\nNone Listed\nCVE-2022-26134\nAtlassian\nConfluence Server and Data Center\nRCE\nCWE-74 Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')\nAdditional Routinely Exploited Vulnerabilities\nIn addition to the 12 vulnerabilities listed in Table 1, the authoring agencies identified vulnerabilities—listed in Table 2—that were also routinely exploited by malicious cyber actors in 2022.\nTable 2: Additional Routinely Exploited Vulnerabilities in 2022\nCVE\nVendor\nProduct\nType\nCWE\nCVE-2017-0199\nMicrosoft\nMultiple Products\nArbitrary Code Execution\nNone Listed\nCVE-2017-11882\nMicrosoft\nExchange Server\nArbitrary Code Execution\nCWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer\nCVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure\nArbitrary File Reading\nCWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2019-0708\nMicrosoft\nRemote Desktop Services\nRCE\nCWE-416: Use After Free\nCVE-2019-19781\nCitrix\nApplication Delivery Controller and Gateway\nArbitrary Code Execution\nCWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2020-5902\nF5 Networks\nBIG-IP\nRCE\nCWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2020-1472\nMicrosoft\nMultiple Products\nPrivilege Escalation\nCWE-330: Use of Insufficiently Random Values\nCVE-2020-14882\nOracle\nWebLogic Server\nRCE\nNone Listed\nCVE-2020-14883\nOracle\nWebLogic Server\nRCE\nNone Listed\nCVE-2021-20016\nSonicWALL\nSSLVPN SMA100\nSQL Injection\nCWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')\nCVE-2021-26855\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nCWE-918: Server-Side Request Forgery (SSRF)\nCVE-2021-27065\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nCWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2021-26858\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nNone Listed\nCVE-2021-26857\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nCWE-502: Deserialization of Untrusted Data\nCVE-2021-20021\nSonicWALL\nEmail Security\nPrivilege Escalation Exploit Chain\nCWE-269: Improper Privilege Management\nCVE-2021-40438\nApache\nHTTP Server\nServer-Side Request Forgery\nCWE-918: Server-Side Request Forgery (SSRF)\nCVE-2021-41773\nApache\nHTTP Server\nServer Path Traversal\nCWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2021-42013\nApache\nHTTP Server\nServer Path Traversal\nCWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\nCVE-2021-20038\nSonicWall\nSMA 100 Series Appliances\nStack-based Buffer Overflow\nCWE-787: Out-of-bounds Write\nCWE-121: Stack-based Buffer Overflow\nCVE-2021-45046\nApache\nLog4j\nRCE\nCWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\nCVE-2022-42475\nFortinet\nFortiOS\nHeap-based Buffer Overflow\nCWE-787: Out-of-bounds Write\nCVE-2022-24682\nZimbra\nCollaboration Suite\n‘Cross-site Scripting’\nCWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')\nCVE-2022-22536\nSAP\nInternet Communication Manager (ICM)\nHTTP Request Smuggling\nCWE-444: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')\nCVE-2022-22963\nVMware Tanzu\nSpring Cloud\nRCE\nCWE-94: Improper Control of Generation of Code ('Code Injection')\nCWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\nCVE-2022-29464\nWSO2\nMultiple Products\nRCE\nCWE-434: Unrestricted Upload of File with Dangerous Type\nCVE-2022-27924\nZimbra\nZimbra Collaboration Suite\nCommand Injection\nCWE-74: Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')\nCVE-2022-22047\nMicrosoft\nWindows CSRSS\nElevation of Privilege\nCWE-269: Improper Privilege Management\nCVE-2022-27593\nQNAP\nQNAP NAS\nExternally Controlled Reference\nCWE-610: Externally Controlled Reference to a Resource in Another Sphere\nCVE-2022-41082\nMicrosoft\nExchange Server\nPrivilege Escalation\nNone Listed\nCVE-2022-40684\nFortinet\nFortiOS, FortiProxy, FortiSwitchManager\nAuthentication Bypass\nCWE-306: Missing Authentication for Critical Function\nMITIGATIONS\nVendors and Developers\nThe authoring agencies recommend vendors and developers take the following steps to ensure their products are secure by design and default:\nIdentify repeatedly exploited classes of vulnerability. \nPerform an analysis of both CVEs and known exploited vulnerabilities to understand which classes of vulnerability are identified more than others. Implement appropriate mitigations to eliminate those classes of vulnerability. For example, if a product has several instances of SQL injection vulnerabilities, ensure all database queries in the product use parameterized queries, and prohibit other forms of queries.\nEnsure business leaders are responsible for security. \nBusiness leaders should ensure that proactive steps to eliminate entire classes of security vulnerabilities, rather than only making one-off patches when new vulnerabilities are discovered.\nFollow the SSDF\n (\nSP 800-218\n)\n and implement secure design practices into each stage of the SDLC. Pay attention to:\nPrioritizing the use of memory safe languages wherever possible [\nSSDF PW 6.1\n].\nExercising due diligence when selecting software components (e.g., software libraries, modules, middleware, frameworks) to ensure robust security in consumer software products [\nSSDF PW 4.1\n].\nSetting up secure development team practices; this includes conducting peer code reviews, working to a common organization secure coding standard, and maintaining awareness of language specific security concerns [\nSSDF PW.5.1, PW.7.1, PW.7.2\n].\nEstablishing a \nvulnerability disclosure program\n to verify and resolve security vulnerabilities disclosed by people who may be internal or external to the organization [\nSSDF RV.1.3\n]. As part of this, establish processes to determine root causes of discovered vulnerabilities.\nUsing static and dynamic application security testing (SAST/DAST) tools to analyze product source code and application behavior to detect error-prone practices [\nSSDF PW.7.2, PW.8.2\n].\nConfiguring production-ready products to have to most secure settings as default and providing guidance on the risks of changing each setting [\nSSDF PW.9.1, PW9.2\n]\nPrioritize secure-by-default configurations\n such as eliminating default passwords, implementing single sign on (SSO) technology via modern open standards, and providing high-quality audit logs to customers with no additional configuration and at no extra charge.\nEnsure published CVEs include the proper CWE field identifying the root cause of the vulnerability \nto enable industry-wide analysis of software security and design flaws.\nFor more information on designing secure-by-design and -default products, including additional recommended secure-by-default configurations, see joint guide \nShifting the Balance of Cybersecurity Risk: Principles and Approaches for Security-by-Design and -Default\n.\nEnd-User Organizations\nThe authoring agencies recommend end-user organizations implement the mitigations below to improve cybersecurity posture on the basis of the threat actors’ activity. These mitigations align with the cross-sector Cybersecurity Performance Goals (CPGs) developed by CISA and the National Institute of Standards and Technology (NIST). The CPGs provide a minimum set of practices and protections that CISA and NIST recommend all organizations implement. CISA and NIST based the CPGs on existing cybersecurity frameworks and guidance to protect against the most common and impactful threats, tactics, techniques, and procedures. Visit CISA’s \nCross-Sector Cybersecurity Performance Goals\n for more information on CPGs, including additional recommended baseline protections.\nVulnerability and Configuration Management\nUpdate software, operating systems, applications, and firmware on IT network assets in a timely manner\n [\nCPG 1.E\n]. Prioritize patching \nknown exploited vulnerabilities\n, especially those CVEs identified in this CSA, then critical and high vulnerabilities that allow for remote code execution or denial-of-service on internet-facing equipment. For patch information on CVEs identified in this CSA, refer to the appendix.\nIf a patch for a known exploited or critical vulnerability cannot be quickly applied, implement vendor-approved workarounds.\nReplace end-of-life software (i.e., software no longer supported by the vendor).\nRoutinely perform automated asset discovery\n across the entire estate to identify and catalogue all the systems, services, hardware and software.\nImplement a robust patch management process \nand centralized patch management system that establishes prioritization of patch applications [\nCPG 1.A\n].\nOrganizations that are unable to perform rapid scanning and patching of internet-facing systems should consider moving these services to mature, reputable cloud service providers (CSPs) or other managed service providers (MSPs). Reputable MSPs can patch applications—such as webmail, file storage, file sharing, and chat and other employee collaboration tools—for their customers. However, MSPs and CSPs can expand their customer’s attack surface and may introduce unanticipated risks, so organizations should proactively collaborate with their MSPs and CSPs to jointly reduce risk [\nCPG 1.F\n]. For more information and guidance, see the following resources.\nCISA Insights \nRisk Considerations for Managed Service Provider Customers\nCISA Insights \nMitigations and Hardening Guidance for MSPs and Small- and Mid-sized Businesses\nACSC advice on \nHow to Manage Your Security When Engaging a Managed Service Provider\nDocument secure baseline configurations for all IT/OT components\n, including cloud infrastructure. Monitor, examine, and document any deviations from the initial secure baseline [\nCPG 2.O\n].\nPerform regular secure system backups\n and create known good copies of all device configurations for repairs and/or restoration. Store copies off-network in physically secure locations and test regularly [\nCPG 2.R\n].\nMaintain an updated cybersecurity incident response plan\n that is tested at least annually and updated within a risk informed time frame to ensure its effectiveness [\nCPG 2.S\n].\nIdentity and Access Management\nEnforce phishing-resistant multifactor authentication (MFA) for all users\n, without exception. [\nCPG 2.H\n].\nEnforce MFA on all VPN connections\n. If MFA is unavailable, require employees engaging in remote work to use strong passwords [\nCPG 2.A, 2.B, 2.C, 2.D, 2.G\n].\nRegularly review, validate, or remove privileged accounts\n (annually at a minimum) [\nCPG 2.D, 2.E\n].\nConfigure access control under the principle of least privilege\n [\nCPG 2.Q\n].\nEnsure software service accounts only provide necessary permissions (least privilege) to perform intended functions (using non-administrative privileges where feasible).\nNote:\n See CISA’s \nCapacity Enhancement Guide – Implementing Strong Authentication\n and ACSC’s guidance on \nImplementing Multi-Factor Authentication\n for more information on authentication system hardening.\nProtective Controls and Architecture\nProperly configure and secure internet-facing network devices\n, disable unused or unnecessary network ports and protocols, encrypt network traffic, and disable unused network services and devices [\nCPG 2.V, 2.W, 2X\n].\nHarden commonly exploited enterprise network services, including Link-Local Multicast Name Resolution (LLMNR) protocol, Remote Desktop Protocol (RDP), Common Internet File System (CIFS), Active Directory, and OpenLDAP.\nManage Windows Key Distribution Center (KDC) accounts (e.g., KRBTGT) to minimize Golden Ticket attacks and Kerberoasting.\nStrictly control the use of native scripting applications, such as command-line, PowerShell, WinRM, Windows Management Instrumentation (WMI), and Distributed Component Object Model (DCOM).\nImplement Zero Trust Network Architecture (ZTNA)\n to limit or block lateral movement by controlling access to applications, devices, and databases. Use private virtual local area networks [\nCPG 2.F, 2.X\n]. \nNote:\n See the Department of Defense’s \nZero Trust Reference Architecture\n for additional information on Zero Trust.\nContinuously monitor the attack surface\n and investigate abnormal activity that may indicate cyber actor or malware lateral movement [\nCPG 2.T\n].\nUse security tools, such as endpoint detection and response (EDR) and security information and event management (SIEM) tools. Consider using an information technology asset management (ITAM) solution to ensure EDR, SIEM, vulnerability scanner, and other similar tools are reporting the same number of assets [\nCPG 2.T, 2.V\n].\nUse web application firewalls to monitor and filter web traffic. These tools are commercially available via hardware, software, and cloud-based solutions, and may detect and mitigate exploitation attempts where a cyber actor sends a malicious web request to an unpatched device [\nCPG 2.B, 2.F\n].\nImplement an administrative policy and/or automated process configured to monitor unwanted hardware, software, or programs against an allowlist with specified approved versions [\nCPG 2.Q\n].\nUse a network protocol analyzer to examine captured data, including packet-level data.\nSupply Chain Security\nReduce third-party applications and unique system/application builds\n—provide exceptions only if required to support business critical functions [\nCPG 2.Q\n].\nEnsure contracts require vendors and/or third-party service providers to:\nProvide notification of security incidents and vulnerabilities within a risk informed time frame [\nCPG 1.G, 1.H, 1.I\n].\nSupply a Software Bill of Materials (SBOM) with all products to enhance vulnerability monitoring and to help reduce time to respond to identified vulnerabilities [\nCPG 4.B\n].\nAsk your software providers to discuss their secure by design program\n and to provide links to information about how they are working to remove classes of vulnerabilities, and to set secure default settings.\nRESOURCES\nFor information on the top vulnerabilities routinely exploited in 2016 through 2019, 2020, and 2021, see:\nJoint CSA \nTop 10 Routinely Exploited Vulnerabilities\nJoint CSA \nTop Routinely Exploited Vulnerabilities\nJoint CSA \n2021 Top Routinely Exploited Vulnerabilities\nSee the appendix for additional partner resources on the vulnerabilities mentioned in this CSA.\nSee ACSC’s \nEssential Eight mitigation strategies\n for additional mitigations.\nSee ACSC’s \nCyber Supply Chain Risk Management\n for additional considerations and advice.\nDISCLAIMER\nThe information in this report is being provided “as is” for informational purposes only. CISA, FBI, NSA, ACSC, CCCS, NCSC-NZ, CERT NZ, and NCSC-UK do not endorse any commercial product or service, including any subjects of analysis. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply endorsement, recommendation, or favoring.\nPURPOSE\nThis document was developed by CISA, NSA, FBI, ACSC, CCCS, NCSC-NZ, CERT NZ, and NCSC-UK in furtherance of their respective cybersecurity missions, including their responsibilities to develop and issue cybersecurity specifications and mitigations.\nREFERENCES\n[1] \nApache Log4j Vulnerability Guidance\nVERSION HISTORY\nAugust 3, 2023: Initial version.\nAPPENDIX: PATCH INFORMATION AND ADDITIONAL RESOURCES FOR TOP EXPLOITED VULNERABILITIES\nCVE\nVendor\nAffected Products and Versions\nPatch Information\nResources\nCVE-2017-0199\nMicrosoft\nMultiple Products\nMicrosoft Office/WordPad Remote Code Execution Vulnerability w/Windows\n \nCVE-2017-11882\nMicrosoft\nOffice, Multiple Versions\nMicrosoft Office Memory Corruption Vulnerability, CVE-2017-11882\n \nCVE-2018-13379\nFortinet\nFortiOS and FortiProxy 2.0.2, 2.0.1, 2.0.0, 1.2.8, 1.2.7, 1.2.6, 1.2.5, 1.2.4, 1.2.3, 1.2.2, 1.2.1, 1.2.0, 1.1.6\nFortiProxy - system file leak through SSL VPN special crafted HTTP resource requests\nJoint CSAs:\nIranian Government-Sponsored APT Cyber Actors Exploiting Microsoft Exchange and Fortinet Vulnerabilities in Furtherance of Malicious Activities\nRussian State-Sponsored Cyber Actors Target Cleared Defense Contractor Networks to Obtain Sensitive U.S. Defense Information and Technology\nAPT Actors Chaining Vulnerabilities Against SLTT, Critical Infrastructure, and Elections Organizations\nCVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure versions, 9.0R1 to 9.0R3.3, 8.3R1 to 8.3R7, and 8.2R1 to 8.2R12\nSA44101 - 2019-04: Out-of-Cycle Advisory: Multiple vulnerabilities resolved in Pulse Connect Secure / Pulse Policy Secure 9.0RX\nCISA Alerts:\nContinued Exploitation of Pulse Secure VPN Vulnerability\nChinese Ministry of State Security-Affiliated Cyber Threat Actor Activity\nACSC Advisory:\n2019-129: Recommendations to mitigate vulnerability in Pulse Connect Secure VPN Software\nJoint CSA:\nAPT Actors Chaining Vulnerabilities Against SLTT, Critical Infrastructure, and Elections Organizations\nCCCS Alert:\nAPT Actors Target U.S. and Allied Networks - Update 1\nCVE-2019-0708\nMicrosoft\nRemote Desktop Services\nRemote Desktop Services Remote Code Execution Vulnerability\n \nCVE-2019-19781\nCitrix\nADC and Gateway version 13.0 all supported builds before 13.0.47.24\nNetScaler ADC and NetScaler Gateway, version 12.1 all supported builds before 12.1.55.18; version 12.0 all supported builds before 12.0.63.13; version 11.1 all supported builds before 11.1.63.15; version 10.5 all supported builds before 10.5.70.12\nSD-WAN WANOP appliance models 4000-WO, 4100-WO, 5000-WO, and 5100-WO all supported software release builds before 10.2.6b and 11.0.3b\nCVE-2019-19781 - Vulnerability in Citrix Application Delivery Controller, Citrix Gateway, and Citrix SD-WAN WANOP appliance\nJoint CSAs:\nAPT Actors Chaining Vulnerabilities Against SLTT, Critical Infrastructure, and Elections Organizations\nChinese Ministry of State Security-Affiliated Cyber Threat Actor Activity\nCCCS Alert:\nDetecting Compromises relating to Citrix CVE-2019-19781\nCVE-2020-5902\nF5\nBIG IP versions 15.1.0, 15.0.0 to 15.0.1, 14.1.0 to 14.1.2, 13.1.0 to 13.1.3, 12.1.0 to 12.1.5, and 11.6.1 to 11.6.5\nK52145254: TMUI RCE vulnerability CVE-2020-5902\nCISA Alert:\nThreat Actor Exploitation of F5 BIG-IP CVE-2020-5902\nCVE-2020-1472\nMicrosoft\nWindows Server, Multiple Versions\nMicrosoft Security Update Guide: Netlogon Elevation of Privilege Vulnerability, CVE-2020-1472\nACSC Advisory:\n2020-016: Netlogon Elevation of Privilege Vulnerability (CVE-2020-1472)\nJoint CSA:\nAPT Actors Chaining Vulnerabilities Against SLTT, Critical Infrastructure, and Elections Organizations\nCCCS Alert:\nMicrosoft Netlogon Elevation of Privilege Vulnerability - CVE-2020-1472 - Update 1\nCVE-2020-14882\nOracle\nWebLogic Server, versions 10.3.6.0.0, 12.1.3.0.0, 12.2.1.3.0, 12.2.1.4.0, 14.1.1.0.0\nOracle Critical Patch Update Advisory - October 2020\n \nCVE-2020-14883\nOracle\nWebLogic Server, versions 10.3.6.0.0, 12.1.3.0.0, 12.2.1.3.0, 12.2.1.4.0, 14.1.1.0.0\nOracle Critical Patch Update Advisory - October 2020\n \nCVE-2021-20016\nSonicWALL\nSSLVPN SMA100, Build Version 10.x\nConfirmed Zero-day vulnerability in the SonicWall SMA100 build version 10.x\n \nCVE-2021-26855\nMicrosoft\nExchange Server, Multiple Versions\nMicrosoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-26855\nCISA Alert:\nMitigate Microsoft Exchange Server Vulnerabilities\nCVE-2021-26857\nMicrosoft\nExchange Server, Multiple Versions\nMicrosoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-26857\nCISA Alert:\nMitigate Microsoft Exchange Server Vulnerabilities\nCVE-2021-26858\nMicrosoft\nExchange Server, Multiple Versions\nMicrosoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-26858\nCISA Alert:\nMitigate Microsoft Exchange Server Vulnerabilities\nCVE-2021-27065\nMicrosoft\nMultiple Products\nMicrosoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-27065\nCISA Alert:\nMitigate Microsoft Exchange Server Vulnerabilities\nCVE-2021-20021\nSonicWALL\nEmail Security version 10.0.9.x Email Security\nSonicWall Email Security pre-authentication administrative account creation vulnerability\n \nCVE-2021-31207\nMicrosoft\nExchange Server, Multiple Versions\nMicrosoft Exchange Server Security Feature Bypass Vulnerability, CVE-2021-31207\nCISA Alert:\nUrgent: Protect Against Active Exploitation of ProxyShell Vulnerabilities\nACSC Alert:\nMicrosoft Exchange ProxyShell Targeting in Australia\nCVE-2022-26134\nAtlassian\nConfluence Server and Data Center, versions: 7.4.17, 7.13.7, 7.14.3, 7.15.2, 7.16.4, 7.17.4, 7.18.1\nConfluence Security Advisory 2022-06-02\nCISA Alert:\nCISA Adds One Known Exploited Vulnerability (CVE-2022-26134) to Catalog\nACSC Alert:\nRemote code execution vulnerability present in Atlassian Confluence Server and Data Center\nCVE-2021-34473\nMicrosoft\nExchange Server, Multiple Version\nMicrosoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-34473\nJoint CSA:\nIranian Government-Sponsored APT Cyber Actors Exploiting Microsoft Exchange and Fortinet Vulnerabilities in Furtherance of Malicious Activities\nCVE-2021-34523\nMicrosoft\nMicrosoft Exchange Server 2013 Cumulative Update 23\nMicrosoft Exchange Server 2016 Cumulative Updates 19 and 20\nMicrosoft Exchange Server 2019 Cumulative Updates 8 and 9\nMicrosoft Exchange Server Elevation of Privilege Vulnerability, CVE-2021-34523\nCISA Alert:\nUrgent: Protect Against Active Exploitation of ProxyShell Vulnerabilities\nCVE-2021-26084\nJira Atlassian\nConfluence Server and Data Center, versions 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.\nJira Atlassian: Confluence Server Webwork OGNL injection - CVE-2021-26084\nCISA Alert:\nAtlassian Releases Security Updates for Confluence Server and Data Center\nCVE-2021-40539\nZoho ManageEngineCorp.\nManageEngine ADSelfService Plus builds up to 6113\nSecurity advisory - ADSelfService Plus authentication bypass vulnerability\nACSC Alert:\nCritical vulnerability in ManageEngine ADSelfService Plus exploited by cyber actors\nCVE-2021-40438\nApache\nHTTP Server 2.4.48\n \n \nCVE-2021-41773\nApache\nApache HTTP Server 2.4.49\nApache HTTP Server 2.4 vulnerabilities\n \nCVE-2021-42013\nApache\nApache HTTP Server 2.4.50\nApache HTTP Server 2.4 vulnerabilities\n \nCVE-2021-20038\nSonicWall\nSMA 100 Series (SMA 200, 210, 400, 410, 500v), versions 10.2.0.8-37sv, 10.2.1.1-19sv, 10.2.1.2-24svSMA 100 series appliances\nSonicWall patches multiple SMA100 affected vulnerabilities\nACSC Alert:\nRemote code execution vulnerability present in SonicWall SMA 100 series appliances\nCCCS Alert:\nSonicWall Security Advisory\nCVE-2021- 44228\nApache\nLog4j, all versions from 2.0-beta9 to 2.14.1\nFor other affected vendors and products, see CISA's GitHub repository.\nApache Log4j Security Vulnerabilities\n \nFor additional information, see joint CSA: \nMitigating Log4Shell and Other Log4j-Related Vulnerabilities\nCISA webpage:\nApache Log4j Vulnerability Guidance\nCCCS Alert:\nActive exploitation of Apache Log4j vulnerability - Update 7\nACSC Advisory:\n2021-007: Log4j vulnerability – advice and mitigations\nACSC Publication:\nLog4j: What Boards and Directors Need to Know\nCVE-2021-45046\nApache\nLog4j 2.15.0Log4j\nApache Log4j Security Vulnerabilities\n \nCVE-2022-42475\nFortinet\nFortiOS SSL-VPN 7.2.0 through 7.2.2, 7.0.0 through 7.0.8, 6.4.0 through 6.4.10, 6.2.0 through 6.2.11, 6.0.15 and earlier and\n \nFortiProxy SSL-VPN 7.2.0 through 7.2.1, 7.0.7 and earlier\nFortiOS - heap-based buffer overflow in sslvpnd\n \nCVE-2022-24682\nZimbra\nZimbra Collaboration Suite 8.8.x before 8.8.15 patch 30 (update 1) Collaboration Suite\nZimbra Collaboration Joule 8.8.15 Patch 30 GA Release\n \nCVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform, SAP Content Server 7.53, and SAP Web Dispatcher Internet Communication Manager (ICM)\nRemediation of CVE-2022-22536 Request smuggling and request concatenation in SAP NetWeaver, SAP Content Server and SAP Web Dispatcher\nCISA Alert:\nCritical Vulnerabilities Affecting SAP Applications Employing Internet Communication Manager (ICM)\nCVE-2022-22963\nVMware Tanzumware Tanzu\nSpring Cloud Function versions 3.1.6, 3.2.2, and older unsupported versions\nCVE-2022-22963: Remote code execution in Spring Cloud Function by malicious Spring Expression\n \nCVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation (vIDM), 8.x, 7.6\nVMware Cloud Foundation (vIDM), 4.x\n \nvRealize Suite Lifecycle Manager (vIDM), 8.xWorkspace\n \nONE Access and Identity Manager\nVMware Advisory VMSA-2022-0011\n \nCVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation3.3.6, 3.3.5, 3.3.4, 3.3.3\n \nvRealize Automation (vIDM), 8.x, 7.6\n \nVMware Cloud Foundation (vIDM), 4.x\n \nVMware Cloud Foundation (vRA), 3.x\n \nvRealize Suite Lifecycle Manager (vIDM), 8.x\nVMSA-2022-0011\n \nCVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics 5.4.0, 5.4.1, 5.5.0, and 5.6.0\n \nWSO2 Identity Server as Key Manager 5.3.0 and above through 5.10.0\n \n WSO2 Enterprise Integrator 6.2.0 and above through 6.6.0\nWSO2 Documentation - Spaces\n \nCVE-2022-27924\nZimbra\nZimbra Collaboration Suite, 8.8.15 and 9.0\nZimbra Collaboration Kepler 9.0.0 Patch 24.1 GA Release\n \nCVE-2022-1388\nF5 Networks\nF5 BIG-IP 16.1.x versions prior to 16.1.2.2, 15.1.x versions prior to 15.1.5.1, 14.1.x versions prior to 14.1.4.6, 13.1.x versions prior to 13.1.5, and All 12.1.x and 11.6.x versions\nK23605346: BIG-IP iControl REST vulnerability CVE-2022-1388\nJoint CSA:\nThreat Actors Exploiting F5 BIG-IP CVE-2022-1388\nCVE-2022-30190\nMicrosoft\nExchange Server, Multiple Versions\n \nCISA Alert:\nMicrosoft Releases Workaround Guidance for MSDT \"Follina\" Vulnerability\nCVE-2022-22047\nMicrosoft\nMultiple Products\nWindows Client Server Run-time Subsystem (CSRSS) Elevation of Privilege Vulnerability, CVE-2022-22047\n \nCVE-2022-27593\nQNAP\nCertain QNAP NAS running Photo Station with internet exposure Ausustor Network Attached Storage\nDeadBolt Ransomware\n \nCVE-2022-41082\nMicrosoft\nExchange Server 2016 Cumulative Update 23, 2019 Cumulative Update 12, 2019 Cumulative Update 11, 2016 Cumulative Update 22, and 2013 Cumulative Update 23\nMicrosoft Exchange Server Remote Code Execution Vulnerability, CVE-2022-41082\nACSC Alert:\nVulnerability Alert – 2 new Vulnerabilities associated with Microsoft Exchange.\nCVE-2022-40684\nFortinet\nFortiOS version 7.2.0 through 7.2.1 and 7.0.0 through 7.0.6, FortiProxy version 7.2.0 and version 7.0.0 through 7.0.6 and FortiSwitchManager version 7.2.0 and 7.0.0\nFortiOS / FortiProxy / FortiSwitchManager - Authentication bypass on administrative interface\n \nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nTags\nAudience\n:\n Industry\nCo-Sealers and Partners\n:\n Federal Bureau of Investigation,\n International\nTopics\n:\nCybersecurity Best Practices\nPlease share your thoughts\nWe recently updated our anonymous \nproduct survey\n; we welcome your feedback.\nRelated Advisories\nApr 23, 2026\nCybersecurity Advisory | AA26-113A\nDefending Against China-Nexus Covert Networks of Compromised Devices\n \nApr 07, 2026\nCybersecurity Advisory | AA26-097A\nIranian-Affiliated Cyber Actors Exploit Programmable Logic Controllers Across US Critical Infrastructure\n \nDec 09, 2025\nCybersecurity Advisory | AA25-343A\nPro-Russia Hacktivists Conduct Opportunistic Attacks Against US and Global Critical Infrastructure\n \nSep 23, 2025\nCybersecurity Advisory | AA25-266A\nCISA Shares Lessons Learned from an Incident Response Engagement",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2022-24682",
+      "type": "Vulnerability",
+      "start": 13080,
+      "end": 13094,
+      "normalized_id": "CVE-2022-24682",
+      "evidence": "CVE-2022-24682\n"
+    },
+    {
+      "id": "E2",
+      "text": "CVE-2021-42013",
+      "type": "Vulnerability",
+      "start": 12544,
+      "end": 12558,
+      "normalized_id": "CVE-2021-42013",
+      "evidence": "CVE-2021-42013\n"
+    },
+    {
+      "id": "E3",
+      "text": "CVE-2022-22963",
+      "type": "Vulnerability",
+      "start": 13407,
+      "end": 13421,
+      "normalized_id": "CVE-2022-22963",
+      "evidence": "CVE-2022-22963\n"
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 6099,
+      "end": 6113,
+      "normalized_id": "CVE-2021-26084",
+      "evidence": "CVE-2021-26084\n"
+    },
+    {
+      "id": "E5",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 12080,
+      "end": 12094,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "CVE-2021-26857\n"
+    },
+    {
+      "id": "E6",
+      "text": "CVE-2021-34523",
+      "type": "Vulnerability",
+      "start": 5305,
+      "end": 5319,
+      "normalized_id": "CVE-2021-34523",
+      "evidence": "CVE-2021-34523\n"
+    },
+    {
+      "id": "E7",
+      "text": "CVE-2019-19781",
+      "type": "Vulnerability",
+      "start": 11099,
+      "end": 11113,
+      "normalized_id": "CVE-2019-19781",
+      "evidence": "CVE-2019-19781\n"
+    },
+    {
+      "id": "E8",
+      "text": "CVE-2021-20038",
+      "type": "Vulnerability",
+      "start": 12687,
+      "end": 12701,
+      "normalized_id": "CVE-2021-20038",
+      "evidence": "CVE-2021-20038\n"
+    },
+    {
+      "id": "E9",
+      "text": "CVE-2022-30190",
+      "type": "Vulnerability",
+      "start": 7909,
+      "end": 7923,
+      "normalized_id": "CVE-2022-30190",
+      "evidence": "CVE-2022-30190\n"
+    },
+    {
+      "id": "E10",
+      "text": "CVE-2021-20016",
+      "type": "Vulnerability",
+      "start": 11617,
+      "end": 11631,
+      "normalized_id": "CVE-2021-20016",
+      "evidence": "CVE-2021-20016\n"
+    },
+    {
+      "id": "E11",
+      "text": "CVE-2020-14882",
+      "type": "Vulnerability",
+      "start": 11509,
+      "end": 11523,
+      "normalized_id": "CVE-2020-14882",
+      "evidence": "CVE-2020-14882\n"
+    },
+    {
+      "id": "E12",
+      "text": "CVE-2022-42475",
+      "type": "Vulnerability",
+      "start": 12992,
+      "end": 13006,
+      "normalized_id": "CVE-2022-42475",
+      "evidence": "CVE-2022-42475\n"
+    },
+    {
+      "id": "E13",
+      "text": "CVE-2019-0708",
+      "type": "Vulnerability",
+      "start": 11023,
+      "end": 11036,
+      "normalized_id": "CVE-2019-0708",
+      "evidence": "CVE-2019-0708\n"
+    },
+    {
+      "id": "E14",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 12010,
+      "end": 12024,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "CVE-2021-26858\n"
+    },
+    {
+      "id": "E15",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 12401,
+      "end": 12415,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "CVE-2021-41773\n"
+    },
+    {
+      "id": "E16",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 11865,
+      "end": 11879,
+      "normalized_id": "CVE-2021-27065",
+      "evidence": "CVE-2021-27065\n"
+    },
+    {
+      "id": "E17",
+      "text": "CVE-2022-22960",
+      "type": "Vulnerability",
+      "start": 7286,
+      "end": 7300,
+      "normalized_id": "CVE-2022-22960",
+      "evidence": "CVE-2022-22960\n"
+    },
+    {
+      "id": "E18",
+      "text": "CVE-2022-40684",
+      "type": "Vulnerability",
+      "start": 14228,
+      "end": 14242,
+      "normalized_id": "CVE-2022-40684",
+      "evidence": "CVE-2022-40684\n"
+    },
+    {
+      "id": "E19",
+      "text": "CVE-2022-22954",
+      "type": "Vulnerability",
+      "start": 7268,
+      "end": 7282,
+      "normalized_id": "CVE-2022-22954",
+      "evidence": "CVE-2022-22954\n"
+    },
+    {
+      "id": "E20",
+      "text": "CVE-2017-0199",
+      "type": "Vulnerability",
+      "start": 10631,
+      "end": 10644,
+      "normalized_id": "CVE-2017-0199",
+      "evidence": "CVE-2017-0199\n"
+    },
+    {
+      "id": "E21",
+      "text": "CVE-2022-26134",
+      "type": "Vulnerability",
+      "start": 8121,
+      "end": 8135,
+      "normalized_id": "CVE-2022-26134",
+      "evidence": "CVE-2022-26134\n"
+    },
+    {
+      "id": "E22",
+      "text": "CVE-2021-45046",
+      "type": "Vulnerability",
+      "start": 12832,
+      "end": 12846,
+      "normalized_id": "CVE-2021-45046",
+      "evidence": "CVE-2021-45046\n"
+    },
+    {
+      "id": "E23",
+      "text": "CVE-2022-27593",
+      "type": "Vulnerability",
+      "start": 14020,
+      "end": 14034,
+      "normalized_id": "CVE-2022-27593",
+      "evidence": "CVE-2022-27593\n"
+    },
+    {
+      "id": "E24",
+      "text": "CVE-2022-1388",
+      "type": "Vulnerability",
+      "start": 7730,
+      "end": 7743,
+      "normalized_id": "CVE-2022-1388",
+      "evidence": "CVE-2022-1388\n"
+    },
+    {
+      "id": "E25",
+      "text": "CVE-2021-34473",
+      "type": "Vulnerability",
+      "start": 5269,
+      "end": 5283,
+      "normalized_id": "CVE-2021-34473",
+      "evidence": "CVE-2021-34473\n"
+    },
+    {
+      "id": "E26",
+      "text": "CVE-2022-27924",
+      "type": "Vulnerability",
+      "start": 13745,
+      "end": 13759,
+      "normalized_id": "CVE-2022-27924",
+      "evidence": "CVE-2022-27924\n"
+    },
+    {
+      "id": "E27",
+      "text": "CVE-2020-1472",
+      "type": "Vulnerability",
+      "start": 11401,
+      "end": 11414,
+      "normalized_id": "CVE-2020-1472",
+      "evidence": "CVE-2020-1472\n"
+    },
+    {
+      "id": "E28",
+      "text": "CVE-2022-22047",
+      "type": "Vulnerability",
+      "start": 13919,
+      "end": 13933,
+      "normalized_id": "CVE-2022-22047",
+      "evidence": "CVE-2022-22047\n"
+    },
+    {
+      "id": "E29",
+      "text": "CVE-2021-40438",
+      "type": "Vulnerability",
+      "start": 12295,
+      "end": 12309,
+      "normalized_id": "CVE-2021-40438",
+      "evidence": "CVE-2021-40438\n"
+    },
+    {
+      "id": "E30",
+      "text": "CVE-2021-40539",
+      "type": "Vulnerability",
+      "start": 5806,
+      "end": 5820,
+      "normalized_id": "CVE-2021-40539",
+      "evidence": "CVE-2021-40539\n"
+    },
+    {
+      "id": "E31",
+      "text": "CVE-2022-22536",
+      "type": "Vulnerability",
+      "start": 13238,
+      "end": 13252,
+      "normalized_id": "CVE-2022-22536",
+      "evidence": "CVE-2022-22536\n"
+    },
+    {
+      "id": "E32",
+      "text": "CVE-2017-11882",
+      "type": "Vulnerability",
+      "start": 10710,
+      "end": 10724,
+      "normalized_id": "CVE-2017-11882",
+      "evidence": "CVE-2017-11882\n"
+    },
+    {
+      "id": "E33",
+      "text": "CVE-2019-11510",
+      "type": "Vulnerability",
+      "start": 10857,
+      "end": 10871,
+      "normalized_id": "CVE-2019-11510",
+      "evidence": "CVE-2019-11510\n"
+    },
+    {
+      "id": "E34",
+      "text": "CVE-2022-29464",
+      "type": "Vulnerability",
+      "start": 13646,
+      "end": 13660,
+      "normalized_id": "CVE-2022-29464",
+      "evidence": "CVE-2022-29464\n"
+    },
+    {
+      "id": "E35",
+      "text": "CVE-2018-13379",
+      "type": "Vulnerability",
+      "start": 4997,
+      "end": 5011,
+      "normalized_id": "CVE-2018-13379",
+      "evidence": "CVE-2018-13379\n"
+    },
+    {
+      "id": "E36",
+      "text": "CVE-2021-20021",
+      "type": "Vulnerability",
+      "start": 12181,
+      "end": 12195,
+      "normalized_id": "CVE-2021-20021",
+      "evidence": "CVE-2021-20021\n"
+    },
+    {
+      "id": "E37",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 11763,
+      "end": 11777,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "CVE-2021-26855\n"
+    },
+    {
+      "id": "E38",
+      "text": "CVE-2020-14883",
+      "type": "Vulnerability",
+      "start": 11563,
+      "end": 11577,
+      "normalized_id": "CVE-2020-14883",
+      "evidence": "CVE-2020-14883\n"
+    },
+    {
+      "id": "E39",
+      "text": "CVE-2021-31207",
+      "type": "Vulnerability",
+      "start": 5287,
+      "end": 5301,
+      "normalized_id": "CVE-2021-31207",
+      "evidence": "CVE-2021-31207\n"
+    },
+    {
+      "id": "E40",
+      "text": "CVE-2020-5902",
+      "type": "Vulnerability",
+      "start": 11277,
+      "end": 11290,
+      "normalized_id": "CVE-2020-5902",
+      "evidence": "CVE-2020-5902\n"
+    },
+    {
+      "id": "E41",
+      "text": "CVE-2022-41082",
+      "type": "Vulnerability",
+      "start": 14154,
+      "end": 14168,
+      "normalized_id": "CVE-2022-41082",
+      "evidence": "CVE-2022-41082\n"
+    },
+    {
+      "id": "E42",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 8599,
+      "end": 8605,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n"
+    },
+    {
+      "id": "E43",
+      "text": "CWE-502",
+      "type": "Weakness",
+      "start": 9617,
+      "end": 9624,
+      "normalized_id": "CWE-502",
+      "evidence": "CWE-502 Deserialization of Untrusted Data\n"
+    },
+    {
+      "id": "E44",
+      "text": "CWE-918",
+      "type": "Weakness",
+      "start": 8744,
+      "end": 8751,
+      "normalized_id": "CWE-918",
+      "evidence": "CWE-918 Server-Side Request Forgery (SSRF)\n"
+    },
+    {
+      "id": "E45",
+      "text": "CWE-444",
+      "type": "Weakness",
+      "start": 13317,
+      "end": 13324,
+      "normalized_id": "CWE-444",
+      "evidence": "CWE-444: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')\n"
+    },
+    {
+      "id": "E46",
+      "text": "CWE-610",
+      "type": "Weakness",
+      "start": 14081,
+      "end": 14088,
+      "normalized_id": "CWE-610",
+      "evidence": "CWE-610: Externally Controlled Reference to a Resource in Another Sphere\n"
+    },
+    {
+      "id": "E47",
+      "text": "CWE-787",
+      "type": "Weakness",
+      "start": 12766,
+      "end": 12773,
+      "normalized_id": "CWE-787",
+      "evidence": "CWE-787: Out-of-bounds Write\n"
+    },
+    {
+      "id": "E48",
+      "text": "CWE-416",
+      "type": "Weakness",
+      "start": 11075,
+      "end": 11082,
+      "normalized_id": "CWE-416",
+      "evidence": "CWE-416: Use After Free\n"
+    },
+    {
+      "id": "E49",
+      "text": "CWE-89",
+      "type": "Weakness",
+      "start": 11670,
+      "end": 11676,
+      "normalized_id": "CWE-89",
+      "evidence": "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')\n"
+    },
+    {
+      "id": "E50",
+      "text": "CWE-330",
+      "type": "Weakness",
+      "start": 11464,
+      "end": 11471,
+      "normalized_id": "CWE-330",
+      "evidence": "CWE-330: Use of Insufficiently Random Values\n"
+    },
+    {
+      "id": "E51",
+      "text": "CWE-306",
+      "type": "Weakness",
+      "start": 10016,
+      "end": 10023,
+      "normalized_id": "CWE-306",
+      "evidence": "CWE-306 Missing Authentication for Critical Function\n"
+    },
+    {
+      "id": "E52",
+      "text": "CWE-119",
+      "type": "Weakness",
+      "start": 10776,
+      "end": 10783,
+      "normalized_id": "CWE-119",
+      "evidence": "CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer\n"
+    },
+    {
+      "id": "E53",
+      "text": "CWE-94",
+      "type": "Weakness",
+      "start": 9727,
+      "end": 9733,
+      "normalized_id": "CWE-94",
+      "evidence": "CWE-94 Improper Control of Generation of Code ('Code Injection')\n"
+    },
+    {
+      "id": "E54",
+      "text": "CWE-269",
+      "type": "Weakness",
+      "start": 9908,
+      "end": 9915,
+      "normalized_id": "CWE-269",
+      "evidence": "CWE-269 Improper Privilege Management\n"
+    },
+    {
+      "id": "E55",
+      "text": "CWE-287",
+      "type": "Weakness",
+      "start": 9030,
+      "end": 9037,
+      "normalized_id": "CWE-287",
+      "evidence": "CWE-287 Improper Authentication\n"
+    },
+    {
+      "id": "E56",
+      "text": "CWE-79",
+      "type": "Weakness",
+      "start": 13145,
+      "end": 13151,
+      "normalized_id": "CWE-79",
+      "evidence": "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')\n"
+    },
+    {
+      "id": "E57",
+      "text": "CWE-917",
+      "type": "Weakness",
+      "start": 9409,
+      "end": 9416,
+      "normalized_id": "CWE-917",
+      "evidence": "CWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\n"
+    },
+    {
+      "id": "E58",
+      "text": "CWE-434",
+      "type": "Weakness",
+      "start": 13688,
+      "end": 13695,
+      "normalized_id": "CWE-434",
+      "evidence": "CWE-434: Unrestricted Upload of File with Dangerous Type\n"
+    },
+    {
+      "id": "E59",
+      "text": "CWE-20",
+      "type": "Weakness",
+      "start": 9538,
+      "end": 9544,
+      "normalized_id": "CWE-20",
+      "evidence": "CWE-20 Improper Input Validation\n"
+    },
+    {
+      "id": "E60",
+      "text": "CWE-400",
+      "type": "Weakness",
+      "start": 9573,
+      "end": 9580,
+      "normalized_id": "CWE-400",
+      "evidence": "CWE-400 Uncontrolled Resource Consumption\n"
+    },
+    {
+      "id": "E61",
+      "text": "CWE-74",
+      "type": "Weakness",
+      "start": 9257,
+      "end": 9263,
+      "normalized_id": "CWE-74",
+      "evidence": "CWE-74 Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')\n"
+    },
+    {
+      "id": "E62",
+      "text": "CWE-121",
+      "type": "Weakness",
+      "start": 12795,
+      "end": 12802,
+      "normalized_id": "CWE-121",
+      "evidence": "CWE-121: Stack-based Buffer Overflow\n"
+    },
+    {
+      "id": "E63",
+      "text": "CVE-2022-22954",
+      "type": "Vulnerability",
+      "start": 7613,
+      "end": 7627,
+      "normalized_id": "CVE-2022-22954",
+      "evidence": "Exploitation of CVE-2022-22954 and CVE-2022-22960 \n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E64",
+      "text": "CVE-2022-22960",
+      "type": "Vulnerability",
+      "start": 7632,
+      "end": 7646,
+      "normalized_id": "CVE-2022-22960",
+      "evidence": "Exploitation of CVE-2022-22954 and CVE-2022-22960 \n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E65",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 8375,
+      "end": 8389,
+      "normalized_id": "CVE-2021-26084",
+      "evidence": "CVE-2021-26084\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E66",
+      "text": "CVE-2018-13379",
+      "type": "Vulnerability",
+      "start": 8524,
+      "end": 8538,
+      "normalized_id": "CVE-2018-13379",
+      "evidence": "CVE-2018-13379\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E67",
+      "text": "CVE-2021-34473",
+      "type": "Vulnerability",
+      "start": 8685,
+      "end": 8699,
+      "normalized_id": "CVE-2021-34473",
+      "evidence": "CVE-2021-34473\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E68",
+      "text": "CVE-2021-31207",
+      "type": "Vulnerability",
+      "start": 8787,
+      "end": 8801,
+      "normalized_id": "CVE-2021-31207",
+      "evidence": "CVE-2021-31207\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E69",
+      "text": "CVE-2021-34523",
+      "type": "Vulnerability",
+      "start": 8952,
+      "end": 8966,
+      "normalized_id": "CVE-2021-34523",
+      "evidence": "CVE-2021-34523\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E70",
+      "text": "CVE-2021-40539",
+      "type": "Vulnerability",
+      "start": 9062,
+      "end": 9076,
+      "normalized_id": "CVE-2021-40539",
+      "evidence": "CVE-2021-40539\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E71",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 9173,
+      "end": 9187,
+      "normalized_id": "CVE-2021-26084",
+      "evidence": "CVE-2021-26084\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E72",
+      "text": "CVE-2022-22954",
+      "type": "Vulnerability",
+      "start": 9659,
+      "end": 9673,
+      "normalized_id": "CVE-2022-22954",
+      "evidence": "CVE-2022-22954\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E73",
+      "text": "CVE-2022-22960",
+      "type": "Vulnerability",
+      "start": 9792,
+      "end": 9806,
+      "normalized_id": "CVE-2022-22960",
+      "evidence": "CVE-2022-22960\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E74",
+      "text": "CVE-2022-1388",
+      "type": "Vulnerability",
+      "start": 9946,
+      "end": 9959,
+      "normalized_id": "CVE-2022-1388",
+      "evidence": "CVE-2022-1388\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E75",
+      "text": "CVE-2022-30190",
+      "type": "Vulnerability",
+      "start": 10069,
+      "end": 10083,
+      "normalized_id": "CVE-2022-30190",
+      "evidence": "CVE-2022-30190\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E76",
+      "text": "CVE-2022-26134",
+      "type": "Vulnerability",
+      "start": 10128,
+      "end": 10142,
+      "normalized_id": "CVE-2022-26134",
+      "evidence": "CVE-2022-26134\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E77",
+      "text": "CVE-2017-0199",
+      "type": "Vulnerability",
+      "start": 25751,
+      "end": 25764,
+      "normalized_id": "CVE-2017-0199",
+      "evidence": "CVE-2017-0199\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E78",
+      "text": "CVE-2017-11882",
+      "type": "Vulnerability",
+      "start": 25866,
+      "end": 25880,
+      "normalized_id": "CVE-2017-11882",
+      "evidence": "CVE-2017-11882\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E79",
+      "text": "CVE-2017-11882",
+      "type": "Vulnerability",
+      "start": 25967,
+      "end": 25981,
+      "normalized_id": "CVE-2017-11882",
+      "evidence": "Microsoft Office Memory Corruption Vulnerability, CVE-2017-11882\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E80",
+      "text": "CVE-2018-13379",
+      "type": "Vulnerability",
+      "start": 25984,
+      "end": 25998,
+      "normalized_id": "CVE-2018-13379",
+      "evidence": "CVE-2018-13379\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E81",
+      "text": "CVE-2019-11510",
+      "type": "Vulnerability",
+      "start": 26605,
+      "end": 26619,
+      "normalized_id": "CVE-2019-11510",
+      "evidence": "CVE-2019-11510\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E82",
+      "text": "CVE-2019-0708",
+      "type": "Vulnerability",
+      "start": 27281,
+      "end": 27294,
+      "normalized_id": "CVE-2019-0708",
+      "evidence": "CVE-2019-0708\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E83",
+      "text": "CVE-2019-19781",
+      "type": "Vulnerability",
+      "start": 27391,
+      "end": 27405,
+      "normalized_id": "CVE-2019-19781",
+      "evidence": "CVE-2019-19781\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E84",
+      "text": "CVE-2019-19781",
+      "type": "Vulnerability",
+      "start": 27863,
+      "end": 27877,
+      "normalized_id": "CVE-2019-19781",
+      "evidence": "CVE-2019-19781 - Vulnerability in Citrix Application Delivery Controller, Citrix Gateway, and Citrix SD-WAN WANOP appliance\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E85",
+      "text": "CVE-2019-19781",
+      "type": "Vulnerability",
+      "start": 28229,
+      "end": 28243,
+      "normalized_id": "CVE-2019-19781",
+      "evidence": "Detecting Compromises relating to Citrix CVE-2019-19781\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E86",
+      "text": "CVE-2020-5902",
+      "type": "Vulnerability",
+      "start": 28244,
+      "end": 28257,
+      "normalized_id": "CVE-2020-5902",
+      "evidence": "CVE-2020-5902\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E87",
+      "text": "CVE-2020-5902",
+      "type": "Vulnerability",
+      "start": 28412,
+      "end": 28425,
+      "normalized_id": "CVE-2020-5902",
+      "evidence": "K52145254: TMUI RCE vulnerability CVE-2020-5902\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E88",
+      "text": "CVE-2020-5902",
+      "type": "Vulnerability",
+      "start": 28477,
+      "end": 28490,
+      "normalized_id": "CVE-2020-5902",
+      "evidence": "Threat Actor Exploitation of F5 BIG-IP CVE-2020-5902\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E89",
+      "text": "CVE-2020-1472",
+      "type": "Vulnerability",
+      "start": 28491,
+      "end": 28504,
+      "normalized_id": "CVE-2020-1472",
+      "evidence": "CVE-2020-1472\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E90",
+      "text": "CVE-2020-1472",
+      "type": "Vulnerability",
+      "start": 28629,
+      "end": 28642,
+      "normalized_id": "CVE-2020-1472",
+      "evidence": "Microsoft Security Update Guide: Netlogon Elevation of Privilege Vulnerability, CVE-2020-1472\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E91",
+      "text": "CVE-2020-1472",
+      "type": "Vulnerability",
+      "start": 28715,
+      "end": 28728,
+      "normalized_id": "CVE-2020-1472",
+      "evidence": "2020-016: Netlogon Elevation of Privilege Vulnerability (CVE-2020-1472)\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E92",
+      "text": "CVE-2020-1472",
+      "type": "Vulnerability",
+      "start": 28914,
+      "end": 28927,
+      "normalized_id": "CVE-2020-1472",
+      "evidence": "Microsoft Netlogon Elevation of Privilege Vulnerability - CVE-2020-1472 - Update 1\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E93",
+      "text": "CVE-2020-14882",
+      "type": "Vulnerability",
+      "start": 28939,
+      "end": 28953,
+      "normalized_id": "CVE-2020-14882",
+      "evidence": "CVE-2020-14882\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E94",
+      "text": "CVE-2020-14883",
+      "type": "Vulnerability",
+      "start": 29101,
+      "end": 29115,
+      "normalized_id": "CVE-2020-14883",
+      "evidence": "CVE-2020-14883\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E95",
+      "text": "CVE-2021-20016",
+      "type": "Vulnerability",
+      "start": 29263,
+      "end": 29277,
+      "normalized_id": "CVE-2021-20016",
+      "evidence": "CVE-2021-20016\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E96",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 29400,
+      "end": 29414,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "CVE-2021-26855\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E97",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 29523,
+      "end": 29537,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "Microsoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-26855\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E98",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 29601,
+      "end": 29615,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "CVE-2021-26857\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E99",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 29724,
+      "end": 29738,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "Microsoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-26857\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E100",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 29802,
+      "end": 29816,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "CVE-2021-26858\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E101",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 29925,
+      "end": 29939,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "Microsoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-26858\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E102",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 30003,
+      "end": 30017,
+      "normalized_id": "CVE-2021-27065",
+      "evidence": "CVE-2021-27065\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E103",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 30109,
+      "end": 30123,
+      "normalized_id": "CVE-2021-27065",
+      "evidence": "Microsoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-27065\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E104",
+      "text": "CVE-2021-20021",
+      "type": "Vulnerability",
+      "start": 30187,
+      "end": 30201,
+      "normalized_id": "CVE-2021-20021",
+      "evidence": "CVE-2021-20021\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E105",
+      "text": "CVE-2021-31207",
+      "type": "Vulnerability",
+      "start": 30351,
+      "end": 30365,
+      "normalized_id": "CVE-2021-31207",
+      "evidence": "CVE-2021-31207\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E106",
+      "text": "CVE-2021-31207",
+      "type": "Vulnerability",
+      "start": 30476,
+      "end": 30490,
+      "normalized_id": "CVE-2021-31207",
+      "evidence": "Microsoft Exchange Server Security Feature Bypass Vulnerability, CVE-2021-31207\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E107",
+      "text": "CVE-2022-26134",
+      "type": "Vulnerability",
+      "start": 30642,
+      "end": 30656,
+      "normalized_id": "CVE-2022-26134",
+      "evidence": "CVE-2022-26134\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E108",
+      "text": "CVE-2022-26134",
+      "type": "Vulnerability",
+      "start": 30864,
+      "end": 30878,
+      "normalized_id": "CVE-2022-26134",
+      "evidence": "CISA Adds One Known Exploited Vulnerability (CVE-2022-26134) to Catalog\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E109",
+      "text": "CVE-2021-34473",
+      "type": "Vulnerability",
+      "start": 30994,
+      "end": 31008,
+      "normalized_id": "CVE-2021-34473",
+      "evidence": "CVE-2021-34473\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E110",
+      "text": "CVE-2021-34473",
+      "type": "Vulnerability",
+      "start": 31116,
+      "end": 31130,
+      "normalized_id": "CVE-2021-34473",
+      "evidence": "Microsoft Exchange Server Remote Code Execution Vulnerability, CVE-2021-34473\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E111",
+      "text": "CVE-2021-34523",
+      "type": "Vulnerability",
+      "start": 31286,
+      "end": 31300,
+      "normalized_id": "CVE-2021-34523",
+      "evidence": "CVE-2021-34523\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E112",
+      "text": "CVE-2021-34523",
+      "type": "Vulnerability",
+      "start": 31545,
+      "end": 31559,
+      "normalized_id": "CVE-2021-34523",
+      "evidence": "Microsoft Exchange Server Elevation of Privilege Vulnerability, CVE-2021-34523\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E113",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 31646,
+      "end": 31660,
+      "normalized_id": "CVE-2021-26084",
+      "evidence": "CVE-2021-26084\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E114",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 31896,
+      "end": 31910,
+      "normalized_id": "CVE-2021-26084",
+      "evidence": "Jira Atlassian: Confluence Server Webwork OGNL injection - CVE-2021-26084\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E115",
+      "text": "CVE-2021-40539",
+      "type": "Vulnerability",
+      "start": 31997,
+      "end": 32011,
+      "normalized_id": "CVE-2021-40539",
+      "evidence": "CVE-2021-40539\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E116",
+      "text": "CVE-2021-40438",
+      "type": "Vulnerability",
+      "start": 32256,
+      "end": 32270,
+      "normalized_id": "CVE-2021-40438",
+      "evidence": "CVE-2021-40438\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E117",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 32301,
+      "end": 32315,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "CVE-2021-41773\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E118",
+      "text": "CVE-2021-42013",
+      "type": "Vulnerability",
+      "start": 32390,
+      "end": 32404,
+      "normalized_id": "CVE-2021-42013",
+      "evidence": "CVE-2021-42013\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E119",
+      "text": "CVE-2021-20038",
+      "type": "Vulnerability",
+      "start": 32479,
+      "end": 32493,
+      "normalized_id": "CVE-2021-20038",
+      "evidence": "CVE-2021-20038\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E120",
+      "text": "CVE-2021-45046",
+      "type": "Vulnerability",
+      "start": 33364,
+      "end": 33378,
+      "normalized_id": "CVE-2021-45046",
+      "evidence": "CVE-2021-45046\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E121",
+      "text": "CVE-2022-42475",
+      "type": "Vulnerability",
+      "start": 33444,
+      "end": 33458,
+      "normalized_id": "CVE-2022-42475",
+      "evidence": "CVE-2022-42475\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E122",
+      "text": "CVE-2022-24682",
+      "type": "Vulnerability",
+      "start": 33703,
+      "end": 33717,
+      "normalized_id": "CVE-2022-24682",
+      "evidence": "CVE-2022-24682\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E123",
+      "text": "CVE-2022-22536",
+      "type": "Vulnerability",
+      "start": 33868,
+      "end": 33882,
+      "normalized_id": "CVE-2022-22536",
+      "evidence": "CVE-2022-22536\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E124",
+      "text": "CVE-2022-22536",
+      "type": "Vulnerability",
+      "start": 34076,
+      "end": 34090,
+      "normalized_id": "CVE-2022-22536",
+      "evidence": "Remediation of CVE-2022-22536 Request smuggling and request concatenation in SAP NetWeaver, SAP Content Server and SAP Web Dispatcher\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E125",
+      "text": "CVE-2022-22963",
+      "type": "Vulnerability",
+      "start": 34306,
+      "end": 34320,
+      "normalized_id": "CVE-2022-22963",
+      "evidence": "CVE-2022-22963\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E126",
+      "text": "CVE-2022-22963",
+      "type": "Vulnerability",
+      "start": 34421,
+      "end": 34435,
+      "normalized_id": "CVE-2022-22963",
+      "evidence": "CVE-2022-22963: Remote code execution in Spring Cloud Function by malicious Spring Expression\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E127",
+      "text": "CVE-2022-22954",
+      "type": "Vulnerability",
+      "start": 34517,
+      "end": 34531,
+      "normalized_id": "CVE-2022-22954",
+      "evidence": "CVE-2022-22954\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E128",
+      "text": "CVE-2022-22960",
+      "type": "Vulnerability",
+      "start": 34864,
+      "end": 34878,
+      "normalized_id": "CVE-2022-22960",
+      "evidence": "CVE-2022-22960\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E129",
+      "text": "CVE-2022-29464",
+      "type": "Vulnerability",
+      "start": 35212,
+      "end": 35226,
+      "normalized_id": "CVE-2022-29464",
+      "evidence": "CVE-2022-29464\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E130",
+      "text": "CVE-2022-27924",
+      "type": "Vulnerability",
+      "start": 35566,
+      "end": 35580,
+      "normalized_id": "CVE-2022-27924",
+      "evidence": "CVE-2022-27924\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E131",
+      "text": "CVE-2022-1388",
+      "type": "Vulnerability",
+      "start": 35689,
+      "end": 35702,
+      "normalized_id": "CVE-2022-1388",
+      "evidence": "CVE-2022-1388\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E132",
+      "text": "CVE-2022-1388",
+      "type": "Vulnerability",
+      "start": 35944,
+      "end": 35957,
+      "normalized_id": "CVE-2022-1388",
+      "evidence": "K23605346: BIG-IP iControl REST vulnerability CVE-2022-1388\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E133",
+      "text": "CVE-2022-1388",
+      "type": "Vulnerability",
+      "start": 36004,
+      "end": 36017,
+      "normalized_id": "CVE-2022-1388",
+      "evidence": "Threat Actors Exploiting F5 BIG-IP CVE-2022-1388\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E134",
+      "text": "CVE-2022-30190",
+      "type": "Vulnerability",
+      "start": 36018,
+      "end": 36032,
+      "normalized_id": "CVE-2022-30190",
+      "evidence": "CVE-2022-30190\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E135",
+      "text": "CVE-2022-22047",
+      "type": "Vulnerability",
+      "start": 36164,
+      "end": 36178,
+      "normalized_id": "CVE-2022-22047",
+      "evidence": "CVE-2022-22047\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E136",
+      "text": "CVE-2022-22047",
+      "type": "Vulnerability",
+      "start": 36294,
+      "end": 36308,
+      "normalized_id": "CVE-2022-22047",
+      "evidence": "Windows Client Server Run-time Subsystem (CSRSS) Elevation of Privilege Vulnerability, CVE-2022-22047\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E137",
+      "text": "CVE-2022-27593",
+      "type": "Vulnerability",
+      "start": 36311,
+      "end": 36325,
+      "normalized_id": "CVE-2022-27593",
+      "evidence": "CVE-2022-27593\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E138",
+      "text": "CVE-2022-41082",
+      "type": "Vulnerability",
+      "start": 36449,
+      "end": 36463,
+      "normalized_id": "CVE-2022-41082",
+      "evidence": "CVE-2022-41082\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E139",
+      "text": "CVE-2022-41082",
+      "type": "Vulnerability",
+      "start": 36691,
+      "end": 36705,
+      "normalized_id": "CVE-2022-41082",
+      "evidence": "Microsoft Exchange Server Remote Code Execution Vulnerability, CVE-2022-41082\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E140",
+      "text": "CVE-2022-40684",
+      "type": "Vulnerability",
+      "start": 36798,
+      "end": 36812,
+      "normalized_id": "CVE-2022-40684",
+      "evidence": "CVE-2022-40684\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E141",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 8866,
+      "end": 8872,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E142",
+      "text": "CWE-287",
+      "type": "Weakness",
+      "start": 9141,
+      "end": 9148,
+      "normalized_id": "CWE-287",
+      "evidence": "CWE-287 Improper Authentication\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E143",
+      "text": "CWE-74",
+      "type": "Weakness",
+      "start": 10191,
+      "end": 10197,
+      "normalized_id": "CWE-74",
+      "evidence": "CWE-74 Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E144",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 10936,
+      "end": 10942,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E145",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 11190,
+      "end": 11196,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E146",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 11314,
+      "end": 11320,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E147",
+      "text": "CWE-918",
+      "type": "Weakness",
+      "start": 11821,
+      "end": 11828,
+      "normalized_id": "CWE-918",
+      "evidence": "CWE-918: Server-Side Request Forgery (SSRF)\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E148",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 11923,
+      "end": 11929,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E149",
+      "text": "CWE-502",
+      "type": "Weakness",
+      "start": 12138,
+      "end": 12145,
+      "normalized_id": "CWE-502",
+      "evidence": "CWE-502: Deserialization of Untrusted Data\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E150",
+      "text": "CWE-269",
+      "type": "Weakness",
+      "start": 12256,
+      "end": 12263,
+      "normalized_id": "CWE-269",
+      "evidence": "CWE-269: Improper Privilege Management\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E151",
+      "text": "CWE-918",
+      "type": "Weakness",
+      "start": 12357,
+      "end": 12364,
+      "normalized_id": "CWE-918",
+      "evidence": "CWE-918: Server-Side Request Forgery (SSRF)\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E152",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 12457,
+      "end": 12463,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E153",
+      "text": "CWE-22",
+      "type": "Weakness",
+      "start": 12600,
+      "end": 12606,
+      "normalized_id": "CWE-22",
+      "evidence": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E154",
+      "text": "CWE-917",
+      "type": "Weakness",
+      "start": 12864,
+      "end": 12871,
+      "normalized_id": "CWE-917",
+      "evidence": "CWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E155",
+      "text": "CWE-787",
+      "type": "Weakness",
+      "start": 13051,
+      "end": 13058,
+      "normalized_id": "CWE-787",
+      "evidence": "CWE-787: Out-of-bounds Write\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E156",
+      "text": "CWE-94",
+      "type": "Weakness",
+      "start": 13452,
+      "end": 13458,
+      "normalized_id": "CWE-94",
+      "evidence": "CWE-94: Improper Control of Generation of Code ('Code Injection')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E157",
+      "text": "CWE-917",
+      "type": "Weakness",
+      "start": 13518,
+      "end": 13525,
+      "normalized_id": "CWE-917",
+      "evidence": "CWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E158",
+      "text": "CWE-74",
+      "type": "Weakness",
+      "start": 13812,
+      "end": 13818,
+      "normalized_id": "CWE-74",
+      "evidence": "CWE-74: Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E159",
+      "text": "CWE-269",
+      "type": "Weakness",
+      "start": 13981,
+      "end": 13988,
+      "normalized_id": "CWE-269",
+      "evidence": "CWE-269: Improper Privilege Management\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E160",
+      "text": "CWE-306",
+      "type": "Weakness",
+      "start": 14314,
+      "end": 14321,
+      "normalized_id": "CWE-306",
+      "evidence": "CWE-306: Missing Authentication for Critical Function\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E161",
+      "text": "CVE-2021- 44228",
+      "type": "Vulnerability",
+      "start": 6585,
+      "end": 6600,
+      "normalized_id": "CVE-2021-44228",
+      "evidence": "CVE-2021- 44228\n",
+      "notes": "PDF-spaced explicit identifier mention"
+    },
+    {
+      "id": "E162",
+      "text": "CVE-2021- 44228",
+      "type": "Vulnerability",
+      "start": 7220,
+      "end": 7235,
+      "normalized_id": "CVE-2021-44228",
+      "evidence": "n exploiting the vulnerability after it was publicly disclosed in December 2021, and continued to show high interest in CVE-2021- 44228 through the first half of 2022.\n",
+      "notes": "PDF-spaced explicit identifier mention"
+    },
+    {
+      "id": "E163",
+      "text": "CVE-2021- 44228",
+      "type": "Vulnerability",
+      "start": 9363,
+      "end": 9378,
+      "normalized_id": "CVE-2021-44228",
+      "evidence": "CVE-2021- 44228\n",
+      "notes": "PDF-spaced explicit identifier mention"
+    },
+    {
+      "id": "E164",
+      "text": "CVE-2021- 44228",
+      "type": "Vulnerability",
+      "start": 32823,
+      "end": 32838,
+      "normalized_id": "CVE-2021-44228",
+      "evidence": "CVE-2021- 44228\n",
+      "notes": "PDF-spaced explicit identifier mention"
+    },
+    {
+      "id": "E165",
+      "text": "Microsoft Exchange",
+      "type": "Configuration",
+      "start": 5374,
+      "end": 5392,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-34473\n, \nCVE-2021-31207\n, \nCVE-2021-34523\n.\n These vulnerabilities, known as ProxyShell, affect Microsoft Exchange email servers.",
+      "notes": "v4.5 human reannotation and adjudication",
+      "boundary_adjudication": {
+        "contract_version": "chapter3-boundary-sync-v2",
+        "decision": "REVISE_SPAN",
+        "prediction_outputs_used": false,
+        "basis": "Retain the adjacent vendor-product identity and remove the generic email-server class suffix."
+      }
+    },
+    {
+      "id": "E166",
+      "text": "Zoho ManageEngine ADSelfService Plus",
+      "type": "Configuration",
+      "start": 5898,
+      "end": 5934,
+      "normalized_id": "cpe:2.3:a:zohocorp:manageengine_adselfservice_plus:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-40539\n.\n This vulnerability enables unauthenticated remote code execution (RCE) in Zoho ManageEngine ADSelfService Plus",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E167",
+      "text": "Atlassian Confluence",
+      "type": "Configuration",
+      "start": 6147,
+      "end": 6167,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26084\n.\n This vulnerability, affecting Atlassian Confluence",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E168",
+      "text": "Apache’s Log4j",
+      "type": "Configuration",
+      "start": 6652,
+      "end": 6666,
+      "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021- 44228\n.\n This vulnerability, known as Log4Shell, affects Apache’s Log4j library",
+      "notes": "v4.5 human reannotation and adjudication",
+      "boundary_adjudication": {
+        "contract_version": "chapter3-boundary-sync-v2",
+        "decision": "REVISE_SPAN",
+        "prediction_outputs_used": false,
+        "basis": "Retain the adjacent vendor-product identity and remove the generic library class suffix."
+      }
+    },
+    {
+      "id": "E169",
+      "text": "VMware Workspace ONE Access",
+      "type": "Configuration",
+      "start": 7388,
+      "end": 7415,
+      "normalized_id": "cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\n, \nCVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E170",
+      "text": "Identity Manager",
+      "type": "Configuration",
+      "start": 7417,
+      "end": 7433,
+      "normalized_id": "cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\n, \nCVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access, Identity Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E171",
+      "text": "F5 BIG-IP",
+      "type": "Configuration",
+      "start": 7854,
+      "end": 7863,
+      "normalized_id": "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-1388\n.\n This vulnerability allows unauthenticated malicious cyber actors to bypass iControl REST authentication\non F5 BIG-IP",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E172",
+      "text": "Microsoft Support Diagnostic Tool (MSDT)",
+      "type": "Configuration",
+      "start": 7958,
+      "end": 7998,
+      "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-30190\n.\n This vulnerability impacts the Microsoft Support Diagnostic Tool (MSDT)",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E173",
+      "text": "Atlassian Confluence",
+      "type": "Configuration",
+      "start": 8178,
+      "end": 8198,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-26134\n. This critical RCE vulnerability affects Atlassian Confluence",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E174",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 8548,
+      "end": 8555,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E175",
+      "text": "FortiProxy",
+      "type": "Configuration",
+      "start": 8560,
+      "end": 8570,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS and FortiProxy",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E176",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 8724,
+      "end": 8739,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-34473\n(Proxy Shell)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E177",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 8826,
+      "end": 8841,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-31207\n(Proxy Shell)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E178",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 8991,
+      "end": 9006,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-34523\n(Proxy Shell)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E179",
+      "text": "ADSelfService Plus",
+      "type": "Configuration",
+      "start": 9095,
+      "end": 9113,
+      "normalized_id": "cpe:2.3:a:zohocorp:manageengine_adselfservice_plus:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-40539\nZoho ManageEngine\nADSelfService Plus",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E180",
+      "text": "Confluence",
+      "type": "Configuration",
+      "start": 9198,
+      "end": 9208,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26084\nAtlassian\nConfluence",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E181",
+      "text": "Log4j2",
+      "type": "Configuration",
+      "start": 9398,
+      "end": 9404,
+      "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E182",
+      "text": "Workspace ONE Access",
+      "type": "Configuration",
+      "start": 9681,
+      "end": 9701,
+      "normalized_id": "cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E183",
+      "text": "Identity Manager",
+      "type": "Configuration",
+      "start": 9706,
+      "end": 9722,
+      "normalized_id": "cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access and Identity Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E184",
+      "text": "Workspace ONE Access",
+      "type": "Configuration",
+      "start": 9814,
+      "end": 9834,
+      "normalized_id": "cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E185",
+      "text": "Identity Manager",
+      "type": "Configuration",
+      "start": 9836,
+      "end": 9852,
+      "normalized_id": "cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, Identity Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E186",
+      "text": "vRealize Automation",
+      "type": "Configuration",
+      "start": 9858,
+      "end": 9877,
+      "normalized_id": "cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, Identity Manager, and vRealize Automation",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E187",
+      "text": "BIG-IP",
+      "type": "Configuration",
+      "start": 9972,
+      "end": 9978,
+      "normalized_id": "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-1388\nF5 Networks\nBIG-IP",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E188",
+      "text": "Confluence",
+      "type": "Configuration",
+      "start": 10153,
+      "end": 10163,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-26134\nAtlassian\nConfluence",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E189",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 10735,
+      "end": 10750,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2017-11882\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E190",
+      "text": "Pulse Connect Secure",
+      "type": "Configuration",
+      "start": 10892,
+      "end": 10912,
+      "normalized_id": "cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E191",
+      "text": "Remote Desktop Services",
+      "type": "Configuration",
+      "start": 11047,
+      "end": 11070,
+      "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-0708\nMicrosoft\nRemote Desktop Services",
+      "notes": "Remote Desktop Services 无独立正式 CPE；CVE-2019-0708 的 CPE 为 Windows 7 与 Windows Server 2008，二者唯一共同父族为 Windows OS。"
+    },
+    {
+      "id": "E192",
+      "text": "Application Delivery Controller",
+      "type": "Configuration",
+      "start": 11121,
+      "end": 11152,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_application_delivery_controller:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-19781\nCitrix\nApplication Delivery Controller",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E193",
+      "text": "Gateway",
+      "type": "Configuration",
+      "start": 11157,
+      "end": 11164,
+      "normalized_id": "cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-19781\nCitrix\nApplication Delivery Controller and Gateway",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E194",
+      "text": "BIG-IP",
+      "type": "Configuration",
+      "start": 11303,
+      "end": 11309,
+      "normalized_id": "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-5902\nF5 Networks\nBIG-IP",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E195",
+      "text": "WebLogic Server",
+      "type": "Configuration",
+      "start": 11531,
+      "end": 11546,
+      "normalized_id": "cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-14882\nOracle\nWebLogic Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E196",
+      "text": "WebLogic Server",
+      "type": "Configuration",
+      "start": 11585,
+      "end": 11600,
+      "normalized_id": "cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-14883\nOracle\nWebLogic Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E197",
+      "text": "SMA100",
+      "type": "Configuration",
+      "start": 11649,
+      "end": 11655,
+      "normalized_id": "cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-20016\nSonicWALL\nSSLVPN SMA100",
+      "notes": "SMA 100 Series 漏洞落在设备固件；NVD 配置使用 part=o 的 sma_100_firmware/具体型号固件族。"
+    },
+    {
+      "id": "E198",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 11801,
+      "end": 11816,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26855\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E199",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 11903,
+      "end": 11918,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-27065\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E200",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 12048,
+      "end": 12063,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26858\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E201",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 12118,
+      "end": 12133,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26857\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E202",
+      "text": "Email Security",
+      "type": "Configuration",
+      "start": 12206,
+      "end": 12220,
+      "normalized_id": "cpe:2.3:a:sonicwall:email_security:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-20021\nSonicWALL\nEmail Security",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E203",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 12317,
+      "end": 12328,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-40438\nApache\nHTTP Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E204",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 12423,
+      "end": 12434,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-41773\nApache\nHTTP Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E205",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 12566,
+      "end": 12577,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-42013\nApache\nHTTP Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E206",
+      "text": "SMA 100 Series",
+      "type": "Configuration",
+      "start": 12712,
+      "end": 12726,
+      "normalized_id": "cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-20038\nSonicWall\nSMA 100 Series Appliances",
+      "notes": "SMA 100 Series 漏洞落在设备固件；NVD 配置使用 part=o 的 sma_100_firmware/具体型号固件族。",
+      "boundary_adjudication": {
+        "contract_version": "chapter3-boundary-sync-v2",
+        "decision": "REVISE_SPAN",
+        "prediction_outputs_used": false,
+        "basis": "SMA 100 Series is the product-family identity; Appliances is a generic class suffix in this occurrence."
+      }
+    },
+    {
+      "id": "E207",
+      "text": "Log4j",
+      "type": "Configuration",
+      "start": 12854,
+      "end": 12859,
+      "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-45046\nApache\nLog4j",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E208",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 13016,
+      "end": 13023,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E209",
+      "text": "Collaboration Suite",
+      "type": "Configuration",
+      "start": 13102,
+      "end": 13121,
+      "normalized_id": "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-24682\nZimbra\nCollaboration Suite",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E210",
+      "text": "Internet Communication Manager (ICM)",
+      "type": "Configuration",
+      "start": 13257,
+      "end": 13293,
+      "normalized_id": "cpe:2.3:a:sap:internet_communication_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22536\nSAP\nInternet Communication Manager (ICM)",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E211",
+      "text": "Spring Cloud",
+      "type": "Configuration",
+      "start": 13435,
+      "end": 13447,
+      "normalized_id": "cpe:2.3:a:vmware:spring_cloud_function:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22963\nVMware Tanzu\nSpring Cloud",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E212",
+      "text": "Zimbra Collaboration Suite",
+      "type": "Configuration",
+      "start": 13767,
+      "end": 13793,
+      "normalized_id": "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-27924\nZimbra\nZimbra Collaboration Suite",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E213",
+      "text": "Windows CSRSS",
+      "type": "Configuration",
+      "start": 13944,
+      "end": 13957,
+      "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22047\nMicrosoft\nWindows CSRSS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E214",
+      "text": "QNAP NAS",
+      "type": "Configuration",
+      "start": 14040,
+      "end": 14048,
+      "normalized_id": "cpe:2.3:h:qnap:nas:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-27593\nQNAP\nQNAP NAS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E215",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 14179,
+      "end": 14194,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-41082\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E216",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 14252,
+      "end": 14259,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E217",
+      "text": "FortiProxy",
+      "type": "Configuration",
+      "start": 14261,
+      "end": 14271,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS, FortiProxy",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E218",
+      "text": "FortiSwitchManager",
+      "type": "Configuration",
+      "start": 14273,
+      "end": 14291,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiswitchmanager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS, FortiProxy, FortiSwitchManager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E219",
+      "text": "Office",
+      "type": "Configuration",
+      "start": 25891,
+      "end": 25897,
+      "normalized_id": "cpe:2.3:a:microsoft:office:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2017-11882\nMicrosoft\nOffice",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E220",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 26008,
+      "end": 26015,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E221",
+      "text": "FortiProxy",
+      "type": "Configuration",
+      "start": 26020,
+      "end": 26030,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS and FortiProxy",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E222",
+      "text": "Pulse Connect Secure",
+      "type": "Configuration",
+      "start": 26640,
+      "end": 26660,
+      "normalized_id": "cpe:2.3:a:ivanti:connect_secure:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E223",
+      "text": "Remote Desktop Services",
+      "type": "Configuration",
+      "start": 27305,
+      "end": 27328,
+      "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-0708\nMicrosoft\nRemote Desktop Services",
+      "notes": "Remote Desktop Services 无独立正式 CPE；CVE-2019-0708 的 CPE 为 Windows 7 与 Windows Server 2008，二者唯一共同父族为 Windows OS。"
+    },
+    {
+      "id": "E224",
+      "text": "SD-WAN WANOP",
+      "type": "Configuration",
+      "start": 27729,
+      "end": 27741,
+      "normalized_id": "cpe:2.3:a:citrix:sd-wan:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2019-19781\nCitrix\nADC and Gateway version 13.0 all supported builds before 13.0.47.24\nNetScaler ADC and NetScaler Gateway, version 12.1 all supported builds before 12.1.55.18; version 12.0 all supported builds before 12.0.63.13; version 11.1 all supported builds before 11.1.63.15; version 10.5 all supported builds before 10.5.70.12\nSD-WAN WANOP appliance",
+      "notes": "v4.5 human reannotation and adjudication",
+      "boundary_adjudication": {
+        "contract_version": "chapter3-boundary-sync-v2",
+        "decision": "REVISE_SPAN",
+        "prediction_outputs_used": false,
+        "basis": "Remove the generic appliance class suffix while retaining the named SD-WAN WANOP product form."
+      }
+    },
+    {
+      "id": "E225",
+      "text": "BIG IP",
+      "type": "Configuration",
+      "start": 28261,
+      "end": 28267,
+      "normalized_id": "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-5902\nF5\nBIG IP",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E226",
+      "text": "Windows Server",
+      "type": "Configuration",
+      "start": 28515,
+      "end": 28529,
+      "normalized_id": "cpe:2.3:o:microsoft:windows_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-1472\nMicrosoft\nWindows Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E227",
+      "text": "WebLogic Server",
+      "type": "Configuration",
+      "start": 28961,
+      "end": 28976,
+      "normalized_id": "cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-14882\nOracle\nWebLogic Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E228",
+      "text": "WebLogic Server",
+      "type": "Configuration",
+      "start": 29123,
+      "end": 29138,
+      "normalized_id": "cpe:2.3:a:oracle:weblogic_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-14883\nOracle\nWebLogic Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E229",
+      "text": "SSLVPN SMA100",
+      "type": "Configuration",
+      "start": 29288,
+      "end": 29301,
+      "normalized_id": "cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-20016\nSonicWALL\nSSLVPN SMA100",
+      "notes": "SMA 100 Series 漏洞落在设备固件；NVD 配置使用 part=o 的 sma_100_firmware/具体型号固件族。"
+    },
+    {
+      "id": "E230",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 29425,
+      "end": 29440,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26855\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E231",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 29626,
+      "end": 29641,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26857\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E232",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 29827,
+      "end": 29842,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26858\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E233",
+      "text": "Email Security",
+      "type": "Configuration",
+      "start": 30212,
+      "end": 30226,
+      "normalized_id": "cpe:2.3:a:sonicwall:email_security:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-20021\nSonicWALL\nEmail Security",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E234",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 30376,
+      "end": 30391,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-31207\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E235",
+      "text": "Confluence",
+      "type": "Configuration",
+      "start": 30667,
+      "end": 30677,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-26134\nAtlassian\nConfluence",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E236",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 31019,
+      "end": 31034,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-34473\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E237",
+      "text": "Microsoft Exchange Server",
+      "type": "Configuration",
+      "start": 31311,
+      "end": 31336,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-34523\nMicrosoft\nMicrosoft Exchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E238",
+      "text": "Confluence",
+      "type": "Configuration",
+      "start": 31676,
+      "end": 31686,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-26084\nJira Atlassian\nConfluence",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E239",
+      "text": "ManageEngine ADSelfService Plus",
+      "type": "Configuration",
+      "start": 32035,
+      "end": 32066,
+      "normalized_id": "cpe:2.3:a:zohocorp:manageengine_adselfservice_plus:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-40539\nZoho ManageEngineCorp.\nManageEngine ADSelfService Plus",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E240",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 32278,
+      "end": 32289,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-40438\nApache\nHTTP Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E241",
+      "text": "Apache HTTP Server",
+      "type": "Configuration",
+      "start": 32323,
+      "end": 32341,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-41773\nApache\nApache HTTP Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E242",
+      "text": "Apache HTTP Server",
+      "type": "Configuration",
+      "start": 32412,
+      "end": 32430,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-42013\nApache\nApache HTTP Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E243",
+      "text": "SMA 100 Series",
+      "type": "Configuration",
+      "start": 32504,
+      "end": 32518,
+      "normalized_id": "cpe:2.3:o:sonicwall:sma_100_firmware:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-20038\nSonicWall\nSMA 100 Series",
+      "notes": "SMA 100 Series 漏洞落在设备固件；NVD 配置使用 part=o 的 sma_100_firmware/具体型号固件族。"
+    },
+    {
+      "id": "E244",
+      "text": "Log4j",
+      "type": "Configuration",
+      "start": 32846,
+      "end": 32851,
+      "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021- 44228\nApache\nLog4j",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E245",
+      "text": "Log4j",
+      "type": "Configuration",
+      "start": 33386,
+      "end": 33391,
+      "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-45046\nApache\nLog4j",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E246",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 33468,
+      "end": 33475,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E247",
+      "text": "FortiProxy",
+      "type": "Configuration",
+      "start": 33595,
+      "end": 33605,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS SSL-VPN 7.2.0 through 7.2.2, 7.0.0 through 7.0.8, 6.4.0 through 6.4.10, 6.2.0 through 6.2.11, 6.0.15 and earlier and\n \nFortiProxy",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E248",
+      "text": "Zimbra Collaboration Suite",
+      "type": "Configuration",
+      "start": 33725,
+      "end": 33751,
+      "normalized_id": "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-24682\nZimbra\nZimbra Collaboration Suite",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E249",
+      "text": "NetWeaver Application Server ABAP",
+      "type": "Configuration",
+      "start": 33887,
+      "end": 33920,
+      "normalized_id": "cpe:2.3:a:sap:netweaver_application_server_abap:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E250",
+      "text": "SAP NetWeaver Application Server Java",
+      "type": "Configuration",
+      "start": 33922,
+      "end": 33959,
+      "normalized_id": "cpe:2.3:a:sap:netweaver_application_server_java:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E251",
+      "text": "ABAP Platform",
+      "type": "Configuration",
+      "start": 33961,
+      "end": 33974,
+      "normalized_id": "cpe:2.3:a:sap:abap_platform:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E252",
+      "text": "SAP Content Server",
+      "type": "Configuration",
+      "start": 33976,
+      "end": 33994,
+      "normalized_id": "cpe:2.3:a:sap:content_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform, SAP Content Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E253",
+      "text": "SAP Web Dispatcher",
+      "type": "Configuration",
+      "start": 34005,
+      "end": 34023,
+      "normalized_id": "cpe:2.3:a:sap:web_dispatcher:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform, SAP Content Server 7.53, and SAP Web Dispatcher",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E254",
+      "text": "Spring Cloud Function",
+      "type": "Configuration",
+      "start": 34345,
+      "end": 34366,
+      "normalized_id": "cpe:2.3:a:vmware:spring_cloud_function:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22963\nVMware Tanzumware Tanzu\nSpring Cloud Function",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E255",
+      "text": "Workspace ONE Access",
+      "type": "Configuration",
+      "start": 34539,
+      "end": 34559,
+      "normalized_id": "cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E256",
+      "text": "Identity Manager",
+      "type": "Configuration",
+      "start": 34617,
+      "end": 34633,
+      "normalized_id": "cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E257",
+      "text": "vRealize Automation",
+      "type": "Configuration",
+      "start": 34668,
+      "end": 34687,
+      "normalized_id": "cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E258",
+      "text": "VMware Cloud Foundation",
+      "type": "Configuration",
+      "start": 34705,
+      "end": 34728,
+      "normalized_id": "cpe:2.3:a:vmware:cloud_foundation:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation (vIDM), 8.x, 7.6\nVMware Cloud Foundation",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E259",
+      "text": "vRealize Suite Lifecycle Manager",
+      "type": "Configuration",
+      "start": 34743,
+      "end": 34775,
+      "normalized_id": "cpe:2.3:a:vmware:vrealize_suite_lifecycle_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation (vIDM), 8.x, 7.6\nVMware Cloud Foundation (vIDM), 4.x\n \nvRealize Suite Lifecycle Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E260",
+      "text": "Workspace ONE Access",
+      "type": "Configuration",
+      "start": 34886,
+      "end": 34906,
+      "normalized_id": "cpe:2.3:a:vmware:workspace_one_access:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E261",
+      "text": "Identity Manager",
+      "type": "Configuration",
+      "start": 34960,
+      "end": 34976,
+      "normalized_id": "cpe:2.3:a:vmware:identity_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E262",
+      "text": "vRealize Automation",
+      "type": "Configuration",
+      "start": 34988,
+      "end": 35007,
+      "normalized_id": "cpe:2.3:a:vmware:vrealize_automation:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation3",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E263",
+      "text": "VMware Cloud Foundation",
+      "type": "Configuration",
+      "start": 35075,
+      "end": 35098,
+      "normalized_id": "cpe:2.3:a:vmware:cloud_foundation:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation3.3.6, 3.3.5, 3.3.4, 3.3.3\n \nvRealize Automation (vIDM), 8.x, 7.6\n \nVMware Cloud Foundation",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E264",
+      "text": "vRealize Suite Lifecycle Manager",
+      "type": "Configuration",
+      "start": 35150,
+      "end": 35182,
+      "normalized_id": "cpe:2.3:a:vmware:vrealize_suite_lifecycle_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation3.3.6, 3.3.5, 3.3.4, 3.3.3\n \nvRealize Automation (vIDM), 8.x, 7.6\n \nVMware Cloud Foundation (vIDM), 4.x\n \nVMware Cloud Foundation (vRA), 3.x\n \nvRealize Suite Lifecycle Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E265",
+      "text": "WSO2 API Manager",
+      "type": "Configuration",
+      "start": 35241,
+      "end": 35257,
+      "normalized_id": "cpe:2.3:a:wso2:api_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E266",
+      "text": "WSO2 Identity Server",
+      "type": "Configuration",
+      "start": 35290,
+      "end": 35310,
+      "normalized_id": "cpe:2.3:a:wso2:identity_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E267",
+      "text": "WSO2 Identity Server Analytics",
+      "type": "Configuration",
+      "start": 35345,
+      "end": 35375,
+      "normalized_id": "cpe:2.3:a:wso2:identity_server_analytics:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E268",
+      "text": "WSO2 Identity Server as Key Manager",
+      "type": "Configuration",
+      "start": 35409,
+      "end": 35444,
+      "normalized_id": "cpe:2.3:a:wso2:identity_server_as_key_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics 5.4.0, 5.4.1, 5.5.0, and 5.6.0\n \nWSO2 Identity Server as Key Manager",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E269",
+      "text": "WSO2 Enterprise Integrator",
+      "type": "Configuration",
+      "start": 35479,
+      "end": 35505,
+      "normalized_id": "cpe:2.3:a:wso2:enterprise_integrator:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics 5.4.0, 5.4.1, 5.5.0, and 5.6.0\n \nWSO2 Identity Server as Key Manager 5.3.0 and above through 5.10.0\n \n WSO2 Enterprise Integrator",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E270",
+      "text": "Zimbra Collaboration Suite",
+      "type": "Configuration",
+      "start": 35588,
+      "end": 35614,
+      "normalized_id": "cpe:2.3:a:zimbra:collaboration:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-27924\nZimbra\nZimbra Collaboration Suite",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E271",
+      "text": "F5 BIG-IP",
+      "type": "Configuration",
+      "start": 35715,
+      "end": 35724,
+      "normalized_id": "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-1388\nF5 Networks\nF5 BIG-IP",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E272",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 36043,
+      "end": 36058,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-30190\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E273",
+      "text": "QNAP NAS",
+      "type": "Configuration",
+      "start": 36339,
+      "end": 36347,
+      "normalized_id": "cpe:2.3:h:qnap:nas:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-27593\nQNAP\nCertain QNAP NAS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E274",
+      "text": "Photo Station",
+      "type": "Configuration",
+      "start": 36356,
+      "end": 36369,
+      "normalized_id": "cpe:2.3:a:qnap:photo_station:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-27593\nQNAP\nCertain QNAP NAS running Photo Station",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E275",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 36474,
+      "end": 36489,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-41082\nMicrosoft\nExchange Server",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E276",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 36822,
+      "end": 36829,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E277",
+      "text": "FortiProxy",
+      "type": "Configuration",
+      "start": 36883,
+      "end": 36893,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS version 7.2.0 through 7.2.1 and 7.0.0 through 7.0.6, FortiProxy",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E278",
+      "text": "FortiSwitchManager",
+      "type": "Configuration",
+      "start": 36944,
+      "end": 36962,
+      "normalized_id": "cpe:2.3:a:fortinet:fortiswitchmanager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS version 7.2.0 through 7.2.1 and 7.0.0 through 7.0.6, FortiProxy version 7.2.0 and version 7.0.0 through 7.0.6 and FortiSwitchManager",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "affects",
+      "head": "E25",
+      "tail": "E165",
+      "evidence": "CVE-2021-34473\n, \nCVE-2021-31207\n, \nCVE-2021-34523\n.\n These vulnerabilities, known as ProxyShell, affect Microsoft Exchange email servers",
+      "evidence_start": 5269,
+      "evidence_end": 5406,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E39",
+      "tail": "E165",
+      "evidence": "CVE-2021-31207\n, \nCVE-2021-34523\n.\n These vulnerabilities, known as ProxyShell, affect Microsoft Exchange email servers",
+      "evidence_start": 5287,
+      "evidence_end": 5406,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E6",
+      "tail": "E165",
+      "evidence": "CVE-2021-34523\n.\n These vulnerabilities, known as ProxyShell, affect Microsoft Exchange email servers",
+      "evidence_start": 5305,
+      "evidence_end": 5406,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E30",
+      "tail": "E166",
+      "evidence": "CVE-2021-40539\n.\n This vulnerability enables unauthenticated remote code execution (RCE) in Zoho ManageEngine ADSelfService Plus",
+      "evidence_start": 5806,
+      "evidence_end": 5934,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R5",
+      "type": "affects",
+      "head": "E4",
+      "tail": "E167",
+      "evidence": "CVE-2021-26084\n.\n This vulnerability, affecting Atlassian Confluence",
+      "evidence_start": 6099,
+      "evidence_end": 6167,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R6",
+      "type": "affects",
+      "head": "E161",
+      "tail": "E168",
+      "evidence": "CVE-2021- 44228\n.\n This vulnerability, known as Log4Shell, affects Apache’s Log4j library",
+      "evidence_start": 6585,
+      "evidence_end": 6674,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R7",
+      "type": "affects",
+      "head": "E19",
+      "tail": "E169",
+      "evidence": "CVE-2022-22954\n, \nCVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access",
+      "evidence_start": 7268,
+      "evidence_end": 7415,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R8",
+      "type": "affects",
+      "head": "E19",
+      "tail": "E170",
+      "evidence": "CVE-2022-22954\n, \nCVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access, Identity Manager",
+      "evidence_start": 7268,
+      "evidence_end": 7433,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R9",
+      "type": "affects",
+      "head": "E17",
+      "tail": "E169",
+      "evidence": "CVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access",
+      "evidence_start": 7286,
+      "evidence_end": 7415,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R10",
+      "type": "affects",
+      "head": "E17",
+      "tail": "E170",
+      "evidence": "CVE-2022-22960\n.\n These vulnerabilities allow RCE, privilege escalation, and authentication bypass in VMware Workspace ONE Access, Identity Manager",
+      "evidence_start": 7286,
+      "evidence_end": 7433,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R11",
+      "type": "affects",
+      "head": "E24",
+      "tail": "E171",
+      "evidence": "CVE-2022-1388\n.\n This vulnerability allows unauthenticated malicious cyber actors to bypass iControl REST authentication\non F5 BIG-IP",
+      "evidence_start": 7730,
+      "evidence_end": 7863,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R12",
+      "type": "affects",
+      "head": "E9",
+      "tail": "E172",
+      "evidence": "CVE-2022-30190\n.\n This vulnerability impacts the Microsoft Support Diagnostic Tool (MSDT)",
+      "evidence_start": 7909,
+      "evidence_end": 7998,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R13",
+      "type": "affects",
+      "head": "E21",
+      "tail": "E173",
+      "evidence": "CVE-2022-26134\n. This critical RCE vulnerability affects Atlassian Confluence",
+      "evidence_start": 8121,
+      "evidence_end": 8198,
+      "adjudication_basis": "narrative list item directly states that the CVE affects or resides in this product"
+    },
+    {
+      "id": "R14",
+      "type": "affects",
+      "head": "E66",
+      "tail": "E174",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS",
+      "evidence_start": 8524,
+      "evidence_end": 8555,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R15",
+      "type": "affects",
+      "head": "E66",
+      "tail": "E175",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS and FortiProxy",
+      "evidence_start": 8524,
+      "evidence_end": 8570,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R16",
+      "type": "instantiates",
+      "head": "E66",
+      "tail": "E42",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS and FortiProxy\nSSL VPN credential exposure\nCWE-22",
+      "evidence_start": 8524,
+      "evidence_end": 8605,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R17",
+      "type": "affects",
+      "head": "E67",
+      "tail": "E176",
+      "evidence": "CVE-2021-34473\n(Proxy Shell)\nMicrosoft\nExchange Server",
+      "evidence_start": 8685,
+      "evidence_end": 8739,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R18",
+      "type": "instantiates",
+      "head": "E67",
+      "tail": "E44",
+      "evidence": "CVE-2021-34473\n(Proxy Shell)\nMicrosoft\nExchange Server\nRCE\nCWE-918",
+      "evidence_start": 8685,
+      "evidence_end": 8751,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R19",
+      "type": "affects",
+      "head": "E68",
+      "tail": "E177",
+      "evidence": "CVE-2021-31207\n(Proxy Shell)\nMicrosoft\nExchange Server",
+      "evidence_start": 8787,
+      "evidence_end": 8841,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R20",
+      "type": "instantiates",
+      "head": "E68",
+      "tail": "E141",
+      "evidence": "CVE-2021-31207\n(Proxy Shell)\nMicrosoft\nExchange Server\nSecurity Feature Bypass\nCWE-22",
+      "evidence_start": 8787,
+      "evidence_end": 8872,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R21",
+      "type": "affects",
+      "head": "E69",
+      "tail": "E178",
+      "evidence": "CVE-2021-34523\n(Proxy Shell)\nMicrosoft\nExchange Server",
+      "evidence_start": 8952,
+      "evidence_end": 9006,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R22",
+      "type": "instantiates",
+      "head": "E69",
+      "tail": "E55",
+      "evidence": "CVE-2021-34523\n(Proxy Shell)\nMicrosoft\nExchange Server\nElevation of Privilege\nCWE-287",
+      "evidence_start": 8952,
+      "evidence_end": 9037,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R23",
+      "type": "affects",
+      "head": "E70",
+      "tail": "E179",
+      "evidence": "CVE-2021-40539\nZoho ManageEngine\nADSelfService Plus",
+      "evidence_start": 9062,
+      "evidence_end": 9113,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R24",
+      "type": "instantiates",
+      "head": "E70",
+      "tail": "E142",
+      "evidence": "CVE-2021-40539\nZoho ManageEngine\nADSelfService Plus\nRCE/\nAuthentication Bypass\nCWE-287",
+      "evidence_start": 9062,
+      "evidence_end": 9148,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R25",
+      "type": "affects",
+      "head": "E71",
+      "tail": "E180",
+      "evidence": "CVE-2021-26084\nAtlassian\nConfluence",
+      "evidence_start": 9173,
+      "evidence_end": 9208,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R26",
+      "type": "instantiates",
+      "head": "E71",
+      "tail": "E61",
+      "evidence": "CVE-2021-26084\nAtlassian\nConfluence Server and Data Center\nArbitrary code execution\nCWE-74",
+      "evidence_start": 9173,
+      "evidence_end": 9263,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R27",
+      "type": "affects",
+      "head": "E163",
+      "tail": "E181",
+      "evidence": "CVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2",
+      "evidence_start": 9363,
+      "evidence_end": 9404,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R28",
+      "type": "instantiates",
+      "head": "E163",
+      "tail": "E43",
+      "evidence": "CVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2\nRCE\nCWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\n \nCWE-20 Improper Input Validation\n \nCWE-400 Uncontrolled Resource Consumption\n \nCWE-502",
+      "evidence_start": 9363,
+      "evidence_end": 9624,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R29",
+      "type": "instantiates",
+      "head": "E163",
+      "tail": "E57",
+      "evidence": "CVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2\nRCE\nCWE-917",
+      "evidence_start": 9363,
+      "evidence_end": 9416,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R30",
+      "type": "instantiates",
+      "head": "E163",
+      "tail": "E59",
+      "evidence": "CVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2\nRCE\nCWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\n \nCWE-20",
+      "evidence_start": 9363,
+      "evidence_end": 9544,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R31",
+      "type": "instantiates",
+      "head": "E163",
+      "tail": "E60",
+      "evidence": "CVE-2021- 44228\n(Log4Shell)\nApache\nLog4j2\nRCE\nCWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')\n \nCWE-20 Improper Input Validation\n \nCWE-400",
+      "evidence_start": 9363,
+      "evidence_end": 9580,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R32",
+      "type": "affects",
+      "head": "E72",
+      "tail": "E182",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access",
+      "evidence_start": 9659,
+      "evidence_end": 9701,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R33",
+      "type": "affects",
+      "head": "E72",
+      "tail": "E183",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access and Identity Manager",
+      "evidence_start": 9659,
+      "evidence_end": 9722,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R34",
+      "type": "instantiates",
+      "head": "E72",
+      "tail": "E53",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access and Identity Manager\nRCE\nCWE-94",
+      "evidence_start": 9659,
+      "evidence_end": 9733,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R35",
+      "type": "affects",
+      "head": "E73",
+      "tail": "E184",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access",
+      "evidence_start": 9792,
+      "evidence_end": 9834,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R36",
+      "type": "affects",
+      "head": "E73",
+      "tail": "E185",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, Identity Manager",
+      "evidence_start": 9792,
+      "evidence_end": 9852,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R37",
+      "type": "affects",
+      "head": "E73",
+      "tail": "E186",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, Identity Manager, and vRealize Automation",
+      "evidence_start": 9792,
+      "evidence_end": 9877,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R38",
+      "type": "instantiates",
+      "head": "E73",
+      "tail": "E54",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, Identity Manager, and vRealize Automation\nImproper Privilege Management\nCWE-269",
+      "evidence_start": 9792,
+      "evidence_end": 9915,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R39",
+      "type": "affects",
+      "head": "E74",
+      "tail": "E187",
+      "evidence": "CVE-2022-1388\nF5 Networks\nBIG-IP",
+      "evidence_start": 9946,
+      "evidence_end": 9978,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R40",
+      "type": "instantiates",
+      "head": "E74",
+      "tail": "E51",
+      "evidence": "CVE-2022-1388\nF5 Networks\nBIG-IP\nMissing Authentication Vulnerability\nCWE-306",
+      "evidence_start": 9946,
+      "evidence_end": 10023,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R41",
+      "type": "affects",
+      "head": "E76",
+      "tail": "E188",
+      "evidence": "CVE-2022-26134\nAtlassian\nConfluence",
+      "evidence_start": 10128,
+      "evidence_end": 10163,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R42",
+      "type": "instantiates",
+      "head": "E76",
+      "tail": "E143",
+      "evidence": "CVE-2022-26134\nAtlassian\nConfluence Server and Data Center\nRCE\nCWE-74",
+      "evidence_start": 10128,
+      "evidence_end": 10197,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R43",
+      "type": "affects",
+      "head": "E32",
+      "tail": "E189",
+      "evidence": "CVE-2017-11882\nMicrosoft\nExchange Server",
+      "evidence_start": 10710,
+      "evidence_end": 10750,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R44",
+      "type": "instantiates",
+      "head": "E32",
+      "tail": "E52",
+      "evidence": "CVE-2017-11882\nMicrosoft\nExchange Server\nArbitrary Code Execution\nCWE-119",
+      "evidence_start": 10710,
+      "evidence_end": 10783,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R45",
+      "type": "affects",
+      "head": "E33",
+      "tail": "E190",
+      "evidence": "CVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure",
+      "evidence_start": 10857,
+      "evidence_end": 10912,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R46",
+      "type": "instantiates",
+      "head": "E33",
+      "tail": "E144",
+      "evidence": "CVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure\nArbitrary File Reading\nCWE-22",
+      "evidence_start": 10857,
+      "evidence_end": 10942,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R47",
+      "type": "affects",
+      "head": "E13",
+      "tail": "E191",
+      "evidence": "CVE-2019-0708\nMicrosoft\nRemote Desktop Services",
+      "evidence_start": 11023,
+      "evidence_end": 11070,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R48",
+      "type": "instantiates",
+      "head": "E13",
+      "tail": "E48",
+      "evidence": "CVE-2019-0708\nMicrosoft\nRemote Desktop Services\nRCE\nCWE-416",
+      "evidence_start": 11023,
+      "evidence_end": 11082,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R49",
+      "type": "affects",
+      "head": "E7",
+      "tail": "E192",
+      "evidence": "CVE-2019-19781\nCitrix\nApplication Delivery Controller",
+      "evidence_start": 11099,
+      "evidence_end": 11152,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R50",
+      "type": "affects",
+      "head": "E7",
+      "tail": "E193",
+      "evidence": "CVE-2019-19781\nCitrix\nApplication Delivery Controller and Gateway",
+      "evidence_start": 11099,
+      "evidence_end": 11164,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R51",
+      "type": "instantiates",
+      "head": "E7",
+      "tail": "E145",
+      "evidence": "CVE-2019-19781\nCitrix\nApplication Delivery Controller and Gateway\nArbitrary Code Execution\nCWE-22",
+      "evidence_start": 11099,
+      "evidence_end": 11196,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R52",
+      "type": "affects",
+      "head": "E40",
+      "tail": "E194",
+      "evidence": "CVE-2020-5902\nF5 Networks\nBIG-IP",
+      "evidence_start": 11277,
+      "evidence_end": 11309,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R53",
+      "type": "instantiates",
+      "head": "E40",
+      "tail": "E146",
+      "evidence": "CVE-2020-5902\nF5 Networks\nBIG-IP\nRCE\nCWE-22",
+      "evidence_start": 11277,
+      "evidence_end": 11320,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R54",
+      "type": "instantiates",
+      "head": "E27",
+      "tail": "E50",
+      "evidence": "CVE-2020-1472\nMicrosoft\nMultiple Products\nPrivilege Escalation\nCWE-330",
+      "evidence_start": 11401,
+      "evidence_end": 11471,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R55",
+      "type": "affects",
+      "head": "E11",
+      "tail": "E195",
+      "evidence": "CVE-2020-14882\nOracle\nWebLogic Server",
+      "evidence_start": 11509,
+      "evidence_end": 11546,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R56",
+      "type": "affects",
+      "head": "E38",
+      "tail": "E196",
+      "evidence": "CVE-2020-14883\nOracle\nWebLogic Server",
+      "evidence_start": 11563,
+      "evidence_end": 11600,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R57",
+      "type": "affects",
+      "head": "E10",
+      "tail": "E197",
+      "evidence": "CVE-2021-20016\nSonicWALL\nSSLVPN SMA100",
+      "evidence_start": 11617,
+      "evidence_end": 11655,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R58",
+      "type": "instantiates",
+      "head": "E10",
+      "tail": "E49",
+      "evidence": "CVE-2021-20016\nSonicWALL\nSSLVPN SMA100\nSQL Injection\nCWE-89",
+      "evidence_start": 11617,
+      "evidence_end": 11676,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R59",
+      "type": "affects",
+      "head": "E37",
+      "tail": "E198",
+      "evidence": "CVE-2021-26855\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "evidence_start": 11763,
+      "evidence_end": 11816,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R60",
+      "type": "instantiates",
+      "head": "E37",
+      "tail": "E147",
+      "evidence": "CVE-2021-26855\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nCWE-918",
+      "evidence_start": 11763,
+      "evidence_end": 11828,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R61",
+      "type": "affects",
+      "head": "E16",
+      "tail": "E199",
+      "evidence": "CVE-2021-27065\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "evidence_start": 11865,
+      "evidence_end": 11918,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R62",
+      "type": "instantiates",
+      "head": "E16",
+      "tail": "E148",
+      "evidence": "CVE-2021-27065\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nCWE-22",
+      "evidence_start": 11865,
+      "evidence_end": 11929,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R63",
+      "type": "affects",
+      "head": "E14",
+      "tail": "E200",
+      "evidence": "CVE-2021-26858\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "evidence_start": 12010,
+      "evidence_end": 12063,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R64",
+      "type": "affects",
+      "head": "E5",
+      "tail": "E201",
+      "evidence": "CVE-2021-26857\n(ProxyLogon)\nMicrosoft\nExchange Server",
+      "evidence_start": 12080,
+      "evidence_end": 12133,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R65",
+      "type": "instantiates",
+      "head": "E5",
+      "tail": "E149",
+      "evidence": "CVE-2021-26857\n(ProxyLogon)\nMicrosoft\nExchange Server\nRCE\nCWE-502",
+      "evidence_start": 12080,
+      "evidence_end": 12145,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R66",
+      "type": "affects",
+      "head": "E36",
+      "tail": "E202",
+      "evidence": "CVE-2021-20021\nSonicWALL\nEmail Security",
+      "evidence_start": 12181,
+      "evidence_end": 12220,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R67",
+      "type": "instantiates",
+      "head": "E36",
+      "tail": "E150",
+      "evidence": "CVE-2021-20021\nSonicWALL\nEmail Security\nPrivilege Escalation Exploit Chain\nCWE-269",
+      "evidence_start": 12181,
+      "evidence_end": 12263,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R68",
+      "type": "affects",
+      "head": "E29",
+      "tail": "E203",
+      "evidence": "CVE-2021-40438\nApache\nHTTP Server",
+      "evidence_start": 12295,
+      "evidence_end": 12328,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R69",
+      "type": "instantiates",
+      "head": "E29",
+      "tail": "E151",
+      "evidence": "CVE-2021-40438\nApache\nHTTP Server\nServer-Side Request Forgery\nCWE-918",
+      "evidence_start": 12295,
+      "evidence_end": 12364,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R70",
+      "type": "affects",
+      "head": "E15",
+      "tail": "E204",
+      "evidence": "CVE-2021-41773\nApache\nHTTP Server",
+      "evidence_start": 12401,
+      "evidence_end": 12434,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R71",
+      "type": "instantiates",
+      "head": "E15",
+      "tail": "E152",
+      "evidence": "CVE-2021-41773\nApache\nHTTP Server\nServer Path Traversal\nCWE-22",
+      "evidence_start": 12401,
+      "evidence_end": 12463,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R72",
+      "type": "affects",
+      "head": "E2",
+      "tail": "E205",
+      "evidence": "CVE-2021-42013\nApache\nHTTP Server",
+      "evidence_start": 12544,
+      "evidence_end": 12577,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R73",
+      "type": "instantiates",
+      "head": "E2",
+      "tail": "E153",
+      "evidence": "CVE-2021-42013\nApache\nHTTP Server\nServer Path Traversal\nCWE-22",
+      "evidence_start": 12544,
+      "evidence_end": 12606,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R74",
+      "type": "affects",
+      "head": "E8",
+      "tail": "E206",
+      "evidence": "CVE-2021-20038\nSonicWall\nSMA 100 Series Appliances",
+      "evidence_start": 12687,
+      "evidence_end": 12737,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R75",
+      "type": "instantiates",
+      "head": "E8",
+      "tail": "E47",
+      "evidence": "CVE-2021-20038\nSonicWall\nSMA 100 Series Appliances\nStack-based Buffer Overflow\nCWE-787",
+      "evidence_start": 12687,
+      "evidence_end": 12773,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R76",
+      "type": "instantiates",
+      "head": "E8",
+      "tail": "E62",
+      "evidence": "CVE-2021-20038\nSonicWall\nSMA 100 Series Appliances\nStack-based Buffer Overflow\nCWE-787: Out-of-bounds Write\nCWE-121",
+      "evidence_start": 12687,
+      "evidence_end": 12802,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R77",
+      "type": "affects",
+      "head": "E22",
+      "tail": "E207",
+      "evidence": "CVE-2021-45046\nApache\nLog4j",
+      "evidence_start": 12832,
+      "evidence_end": 12859,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R78",
+      "type": "instantiates",
+      "head": "E22",
+      "tail": "E154",
+      "evidence": "CVE-2021-45046\nApache\nLog4j\nRCE\nCWE-917",
+      "evidence_start": 12832,
+      "evidence_end": 12871,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R79",
+      "type": "affects",
+      "head": "E12",
+      "tail": "E208",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS",
+      "evidence_start": 12992,
+      "evidence_end": 13023,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R80",
+      "type": "instantiates",
+      "head": "E12",
+      "tail": "E155",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS\nHeap-based Buffer Overflow\nCWE-787",
+      "evidence_start": 12992,
+      "evidence_end": 13058,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R81",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E209",
+      "evidence": "CVE-2022-24682\nZimbra\nCollaboration Suite",
+      "evidence_start": 13080,
+      "evidence_end": 13121,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R82",
+      "type": "instantiates",
+      "head": "E1",
+      "tail": "E56",
+      "evidence": "CVE-2022-24682\nZimbra\nCollaboration Suite\n‘Cross-site Scripting’\nCWE-79",
+      "evidence_start": 13080,
+      "evidence_end": 13151,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R83",
+      "type": "affects",
+      "head": "E31",
+      "tail": "E210",
+      "evidence": "CVE-2022-22536\nSAP\nInternet Communication Manager (ICM)",
+      "evidence_start": 13238,
+      "evidence_end": 13293,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R84",
+      "type": "instantiates",
+      "head": "E31",
+      "tail": "E45",
+      "evidence": "CVE-2022-22536\nSAP\nInternet Communication Manager (ICM)\nHTTP Request Smuggling\nCWE-444",
+      "evidence_start": 13238,
+      "evidence_end": 13324,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R85",
+      "type": "affects",
+      "head": "E3",
+      "tail": "E211",
+      "evidence": "CVE-2022-22963\nVMware Tanzu\nSpring Cloud",
+      "evidence_start": 13407,
+      "evidence_end": 13447,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R86",
+      "type": "instantiates",
+      "head": "E3",
+      "tail": "E156",
+      "evidence": "CVE-2022-22963\nVMware Tanzu\nSpring Cloud\nRCE\nCWE-94",
+      "evidence_start": 13407,
+      "evidence_end": 13458,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R87",
+      "type": "instantiates",
+      "head": "E3",
+      "tail": "E157",
+      "evidence": "CVE-2022-22963\nVMware Tanzu\nSpring Cloud\nRCE\nCWE-94: Improper Control of Generation of Code ('Code Injection')\nCWE-917",
+      "evidence_start": 13407,
+      "evidence_end": 13525,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R88",
+      "type": "instantiates",
+      "head": "E34",
+      "tail": "E58",
+      "evidence": "CVE-2022-29464\nWSO2\nMultiple Products\nRCE\nCWE-434",
+      "evidence_start": 13646,
+      "evidence_end": 13695,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R89",
+      "type": "affects",
+      "head": "E26",
+      "tail": "E212",
+      "evidence": "CVE-2022-27924\nZimbra\nZimbra Collaboration Suite",
+      "evidence_start": 13745,
+      "evidence_end": 13793,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R90",
+      "type": "instantiates",
+      "head": "E26",
+      "tail": "E158",
+      "evidence": "CVE-2022-27924\nZimbra\nZimbra Collaboration Suite\nCommand Injection\nCWE-74",
+      "evidence_start": 13745,
+      "evidence_end": 13818,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R91",
+      "type": "affects",
+      "head": "E28",
+      "tail": "E213",
+      "evidence": "CVE-2022-22047\nMicrosoft\nWindows CSRSS",
+      "evidence_start": 13919,
+      "evidence_end": 13957,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R92",
+      "type": "instantiates",
+      "head": "E28",
+      "tail": "E159",
+      "evidence": "CVE-2022-22047\nMicrosoft\nWindows CSRSS\nElevation of Privilege\nCWE-269",
+      "evidence_start": 13919,
+      "evidence_end": 13988,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R93",
+      "type": "affects",
+      "head": "E23",
+      "tail": "E214",
+      "evidence": "CVE-2022-27593\nQNAP\nQNAP NAS",
+      "evidence_start": 14020,
+      "evidence_end": 14048,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R94",
+      "type": "instantiates",
+      "head": "E23",
+      "tail": "E46",
+      "evidence": "CVE-2022-27593\nQNAP\nQNAP NAS\nExternally Controlled Reference\nCWE-610",
+      "evidence_start": 14020,
+      "evidence_end": 14088,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R95",
+      "type": "affects",
+      "head": "E41",
+      "tail": "E215",
+      "evidence": "CVE-2022-41082\nMicrosoft\nExchange Server",
+      "evidence_start": 14154,
+      "evidence_end": 14194,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R96",
+      "type": "affects",
+      "head": "E18",
+      "tail": "E216",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS",
+      "evidence_start": 14228,
+      "evidence_end": 14259,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R97",
+      "type": "affects",
+      "head": "E18",
+      "tail": "E217",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS, FortiProxy",
+      "evidence_start": 14228,
+      "evidence_end": 14271,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R98",
+      "type": "affects",
+      "head": "E18",
+      "tail": "E218",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS, FortiProxy, FortiSwitchManager",
+      "evidence_start": 14228,
+      "evidence_end": 14291,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the product"
+    },
+    {
+      "id": "R99",
+      "type": "instantiates",
+      "head": "E18",
+      "tail": "E160",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS, FortiProxy, FortiSwitchManager\nAuthentication Bypass\nCWE-306",
+      "evidence_start": 14228,
+      "evidence_end": 14321,
+      "adjudication_basis": "same CISA table row explicitly pairs this CVE with the CWE"
+    },
+    {
+      "id": "R100",
+      "type": "affects",
+      "head": "E78",
+      "tail": "E219",
+      "evidence": "CVE-2017-11882\nMicrosoft\nOffice",
+      "evidence_start": 25866,
+      "evidence_end": 25897,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R101",
+      "type": "affects",
+      "head": "E80",
+      "tail": "E220",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS",
+      "evidence_start": 25984,
+      "evidence_end": 26015,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R102",
+      "type": "affects",
+      "head": "E80",
+      "tail": "E221",
+      "evidence": "CVE-2018-13379\nFortinet\nFortiOS and FortiProxy",
+      "evidence_start": 25984,
+      "evidence_end": 26030,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R103",
+      "type": "affects",
+      "head": "E81",
+      "tail": "E222",
+      "evidence": "CVE-2019-11510\nIvanti\nPulse Secure Pulse Connect Secure",
+      "evidence_start": 26605,
+      "evidence_end": 26660,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R104",
+      "type": "affects",
+      "head": "E82",
+      "tail": "E223",
+      "evidence": "CVE-2019-0708\nMicrosoft\nRemote Desktop Services",
+      "evidence_start": 27281,
+      "evidence_end": 27328,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R105",
+      "type": "affects",
+      "head": "E83",
+      "tail": "E224",
+      "evidence": "CVE-2019-19781\nCitrix\nADC and Gateway version 13.0 all supported builds before 13.0.47.24\nNetScaler ADC and NetScaler Gateway, version 12.1 all supported builds before 12.1.55.18; version 12.0 all supported builds before 12.0.63.13; version 11.1 all supported builds before 11.1.63.15; version 10.5 all supported builds before 10.5.70.12\nSD-WAN WANOP appliance",
+      "evidence_start": 27391,
+      "evidence_end": 27751,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R106",
+      "type": "affects",
+      "head": "E86",
+      "tail": "E225",
+      "evidence": "CVE-2020-5902\nF5\nBIG IP",
+      "evidence_start": 28244,
+      "evidence_end": 28267,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R107",
+      "type": "affects",
+      "head": "E89",
+      "tail": "E226",
+      "evidence": "CVE-2020-1472\nMicrosoft\nWindows Server",
+      "evidence_start": 28491,
+      "evidence_end": 28529,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R108",
+      "type": "affects",
+      "head": "E93",
+      "tail": "E227",
+      "evidence": "CVE-2020-14882\nOracle\nWebLogic Server",
+      "evidence_start": 28939,
+      "evidence_end": 28976,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R109",
+      "type": "affects",
+      "head": "E94",
+      "tail": "E228",
+      "evidence": "CVE-2020-14883\nOracle\nWebLogic Server",
+      "evidence_start": 29101,
+      "evidence_end": 29138,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R110",
+      "type": "affects",
+      "head": "E95",
+      "tail": "E229",
+      "evidence": "CVE-2021-20016\nSonicWALL\nSSLVPN SMA100",
+      "evidence_start": 29263,
+      "evidence_end": 29301,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R111",
+      "type": "affects",
+      "head": "E96",
+      "tail": "E230",
+      "evidence": "CVE-2021-26855\nMicrosoft\nExchange Server",
+      "evidence_start": 29400,
+      "evidence_end": 29440,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R112",
+      "type": "affects",
+      "head": "E98",
+      "tail": "E231",
+      "evidence": "CVE-2021-26857\nMicrosoft\nExchange Server",
+      "evidence_start": 29601,
+      "evidence_end": 29641,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R113",
+      "type": "affects",
+      "head": "E100",
+      "tail": "E232",
+      "evidence": "CVE-2021-26858\nMicrosoft\nExchange Server",
+      "evidence_start": 29802,
+      "evidence_end": 29842,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R114",
+      "type": "affects",
+      "head": "E104",
+      "tail": "E233",
+      "evidence": "CVE-2021-20021\nSonicWALL\nEmail Security",
+      "evidence_start": 30187,
+      "evidence_end": 30226,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R115",
+      "type": "affects",
+      "head": "E105",
+      "tail": "E234",
+      "evidence": "CVE-2021-31207\nMicrosoft\nExchange Server",
+      "evidence_start": 30351,
+      "evidence_end": 30391,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R116",
+      "type": "affects",
+      "head": "E107",
+      "tail": "E235",
+      "evidence": "CVE-2022-26134\nAtlassian\nConfluence",
+      "evidence_start": 30642,
+      "evidence_end": 30677,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R117",
+      "type": "affects",
+      "head": "E109",
+      "tail": "E236",
+      "evidence": "CVE-2021-34473\nMicrosoft\nExchange Server",
+      "evidence_start": 30994,
+      "evidence_end": 31034,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R118",
+      "type": "affects",
+      "head": "E111",
+      "tail": "E237",
+      "evidence": "CVE-2021-34523\nMicrosoft\nMicrosoft Exchange Server",
+      "evidence_start": 31286,
+      "evidence_end": 31336,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R119",
+      "type": "affects",
+      "head": "E113",
+      "tail": "E238",
+      "evidence": "CVE-2021-26084\nJira Atlassian\nConfluence",
+      "evidence_start": 31646,
+      "evidence_end": 31686,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R120",
+      "type": "affects",
+      "head": "E115",
+      "tail": "E239",
+      "evidence": "CVE-2021-40539\nZoho ManageEngineCorp.\nManageEngine ADSelfService Plus",
+      "evidence_start": 31997,
+      "evidence_end": 32066,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R121",
+      "type": "affects",
+      "head": "E116",
+      "tail": "E240",
+      "evidence": "CVE-2021-40438\nApache\nHTTP Server",
+      "evidence_start": 32256,
+      "evidence_end": 32289,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R122",
+      "type": "affects",
+      "head": "E117",
+      "tail": "E241",
+      "evidence": "CVE-2021-41773\nApache\nApache HTTP Server",
+      "evidence_start": 32301,
+      "evidence_end": 32341,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R123",
+      "type": "affects",
+      "head": "E118",
+      "tail": "E242",
+      "evidence": "CVE-2021-42013\nApache\nApache HTTP Server",
+      "evidence_start": 32390,
+      "evidence_end": 32430,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R124",
+      "type": "affects",
+      "head": "E119",
+      "tail": "E243",
+      "evidence": "CVE-2021-20038\nSonicWall\nSMA 100 Series",
+      "evidence_start": 32479,
+      "evidence_end": 32518,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R125",
+      "type": "affects",
+      "head": "E164",
+      "tail": "E244",
+      "evidence": "CVE-2021- 44228\nApache\nLog4j",
+      "evidence_start": 32823,
+      "evidence_end": 32851,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R126",
+      "type": "affects",
+      "head": "E120",
+      "tail": "E245",
+      "evidence": "CVE-2021-45046\nApache\nLog4j",
+      "evidence_start": 33364,
+      "evidence_end": 33391,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R127",
+      "type": "affects",
+      "head": "E121",
+      "tail": "E246",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS",
+      "evidence_start": 33444,
+      "evidence_end": 33475,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R128",
+      "type": "affects",
+      "head": "E121",
+      "tail": "E247",
+      "evidence": "CVE-2022-42475\nFortinet\nFortiOS SSL-VPN 7.2.0 through 7.2.2, 7.0.0 through 7.0.8, 6.4.0 through 6.4.10, 6.2.0 through 6.2.11, 6.0.15 and earlier and\n \nFortiProxy",
+      "evidence_start": 33444,
+      "evidence_end": 33605,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R129",
+      "type": "affects",
+      "head": "E122",
+      "tail": "E248",
+      "evidence": "CVE-2022-24682\nZimbra\nZimbra Collaboration Suite",
+      "evidence_start": 33703,
+      "evidence_end": 33751,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R130",
+      "type": "affects",
+      "head": "E123",
+      "tail": "E249",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP",
+      "evidence_start": 33868,
+      "evidence_end": 33920,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R131",
+      "type": "affects",
+      "head": "E123",
+      "tail": "E250",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java",
+      "evidence_start": 33868,
+      "evidence_end": 33959,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R132",
+      "type": "affects",
+      "head": "E123",
+      "tail": "E251",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform",
+      "evidence_start": 33868,
+      "evidence_end": 33974,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R133",
+      "type": "affects",
+      "head": "E123",
+      "tail": "E252",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform, SAP Content Server",
+      "evidence_start": 33868,
+      "evidence_end": 33994,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R134",
+      "type": "affects",
+      "head": "E123",
+      "tail": "E253",
+      "evidence": "CVE-2022-22536\nSAP\nNetWeaver Application Server ABAP, SAP NetWeaver Application Server Java, ABAP Platform, SAP Content Server 7.53, and SAP Web Dispatcher",
+      "evidence_start": 33868,
+      "evidence_end": 34023,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R135",
+      "type": "affects",
+      "head": "E125",
+      "tail": "E254",
+      "evidence": "CVE-2022-22963\nVMware Tanzumware Tanzu\nSpring Cloud Function",
+      "evidence_start": 34306,
+      "evidence_end": 34366,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R136",
+      "type": "affects",
+      "head": "E127",
+      "tail": "E255",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access",
+      "evidence_start": 34517,
+      "evidence_end": 34559,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R137",
+      "type": "affects",
+      "head": "E127",
+      "tail": "E256",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager",
+      "evidence_start": 34517,
+      "evidence_end": 34633,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R138",
+      "type": "affects",
+      "head": "E127",
+      "tail": "E257",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation",
+      "evidence_start": 34517,
+      "evidence_end": 34687,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R139",
+      "type": "affects",
+      "head": "E127",
+      "tail": "E258",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation (vIDM), 8.x, 7.6\nVMware Cloud Foundation",
+      "evidence_start": 34517,
+      "evidence_end": 34728,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R140",
+      "type": "affects",
+      "head": "E127",
+      "tail": "E259",
+      "evidence": "CVE-2022-22954\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\n \n \nIdentity Manager (vIDM) 3.3.6, 3.3.5, 3.3.4, 3.3.3\nvRealize Automation (vIDM), 8.x, 7.6\nVMware Cloud Foundation (vIDM), 4.x\n \nvRealize Suite Lifecycle Manager",
+      "evidence_start": 34517,
+      "evidence_end": 34775,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R141",
+      "type": "affects",
+      "head": "E128",
+      "tail": "E260",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access",
+      "evidence_start": 34864,
+      "evidence_end": 34906,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R142",
+      "type": "affects",
+      "head": "E128",
+      "tail": "E261",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager",
+      "evidence_start": 34864,
+      "evidence_end": 34976,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R143",
+      "type": "affects",
+      "head": "E128",
+      "tail": "E262",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation",
+      "evidence_start": 34864,
+      "evidence_end": 35007,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R144",
+      "type": "affects",
+      "head": "E128",
+      "tail": "E263",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation3.3.6, 3.3.5, 3.3.4, 3.3.3\n \nvRealize Automation (vIDM), 8.x, 7.6\n \nVMware Cloud Foundation",
+      "evidence_start": 34864,
+      "evidence_end": 35098,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R145",
+      "type": "affects",
+      "head": "E128",
+      "tail": "E264",
+      "evidence": "CVE-2022-22960\nVMware\nWorkspace ONE Access, versions 21.08.0.1, 21.08.0.0, 20.10.0.1, 20.10.0.0\nIdentity Manager (vIDM) and vRealize Automation3.3.6, 3.3.5, 3.3.4, 3.3.3\n \nvRealize Automation (vIDM), 8.x, 7.6\n \nVMware Cloud Foundation (vIDM), 4.x\n \nVMware Cloud Foundation (vRA), 3.x\n \nvRealize Suite Lifecycle Manager",
+      "evidence_start": 34864,
+      "evidence_end": 35182,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R146",
+      "type": "affects",
+      "head": "E129",
+      "tail": "E265",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager",
+      "evidence_start": 35212,
+      "evidence_end": 35257,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R147",
+      "type": "affects",
+      "head": "E129",
+      "tail": "E266",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server",
+      "evidence_start": 35212,
+      "evidence_end": 35310,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R148",
+      "type": "affects",
+      "head": "E129",
+      "tail": "E267",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics",
+      "evidence_start": 35212,
+      "evidence_end": 35375,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R149",
+      "type": "affects",
+      "head": "E129",
+      "tail": "E268",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics 5.4.0, 5.4.1, 5.5.0, and 5.6.0\n \nWSO2 Identity Server as Key Manager",
+      "evidence_start": 35212,
+      "evidence_end": 35444,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R150",
+      "type": "affects",
+      "head": "E129",
+      "tail": "E269",
+      "evidence": "CVE-2022-29464\nAtlassianWSO2\nWSO2 API Manager 2.2.0 and above through 4.0.0\n \nWSO2 Identity Server 5.2.0 and above through 5.11.0 \n \nWSO2 Identity Server Analytics 5.4.0, 5.4.1, 5.5.0, and 5.6.0\n \nWSO2 Identity Server as Key Manager 5.3.0 and above through 5.10.0\n \n WSO2 Enterprise Integrator",
+      "evidence_start": 35212,
+      "evidence_end": 35505,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R151",
+      "type": "affects",
+      "head": "E130",
+      "tail": "E270",
+      "evidence": "CVE-2022-27924\nZimbra\nZimbra Collaboration Suite",
+      "evidence_start": 35566,
+      "evidence_end": 35614,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R152",
+      "type": "affects",
+      "head": "E131",
+      "tail": "E271",
+      "evidence": "CVE-2022-1388\nF5 Networks\nF5 BIG-IP",
+      "evidence_start": 35689,
+      "evidence_end": 35724,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R153",
+      "type": "affects",
+      "head": "E134",
+      "tail": "E272",
+      "evidence": "CVE-2022-30190\nMicrosoft\nExchange Server",
+      "evidence_start": 36018,
+      "evidence_end": 36058,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R154",
+      "type": "affects",
+      "head": "E137",
+      "tail": "E273",
+      "evidence": "CVE-2022-27593\nQNAP\nCertain QNAP NAS",
+      "evidence_start": 36311,
+      "evidence_end": 36347,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R155",
+      "type": "affects",
+      "head": "E137",
+      "tail": "E274",
+      "evidence": "CVE-2022-27593\nQNAP\nCertain QNAP NAS running Photo Station",
+      "evidence_start": 36311,
+      "evidence_end": 36369,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R156",
+      "type": "affects",
+      "head": "E138",
+      "tail": "E275",
+      "evidence": "CVE-2022-41082\nMicrosoft\nExchange Server",
+      "evidence_start": 36449,
+      "evidence_end": 36489,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R157",
+      "type": "affects",
+      "head": "E140",
+      "tail": "E276",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS",
+      "evidence_start": 36798,
+      "evidence_end": 36829,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R158",
+      "type": "affects",
+      "head": "E140",
+      "tail": "E277",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS version 7.2.0 through 7.2.1 and 7.0.0 through 7.0.6, FortiProxy",
+      "evidence_start": 36798,
+      "evidence_end": 36893,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    },
+    {
+      "id": "R159",
+      "type": "affects",
+      "head": "E140",
+      "tail": "E278",
+      "evidence": "CVE-2022-40684\nFortinet\nFortiOS version 7.2.0 through 7.2.1 and 7.0.0 through 7.0.6, FortiProxy version 7.2.0 and version 7.0.0 through 7.0.6 and FortiSwitchManager",
+      "evidence_start": 36798,
+      "evidence_end": 36962,
+      "adjudication_basis": "same appendix row explicitly pairs the CVE and affected product"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

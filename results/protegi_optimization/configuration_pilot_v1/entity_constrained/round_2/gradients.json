@@ -1,0 +1,16 @@
+[
+  {
+    "gradient_id": "grad_c_r1_p0_g0_para_0_0_0",
+    "parent_prompt_id": "c_r1_p0_g0_para_0",
+    "error_group_id": "G1_0",
+    "gradient_text": "The filtering step uses vague, untestable phrases like technology-like candidate, direct impact, affected item, and infrastructure-related without an operational decision procedure tied to the contract's directly-supported Vulnerability-affects->Configuration test. This lets attacker tooling, scanner utilities, generic role/infrastructure nouns, standards bodies/frameworks, and process/management artifacts pass as candidates while providing no rule for handling title/header/product-identifier occurrences versus numbered instance aliases, plurals, or passing mentions. Tighten the guidance with a positive affected-product test requiring explicit local language of being vulnerable/exploited/affected that could support the relation, a closed exclusion procedure for tooling, generic infrastructure, organizations, and non-product concepts, and an explicit every-distinct-mention rule that retains qualifying occurrences in all document zones and validates spans against the source.",
+    "round_idx": 1
+  },
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The OPTIMIZABLE_GUIDANCE lacks an operational decision procedure for the Configuration shortest-span and exclusion rules, only saying to apply definitions conservatively. It needs an explicit trim-and-filter workflow: first isolate the minimal independently identifiable product/component token, stripping incidental vendor prefixes, feature or capability qualifiers, version/build enumerations, and plural or generic modifiers, then apply a negative check to reject ordinary tools, services, filenames, network artifacts, administrative directives, and generic lowercase infrastructure nouns before emission, plus a final exhaustive-scan pass to avoid missing repeated minimal mentions.",
+    "round_idx": 0
+  }
+]

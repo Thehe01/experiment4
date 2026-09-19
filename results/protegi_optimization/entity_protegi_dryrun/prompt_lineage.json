@@ -1,0 +1,58 @@
+{
+  "total_nodes": 3,
+  "total_edges": 2,
+  "final_candidate_id": "c_r1_p0_g0_para_0",
+  "trace_to_root": [
+    "P_E0",
+    "c_r1_p0_g0_para_0"
+  ],
+  "nodes": {
+    "P_E0": {
+      "candidate_id": "P_E0",
+      "parent_id": null,
+      "round_idx": 0,
+      "generation_type": "initial",
+      "gradient_id": null,
+      "gradient_text": null,
+      "estimated_reward": 0.75,
+      "selection_status": "selected",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r1_p0_g0_edit": {
+      "candidate_id": "c_r1_p0_g0_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "You are a cybersecurity intelligence annotation expert. Extract named entities from the input text using ONLY the four t..."
+    },
+    "c_r1_p0_g0_para_0": {
+      "candidate_id": "c_r1_p0_g0_para_0",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": null,
+      "estimated_reward": 0.0,
+      "selection_status": "pending",
+      "prompt_text_preview": "Act as a cybersecurity threat intelligence annotation specialist. Identify named entities in the provided text strictly ..."
+    }
+  },
+  "edges": [
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g0_edit",
+      "generation_type": "gradient_edit",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g0_para_0",
+      "generation_type": "paraphrase",
+      "gradient_id": "grad_P_E0_0_0"
+    }
+  ]
+}

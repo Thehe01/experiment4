@@ -1,0 +1,9 @@
+[
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The Configuration wording ties entity existence to a future relation tail and relies on vague shortest-identifiable language without testable span rules, so rewrite it as standalone mention detection with explicit trimming operations: keep only the minimal bare product or platform token, strip vendor prefixes, versions, feature or capability qualifiers and surrounding component chains instead of merging them into one long span, apply the rule uniformly to titles, body and lists to enforce exhaustive mention coverage rather than only relation-adjacent cases, and restrict normalization to a verified canonical form with null fallback rather than composing a new identifier from surface words.",
+    "round_idx": 0
+  }
+]

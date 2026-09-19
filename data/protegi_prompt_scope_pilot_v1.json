@@ -1,0 +1,53 @@
+{
+  "manifest_version": "protegi-prompt-scope-pilot-v1",
+  "purpose": "matched small-scale Stage 1 comparison of constrained and unconstrained ProTeGi",
+  "parent_split_file": "train_dev_test_split_v7.json",
+  "parent_split_sha256": "6cbef622b5e9075e7173559c01d733336adb60195fbc9490ecdbe92c368f5da5",
+  "selection_policy": "source-label-only stratification within the frozen official train/dev partitions; no model outputs and no test documents used",
+  "window_policy": {
+    "max_chars": 3000,
+    "overlap": 400
+  },
+  "train": [
+    "aa23-289a",
+    "aa23-339a-coldfusion-cve-26360",
+    "fortios-sslvpn-rapid7-fortinet-targeting",
+    "aa25-266a"
+  ],
+  "dev": [
+    "confluence-nvd-confluence-26084",
+    "aa23-213a",
+    "aa22-228a",
+    "aa22-074a"
+  ],
+  "test": [],
+  "audit_counts": {
+    "train": {
+      "documents": 4,
+      "source_characters": 58307,
+      "estimated_windows": 24,
+      "entities": {
+        "Vulnerability": 49,
+        "Configuration": 26,
+        "Weakness": 4,
+        "AttackTechnique": 67
+      }
+    },
+    "dev": {
+      "documents": 4,
+      "source_characters": 58594,
+      "estimated_windows": 24,
+      "entities": {
+        "Vulnerability": 78,
+        "Configuration": 22,
+        "Weakness": 5,
+        "AttackTechnique": 40
+      }
+    }
+  },
+  "notes": [
+    "All four extraction-layer entity types occur in both subsets.",
+    "The pilot is for pipeline and directional-signal assessment only, not a formal effectiveness conclusion.",
+    "The official test partition is intentionally absent."
+  ]
+}

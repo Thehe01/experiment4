@@ -1,0 +1,45 @@
+[
+  {
+    "parent_candidate_id": "P_E0",
+    "sample_ids": [
+      "aa25-266a_w11",
+      "aa25-266a_w13",
+      "aa25-266a_w7",
+      "aa23-289a_w2",
+      "aa25-266a_w8",
+      "aa25-266a_w3",
+      "aa23-289a_w1",
+      "aa23-289a_w0"
+    ],
+    "error_sample_ids": [
+      "aa25-266a_w7",
+      "aa25-266a_w8",
+      "aa25-266a_w3",
+      "aa23-289a_w1",
+      "aa23-289a_w0"
+    ]
+  },
+  {
+    "parent_candidate_id": "c_r1_p0_g0_para_0",
+    "sample_ids": [
+      "aa23-289a_w2",
+      "aa23-339a-coldfusion-cve-26360_w1",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+      "aa25-266a_w6",
+      "aa25-266a_w9",
+      "aa23-289a_w0",
+      "aa25-266a_w7",
+      "aa25-266a_w13"
+    ],
+    "error_sample_ids": [
+      "aa23-289a_w2",
+      "aa23-339a-coldfusion-cve-26360_w1",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+      "aa25-266a_w6",
+      "aa25-266a_w9",
+      "aa23-289a_w0",
+      "aa25-266a_w7",
+      "aa25-266a_w13"
+    ]
+  }
+]

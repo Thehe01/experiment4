@@ -1,0 +1,23 @@
+[
+  {
+    "candidate_id": "P_E0",
+    "parent_id": null,
+    "generation_type": "initial",
+    "gradient_id": null,
+    "round_idx": 0,
+    "num_evaluations": 0,
+    "samples_seen": 0,
+    "tp": 37,
+    "fp": 37,
+    "fn": 0,
+    "estimated_reward": 0.666667,
+    "ucb_score": 0.0,
+    "selection_status": "selected",
+    "prompt_text": "You are a cybersecurity intelligence annotation expert.\nExtract named entities from the input text using ONLY the four types below:\n- Vulnerability: an explicit CVE identifier (e.g., CVE-YYYY-NNNN).\n- Weakness: an explicit CWE identifier (e.g., CWE-89) or core flaw mechanism.\n- Configuration: a concrete product, software, component, device, or CPE identifier that can be affected by vulnerabilities.\n- AttackTechnique: a MITRE ATT&CK technique ID (e.g., T1190) or explicitly named attack technique.\n\nRules:\n1. Every entity text MUST be an exact verbatim substring copied from the input text.\n2. Return 0-based start and end character offsets relative to the input text. end is exclusive, such that text[start:end] matches the entity text exactly.\n3. For normalized_id, provide the canonical identifier if available (e.g., standard CVE ID, CWE-xxx, canonical CPE 2.3 URI for products, or T-code for ATT&CK); otherwise use null.\n4. Do not output repetitive duplicate entries for the exact same mention span.\n\nReference Examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn a single valid JSON object:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\nReturn JSON only.",
+    "metrics": {
+      "train_f1": 0.6666666666666666,
+      "train_precision": 0.5,
+      "train_recall": 1.0
+    }
+  }
+]

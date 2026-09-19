@@ -1,0 +1,114 @@
+[
+  {
+    "gradient_id": "grad_c_r5_p3_g0_para_1_0_0",
+    "parent_prompt_id": "c_r5_p3_g0_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt's definition of AttackTechnique includes \"TA-code\" IDs (e.g., TA0011) as valid, but the gold annotations in the error examples treat only technique/sub-technique T-codes as in-scope AttackTechnique entities and exclude tactic TA-codes (e.g., TA0007, TA0010 in Error Example 2). The prompt explicitly says \"a MITRE ATT&CK technique ID (e.g., T1190, T1090.002, T1078, TA0011)\" and later says \"Only exact MITRE T-code/TA-code substrings qualify,\" which directly licenses the model to emit TA-codes. This creates a systematic over-generation of AttackTechnique entities that violate the downstream gold schema. Direction: remove TA-codes from the AttackTechnique category (or define a separate Tactic type and explicitly state it is not extracted), and align the allowed ID regex strictly with T####[.###] patterns only.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p3_g0_para_1_0_1",
+    "parent_prompt_id": "c_r5_p3_g0_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt forbids duplicate entries for the same mention span (Constraint 4) but does not define how to handle overlapping or nested ID substrings such as a parent technique \"T1070\" and its sub-technique \"T1070.002\" appearing in the same character span (as in Error Examples 3 and 4, where \"T1070.002\" contains \"T1070\"). The model incorrectly emits both the parent and sub-technique as separate entities sharing the same start offset, violating the no-duplicate/span intent and mismatching gold which only keeps the most specific ID. Direction: add an explicit disambiguation rule stating that when a longer ATT&CK or CVE variant substring fully contains a shorter valid ID at the same start position, only the longest exact match is extracted, and overlapping spans are resolved by maximal specificity.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p3_g0_para_1_0_2",
+    "parent_prompt_id": "c_r5_p3_g0_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt's Configuration category and examples imply that product/component names (e.g., \"Log4j\", \"Microsoft Exchange Server\") should be extracted with inferred canonical CPEs, yet the gold outputs in Error Example 1 show that the evaluation ground truth excludes many such Configuration spans (e.g., the model extracted \"Barracuda Networks Email Security Gateway (ESG) Appliance\", \"Zoho ManageEngine\", \"ServiceDesk Plus\", etc., but gold omitted them). The prompt fails to distinguish between \"affected product mentioned in passing\" vs. \"configuration entity explicitly required by the annotation schema,\" and gives no negative examples or exclusion list for over-broad product extraction. Direction: tighten the Configuration definition with explicit negative constraints (e.g., only extract if the product is the direct subject of a vulnerability/technique relation or explicitly listed as impacted in a CPE-like context) and add counter-examples showing product names that should NOT be extracted.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p3_g0_para_1_0_3",
+    "parent_prompt_id": "c_r5_p3_g0_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt mandates \"Output ONLY these JSON fields per entity: id, text, type, start, end, normalized_id. No extra keys (e.g., no 'evidence', 'notes')\" and repeats this in the final instruction, but the gold outputs in all error examples contain extra keys (\"evidence\", \"notes\"). This signals a mismatch between the prompt's output contract and the actual expected annotation format used for scoring. The model is penalized for following the prompt's schema strictly, or conversely the prompt's examples (which also lack those keys) do not prepare the model for the real evaluation distribution. Direction: either (a) update the prompt to permit or ignore optional provenance keys if the downstream gold uses them, or (b) explicitly state that the model must match the strict 6-field schema and that gold-set extra keys are not model requirements—but in either case, reconcile the prompt's example and constraint section with the documented ground-truth structure to remove evaluative ambiguity.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g0_para_0_0_0",
+    "parent_prompt_id": "c_r5_p2_g0_para_0",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt’s definition of “Configuration” is too permissive regarding executable filenames and product-name inference, causing the model to hallucinate or over-extract Configurations from mere `.exe` strings. In Error 1, the model tagged `FortiClient.exe`, `Ivanti-Secure-Access-Client.exe`, etc., with no explicit affected/targeted context or co-location with a CVE/CWE/technique ID in the snippet; in Error 4 it tagged `pfSense` apparently without the required linkage. The prompt excludes “generic filenames” but does not explicitly state that a bare executable name (e.g., `FortiClient.exe`) is a generic filename unless co-located with a vulnerability/technique or explicitly stated as affected. Improvement direction: tighten the Configuration rules to state that any token ending in `.exe`, `.lnk`, `.sys`, or similar binary/file suffixes is presumed a generic filename and is NOT a Configuration unless the same structured entry (bullet/row/cell) also contains a CVE/CWE/T-code proving affected/targeted status; additionally, prohibit inferring vendor product families from filenames.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g0_para_0_0_1",
+    "parent_prompt_id": "c_r5_p2_g0_para_0",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt fails to specify how to handle parent technique IDs when a sub-technique ID is explicitly present, leading to duplicate or incorrect sibling entities. In Errors 2 and 3, the gold output includes only the precise ID written (`T1001.003`, `T1071.001`, `T1071.002`), but the model also emitted a separate parent span (`T1001` at same start, shorter end; `T1071` at same start) because the prompt says “Both sub-technique IDs and parent technique IDs are valid when explicitly stated” without clarifying that the parent string is NOT “explicitly stated” if only the longer sub-technique substring appears. Improvement direction: add a rule that when a sub-technique ID (e.g., `T1071.001`) is present as an exact substring, the parent (e.g., `T1071`) is NOT to be extracted as a separate entity from the same character span or as a truncated version of it; only extract exactly what is written, and never synthesize a parent ID from a sub-technique occurrence.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g0_para_0_0_2",
+    "parent_prompt_id": "c_r5_p2_g0_para_0",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt’s instruction on “exact verbatim substring” and offset exclusivity is undermined by its own examples and rules around spaced technique IDs, creating confusion about overlapping spans. In the spaced-ID example, it instructs capturing only `T1566.0` (contiguous token before space) and setting `normalized_id` to canonical; but in Errors 2/3/4 the model produced overlapping entities with same start and different ends (e.g., `T1070` start 849 end 854 AND `T1070.002` start 849 end 858). The prompt does not forbid overlapping spans for the same base ID nor explain that only the longest exact match should be taken. Improvement direction: explicitly ban overlapping entity spans for the same technique family in the same position; state that if a longer exact ID (sub-technique) is present, only that longer exact substring is extracted, and no shorter prefix entity may be created from the same occurrence.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g0_para_0_0_3",
+    "parent_prompt_id": "c_r5_p2_g0_para_0",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt lacks a clear negative constraint for structured “technique list” formats where product/component names appear without co-located vulnerability or attack linkage, causing false Configuration extraction. Error 1’s input begins with a hash/filename list (likely IOC list) and later shows product `.exe` names; the model treated these as Configurations despite no CVE/CWE/T-code co-location in the provided snippet. The prompt’s structured-format rule says co-location with CVE/Weakness/Technique makes it a Configuration, but does not say that a list of filenames/products WITHOUT such co-location must be ignored. Improvement direction: add a explicit exclusion that in any list, table, or appendix, a product/component/file name is a Configuration ONLY if its immediate structured entry also contains a Vulnerability, Weakness, or AttackTechnique entity per the definitions; otherwise it is out-of-scope and must be skipped, even if it looks like a software name.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g2_para_1_0_0",
+    "parent_prompt_id": "c_r5_p2_g2_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt’s definition of “Configuration” is too permissive regarding product lists that appear in vulnerability summaries or affected-product bullet lists, causing over-extraction. In Error Example 1 and Error Example 3, the model extracted product/component names (e.g., “GitLab Community and Enterprise Editions”, “VMware Workspace ONE Access”, “vIDM”) as Configuration even when they were merely listed as affected products in a catalog-style or “affects the following products” context without an explicit inline phrase like “vulnerability in X” or “attackers used TXXXX against X”. The current rule says “EXPLICITLY stated … as affected by, targeted by, or subject to” and gives examples with inline linkage, but it does not clarify that a separate enumerated list of products under a CVE (or a bare product name following a CVE) is only a Configuration if the gold schema treats it as such, nor does it warn against extracting every product mention in CVE-bulletin strings. Improvement direction: Tighten the Configuration rule to explicitly state that product/component names are NOT to be extracted solely because they appear adjacent to or enumerated under a CVE/Weakness in a list format, and require a direct syntactic tie (e.g., “in X”, “X affected”) within the same clause or an explicit CPE string; add negative examples showing CVE-with-product-list cases where products are excluded.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g2_para_1_0_1",
+    "parent_prompt_id": "c_r5_p2_g2_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt fails to specify how to handle ATT&CK technique IDs presented with surrounding bracket or citation markers (e.g., “[T1482]”, “[T1087.002]”), leading the model to correctly extract the T-code in Example 4 but revealing a latent ambiguity: the rule says “exact T-code substrings” and “capture solely the exact T-code token”, yet does not address bracketed or punctuated occurrences. While the model extracted them correctly here, the lack of explicit instruction means inconsistent behavior is likely on “[T1046]” vs “T1046” and may cause missed or padded spans in other cases. More importantly, the prompt never defines that Technique IDs may appear in non-narrative contexts (lists, tables, citations) and still count. Improvement direction: Add an explicit clause that AttackTechnique entities include T-codes appearing inside brackets, parentheses, or as standalone tokens (e.g., “[T1482]” → text “T1482”, start/end spanning only the T-code), and provide a reference example with bracketed T-codes to remove ambiguity about span boundaries.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g2_para_1_0_2",
+    "parent_prompt_id": "c_r5_p2_g2_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt’s Weakness category permits extraction of both the CWE identifier token (e.g., “CWE-20”) and the descriptive flaw class text, but the gold standard in Error Example 1 shows only the CWE identifier tokens were labeled (no “server-side request forgery” type spans), while the prompt’s earlier example 2 extracted both “server-side request forgery” and “CWE-918” as separate Weakness entities. This inconsistency trains the model to over-extract free-text flaw descriptions as Weaknesses, yet the error example gold output omits them. The prompt does not distinguish between “CWE identifier only” vs “fundamental flaw class text also allowed” in a way that aligns with the evaluation set. Improvement direction: Clarify that for the target task, Weakness entities are restricted to explicit CWE-xxx identifier substrings (e.g., CWE-20, CWE-918) and that natural-language flaw class phrases (e.g., “Improper Input Validation”) are NOT to be labeled as Weakness unless they are the only available identifier; revise the example set so the few-shot examples do not contradict the strict CWE-token-only policy expected by the gold data.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p2_g2_para_1_0_3",
+    "parent_prompt_id": "c_r5_p2_g2_para_1",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt does not instruct the model on how to treat variant formatting of vulnerability identifiers such as “CVE 2022-22954” (space instead of hyphen) shown in Error Example 3 gold as a valid Vulnerability entity with normalized_id “CVE-2022-22954”. The current rule says “must be a literal CVE identifier formatted as CVE-YYYY-NNNN” and “Only exact CVE-YYYY-NNNN substrings are acceptable,” which directly contradicts the gold that includes “CVE 2022-22954”. This deficiency causes either missed entities (if model obeys prompt strictly) or confusion when the model partially overrides the rule. Improvement direction: Either relax the Vulnerability definition to accept commonly observed variants (e.g., “CVE 2022-22954” with space) as valid entity text while normalizing to canonical form, or explicitly state that such variants are out of scope and update gold examples—but to match the provided ground truth, the prompt must define tolerance for minor delimiter deviations and instruct the model to capture the verbatim variant as text and supply the normalized CVE-ID.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p1_g0_edit_0_0",
+    "parent_prompt_id": "c_r5_p1_g0_edit",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt fails to specify how to handle ATT&CK technique IDs that are split by whitespace (e.g., \"T1566.0 01\" or \"T1070.002\" presented as \"T1070.002\" on a line but also with parent technique duplicated). In Error Example 2, the input contains \"T1566.0 01\" (space-separated sub-technique token) and the model extracted it verbatim as \"T1566.0 01\" with normalized \"T1566.001\", while gold expects the parent \"T1566\" only. In Error Example 4, the input lists both a parent ID (e.g., \"T1070\") and its sub-technique (e.g., \"T1070.002\") on separate lines, and the model emitted both the parent token and the sub-technique token as overlapping/duplicate entities, whereas gold expects only the most specific explicit token (sub-technique) without also emitting the parent as a separate span. The prompt says \"Both sub-technique IDs and parent technique IDs are valid when explicitly stated\" but does not define precedence or how to treat whitespace-split T-codes. Improvement direction: Add explicit rules for (a) normalizing whitespace-split T-codes to canonical form for entity text vs normalized_id, and (b) stating that when a sub-technique ID is explicitly present, the parent ID string must not be separately extracted if it is not independently written as a distinct token, and vice versa.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p1_g0_edit_0_1",
+    "parent_prompt_id": "c_r5_p1_g0_edit",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt’s Configuration definition lacks guidance on extracting multiple distinct product/component strings from the same vulnerability context, and on whether partial product names (e.g., \"Cisco IOS XE Web UI\" vs \"Cisco IOS XE\") should be separately tagged. In Error Example 3, gold extracts only CVEs and not any Configuration entities, implying that the evaluation scope for that sample excluded Configurations (or the gold standard treated the text differently), but the model extracted numerous Configurations (e.g., \"Cisco IOS XE Web UI\", \"Fortinet FortiOS and FortiProxy SSL-VPN\") based on \"affects\" language. This reveals ambiguity: the prompt says Configuration is required when \"EXPLICITLY stated as affected by…\" but does not clarify whether such extractions are always expected or whether samples may selectively omit them, nor does it handle compound product phrases (\"X and Y\") as one or multiple entities. Improvement direction: Clarify that Configuration extraction is conditional on the annotation task’s target schema per sample, provide examples where Configurations are intentionally omitted to match gold, and specify how to split or merge compound affected-product lists.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p1_g0_edit_0_2",
+    "parent_prompt_id": "c_r5_p1_g0_edit",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt prohibits extra fields (Rule 8: only id, text, type, start, end, normalized_id) but the gold outputs in all error examples include \"evidence\" and/or \"notes\" fields, and the model correctly omitted them yet was still marked incorrect on content (not schema). More critically, the prompt does not align with the gold annotation philosophy of \"exhaustive explicit identifier mention\" and relation-localized duplicates (e.g., Error Example 1 gold includes three CVE mentions and two SimpleHelp variants with notes). The model skipped \"SimpleHelp RMM\" as a separate Configuration and used wrong CPE vendor (simplehelp vs simple-help). The prompt’s CPE examples are too few and do not instruct on vendor-name normalization disputes (hyphenation). Improvement direction: Add explicit instruction that product/component strings must be extracted as separate entities for each distinct verbatim affected-target phrase (including abbreviated vs full names), and provide a small lookup or rule for canonical CPE vendor formatting (e.g., NVD official vendor field) to avoid hallucinated CPEs.",
+    "round_idx": 5
+  },
+  {
+    "gradient_id": "grad_c_r5_p1_g0_edit_0_3",
+    "parent_prompt_id": "c_r5_p1_g0_edit",
+    "error_group_id": "G5_0",
+    "gradient_text": "The prompt’s Weaknes category permits extraction of \"fundamental flaw class explicitly described… (e.g., server-side request forgery)\" and the model in Error Example 3 extracted \"SQL injection\", \"improper input validation\" as Weakness with CWE IDs, but gold omitted all Weaknesses. This shows the prompt does not constrain Weakness extraction to cases where a CWE token is present or where the task explicitly requires it; it also does not state that some samples may exclude Weakness entirely. Additionally, the prompt does not define interaction between Vulnerability and Weakness when a CVE is described by a flaw class (e.g., \"path traversal vulnerability\" in Error Example 1) – the model added Weakness \"path traversal\" but gold did not. Improvement direction: State clearly that Weakness entities should only be extracted when a CWE-xxx identifier appears OR when the sample’s gold explicitly includes flaw-class spans, and provide negative examples showing CVE-associated flaw descriptions that must NOT be tagged as Weakness to prevent over-extraction.",
+    "round_idx": 5
+  }
+]

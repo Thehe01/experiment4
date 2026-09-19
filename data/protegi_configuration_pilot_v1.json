@@ -1,0 +1,92 @@
+{
+  "manifest_version": "protegi-configuration-pilot-v1",
+  "purpose": "small-scale constrained ProTeGi optimization targeted at Configuration extraction",
+  "parent_split_file": "train_dev_test_split_v7.json",
+  "parent_split_sha256": "6cbef622b5e9075e7173559c01d733336adb60195fbc9490ecdbe92c368f5da5",
+  "selection_policy": "Gold-label-only selection inside frozen official train/dev partitions; the fresh Dev subset excludes every document used by prompt-scope-pilot-v1; no model outputs and no test documents were used",
+  "window_policy": {
+    "max_chars": 3000,
+    "overlap": 400,
+    "counting": "actual build_text_windows output, not a length estimator"
+  },
+  "document_context": {
+    "enabled": true,
+    "version": "explicit-abbreviation-context-v1",
+    "scope": "explicit Long Form (SF) or SF (Long Form) definitions only",
+    "semantic_entity_decisions": false,
+    "automatic_entity_backfill": false
+  },
+  "train": [
+    "aa23-289a",
+    "aa23-339a-coldfusion-cve-26360",
+    "fortios-sslvpn-rapid7-fortinet-targeting",
+    "aa25-266a"
+  ],
+  "dev": [
+    "aa24-242a",
+    "proxylogon-microsoft-hafnium-exchange",
+    "aa22-257a"
+  ],
+  "test": [],
+  "observed_diagnostic_dev_excluded": [
+    "confluence-nvd-confluence-26084",
+    "aa23-213a",
+    "aa22-228a",
+    "aa22-074a"
+  ],
+  "audit_counts": {
+    "train": {
+      "documents": 4,
+      "source_characters": 58307,
+      "runtime_windows": 25,
+      "runtime_windows_by_document": {
+        "aa23-289a": 5,
+        "aa23-339a-coldfusion-cve-26360": 2,
+        "fortios-sslvpn-rapid7-fortinet-targeting": 3,
+        "aa25-266a": 15
+      },
+      "document_entities": {
+        "Vulnerability": 49,
+        "Configuration": 26,
+        "Weakness": 4,
+        "AttackTechnique": 67
+      },
+      "window_entities": {
+        "Vulnerability": 53,
+        "Configuration": 29,
+        "Weakness": 4,
+        "AttackTechnique": 75
+      },
+      "explicit_abbreviation_pairs": 46
+    },
+    "dev": {
+      "documents": 3,
+      "source_characters": 84388,
+      "runtime_windows": 34,
+      "runtime_windows_by_document": {
+        "aa24-242a": 15,
+        "proxylogon-microsoft-hafnium-exchange": 7,
+        "aa22-257a": 12
+      },
+      "document_entities": {
+        "Vulnerability": 79,
+        "Configuration": 20,
+        "Weakness": 7,
+        "AttackTechnique": 62
+      },
+      "window_entities": {
+        "Vulnerability": 90,
+        "Configuration": 25,
+        "Weakness": 8,
+        "AttackTechnique": 71
+      },
+      "explicit_abbreviation_pairs": 40
+    }
+  },
+  "notes": [
+    "The Train subset is reused because observing Train errors is part of ProTeGi optimization.",
+    "The Dev subset is fresh relative to the completed prompt-scope pilot and is used once after all Train search rounds.",
+    "Strict Configuration F1 is primary; overlap F1 is diagnostic only.",
+    "This pilot is for pipeline validation and directional evidence, not the final thesis effectiveness claim."
+  ]
+}

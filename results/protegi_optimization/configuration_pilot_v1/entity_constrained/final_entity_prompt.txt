@@ -1,0 +1,60 @@
+<IMMUTABLE_CONTRACT>
+BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1
+TASK_STAGE: entity-only
+
+Extract only these four entity types:
+- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.
+- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.
+- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.
+- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.
+
+Entity rules:
+1. Entity text must be an exact substring of the input.
+2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.
+3. Extract every distinct explicit mention; do not duplicate the same type and span.
+4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.
+5. Output entities only. Stage 1 must not extract, define, or output relations.
+6. Return exactly these entity fields: id, text, type, start, end, normalized_id.
+
+Frozen reference examples:
+<example>
+<text>
+Attackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).
+</text>
+<entities>
+[
+  {"id": "E1", "text": "CVE-2021-44228", "type": "Vulnerability", "start": 20, "end": 34, "normalized_id": "CVE-2021-44228"},
+  {"id": "E2", "text": "Log4j", "type": "Configuration", "start": 42, "end": 47, "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*"},
+  {"id": "E3", "text": "T1190", "type": "AttackTechnique", "start": 124, "end": 129, "normalized_id": "T1190"}
+]
+</entities>
+</example>
+
+<example>
+<text>
+CVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.
+</text>
+<entities>
+[
+  {"id": "E1", "text": "CVE-2021-26855", "type": "Vulnerability", "start": 0, "end": 14, "normalized_id": "CVE-2021-26855"},
+  {"id": "E2", "text": "server-side request forgery", "type": "Weakness", "start": 20, "end": 47, "normalized_id": "CWE-918"},
+  {"id": "E3", "text": "CWE-918", "type": "Weakness", "start": 49, "end": 56, "normalized_id": "CWE-918"},
+  {"id": "E4", "text": "Microsoft Exchange Server", "type": "Configuration", "start": 75, "end": 100, "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*"}
+]
+</entities>
+</example>
+
+Input text:
+<text>
+{text}
+</text>
+
+Return one JSON object only:
+{"entities": [{"id": "E1", "text": "exact substring", "type": "Vulnerability", "start": 0, "end": 14, "normalized_id": "CVE-..."}]}
+</IMMUTABLE_CONTRACT>
+
+<OPTIMIZABLE_GUIDANCE>
+Scan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Apply the frozen definitions conservatively and check every emitted span against the source before returning JSON.
+</OPTIMIZABLE_GUIDANCE>
+
+Follow the immutable contract and the operational guidance. Output JSON only.

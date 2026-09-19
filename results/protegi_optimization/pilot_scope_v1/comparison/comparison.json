@@ -1,0 +1,195 @@
+{
+  "experiment_pair_id": "protegi-prompt-scope-pilot-v1",
+  "stage": "entity",
+  "split_file": "D:\\BRON\\experiments\\v6\\data\\protegi_prompt_scope_pilot_v1.json",
+  "split_file_sha256": "adc810f122569911c83e50a593f6291c993fe7f845fd3dee83d6d9f6b700a23f",
+  "test_documents_loaded": false,
+  "arms": {
+    "constrained": {
+      "candidate_id": "c_r2_p0_g0_para_0",
+      "prompt_sha256": "92099f834763e57f33a3e76f34de885df69971ea00bd1ea72de03f2d741f9452",
+      "prompt_length": 4199,
+      "precision": 0.818182,
+      "recall": 0.872727,
+      "f1": 0.844575,
+      "by_type": {
+        "AttackTechnique": {
+          "tp": 46,
+          "fp": 4,
+          "fn": 0,
+          "precision": 0.92,
+          "recall": 1.0,
+          "f1": 0.958333,
+          "details": {},
+          "gold_support": 46,
+          "predicted_support": 50,
+          "applicable": true
+        },
+        "Configuration": {
+          "tp": 8,
+          "fp": 20,
+          "fn": 18,
+          "precision": 0.285714,
+          "recall": 0.307692,
+          "f1": 0.296296,
+          "details": {},
+          "gold_support": 26,
+          "predicted_support": 28,
+          "applicable": true
+        },
+        "Vulnerability": {
+          "tp": 85,
+          "fp": 7,
+          "fn": 1,
+          "precision": 0.923913,
+          "recall": 0.988372,
+          "f1": 0.955056,
+          "details": {},
+          "gold_support": 86,
+          "predicted_support": 92,
+          "applicable": true
+        },
+        "Weakness": {
+          "tp": 5,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.833333,
+          "recall": 0.714286,
+          "f1": 0.769231,
+          "details": {},
+          "gold_support": 7,
+          "predicted_support": 6,
+          "applicable": true
+        }
+      },
+      "normalization": {
+        "correct": 139,
+        "total": 144,
+        "accuracy": 0.9652777777777778,
+        "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+      },
+      "prompt_scope_audit": {
+        "configured_scope": "constrained",
+        "runtime_interface_valid": true,
+        "runtime_interface_reasons": [],
+        "frozen_contract_exact_match": true,
+        "frozen_contract_reasons": []
+      },
+      "task_max_workers": 8,
+      "call_stats": {
+        "task_model_calls": 196,
+        "optimizer_model_calls": 8,
+        "task_input_tokens": 326481,
+        "task_output_tokens": 73500,
+        "optimizer_input_tokens": 38174,
+        "optimizer_output_tokens": 1985,
+        "num_generated_candidates": 5,
+        "num_evaluated_candidates": 3,
+        "num_duplicate_candidates": 0,
+        "num_evaluated_samples": 196
+      }
+    },
+    "unconstrained": {
+      "candidate_id": "c_r2_p0_g0_para_0",
+      "prompt_sha256": "934cf1a15d9dc5a190e4695699e088d35e7e2e7f23072c9ffdcb0efca463fa4b",
+      "prompt_length": 6039,
+      "precision": 0.8375,
+      "recall": 0.812121,
+      "f1": 0.824615,
+      "by_type": {
+        "AttackTechnique": {
+          "tp": 46,
+          "fp": 6,
+          "fn": 0,
+          "precision": 0.884615,
+          "recall": 1.0,
+          "f1": 0.938776,
+          "details": {},
+          "gold_support": 46,
+          "predicted_support": 52,
+          "applicable": true
+        },
+        "Configuration": {
+          "tp": 6,
+          "fp": 13,
+          "fn": 20,
+          "precision": 0.315789,
+          "recall": 0.230769,
+          "f1": 0.266667,
+          "details": {},
+          "gold_support": 26,
+          "predicted_support": 19,
+          "applicable": true
+        },
+        "Vulnerability": {
+          "tp": 78,
+          "fp": 7,
+          "fn": 8,
+          "precision": 0.917647,
+          "recall": 0.906977,
+          "f1": 0.912281,
+          "details": {},
+          "gold_support": 86,
+          "predicted_support": 85,
+          "applicable": true
+        },
+        "Weakness": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 3,
+          "precision": 1.0,
+          "recall": 0.571429,
+          "f1": 0.727273,
+          "details": {},
+          "gold_support": 7,
+          "predicted_support": 4,
+          "applicable": true
+        }
+      },
+      "normalization": {
+        "correct": 131,
+        "total": 134,
+        "accuracy": 0.9776119402985075,
+        "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+      },
+      "prompt_scope_audit": {
+        "configured_scope": "unconstrained",
+        "runtime_interface_valid": true,
+        "runtime_interface_reasons": [],
+        "frozen_contract_exact_match": false,
+        "frozen_contract_reasons": [
+          "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+          "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+          "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+          "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+          "无法解析冻结契约块",
+          "无法解析可优化 guidance 块"
+        ]
+      },
+      "task_max_workers": 8,
+      "call_stats": {
+        "task_model_calls": 221,
+        "optimizer_model_calls": 9,
+        "task_input_tokens": 437002,
+        "task_output_tokens": 88050,
+        "optimizer_input_tokens": 44599,
+        "optimizer_output_tokens": 10317,
+        "num_generated_candidates": 6,
+        "num_evaluated_candidates": 4,
+        "num_duplicate_candidates": 0,
+        "num_evaluated_samples": 221
+      }
+    }
+  },
+  "decision": {
+    "status": "provisional_complete",
+    "provisional_choice": "constrained",
+    "reason": "有约束臂 Dev F1 更高；按预注册规则选择 constrained"
+  },
+  "limitations": [
+    "small fixed Train/Dev pilot",
+    "no test evaluation",
+    "no statistical significance claim",
+    "unconstrained winner requires separate Chapter 3 boundary audit"
+  ]
+}

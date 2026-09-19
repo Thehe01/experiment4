@@ -1,0 +1,29 @@
+[
+  {
+    "type": "initial_pull",
+    "candidate_id": "c_r1_p0_g0_edit",
+    "reward": 0.923076923076923
+  },
+  {
+    "type": "initial_pull",
+    "candidate_id": "c_r1_p0_g0_para_0",
+    "reward": 0.923076923076923
+  },
+  {
+    "type": "initial_pull",
+    "candidate_id": "P_E0",
+    "reward": 0.7164179104477612
+  },
+  {
+    "type": "ucb_pull",
+    "candidate_id": "c_r1_p0_g0_para_0",
+    "ucb_score": 3.019371071013333,
+    "reward": 0.923076923076923
+  },
+  {
+    "type": "ucb_pull",
+    "candidate_id": "c_r1_p0_g0_edit",
+    "ucb_score": 3.2778969681078722,
+    "reward": 0.923076923076923
+  }
+]

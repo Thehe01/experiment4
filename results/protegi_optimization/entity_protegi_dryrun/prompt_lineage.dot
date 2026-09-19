@@ -1,0 +1,9 @@
+digraph PromptLineage {
+  rankdir="LR";
+  node [shape="box", style="rounded,filled", fontname="Arial"];
+  "P_E0" [label="P_E0\n(R0, F1:0.7500)\ninitial", fillcolor="#e6f2ff"];
+  "c_r1_p0_g0_edit" [label="c_r1_p0_g0_edit\n(R1, F1:0.0000)\ngradient_edit", fillcolor="#f9f9f9"];
+  "c_r1_p0_g0_para_0" [label="c_r1_p0_g0_para_0\n(R1, F1:0.0000)\nparaphrase", fillcolor="#ffcccc"];
+  "P_E0" -> "c_r1_p0_g0_edit" [label="gradient_edit", color="#aaaaaa"];
+  "P_E0" -> "c_r1_p0_g0_para_0" [label="paraphrase", color="#0066cc", penwidth=2.0];
+}

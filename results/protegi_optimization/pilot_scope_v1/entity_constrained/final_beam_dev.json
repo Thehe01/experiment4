@@ -1,0 +1,183 @@
+[
+  {
+    "candidate_id": "P_E0",
+    "parent_id": null,
+    "generation_type": "initial",
+    "gradient_id": null,
+    "round_idx": 0,
+    "num_evaluations": 3,
+    "samples_seen": 24,
+    "tp": 133,
+    "fp": 24,
+    "fn": 22,
+    "estimated_reward": 0.852564,
+    "ucb_score": 2.463324,
+    "selection_status": "final_not_selected",
+    "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nScan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Apply the frozen definitions conservatively and check every emitted span against the source before returning JSON.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+    "metrics": {
+      "train_f1": 0.8405797101449274,
+      "train_precision": 0.8656716417910447,
+      "train_recall": 0.8169014084507042,
+      "train_sample_ids": [
+        "aa25-266a_w6",
+        "aa25-266a_w2",
+        "fortios-sslvpn-rapid7-fortinet-targeting_w2",
+        "aa25-266a_w9",
+        "aa25-266a_w8",
+        "aa23-339a-coldfusion-cve-26360_w1",
+        "aa23-339a-coldfusion-cve-26360_w0",
+        "aa25-266a_w0"
+      ],
+      "prompt_scope_audit": {
+        "configured_scope": "constrained",
+        "runtime_interface_valid": true,
+        "runtime_interface_reasons": [],
+        "frozen_contract_exact_match": true,
+        "frozen_contract_reasons": []
+      },
+      "dev_f1": 0.8372093023255814,
+      "dev_precision": 0.8044692737430168,
+      "dev_recall": 0.8727272727272727,
+      "dev_by_type": {
+        "AttackTechnique": {
+          "tp": 46,
+          "fp": 6,
+          "fn": 0,
+          "precision": 0.884615,
+          "recall": 1.0,
+          "f1": 0.938776,
+          "details": {},
+          "gold_support": 46,
+          "predicted_support": 52,
+          "applicable": true
+        },
+        "Configuration": {
+          "tp": 7,
+          "fp": 18,
+          "fn": 19,
+          "precision": 0.28,
+          "recall": 0.269231,
+          "f1": 0.27451,
+          "details": {},
+          "gold_support": 26,
+          "predicted_support": 25,
+          "applicable": true
+        },
+        "Vulnerability": {
+          "tp": 86,
+          "fp": 10,
+          "fn": 0,
+          "precision": 0.895833,
+          "recall": 1.0,
+          "f1": 0.945055,
+          "details": {},
+          "gold_support": 86,
+          "predicted_support": 96,
+          "applicable": true
+        },
+        "Weakness": {
+          "tp": 5,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.833333,
+          "recall": 0.714286,
+          "f1": 0.769231,
+          "details": {},
+          "gold_support": 7,
+          "predicted_support": 6,
+          "applicable": true
+        }
+      },
+      "dev_normalization": {
+        "correct": 139,
+        "total": 144,
+        "accuracy": 0.9652777777777778,
+        "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+      }
+    }
+  },
+  {
+    "candidate_id": "c_r2_p0_g0_para_0",
+    "parent_id": "c_r2_p0_g0_edit",
+    "generation_type": "paraphrase",
+    "gradient_id": "grad_P_E0_0_0",
+    "round_idx": 2,
+    "num_evaluations": 3,
+    "samples_seen": 24,
+    "tp": 134,
+    "fp": 28,
+    "fn": 21,
+    "estimated_reward": 0.845426,
+    "ucb_score": 2.802038,
+    "selection_status": "final_winner",
+    "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nExamine the complete source across all formats — narrative text, tables, lists, captions, and identifiers split across lines. Validate each output span against the original before finalizing.\nFor every product-like mention, apply this sequential accept-reject filter and retain only candidates that pass all steps:\n1. Reduce to the minimal self-contained phrase that still uniquely names the item; strip trailing instance counts, descriptive qualifiers, and deployment details.\n2. Exclude if the reduced form is merely a generic role, function, or plural/collective variant lacking a distinct singular identifiable version.\n3. Exclude if the surrounding local passage does not explicitly present it as an impacted item; ignore passing, background, or tool-only references.\n4. Confirm verbatim character-level match to the source prior to retention.\nIf in doubt, drop the candidate.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+    "metrics": {
+      "prompt_scope_audit": {
+        "configured_scope": "constrained",
+        "runtime_interface_valid": true,
+        "runtime_interface_reasons": [],
+        "frozen_contract_exact_match": true,
+        "frozen_contract_reasons": []
+      },
+      "dev_f1": 0.8445747800586509,
+      "dev_precision": 0.8181818181818182,
+      "dev_recall": 0.8727272727272727,
+      "dev_by_type": {
+        "AttackTechnique": {
+          "tp": 46,
+          "fp": 4,
+          "fn": 0,
+          "precision": 0.92,
+          "recall": 1.0,
+          "f1": 0.958333,
+          "details": {},
+          "gold_support": 46,
+          "predicted_support": 50,
+          "applicable": true
+        },
+        "Configuration": {
+          "tp": 8,
+          "fp": 20,
+          "fn": 18,
+          "precision": 0.285714,
+          "recall": 0.307692,
+          "f1": 0.296296,
+          "details": {},
+          "gold_support": 26,
+          "predicted_support": 28,
+          "applicable": true
+        },
+        "Vulnerability": {
+          "tp": 85,
+          "fp": 7,
+          "fn": 1,
+          "precision": 0.923913,
+          "recall": 0.988372,
+          "f1": 0.955056,
+          "details": {},
+          "gold_support": 86,
+          "predicted_support": 92,
+          "applicable": true
+        },
+        "Weakness": {
+          "tp": 5,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.833333,
+          "recall": 0.714286,
+          "f1": 0.769231,
+          "details": {},
+          "gold_support": 7,
+          "predicted_support": 6,
+          "applicable": true
+        }
+      },
+      "dev_normalization": {
+        "correct": 139,
+        "total": 144,
+        "accuracy": 0.9652777777777778,
+        "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+      }
+    }
+  }
+]

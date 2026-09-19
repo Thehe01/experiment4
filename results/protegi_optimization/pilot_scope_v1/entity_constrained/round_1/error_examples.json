@@ -1,0 +1,640 @@
+[
+  {
+    "sample_id": "aa23-289a_w0",
+    "input_text": " To report suspicious or criminal activity related to information found in this joint Cybersecurity Advisory, contact your local FBI field office or CISA’s 24/7 Operations Center at Report@cisa.gov or (888) 282-0870. When available, please include the following information regarding the incident: date, time, and location of the incident; type of activity; number of people affected; type of equipment used for the activity; the name of the submitting company or organization; and a designated point of contact. SLTT organizations should report incidents to MS-ISAC (866-787-4722 or SOC@cisecurity.org). This document is marked TLP:CLEAR. Disclosure is not limited. Sources may use TLP:CLEAR when information carries minimal or no foreseeable risk of misuse, in accordance with applicable rules and procedures for public release. Subject to standard copyright rules, TLP:CLEAR information may be distributed without restriction. For more information on the Traffic Light Protocol, see cisa.gov/tlp. TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Federal Bureau of Investigation (FBI), and Multi-State Information Sharing and Analysis Center (MS-ISAC) are releasing this joint Cybersecurity Advisory (CSA) in response to the active exploitation of CVE-2023-22515. This recently disclosed vulnerability affects certain versions of Atlassian Confluence Data Center and Server, enabling malicious cyber threat actors to obtain initial access to Confluence instances by creating unauthorized Confluence administrator accounts. Threat actors exploited CVE-2023-22515 as a zero- day to obtain access to victim systems and continue active exploitation post-patch. Atlassian has rated this vulnerability as critical; CISA, FBI, and MS-ISAC expect widespread, continued exploitation due to ease of exploitation. CISA, FBI, and MS-ISAC strongly encourage network administrators to immediately apply the upgrades provided by Atlassian. CISA, FBI, and MS-ISAC also encourage organizations to hunt for malicious activity on their networks using the detection signatures and indicators of compromise (IOCs) in this CSA. If a potential compromise is detected, organizations should apply the incident response recommendations. For additional information on upgrade instructions, a complete list of affected product versions, and IOCs, see Atlassian’s security advisory for CVE-2023-22515.[1] While Atlassian’s advisory provides interim measures to temporarily mitigate known attack vectors, CISA, FBI, and MS-ISAC strongly encourage upgrading to a fixed version or taking servers offline to apply necessary updates. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E1",
+          "text": "Atlassian Confluence",
+          "type": "Configuration",
+          "start": 1094,
+          "end": 1114,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Fede"
+        },
+        {
+          "id": "E2",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1115,
+          "end": 1129,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "TLP:CLEAR Product ID: AA23-289A October 16, 2023 Authored by: TLP:CLEAR Threat Actors Exploit Atlassian Confluence CVE-2023-22515 for Initial Access to Networks SUMMARY The Cybersecurity and Infrastructure Security Agency (CISA), Federal Bureau of I"
+        },
+        {
+          "id": "E4",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1431,
+          "end": 1445,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "alysis Center (MS-ISAC) are releasing this joint Cybersecurity Advisory (CSA) in response to the active exploitation of CVE-2023-22515.",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E5",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1730,
+          "end": 1744,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "Threat actors exploited CVE-2023-22515 as a zero- day to obtain access to victim systems and continue active exploitation post-patch.",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E6",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2540,
+          "end": 2554,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": " on upgrade instructions, a complete list of affected product versions, and IOCs, see Atlassian’s security advisory for CVE-2023-22515.[1] While Atlassian’s advisory provides interim measures to temporarily mitigate known attack vectors, CISA, FBI, and M",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E16",
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1513,
+          "end": 1556,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+          "evidence": "Atlassian Confluence Data Center and Server, enabling malicious cyber threat actors to obtain initial access to Confluence instances by creating unauthorized Confluence administrator accounts.",
+          "notes": "v4.5 human reannotation and adjudication"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1115,
+          "end": 1129,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E1"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1431,
+          "end": 1445,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E2"
+        },
+        {
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1513,
+          "end": 1556,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center_and_server:*:*:*:*:*:*:*:*",
+          "id": "E3"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1730,
+          "end": 1744,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E4"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2540,
+          "end": 2554,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E5"
+        }
+      ]
+    },
+    "error_details": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 1
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "fortios-sslvpn-rapid7-fortinet-targeting_w1",
+    "input_text": "ated attacker on the same subnet to intercept sensitive information by impersonating the LDAP server.\nCVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for the second factor of authentication (FortiToken) if that user changes the case of their username.\nSince the beginning of March, Rapid7 Labs' Heisenberg Honeypot fleet has seen nearly 60 IP addresses attempting common, known single GET request exploits against Fortinet devices (we’ve grouped the IP addresses up to the hosting provider/ISP level):\nUnfortunately, our fleet does not emulate Fortinet devices. Since these devices are fairly easy to distinguish on the internet (nearly 1 million of them in the image, below)—due to the common, vendor SSL certificate they use—it is surprising to see opportunistic exploit attempts versus just inventory/discovery scans.\nThat last sentence should help organizations underscore why CISA and the FBI raised the Fortinet exploitation campaign to the level of a joint alert: Attackers can easily identify legitimate Fortinet endpoints on the internet, and it takes virtually no time from discovery to exploit if a target system is not patched and configured properly.\nAs Fortinet notes in that post, these weaknesses have had patches available for quite some time, so if you’re just getting around to fixing them, you may need to dedicate some further cycles to some forensic activity, as it is very likely one or more attackers have already taken advantage of these vulnerabilities.\nTo learn more about other vulnerabilities that functioned as network pivots for attackers, read Rapid7’s 2020 Vulnerability Intelligence Report .\nActively exploited SAP vulnerabilities\nThe two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207. Both of these vulnerabilities allow broad compromise of SAP applications and environments.\nCVE-2020-6287 is present by default in SAP applications running on top of SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP NetWeaver 7.5). It allows remote, unauthenticated attackers to exploit and fully compromise vulnerable SAP installations. Exploitation of CVE-2020-6287 through the HTTP interface allows for modification or extraction of highly sensitive information and disruption of critical business processes. For a list of affected applications and additional guidance, read Rapid7’s full analysis here .\nCVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E5",
+          "text": "CVE-2020-12812",
+          "type": "Vulnerability",
+          "start": 102,
+          "end": 116,
+          "normalized_id": "CVE-2020-12812",
+          "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a u"
+        },
+        {
+          "id": "E6",
+          "text": "CVE-2020-6287",
+          "type": "Vulnerability",
+          "start": 1892,
+          "end": 1905,
+          "normalized_id": "CVE-2020-6287",
+          "evidence": "The two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has b"
+        },
+        {
+          "id": "E7",
+          "text": "CVE-2020-6207",
+          "type": "Vulnerability",
+          "start": 2102,
+          "end": 2115,
+          "normalized_id": "CVE-2020-6207",
+          "evidence": "omponent LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207."
+        },
+        {
+          "id": "E12",
+          "text": "SAP NetWeaver",
+          "type": "Configuration",
+          "start": 1938,
+          "end": 1951,
+          "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+          "evidence": "wo most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July "
+        },
+        {
+          "id": "E14",
+          "text": "SAP Solution Manager",
+          "type": "Configuration",
+          "start": 2081,
+          "end": 2101,
+          "normalized_id": "cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*",
+          "evidence": "on Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207."
+        },
+        {
+          "id": "E20",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 175,
+          "end": 182,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for "
+        },
+        {
+          "id": "E25",
+          "text": "CVE-2020-6287",
+          "type": "Vulnerability",
+          "start": 2208,
+          "end": 2221,
+          "normalized_id": "CVE-2020-6287",
+          "evidence": "CVE-2020-6287 is present by default in SAP applications running on top of SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E26",
+          "text": "CVE-2020-6287",
+          "type": "Vulnerability",
+          "start": 2480,
+          "end": 2493,
+          "normalized_id": "CVE-2020-6287",
+          "evidence": "Exploitation of CVE-2020-6287 through the HTTP interface allows for modification or extraction of highly sensitive information and disruption of crit",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E27",
+          "text": "CVE-2020-6207",
+          "type": "Vulnerability",
+          "start": 2734,
+          "end": 2747,
+          "normalized_id": "CVE-2020-6207",
+          "evidence": "CVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to comp",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E31",
+          "text": "SAP NetWeaver",
+          "type": "Configuration",
+          "start": 2282,
+          "end": 2295,
+          "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+          "evidence": "SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP NetWeaver 7.5).",
+          "notes": "v4.5 human reannotation and adjudication"
+        },
+        {
+          "id": "E32",
+          "text": "SAP’s Solution Manager",
+          "type": "Configuration",
+          "start": 2809,
+          "end": 2831,
+          "normalized_id": "cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*",
+          "evidence": "CVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager.",
+          "notes": "v4.5 human reannotation and adjudication"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "CVE-2020-12812",
+          "type": "Vulnerability",
+          "start": 102,
+          "end": 116,
+          "normalized_id": "CVE-2020-12812",
+          "id": "E1"
+        },
+        {
+          "text": "SSL VPN",
+          "type": "Configuration",
+          "start": 164,
+          "end": 171,
+          "normalized_id": null,
+          "id": "E2"
+        },
+        {
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 175,
+          "end": 182,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "id": "E3"
+        },
+        {
+          "text": "CVE-2020-6287",
+          "type": "Vulnerability",
+          "start": 1892,
+          "end": 1905,
+          "normalized_id": "CVE-2020-6287",
+          "id": "E4"
+        },
+        {
+          "text": "SAP NetWeaver Application Server (AS) Java",
+          "type": "Configuration",
+          "start": 1938,
+          "end": 1980,
+          "normalized_id": "cpe:2.3:a:sap:netweaver_application_server_java:*:*:*:*:*:*:*:*",
+          "id": "E5"
+        },
+        {
+          "text": "SAP Solution Manager",
+          "type": "Configuration",
+          "start": 2081,
+          "end": 2101,
+          "normalized_id": "cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*",
+          "id": "E6"
+        },
+        {
+          "text": "CVE-2020-6207",
+          "type": "Vulnerability",
+          "start": 2102,
+          "end": 2115,
+          "normalized_id": "CVE-2020-6207",
+          "id": "E7"
+        },
+        {
+          "text": "CVE-2020-6287",
+          "type": "Vulnerability",
+          "start": 2208,
+          "end": 2221,
+          "normalized_id": "CVE-2020-6287",
+          "id": "E8"
+        },
+        {
+          "text": "SAP NetWeaver AS Java",
+          "type": "Configuration",
+          "start": 2282,
+          "end": 2303,
+          "normalized_id": "cpe:2.3:a:sap:netweaver_application_server_java:*:*:*:*:*:*:*:*",
+          "id": "E9"
+        },
+        {
+          "text": "CVE-2020-6287",
+          "type": "Vulnerability",
+          "start": 2480,
+          "end": 2493,
+          "normalized_id": "CVE-2020-6287",
+          "id": "E10"
+        },
+        {
+          "text": "CVE-2020-6207",
+          "type": "Vulnerability",
+          "start": 2734,
+          "end": 2747,
+          "normalized_id": "CVE-2020-6207",
+          "id": "E11"
+        },
+        {
+          "text": "SAP’s Solution Manager",
+          "type": "Configuration",
+          "start": 2809,
+          "end": 2831,
+          "normalized_id": "cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*",
+          "id": "E12"
+        }
+      ]
+    },
+    "error_details": {
+      "tp": 9,
+      "fp": 3,
+      "fn": 2
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+    "input_text": "The following blog was co-authored by Caitlin Condon and Bob Rudis , also known (in his own words) as “some caveman from Maine.”\nLast week, the U.S. Cybersecurity and Infrastructure Security Agency (CISA) and the FBI published a joint alert to warn users that APT threat actors were likely exploiting unpatched Fortinet FortiOS devices to gain initial access to government, commercial, technology, and other organizations’ networks. The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months. This week, CISA published an additional alert amplifying a threat report from security firm Onapsis, which describes ongoing attacks against SAP applications .\nRapid7 has previously analyzed a number of the highest-severity vulnerabilities enumerated in this latest set of alerts. The CVEs included in these reports have been detailed below, along with recommendations for organizations seeking to defend themselves against ongoing exploitation. Notably, none of these vulnerabilities are new—many of them are a year or more old, which underscores the need for a regular patch cycle, as well as a defined patch cycle exception process.\nFortiOS vulnerabilities\nFortinet devices are what we call network pivots —that is, the position they occupy in organizations’ networks gives external attackers the ability to access internal networks if exploited successfully, which in turn allows for a range of secondary attacks and other nefarious activities. If at all possible, defenders should strongly consider implementing a “zero-day” patch cycle for internet-exposed and other network pivot products, including (but not only) Fortinet and other VPNs. InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\nCVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs. The vulnerability allows external attackers to download FortiOS system files through specially crafted HTTP resource requests and has been exploited in the wild since 2019 . Read our full analysis of CVE-2018-13379 and its history here .\nCVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP server.\nCVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for the second factor of authentication (FortiToken) if that user changes the case of their username.\n",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E1",
+          "text": "CVE-2018-13379",
+          "type": "Vulnerability",
+          "start": 549,
+          "end": 563,
+          "normalized_id": "CVE-2018-13379",
+          "evidence": "The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months."
+        },
+        {
+          "id": "E4",
+          "text": "CVE-2019-5591",
+          "type": "Vulnerability",
+          "start": 2283,
+          "end": 2296,
+          "normalized_id": "CVE-2019-5591",
+          "evidence": "CVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to inter"
+        },
+        {
+          "id": "E5",
+          "text": "CVE-2020-12812",
+          "type": "Vulnerability",
+          "start": 2477,
+          "end": 2491,
+          "normalized_id": "CVE-2020-12812",
+          "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a u"
+        },
+        {
+          "id": "E17",
+          "text": "CVE-2018-13379",
+          "type": "Vulnerability",
+          "start": 1881,
+          "end": 1895,
+          "normalized_id": "CVE-2018-13379",
+          "notes": "relation-localized mention added by repair_gold_v4",
+          "evidence": "CVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal c"
+        },
+        {
+          "id": "E18",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 1835,
+          "end": 1842,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\n"
+        },
+        {
+          "id": "E19",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 2341,
+          "end": 2348,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "CVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP"
+        },
+        {
+          "id": "E20",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 2550,
+          "end": 2557,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+          "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for "
+        },
+        {
+          "id": "E24",
+          "text": "CVE-2018-13379",
+          "type": "Vulnerability",
+          "start": 2245,
+          "end": 2259,
+          "normalized_id": "CVE-2018-13379",
+          "evidence": "Read our full analysis of CVE-2018-13379 and its history here .\n",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E30",
+          "text": "FortiOS",
+          "type": "Configuration",
+          "start": 461,
+          "end": 468,
+          "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "evidence": "The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months.",
+          "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "Fortinet FortiOS",
+          "type": "Configuration",
+          "start": 311,
+          "end": 327,
+          "normalized_id": "cpe:2.3:a:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "id": "E1"
+        },
+        {
+          "text": "CVE-2018-13379",
+          "type": "Vulnerability",
+          "start": 549,
+          "end": 563,
+          "normalized_id": "CVE-2018-13379",
+          "id": "E2"
+        },
+        {
+          "text": "CVE-2018-13379",
+          "type": "Vulnerability",
+          "start": 1881,
+          "end": 1895,
+          "normalized_id": "CVE-2018-13379",
+          "id": "E3"
+        },
+        {
+          "text": "FortiOS SSL VPNs",
+          "type": "Configuration",
+          "start": 2027,
+          "end": 2043,
+          "normalized_id": "cpe:2.3:a:fortinet:fortios:*:*:*:*:*:*:*:*",
+          "id": "E4"
+        },
+        {
+          "text": "CVE-2018-13379",
+          "type": "Vulnerability",
+          "start": 2245,
+          "end": 2259,
+          "normalized_id": "CVE-2018-13379",
+          "id": "E5"
+        },
+        {
+          "text": "CVE-2019-5591",
+          "type": "Vulnerability",
+          "start": 2283,
+          "end": 2296,
+          "normalized_id": "CVE-2019-5591",
+          "id": "E6"
+        },
+        {
+          "text": "CVE-2020-12812",
+          "type": "Vulnerability",
+          "start": 2477,
+          "end": 2491,
+          "normalized_id": "CVE-2020-12812",
+          "id": "E7"
+        }
+      ]
+    },
+    "error_details": {
+      "tp": 5,
+      "fp": 2,
+      "fn": 4
+    },
+    "parent_candidate_id": "P_E0"
+  },
+  {
+    "sample_id": "aa23-289a_w4",
+    "input_text": "rity practices in your production and enterprise environments. While not observed in this instance of exploitation, mandating phishing-resistant multifactor authentication (MFA) for all staff and services can make it more difficult for threat actors to gain access to networks and information systems. For additional best practices, see: o CISA’s Cross-Sector Cybersecurity Performance Goals (CPGs). The CPGs, developed by CISA and the National Institute of Standards and Technology (NIST), are a prioritized subset of IT and OT security practices that can meaningfully reduce the likelihood and impact of known cyber risks and common tactics, techniques, and procedures (TTPs). Because the CPGs are a subset of best practices, CISA recommends software manufacturers implement a comprehensive information security program based on a recognized framework, such as the NIST Cybersecurity Framework (CSF). o Center for Internet Security’s (CIS) Critical Security Controls. The CIS Critical Security Controls are a prescriptive, prioritized, and simplified set of best practices that organizations can use to strengthen cybersecurity posture and protect against cyber incidents. RESOURCES • NIST: CVE-2023-22515 • MITRE: CWE-20 - Improper Input Validation • CISA: Known Exploited Vulnerabilities Catalog These mitigations apply to all organizations using non-cloud Atlassian Confluence Data Center and Server software. CISA, FBI, and MS-ISAC recommend that software manufacturers incorporate secure by design and default principles and tactics into their software development practices to reduce the prevalence of Broken Access Control vulnerabilities, thus strengthening the secure posture for their customers. For more information on secure by design, see CISA’s Secure by Design and Default webpage and joint guide. CISA  FBI | MS-ISAC TLP:CLEAR Page 6 of 6 | Product ID: AA23-289A TLP:CLEAR • MITRE Software: Rclone • CISA: Secure by Design and Default • CISA: Phishing-Resistant MFA • CISA: Cross-Sector Cybersecurity Performance Goals • CIS: Critical Security Controls REFERENCES [1] Atlassian: CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server [2] Rapid7: CVE-2023-22515 Analysis [3] Microsoft: CVE-2023-22515 Exploit IP Addresses [4] Proofpoint: Emerging Threats Rulesets [5] Confluence CVE-2023-22515 Proof of Concept - vulhub [6] Atlassian Support: Upgrading Confluence DISCLAIMER The information in this report is being provided “as is” for informational purposes only. CISA, FBI, and MS-ISAC do not endorse any commercial entity, product, company, or service, including any entities, products, or services linked within this document. Any reference to specific commercial entities, products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply endorsement, recommendation, or favoring by CISA, FBI, and MS-ISAC. VERSION HISTORY October 16, 2023: Initial version. ",
+    "gold_output": {
+      "entities": [
+        {
+          "id": "E10",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1193,
+          "end": 1207,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "RESOURCES • NIST: CVE-2023-22515 • MITRE: CWE-20 - Improper Input Validation • CISA: Known Exploited Vulnerabilities Catalog These mitigations apply to ",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E11",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2098,
+          "end": 2112,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "nt MFA • CISA: Cross-Sector Cybersecurity Performance Goals • CIS: Critical Security Controls REFERENCES [1] Atlassian: CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server [2] Rapid7: CVE-2023-22515 Analysis [3] Micr",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E12",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2200,
+          "end": 2214,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "ES [1] Atlassian: CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server [2] Rapid7: CVE-2023-22515 Analysis [3] Microsoft: CVE-2023-22515 Exploit IP Addresses [4] Proofpoint: Emerging Threats Rulesets [5] Confluence CV",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E13",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2239,
+          "end": 2253,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "en Access Control Vulnerability in Confluence Data Center and Server [2] Rapid7: CVE-2023-22515 Analysis [3] Microsoft: CVE-2023-22515 Exploit IP Addresses [4] Proofpoint: Emerging Threats Rulesets [5] Confluence CVE-2023-22515 Proof of Concept - vulhub ",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E14",
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2332,
+          "end": 2346,
+          "normalized_id": "CVE-2023-22515",
+          "evidence": "15 Analysis [3] Microsoft: CVE-2023-22515 Exploit IP Addresses [4] Proofpoint: Emerging Threats Rulesets [5] Confluence CVE-2023-22515 Proof of Concept - vulhub [6] Atlassian Support: Upgrading Confluence DISCLAIMER The information in this report is bein",
+          "notes": "exhaustive explicit identifier mention"
+        },
+        {
+          "id": "E15",
+          "text": "CWE-20",
+          "type": "Weakness",
+          "start": 1217,
+          "end": 1223,
+          "normalized_id": "CWE-20",
+          "evidence": "RESOURCES • NIST: CVE-2023-22515 • MITRE: CWE-20 - Improper Input Validation • CISA: Known Exploited Vulnerabilities Catalog These mitigations apply to all organization",
+          "notes": "exhaustive explicit identifier mention"
+        }
+      ]
+    },
+    "predicted_output": {
+      "entities": [
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 1193,
+          "end": 1207,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E1"
+        },
+        {
+          "text": "CWE-20",
+          "type": "Weakness",
+          "start": 1217,
+          "end": 1223,
+          "normalized_id": "CWE-20",
+          "id": "E2"
+        },
+        {
+          "text": "Improper Input Validation",
+          "type": "Weakness",
+          "start": 1226,
+          "end": 1251,
+          "normalized_id": "CWE-20",
+          "id": "E3"
+        },
+        {
+          "text": "Atlassian Confluence Data Center and Server",
+          "type": "Configuration",
+          "start": 1361,
+          "end": 1404,
+          "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center_and_server:*:*:*:*:*:*:*:*",
+          "id": "E4"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2098,
+          "end": 2112,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E5"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2200,
+          "end": 2214,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E6"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2239,
+          "end": 2253,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E7"
+        },
+        {
+          "text": "CVE-2023-22515",
+          "type": "Vulnerability",
+          "start": 2332,
+          "end": 2346,
+          "normalized_id": "CVE-2023-22515",
+          "id": "E8"
+        }
+      ]
+    },
+    "error_details": {
+      "tp": 6,
+      "fp": 2,
+      "fn": 0
+    },
+    "parent_candidate_id": "P_E0"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The optimizable guidance lacks any operational decision procedure for enforcing the frozen Configuration boundaries, leaving the model with only a vague instruction to be conservative. It should be expanded to direct a step-by-step product-vs-deployment test: isolate the shortest independently identifiable product/component substring, strip instance numbers and deployment qualifiers, reject generic infrastructure role descriptors and plural/collective inflections unless the singular product form remains, and reject incidental surrounding mentions that cannot serve as the tail of a directly supported affected-product fact. This would curb systematic over-extraction of non-product mentions while preserving recall of true product types.",
+    "round_idx": 0
+  },
+  {
+    "gradient_id": "grad_c_r1_p0_g0_para_0_0_0",
+    "parent_prompt_id": "c_r1_p0_g0_para_0",
+    "error_group_id": "G1_0",
+    "gradient_text": "The OPTIMIZABLE_GUIDANCE Configuration vetting is under-specified relative to the contract's tail-of-supported-fact definition: step 1 permits retaining vendor prefixes, trailing version/build descriptors, and feature-qualified spans via a vague recognizability exception, and step 2 only filters feature/capability/function/module while omitting the contract's other exclusions for tools, services, generic placeholders, incidental mentions, and version/patch/build tokens, with no test for local vulnerability anchoring. Add an explicit sequential decision procedure: keep a candidate only if the same local fact block contains an explicit vulnerability identifier that directly affects it, otherwise discard as unanchored; then strip any leading vendor/organization qualifier and any trailing version, build, deployment, component, or feature qualifier to the shortest standalone concrete product/component/device token and discard if what remains is only a generic class, tool, service, feature, function, file, or infrastructure token; forbid forming a normalized value by joining qualifiers or inferring part, requiring null when part and product token are not both confidently verified.",
+    "round_idx": 1
+  }
+]

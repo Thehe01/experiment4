@@ -1,0 +1,35 @@
+# ProTeGi matched-budget arm: unconstrained semantic-prompt search
+# 完整语义提示、任务定义与 few-shot 可改；仅固定评价器输入占位符与 JSON 接口。
+
+prompt_scope: "unconstrained"
+experiment_pair_id: "protegi-prompt-scope-v1"
+
+optimization_steps: 6
+beam_width: 4
+minibatch_size: 64
+errors_per_group: 4
+gradients_per_error_group: 4
+max_error_groups: 1
+edits_per_gradient: 1
+paraphrases_per_edit: 2
+successors_per_parent: 4
+total_pull_budget_per_round: 64
+eval_batch_size: 8
+min_pulls_per_candidate: 2
+ucb_c: 2.0
+seed: 42
+
+task_model: "hy3"
+task_max_workers: 8
+task_temperature: 0.0
+task_thinking: "disabled"
+task_reasoning_effort: "none"
+task_top_p: 0.95
+task_max_tokens: 4096
+
+optimizer_model: "muse-spark-1.3-contributor"
+optimizer_temperature: 0.1
+optimizer_thinking: "disabled"
+optimizer_reasoning_effort: "high"
+optimizer_top_p: 1.0
+optimizer_max_tokens: 16384

@@ -1,0 +1,310 @@
+{
+  "manifest_version": "v5-baseline-methods-freeze-v1",
+  "status": "frozen",
+  "created_at_utc": "2026-08-31T04:09:09.345182+00:00",
+  "scope": {
+    "methods": [
+      "rule",
+      "multipass",
+      "full"
+    ],
+    "split": "test",
+    "document_count": 21,
+    "policy": "Rule, Multipass/P0 and Full test predictions and exported metrics are immutable. Full is deterministically derived from the frozen Multipass prediction batch without new model calls."
+  },
+  "dataset_freeze": {
+    "path": "data/dataset_freeze_manifest_v5.json",
+    "sha256": "b05cf4710bd971f8dde9a68a4500431e018e1ee4ca49d270153942f433268e6d"
+  },
+  "split": {
+    "path": "data/train_dev_test_split_v7.json",
+    "sha256": "6cbef622b5e9075e7173559c01d733336adb60195fbc9490ecdbe92c368f5da5",
+    "test_document_ids": [
+      "aa22-137a",
+      "aa22-264a",
+      "aa22-294a",
+      "aa23-075a",
+      "aa23-131a",
+      "aa23-250a",
+      "aa23-250a-manageengine-cve-47966",
+      "aa23-320a",
+      "aa23-325a",
+      "aa23-325a-citrix-bleed-cve-4966",
+      "aa23-335a",
+      "aa23-352a",
+      "aa24-016a",
+      "aa24-016a-androxgh0st",
+      "aa24-060b",
+      "aa24-131a",
+      "aa24-131a-black-basta-cve-1709",
+      "aa25-343a",
+      "drupalgeddon-nvd-drupalgeddon-7600",
+      "follina-huntress-follina",
+      "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities"
+    ]
+  },
+  "methods": {
+    "rule": {
+      "result": {
+        "path": "results/v5_rule_test.json",
+        "sha256": "71e62390b77379628ce5950fd7d2cf26c993dff7d6720cb2f55f0e6da1de2327"
+      },
+      "predictions": {
+        "directory": "results/raw_predictions/v5_rule",
+        "document_count": 21,
+        "aggregate_sha256": "2356857a75591bf34fc6cfb73f8a602f6809b9cd7261242af0e90a2a33a98117",
+        "file_sha256": {
+          "aa22-137a.json": "96ab29d9c239b0510715b8097ff369fd1b6cd975e3f4e5f2a9ef85f59a853c60",
+          "aa22-264a.json": "5655b0ab614b335eba7f753946915c37b6e38d781b766cabae72ed2ff7c58b53",
+          "aa22-294a.json": "8d64d1ea89e491d8a11a3b421ff220f8c12fdffc9bc563b99b4ac300ce42fe9f",
+          "aa23-075a.json": "a35e534b9a81d2a336e9f2eeece2b5d2e6793115cb55425f1bf7bffebe24b3d3",
+          "aa23-131a.json": "cc383b1b5741ef746eb605743253d0eae40a37a35aed691759cbc6084e718deb",
+          "aa23-250a-manageengine-cve-47966.json": "74f7cff83ec9f9d6f1a8a74d52cd4e2698df04bdb58d9d200799b7d1f29bf883",
+          "aa23-250a.json": "bd7e600d6f1a7c56f9cbf90fa6244a97424d6f60473294cbd3cb9c9c22892f4c",
+          "aa23-320a.json": "2b3837b80ef5a8986843730fbeded9a1fb02c551fc6414ede4ff07d455834452",
+          "aa23-325a-citrix-bleed-cve-4966.json": "9b77b83bb0e8981b8a576d08e2fe8baf3e28e6a2b9c53330784b8adce1a5c66b",
+          "aa23-325a.json": "db8bf7c9ec427e3cd639262a3eb4cb57e00c24e6cc5bc7d2e0da6c02e8b84f41",
+          "aa23-335a.json": "99ad52add83e6e5f95c6f118e196b3e9dd24fda2f02acada305130f0b241a9cf",
+          "aa23-352a.json": "3b80a970f1bc24e3cb320a4cb6f5795d104defdf116dc02329aa5461506ab74f",
+          "aa24-016a-androxgh0st.json": "05c26ce409e9ae76d1904baa2947a6f9256c5eba3b0f717e1d29e4dbd9b49a13",
+          "aa24-016a.json": "8a82001faf0aa895f26a88dbfdba2ec187d974063aa1dfaacdd2de8856d18c49",
+          "aa24-060b.json": "de7082d2ac8aa6b9445569f1dfd907c571d0e8202b7ce9cf9e074426cb99676d",
+          "aa24-131a-black-basta-cve-1709.json": "cf6c55f015b427f0426e9eb6494ab029c470987fd30bfb506b29405d404f247f",
+          "aa24-131a.json": "136a7da4ecd2a872a437a890b3de168fe3be3c7d77917e62886c0e18e6590735",
+          "aa25-343a.json": "1d986ab16f42af1aecdaccf1b53cf6e717eb99dfef9064d7ae48241839ee1dfb",
+          "drupalgeddon-nvd-drupalgeddon-7600.json": "321047d0fdb1f30dc6ced33decfbaafa5c4b17657b4076474209699602faa029",
+          "follina-huntress-follina.json": "f18c70d5623fad088d5cd93d494ed094e33076d717c9f39948b9a195516bfe4e",
+          "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities.json": "b6d5d95d7120ea793b6fe8d265ec5e68342c20f94fb93465702f721d43d09abe"
+        }
+      },
+      "metrics": {
+        "entity": {
+          "precision": 0.7407,
+          "recall": 0.9459,
+          "f1": 0.8308,
+          "tp": 734,
+          "fp": 257,
+          "fn": 42
+        },
+        "relation": {
+          "precision": 0.3958,
+          "recall": 0.2901,
+          "f1": 0.3348,
+          "tp": 38,
+          "fp": 58,
+          "fn": 93
+        },
+        "normalized_relation": {
+          "precision": 0.5606,
+          "recall": 0.4805,
+          "f1": 0.5175,
+          "tp": 37,
+          "fp": 29,
+          "fn": 40
+        }
+      },
+      "runtime_config": {
+        "extractor": "deterministic-rule-baseline",
+        "lexicon_source": "frozen train+dev annotations only (development-fitted rule baseline)",
+        "split_file": "train_dev_test_split_v7.json",
+        "uses_document_topic": false
+      },
+      "validation": {
+        "prediction_count": 21,
+        "exact_test_document_set": true,
+        "metrics_recomputed": true,
+        "deterministic_reproduction_mismatches": 0
+      }
+    },
+    "multipass": {
+      "result": {
+        "path": "results/v5_multipass_test.json",
+        "sha256": "52a7f04bcdaa7a675ed5be70d552caa945598c415e5a27f559e03e4ec21659e0"
+      },
+      "predictions": {
+        "directory": "results/raw_predictions/v5_multipass",
+        "document_count": 21,
+        "aggregate_sha256": "293aef1df9d466d8e089b6ff32099dea6eefae83ca6ccb2bcda99516de500a77",
+        "file_sha256": {
+          "aa22-137a.json": "da8256cd601e43c9be12460aa892ccaa1720b705fcafb9920e8ca162a1d9513b",
+          "aa22-264a.json": "04ee9a42285de504740b66fd98b8a48026f7318dddbda62a0d74781a66936212",
+          "aa22-294a.json": "9bfff2878a85edc6e3469a21a0b3d666995da09e9e78b56134db106f76861e4d",
+          "aa23-075a.json": "788a819b2e966cae1c46162e75e0010b22757dd380a6caf2a50951ba1f374127",
+          "aa23-131a.json": "f849c421f5047425de3da7d9f01888c348b764532be51c7bcf4ee071a9431207",
+          "aa23-250a-manageengine-cve-47966.json": "ad23575d5b227fc5c136243977b3e119948e372cc95aa9ab2579cc22f0164f8f",
+          "aa23-250a.json": "c6e8ff39f499e9c33237abfcc84d5c9fbc97aad92150b5117a57426d7ab1fefc",
+          "aa23-320a.json": "6dfb02725cd7dea7309b89947020f4f30d847020fc49dc76b6286f0e42e3d896",
+          "aa23-325a-citrix-bleed-cve-4966.json": "0047b3276a69ca863318610e97c00138091df50e1459ac9203d51753772b76aa",
+          "aa23-325a.json": "638cd22ca200746adaf1550c433cf2227d92cac35be6a3b1f1630a1ff7efb766",
+          "aa23-335a.json": "4b50a512d3f880bf4366b24988ed814d401587dc4746ab942c8938fcb0a6a51f",
+          "aa23-352a.json": "1817386d4bb0691756b412219ca64c923250bfea91189f1d8cef811d483630e6",
+          "aa24-016a-androxgh0st.json": "0f191c4bb9d137cf6aff28d77ec01d8de08959a537d10cd2f8f172def6afe76f",
+          "aa24-016a.json": "dd2337fa4efd681baac84d5c55e73680889aca19d13116c5c0b55f04399f6e5c",
+          "aa24-060b.json": "70b8e472d5fa76661bba7755736b29ca8e5b89cf974fa0a465c648082875e3f5",
+          "aa24-131a-black-basta-cve-1709.json": "422523a31bb80dd3289689b79e17d2a76695021e53dcd69e6dda65dc6becc075",
+          "aa24-131a.json": "9fae021f83881b7b3d46f02e5e7a970c591671dfd1fe705a65f65d4dbeaed879",
+          "aa25-343a.json": "abd1696be64c58950e136d7a591484750f27ab45716cf389c377a4e2b0f7bd6e",
+          "drupalgeddon-nvd-drupalgeddon-7600.json": "f6ba07e833247063963747bba79f61ceed00cad8433ae164d313c896aa31e762",
+          "follina-huntress-follina.json": "162b40bed9ad6cac437de882d97d22eb543b4398818e758a6ba0d16a5db9fda2",
+          "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities.json": "7e52d5f1207594ec527a445bfef071c9df5c7c29e45abab91fc5a5c793980f43"
+        }
+      },
+      "metrics": {
+        "entity": {
+          "precision": 0.8996,
+          "recall": 0.9124,
+          "f1": 0.906,
+          "tp": 708,
+          "fp": 79,
+          "fn": 68
+        },
+        "relation": {
+          "precision": 0.7126,
+          "recall": 0.4733,
+          "f1": 0.5688,
+          "tp": 62,
+          "fp": 25,
+          "fn": 69
+        },
+        "normalized_relation": {
+          "precision": 0.5942,
+          "recall": 0.5325,
+          "f1": 0.5616,
+          "tp": 41,
+          "fp": 28,
+          "fn": 36
+        }
+      },
+      "runtime_config": {
+        "model": "hy3",
+        "base_url": "https://opencode.ai/zen/go/v1",
+        "provider": "opencode",
+        "endpoint": "/v1/chat/completions",
+        "temperature": 0.0,
+        "thinking": "disabled",
+        "reasoning_effort": "",
+        "max_tokens": 4096,
+        "max_escalated_tokens": 4096,
+        "top_p": 0.95,
+        "max_retries": 3,
+        "request_timeout_seconds": 180.0,
+        "transport_max_retries": 0,
+        "prompt_version": "chapter3-no-capec-v1-config-policy-v9-v7-restored-20260814-v5|chapter3-no-capec-v1-endpoint-offsets-mention-facts-20260812-v5-semantic-repair",
+        "window_chars": 3000,
+        "window_overlap": 400,
+        "max_workers": 16
+      },
+      "validation": {
+        "prediction_count": 21,
+        "exact_test_document_set": true,
+        "metrics_recomputed": true,
+        "error_stages": 0,
+        "failed_stage_calls": 0
+      }
+    },
+    "full": {
+      "result": {
+        "path": "results/v5_full_test.json",
+        "sha256": "068ba7296b1cd1e0d442ae9512c710e0fd2f1f4c7027125cb04f427d2b72da5a"
+      },
+      "predictions": {
+        "directory": "results/raw_predictions/v5_full",
+        "document_count": 21,
+        "aggregate_sha256": "2c172a8e61d916e96c74a797354f46d67a2d19f399325f5d2a0811bf2d30cc2d",
+        "file_sha256": {
+          "aa22-137a.json": "30d491472a79d5fda7947e553dc20f1ca64810770b832bd4521b89715418f9cb",
+          "aa22-264a.json": "f8ef26f35fd3b8a6d011fd487778d34a208fcdbec396cd1a0f2c5c1fb227899c",
+          "aa22-294a.json": "6274d1e350de3e9d3737749aa6946143dd1340b4ff6f86006424b64e5450bea2",
+          "aa23-075a.json": "d247c957ac79f9b5f0c438cc696ce308e80f41039c5a00b67c38c9603dee88ab",
+          "aa23-131a.json": "f251f9d4b04f9fe5dc4d185a33dad32fc0173f95bcee86f1f9265fa481c1e48d",
+          "aa23-250a-manageengine-cve-47966.json": "d2607603fd97643493b2fe53203ec19c499ee41d2a55a5a53eb2ad75f90fd404",
+          "aa23-250a.json": "879081369204f4ce5fb2e15bbcfad59c1ac55ce52ffdb1ac382642c7d64ef1fb",
+          "aa23-320a.json": "6ba1777a6e5b5569f8f05c9613b823832c5d8b0c66d359dd4b908c9d909e38aa",
+          "aa23-325a-citrix-bleed-cve-4966.json": "72402219b07045edc73675da94ef40e602894070809483378cf5731d3440a451",
+          "aa23-325a.json": "fb401b91165e34ba9f878214fd0402a078f47f906a3d72de162136d376c4b9d9",
+          "aa23-335a.json": "52a804d16a1a29ad28253c1ca1cc0053428c9be6045bde233c0642b28a21f890",
+          "aa23-352a.json": "88dbb25c19b0cd7fbf363768a80142447dd90e8b80e76f5896b7aa6228aba669",
+          "aa24-016a-androxgh0st.json": "2ae352f33989f64f1b46af6201365564f275c67872138049918351a0b0535617",
+          "aa24-016a.json": "fe0ee80c3d880e9e11eb3d98ff8eb7a007c4ea1b9a685b92a8f9a96f63148320",
+          "aa24-060b.json": "beab5b827221ea3ac4681355ae204fda32643f0be6a264fe149f744b11d9249c",
+          "aa24-131a-black-basta-cve-1709.json": "89789932f84947cea0bb7d914ecf9a8c9e39c84cb9bd91c72befdc39e4728542",
+          "aa24-131a.json": "fa53510857d1261eda361b6b9e603128eca84e9bbbc3488bcfb016c41ec95ed1",
+          "aa25-343a.json": "91ae2049def47c56f4f656bd90fd3cd6d4a7e5b3759a242b2e9a3ba4d2a24cfc",
+          "drupalgeddon-nvd-drupalgeddon-7600.json": "e0019d67945842de35b55bb864153cf52573c230867893e418fd674039691c29",
+          "follina-huntress-follina.json": "91de0d0e71c6a20eb598d5f392aeac9ca6e945d954543619ca19d4383e7027ec",
+          "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities.json": "556fa6fbc38f78ec339f79b4b3642ef94bd1a4ed686a9b3279fd99ced2959398"
+        }
+      },
+      "metrics": {
+        "entity": {
+          "precision": 0.9565,
+          "recall": 0.9072,
+          "f1": 0.9312,
+          "tp": 704,
+          "fp": 32,
+          "fn": 72
+        },
+        "relation": {
+          "precision": 0.8429,
+          "recall": 0.4504,
+          "f1": 0.5871,
+          "tp": 59,
+          "fp": 11,
+          "fn": 72
+        },
+        "normalized_relation": {
+          "precision": 0.6842,
+          "recall": 0.5065,
+          "f1": 0.5821,
+          "tp": 39,
+          "fp": 18,
+          "fn": 38
+        }
+      },
+      "runtime_config": {
+        "model": "hy3",
+        "base_url": "https://opencode.ai/zen/go/v1",
+        "provider": "opencode",
+        "endpoint": "/v1/chat/completions",
+        "temperature": 0.0,
+        "thinking": "disabled",
+        "reasoning_effort": "",
+        "max_tokens": 4096,
+        "max_escalated_tokens": 4096,
+        "top_p": 0.95,
+        "max_retries": 3,
+        "request_timeout_seconds": 180.0,
+        "transport_max_retries": 0,
+        "prompt_version": "chapter3-no-capec-v1-config-policy-v9-v7-restored-20260814-v5|chapter3-no-capec-v1-endpoint-offsets-mention-facts-20260812-v5-semantic-repair",
+        "window_chars": 3000,
+        "window_overlap": 400,
+        "max_workers": 16
+      },
+      "validation": {
+        "prediction_count": 21,
+        "exact_test_document_set": true,
+        "metrics_recomputed": true,
+        "source_method": "multipass",
+        "deterministic_postprocess_reproduction_mismatches": 0,
+        "new_model_calls": 0
+      }
+    }
+  },
+  "dependencies": {
+    "config/runtime_profile.json": "857d8218dc20d52053447a569e44365b0e5657bb32962a1ce97b56080d1f5c1a",
+    "scripts/run_v5_experiment.py": "fc891af13cc445e86f82f2c36d69d1a814c6d29744a327f5634db802b19e7b8a",
+    "scripts/freeze_baseline_methods_v5.py": "22edcf2d8adf7f86fe50a2aedf36a0cecc1e169fc496cc910093e9858e6a42f5",
+    "scripts/provider_config.py": "d4d25bc06a4c7d25311f2a33a70dde5057b1ba7fda8e194be93db0efedc1c288",
+    "scripts/rule_baseline.py": "4a7c39561f6e01418bbddc2edb161f37fcfd15584413148ad612cd99ab056aab",
+    "scripts/llm_methods.py": "2f52873193e8a4398603c06df4de64c7e6b12ccfb531577fbb2f2b82906b1df2",
+    "scripts/eval_metrics.py": "94c2328bd2c2fa34a1a308dfaf2f18c793618d9807f6e30c4c163ab853941ca3",
+    "scripts/schema.py": "3e1cbd39278ecad52181671b25a5b51849e6a8e7d593b876d892856a3dd712c8",
+    "scripts/prompts/multipass_prompts.py": "312e6598cfa4c6a106e8710eef763fa67446241fab71c9a86950ea2cc3ecff5c"
+  },
+  "invariants": {
+    "allow_force_overwrite": false,
+    "allow_eval_only_result_rewrite": false,
+    "explicit_unfreeze_required_for_rerun": true
+  },
+  "metadata_refreshed_at_utc": "2026-08-31T05:22:04.210048+00:00"
+}

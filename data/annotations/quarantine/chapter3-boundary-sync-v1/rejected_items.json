@@ -1,0 +1,1817 @@
+{
+  "contract_version": "chapter3-boundary-sync-v1",
+  "reviewer": "expert_adjudicator",
+  "review_date": "2026-09-14",
+  "source_gold": "../v4.5/data/annotations/v3_text_grounded",
+  "policy": "rejected annotations are excluded from formal Gold but preserved verbatim for audit and recovery",
+  "summary": {
+    "rejected_ledger_items": 62,
+    "cascade_removed_instantiates": 47,
+    "by_kind": {
+      "explicit_post_exploitation_sequence;exploited_by_boundary_recertification_required": 3,
+      "exploited_by_boundary_recertification_required": 1,
+      "weakness_without_local_explicit_cwe": 58
+    }
+  },
+  "rejected_items": [
+    {
+      "doc_id": "aa22-228a",
+      "item_id": "E10",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E10",
+          "text": "cross-site scripting",
+          "type": "Weakness",
+          "start": 6099,
+          "end": 6119,
+          "normalized_id": "CWE-79",
+          "evidence": "Based on industry reporting, a malicious cyber actor is selling a cross-site scripting (XSS) exploit kit for the ZCS vulnerability to CVE-2022-30333."
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "item_id": "E46",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E46",
+          "text": "authentication bypass",
+          "type": "Weakness",
+          "start": 4907,
+          "end": 4928,
+          "normalized_id": "CWE-288",
+          "evidence": "authentication bypass vulnerability that affects ZCS releases 8.8.15 and 9.0.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "item_id": "E49",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E49",
+          "text": "directory traversal",
+          "type": "Weakness",
+          "start": 5333,
+          "end": 5352,
+          "normalized_id": "CWE-22",
+          "evidence": "directory traversal vulnerability in RARLAB UnRAR on Linux and UNIX allowing a malicious actor to write to files during an extract (unpack) operation.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "item_id": "E54",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E54",
+          "text": "cross-site scripting (XSS)",
+          "type": "Weakness",
+          "start": 6477,
+          "end": 6503,
+          "normalized_id": "CWE-79",
+          "evidence": "cross-site scripting (XSS) vulnerability allowing malicious actors to steal session cookie files.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "item_id": "E8",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E8",
+          "text": "path traversal",
+          "type": "Weakness",
+          "start": 12791,
+          "end": 12805,
+          "normalized_id": "CWE-22",
+          "evidence": "d in the wild, likely against Zimbra servers [7] Zimbra Collaboration Kepler 9.0.0 patch 25 GA release [8] Zimbra UnRAR path traversal [9] Operation EmailThief: Active exploitation of zero-day XSS vulnerability in Zimbra [10] Hotfix available 5 Feb for z"
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "item_id": "E9",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E9",
+          "text": "directory traversal",
+          "type": "Weakness",
+          "start": 4605,
+          "end": 4624,
+          "normalized_id": "CWE-22",
+          "evidence": "An authenticated user has the ability to upload arbitrary files to the system thereby leading to directory traversal.[1] On August 10, 2022, researchers from Volexity reported widespread exploitation—against over 1,000 ZCS instances—of "
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-109a",
+      "item_id": "E158",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E158",
+          "text": "Common Weakness Enumeration (CWE)-200",
+          "type": "Weakness",
+          "start": 5871,
+          "end": 5908,
+          "normalized_id": "CWE-200",
+          "evidence": "Common Weakness Enumeration (CWE)-200: Exposure of Sensitive Information to an Unauthorized Actor\n",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-249a",
+      "item_id": "E11",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E11",
+          "text": "cross-site scripting",
+          "type": "Weakness",
+          "start": 8848,
+          "end": 8868,
+          "normalized_id": "CWE-79",
+          "evidence": "Acunetix vulnerability scanning tool has been used for gathering information on potential vulnerabilities such as blind cross-site scripting, as shown in the following commands: GET /index.php?log=to@example.com>%0d%0abcc:009247.3183- 377.3183.1bf6c.19446.2@bx"
+        }
+      }
+    },
+    {
+      "doc_id": "aa25-239a",
+      "item_id": "E11",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E11",
+          "text": "command injection",
+          "type": "Weakness",
+          "start": 14440,
+          "end": 14457,
+          "normalized_id": "CWE-78",
+          "evidence": "ploited CVEs, ordered by year, include:  CVE-2024-21887 - Ivanti Connect Secure and Ivanti Policy Secure web-component command injection vulnerability, commonly chained after CVE-2023-46805 (authentication bypass)  CVE-2024-3400 - Palo Alto Networks PAN-O"
+        }
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "item_id": "E10",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E10",
+          "text": "OS command execution",
+          "type": "Weakness",
+          "start": 3120,
+          "end": 3140,
+          "normalized_id": "CWE-78",
+          "notes": "relation-localized mention added by repair_gold_v4",
+          "evidence": "CVE-2021-27104 - OS command execution via a crafted POST request\n"
+        }
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "item_id": "E5",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E5",
+          "text": "SQL injection",
+          "type": "Weakness",
+          "start": 2947,
+          "end": 2960,
+          "normalized_id": "CWE-89",
+          "evidence": "CVE-2021-27101 - SQL injection via a crafted Host header\n"
+        }
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "item_id": "E6",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E6",
+          "text": "OS command execution",
+          "type": "Weakness",
+          "start": 3004,
+          "end": 3024,
+          "normalized_id": "CWE-78",
+          "evidence": "CVE-2021-27102 - OS command execution via a local web service call\n"
+        }
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "item_id": "E7",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E7",
+          "text": "SSRF",
+          "type": "Weakness",
+          "start": 3071,
+          "end": 3075,
+          "normalized_id": "CWE-918",
+          "evidence": "CVE-2021-27103 - SSRF via a crafted POST request\n"
+        }
+      }
+    },
+    {
+      "doc_id": "confluence-nvd-confluence-26084",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "OGNL injection",
+          "type": "Weakness",
+          "start": 227,
+          "end": 241,
+          "normalized_id": "CWE-917",
+          "evidence": "- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or D"
+        }
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "item_id": "E14",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E14",
+          "text": "arbitrary file write",
+          "type": "Weakness",
+          "start": 6065,
+          "end": 6085,
+          "normalized_id": "CWE-22",
+          "notes": "relation-localized mention added by repair_gold_v4",
+          "evidence": "CVE-2021-27065 is a post-authentication arbitrary file write vulnerability in Exchange."
+        }
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "item_id": "E5",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E5",
+          "text": "server-side request forgery",
+          "type": "Weakness",
+          "start": 5142,
+          "end": 5169,
+          "normalized_id": "CWE-918",
+          "evidence": "CVE-2021-26855 is a server-side request forgery (SSRF) vulnerability in Exchange which allowed the attacker to send arbitrary HTTP requests and authenticate as the Exc"
+        }
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "item_id": "E6",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E6",
+          "text": "insecure deserialization",
+          "type": "Weakness",
+          "start": 5324,
+          "end": 5348,
+          "normalized_id": "CWE-502",
+          "evidence": "CVE-2021-26857 is an insecure deserialization vulnerability in the Unified Messaging service."
+        }
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "item_id": "E7",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E7",
+          "text": "arbitrary file write",
+          "type": "Weakness",
+          "start": 5711,
+          "end": 5731,
+          "normalized_id": "CWE-22",
+          "evidence": "CVE-2021-26858 is a post-authentication arbitrary file write vulnerability in Exchange."
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-131a",
+      "item_id": "E15",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E15",
+          "type": "Weakness",
+          "text": "improper access controls",
+          "start": 2689,
+          "end": 2713,
+          "normalized_id": "CWE-284"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-016a",
+      "item_id": "E11",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E11",
+          "type": "Weakness",
+          "text": "path traversal",
+          "start": 6977,
+          "end": 6991,
+          "normalized_id": "CWE-22"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-016a",
+      "item_id": "E42",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E42",
+          "type": "Weakness",
+          "text": "un-serialized call",
+          "start": 6529,
+          "end": 6547,
+          "normalized_id": "CWE-502"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-016a-androxgh0st",
+      "item_id": "E11",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E11",
+          "type": "Weakness",
+          "text": "un-serialized call",
+          "start": 6284,
+          "end": 6302,
+          "normalized_id": "CWE-502"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-016a-androxgh0st",
+      "item_id": "E12",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E12",
+          "type": "Weakness",
+          "text": "path traversal",
+          "start": 6736,
+          "end": 6750,
+          "normalized_id": "CWE-22"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-060b",
+      "item_id": "E23",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E23",
+          "type": "Weakness",
+          "text": "server-side request forgery",
+          "start": 7199,
+          "end": 7226,
+          "normalized_id": "CWE-918"
+        }
+      }
+    },
+    {
+      "doc_id": "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities",
+      "item_id": "E23",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E23",
+          "type": "Weakness",
+          "text": "server-side request forgery",
+          "start": 6603,
+          "end": 6630,
+          "normalized_id": "CWE-918",
+          "evidence": "server-side request forgery"
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-138b-vmware-cve-22954",
+      "item_id": "E18",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E18",
+          "text": "server-side template injection",
+          "type": "Weakness",
+          "start": 4593,
+          "end": 4623,
+          "normalized_id": "CWE-1336",
+          "notes": "relation-localized mention added by repair_gold_v4",
+          "evidence": " enables an actor with network access to trigger a server-side template injection that may result in RCE."
+        }
+      }
+    },
+    {
+      "doc_id": "aa22-138b-vmware-cve-22954",
+      "item_id": "E5",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E5",
+          "text": "server-side template injection",
+          "type": "Weakness",
+          "start": 1601,
+          "end": 1631,
+          "normalized_id": "CWE-1336",
+          "evidence": "Exploiting these vulnerabilities permits malicious actors to trigger a server-side template injection that may result in remote code execution (RCE) (CVE-2022-22954) or escalation of privileges to root (CVE-2022-22960). \n"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-074a",
+      "item_id": "E6",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E6",
+          "text": "deserialization",
+          "type": "Weakness",
+          "start": 1280,
+          "end": 1295,
+          "normalized_id": "CWE-502",
+          "evidence": "ned that multiple cyber threat actors, including an advanced persistent threat (APT) actor, were able to exploit a .NET deserialization vulnerability (CVE-2019-18935) in Progress Telerik user interface (UI) for ASP.NET AJAX, located in the agency’s Micros"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-074a",
+      "item_id": "E78",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E78",
+          "text": ".NET deserialization",
+          "type": "Weakness",
+          "start": 3161,
+          "end": 3181,
+          "normalized_id": "CWE-502",
+          "evidence": ".NET deserialization vulnerability (CVE-2019-18935) in an instance of Telerik UI for ASP.NET AJAX Q2 2013 SP1 (version 2013.2.717) running on an FCEB agency’s Microsoft IIS server.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-074a-telerik-cve-18935",
+      "item_id": "E5",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E5",
+          "text": "deserialization",
+          "type": "Weakness",
+          "start": 395,
+          "end": 410,
+          "normalized_id": "CWE-502",
+          "evidence": "ned that multiple cyber threat actors, including an advanced persistent threat (APT) actor, were able to exploit a .NET deserialization vulnerability (CVE-2019-18935) in Progress Telerik user interface (UI) for ASP.NET AJAX, located in the agency’s Micros"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-074a-telerik-cve-18935",
+      "item_id": "E82",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E82",
+          "text": "deserialization",
+          "type": "Weakness",
+          "start": 2909,
+          "end": 2924,
+          "normalized_id": "CWE-502",
+          "evidence": "deserialization vulnerability (CVE-2019-18935) in an instance of Telerik UI for ASP.NET AJAX Q2 2013 SP1 (version 2013.2.717) running on an FCEB agency’s Microsoft IIS server.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-158a",
+      "item_id": "E23",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E23",
+          "text": "SQL injection",
+          "type": "Weakness",
+          "start": 2451,
+          "end": 2464,
+          "normalized_id": "CWE-89",
+          "evidence": "nformation, beginning on May 27, 2023, CL0P Ransomware Gang, also known as TA505, began exploiting a previously unknown SQL injection vulnerability (\n"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-158a",
+      "item_id": "E61",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E61",
+          "text": "SQL injection",
+          "type": "Weakness",
+          "start": 9066,
+          "end": 9079,
+          "normalized_id": "CWE-89",
+          "evidence": "SQL injection zero-day vulnerability \nCVE-2023-34362\n to install a web shell named LEMURLOOT on MOVEit Transfer web applications [\nT1190\n] [\n1\n].",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-158a",
+      "item_id": "E63",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E63",
+          "text": "SQL injection",
+          "type": "Weakness",
+          "start": 24549,
+          "end": 24562,
+          "normalized_id": "CWE-89",
+          "evidence": "SQL injection to infiltrate the MOVEit Transfer web application.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-208a",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "IDOR vulnerability",
+          "type": "Weakness",
+          "start": 7220,
+          "end": 7238,
+          "normalized_id": "CWE-639",
+          "evidence": "IDOR vulnerability, CVE-2022-0732.[3]",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-289a",
+      "item_id": "E18",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E18",
+          "text": "Broken Access Control",
+          "type": "Weakness",
+          "start": 2997,
+          "end": 3018,
+          "normalized_id": "CWE-284",
+          "evidence": "Broken Access Control vulnerability affecting the following versions of Atlassian Confluence Data Center and Server.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-339a",
+      "item_id": "E55",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E55",
+          "text": "improper access control",
+          "type": "Weakness",
+          "start": 1326,
+          "end": 1349,
+          "normalized_id": "CWE-284",
+          "evidence": "improper access control issue impacting Adobe ColdFusion versions 2018 Update 15 (and earlier) and 2021 Update 5 (and earlier).",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "improper access control",
+          "type": "Weakness",
+          "start": 391,
+          "end": 414,
+          "normalized_id": "CWE-284",
+          "evidence": "This vulnerability presents as an improper access control issue impacting Adobe ColdFusion versions 2018 Update 15 (and earlier) and 2021 Update 5 (and earlier)."
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-347a",
+      "item_id": "R3",
+      "kind": "explicit_post_exploitation_sequence;exploited_by_boundary_recertification_required",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: evidence states post-exploitation activity rather than the CVE's direct ATT&CK exploit role; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "relation",
+        "item": {
+          "id": "R3",
+          "type": "exploited_by",
+          "head": "E79",
+          "tail": "E56",
+          "evidence": "Exploitation for Client Execution T1203 SVR cyber actors leverage arbitrary code execution after exploiting CVE- 2023-42793.",
+          "adjudication_basis": "verified single-endpoint factual clause",
+          "evidence_start": 22380,
+          "evidence_end": 22504
+        }
+      }
+    },
+    {
+      "doc_id": "aa23-347a-play-ransomware",
+      "item_id": "R3",
+      "kind": "explicit_post_exploitation_sequence;exploited_by_boundary_recertification_required",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: evidence states post-exploitation activity rather than the CVE's direct ATT&CK exploit role; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "relation",
+        "item": {
+          "id": "R3",
+          "type": "exploited_by",
+          "head": "E15",
+          "tail": "E50",
+          "evidence": "T1203\nSVR cyber actors leverage arbitrary code execution after exploiting CVE-2023-42793.",
+          "adjudication_basis": "verified single-endpoint factual clause",
+          "evidence_start": 21459,
+          "evidence_end": 21548
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-038a",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "buffer overflow",
+          "type": "Weakness",
+          "start": 22657,
+          "end": 22672,
+          "normalized_id": "CWE-120",
+          "evidence": "There is evidence of a buffer overflow attack identified within the Secure Sockets Layer (SSL)-VPN crash logs."
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-038a-volt-typhoon",
+      "item_id": "E132",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E132",
+          "text": "buffer overflow",
+          "type": "Weakness",
+          "start": 16645,
+          "end": 16660,
+          "normalized_id": "CWE-120",
+          "evidence": "buffer overflow attack identified within the Secure Sockets Layer (SSL)-VPN crash logs.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-046a",
+      "item_id": "E3",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E3",
+          "text": "deserialization",
+          "type": "Weakness",
+          "start": 13429,
+          "end": 13444,
+          "normalized_id": "CWE-502",
+          "evidence": "This process is known as deserialization.”6 IMPACT Execution during an attack helps the cyber actor interrupt availability of systems and manipulate data and fi"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-046a",
+      "item_id": "E4",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E4",
+          "text": "cross-site scripting",
+          "type": "Weakness",
+          "start": 20307,
+          "end": 20327,
+          "normalized_id": "CWE-79",
+          "evidence": "HOW Threat actors use different defense evasion techniques, which range from disabling security software to cross-site scripting."
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-193a",
+      "item_id": "R2",
+      "kind": "explicit_post_exploitation_sequence;exploited_by_boundary_recertification_required",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: evidence states post-exploitation activity rather than the CVE's direct ATT&CK exploit role; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "relation",
+        "item": {
+          "id": "R2",
+          "type": "exploited_by",
+          "head": "E61",
+          "tail": "E37",
+          "evidence": "Application Layer Protocol: Web Protocols T1071.001 The red team exploited CVE-2022- 21587 and ran a RAT that provided consistent C2 via open Transmission Control Protocol (TCP) ports.",
+          "evidence_start": 59880,
+          "evidence_end": 60064,
+          "adjudication_basis": "verified single-endpoint factual clause"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-290a",
+      "item_id": "R6",
+      "kind": "exploited_by_boundary_recertification_required",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: the duplicated T1202 table entry classifies adjacent Indirect Command Execution behavior and does not state that CVE-2020-1472 directly instantiates T1202; the direct exploitation mapping is retained only as T1068 in R5",
+      "source_snapshot": {
+        "item_type": "relation",
+        "item": {
+          "id": "R6",
+          "type": "exploited_by",
+          "head": "E31",
+          "tail": "E46",
+          "evidence": "Indirect Command Execution T1202 The actors attempted impersonation of the Domain Controller likely by exploiting CVE-2020-1472, Microsoft’s Netlogon Privilege Escalation vulnerability.",
+          "evidence_start": 19214,
+          "evidence_end": 19399,
+          "adjudication_basis": "verified single-endpoint factual clause"
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-317a",
+      "item_id": "E84",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E84",
+          "text": "deserialization",
+          "type": "Weakness",
+          "start": 6566,
+          "end": 6581,
+          "normalized_id": "CWE-502",
+          "evidence": "Allows a malicious cyber actor to obtain remote code execution via this access by abusing a deserialization call."
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-317a",
+      "item_id": "E85",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E85",
+          "text": "buffer overflow",
+          "type": "Weakness",
+          "start": 5471,
+          "end": 5486,
+          "normalized_id": "CWE-120",
+          "evidence": "Allows an unauthenticated user to cause a stack buffer overflow in the NSPPE process by using a HTTP GET request."
+        }
+      }
+    },
+    {
+      "doc_id": "aa24-317a",
+      "item_id": "E86",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E86",
+          "text": "command injection",
+          "type": "Weakness",
+          "start": 7663,
+          "end": 7680,
+          "normalized_id": "CWE-78",
+          "evidence": "CVE-2023-2868 : This is a remote command injection vulnerability that affects the Barracuda Networks Email Security Gateway (ESG) Appliance."
+        }
+      }
+    },
+    {
+      "doc_id": "aa25-071a",
+      "item_id": "E68",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E68",
+          "text": "CWE 89",
+          "type": "Weakness",
+          "start": 5005,
+          "end": 5011,
+          "normalized_id": "CWE-89",
+          "evidence": "Authentication Bypass Using an Alternate Path or Channel] and Fortinet EMS SQL injection vulnerability [CVE-2023-48788 [CWE 89: SQL Injection].",
+          "notes": "PDF-spaced explicit identifier mention"
+        }
+      }
+    },
+    {
+      "doc_id": "aa25-163a",
+      "item_id": "E3",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E3",
+          "text": "path traversal",
+          "type": "Weakness",
+          "start": 1623,
+          "end": 1637,
+          "normalized_id": "CWE-22",
+          "evidence": "SimpleHelp versions 5.5.7 and earlier contain several vulnerabilities, including CVE-2024-57727—a path traversal vulnerability.0F1 Ransomware actors likely leveraged CVE-2024-57727 to access downstream customers’ unpatched SimpleHel"
+        }
+      }
+    },
+    {
+      "doc_id": "accellion-fta-nvd-accellion-27101",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "SQL injection",
+          "type": "Weakness",
+          "start": 206,
+          "end": 219,
+          "normalized_id": "CWE-89",
+          "evidence": "- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html."
+        }
+      }
+    },
+    {
+      "doc_id": "apache-httpd-41773-tenable-httpd-41773",
+      "item_id": "E3",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E3",
+          "text": "path traversal",
+          "type": "Weakness",
+          "start": 402,
+          "end": 416,
+          "normalized_id": "CWE-22",
+          "evidence": "The vulnerability arises from the mishandling of URL-encoded path traversal characters in the HTTP GET request."
+        }
+      }
+    },
+    {
+      "doc_id": "apache-httpd-41773-tenable-httpd-41773",
+      "item_id": "E6",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E6",
+          "text": "path traversal",
+          "type": "Weakness",
+          "start": 2839,
+          "end": 2853,
+          "normalized_id": "CWE-22",
+          "notes": "relation-localized mention added by repair_gold_v4",
+          "evidence": "According to their advisory, \"an attacker could use a path traversal attack to map URLs to files outside the directories configured by Alias-like directives."
+        }
+      }
+    },
+    {
+      "doc_id": "citrix-adc-tenable-citrix-19781-cve",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "Directory Traversal",
+          "type": "Weakness",
+          "start": 161,
+          "end": 180,
+          "normalized_id": "CWE-22",
+          "evidence": "They allow Directory Traversal.\n"
+        }
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "item_id": "E15",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E15",
+          "text": "improper authentication",
+          "type": "Weakness",
+          "start": 2498,
+          "end": 2521,
+          "normalized_id": "CWE-287",
+          "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in succ"
+        }
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "item_id": "E16",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E16",
+          "text": "directory traversal",
+          "type": "Weakness",
+          "start": 6286,
+          "end": 6305,
+          "normalized_id": "CWE-22",
+          "evidence": "CVE-2016-3976 is a directory traversal vulnerability in SAP NetWeaver AS Java 7.1 through 7.5 that allows remote attackers to read arbitrary files via a ..\\ ("
+        }
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "item_id": "E2",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E2",
+          "text": "path traversal",
+          "type": "Weakness",
+          "start": 1976,
+          "end": 1990,
+          "normalized_id": "CWE-22",
+          "evidence": "CVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs."
+        }
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "item_id": "E33",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E33",
+          "text": "missing authentication check",
+          "type": "Weakness",
+          "start": 5137,
+          "end": 5165,
+          "normalized_id": "CWE-306",
+          "evidence": "missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "item_id": "E34",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E34",
+          "text": "XML External Entity (XXE)",
+          "type": "Weakness",
+          "start": 6167,
+          "end": 6192,
+          "normalized_id": "CWE-611",
+          "evidence": "XML External Entity (XXE) attacks via the sap.com~tc~bpem~him~uwlconn~provider~web/bpemuwlconn URI.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "item_id": "E35",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E35",
+          "text": "lack of authentication",
+          "type": "Weakness",
+          "start": 6633,
+          "end": 6655,
+          "normalized_id": "CWE-306",
+          "evidence": "lack of authentication and allows remote attackers to execute arbitrary code via an HTTP or HTTPS request. It was used in attacks from 2013 to 2016.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    },
+    {
+      "doc_id": "goanywhere-nvd-goanywhere-0669",
+      "item_id": "E7",
+      "kind": "weakness_without_local_explicit_cwe",
+      "decision": "REJECT",
+      "adjudication_basis": "rejected under chapter3-boundary-sync-v1: descriptive weakness phrase lacks a locally explicit CWE in the source fact block; archived in data/annotations/quarantine/chapter3-boundary-sync-v1/rejected_items.json",
+      "source_snapshot": {
+        "item_type": "entity",
+        "item": {
+          "id": "E7",
+          "text": "command injection",
+          "type": "Weakness",
+          "start": 236,
+          "end": 253,
+          "normalized_id": "CWE-77",
+          "evidence": "command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.",
+          "notes": "v4.4 source-only assistant adjudication; not human IAA"
+        }
+      }
+    }
+  ],
+  "cascade_removed_relations": [
+    {
+      "doc_id": "aa22-138b-vmware-cve-22954",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E17",
+        "tail": "E18",
+        "evidence": "CVE-2022-22954\n enables an actor with network access to trigger a server-side template injection that may result in RCE.",
+        "evidence_start": 4527,
+        "evidence_end": 4647
+      }
+    },
+    {
+      "doc_id": "aa22-138b-vmware-cve-22954",
+      "relation": {
+        "id": "R14",
+        "type": "instantiates",
+        "head": "E19",
+        "tail": "E5",
+        "evidence": "Exploiting these vulnerabilities permits malicious actors to trigger a server-side template injection that may result in remote code execution (RCE) (CVE-2022-22954) or escalation of privileges to root (CVE-2022-22960).",
+        "evidence_start": 1530,
+        "evidence_end": 1749,
+        "adjudication_basis": "sentence explicitly maps the RCE branch for CVE-2022-22954 to template injection"
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "relation": {
+        "id": "R10",
+        "type": "instantiates",
+        "head": "E20",
+        "tail": "E9",
+        "evidence": "CVE-2022-27925 is a high-severity vulnerability in ZCS releases 8.8.15 and 9.0 that have mboximport functionality to receive a ZIP archive and extract files from it. An authenticated user has the ability to upload arbitrary files to the system thereby leading to directory traversal.[1]",
+        "evidence_start": 4342,
+        "evidence_end": 4628,
+        "adjudication_basis": "following sentence resolves the vulnerability to directory traversal"
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "relation": {
+        "id": "R14",
+        "type": "instantiates",
+        "head": "E23",
+        "tail": "E46",
+        "evidence": "CVE-2022-37042 is an authentication bypass vulnerability that affects ZCS releases 8.8.15 and 9.0.",
+        "evidence_start": 4886,
+        "evidence_end": 4984,
+        "adjudication_basis": "sentence explicitly names authentication bypass"
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "relation": {
+        "id": "R17",
+        "type": "instantiates",
+        "head": "E27",
+        "tail": "E49",
+        "evidence": "CVE-2022-30333 is a high-severity directory traversal vulnerability in RARLAB UnRAR on Linux and UNIX allowing a malicious actor to write to files during an extract (unpack) operation.",
+        "evidence_start": 5299,
+        "evidence_end": 5483,
+        "adjudication_basis": "sentence explicitly names directory traversal"
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "relation": {
+        "id": "R22",
+        "type": "instantiates",
+        "head": "E34",
+        "tail": "E54",
+        "evidence": "CVE-2022-24682 is a medium-severity vulnerability that impacts ZCS webmail clients running releases before 8.8.15 patch 30 (update 1), which contain a cross-site scripting (XSS) vulnerability allowing malicious actors to steal session cookie files.",
+        "evidence_start": 6326,
+        "evidence_end": 6574,
+        "adjudication_basis": "sentence explicitly names XSS"
+      }
+    },
+    {
+      "doc_id": "aa23-074a",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E2",
+        "tail": "E6",
+        "evidence": "exploit a .NET deserialization vulnerability (CVE-2019-18935) in Progress Telerik user interface (UI) for ASP.NET AJAX",
+        "evidence_start": 1265,
+        "evidence_end": 1383,
+        "adjudication_basis": "same clause explicitly calls the CVE a .NET deserialization vulnerability"
+      }
+    },
+    {
+      "doc_id": "aa23-074a",
+      "relation": {
+        "id": "R6",
+        "type": "instantiates",
+        "head": "E23",
+        "tail": "E78",
+        "evidence": "beginning as late as November 2022, threat actors successfully exploited a .NET deserialization vulnerability (CVE-2019-18935) in an instance of Telerik UI for ASP.NET AJAX Q2 2013 SP1 (version 2013.2.717) running on an FCEB agency’s Microsoft IIS server.",
+        "evidence_start": 3086,
+        "evidence_end": 3341,
+        "adjudication_basis": "same sentence explicitly names .NET deserialization"
+      }
+    },
+    {
+      "doc_id": "aa23-074a-telerik-cve-18935",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E5",
+        "evidence": "Analysts determined that multiple cyber threat actors, including an advanced persistent threat (APT) actor, were able to exploit a .NET deserialization vulnerability (CVE-2019-18935) in Progress Telerik user interface (UI) for ASP.NET AJAX, located in the agency’s Microsoft Internet Information Services (IIS) web server.",
+        "evidence_start": 259,
+        "evidence_end": 581,
+        "adjudication_basis": "same introductory sentence explicitly identifies CVE-2019-18935 as deserialization"
+      }
+    },
+    {
+      "doc_id": "aa23-074a-telerik-cve-18935",
+      "relation": {
+        "id": "R9",
+        "type": "instantiates",
+        "head": "E13",
+        "tail": "E82",
+        "evidence": "beginning as late as November 2022, threat actors successfully exploited a .NET deserialization vulnerability (CVE-2019-18935) in an instance of Telerik UI for ASP.NET AJAX Q2 2013 SP1 (version 2013.2.717) running on an FCEB agency’s Microsoft IIS server.",
+        "evidence_start": 2829,
+        "evidence_end": 3084,
+        "adjudication_basis": "overview explicitly calls CVE-2019-18935 a deserialization vulnerability"
+      }
+    },
+    {
+      "doc_id": "aa23-131a",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E8",
+        "tail": "E15",
+        "evidence": "PaperCut servers vulnerable to CVE-2023-27350 implement improper access controls",
+        "evidence_start": 2633,
+        "evidence_end": 2713,
+        "adjudication_basis": "source-text adjudication: the cited self-contained fact sentence directly binds the typed endpoints"
+      }
+    },
+    {
+      "doc_id": "aa23-158a",
+      "relation": {
+        "id": "R2",
+        "type": "instantiates",
+        "head": "E34",
+        "tail": "E23",
+        "evidence": "began exploiting a previously unknown SQL injection vulnerability (\nCVE-2023-34362\n) in Progress Software's managed file transfer (MFT) solution known as MOVEit Transfer.",
+        "evidence_start": 2413,
+        "evidence_end": 2583,
+        "adjudication_basis": "single CVE/weakness/product sentence"
+      }
+    },
+    {
+      "doc_id": "aa23-158a",
+      "relation": {
+        "id": "R10",
+        "type": "instantiates",
+        "head": "E38",
+        "tail": "E61",
+        "evidence": "In May 2023, the CL0P ransomware group exploited a SQL injection zero-day vulnerability \nCVE-2023-34362\n to install a web shell named LEMURLOOT on MOVEit Transfer web applications [\nT1190\n] [\n1\n].",
+        "evidence_start": 9015,
+        "evidence_end": 9211,
+        "adjudication_basis": "same sentence explicitly calls it SQL injection"
+      }
+    },
+    {
+      "doc_id": "aa23-158a",
+      "relation": {
+        "id": "R13",
+        "type": "instantiates",
+        "head": "E40",
+        "tail": "E63",
+        "evidence": "Table 1. ATT&CK Techniques for Enterprise: Initial Access\nInitial Access\n \n \nTechnique Title\nID\nUse\nExploit Public-Facing Application\nT1190\nCL0P ransomware group exploited the zero-day vulnerability CVE-2023-34362 affecting MOVEit Transfer software; begins with a SQL injection to infiltrate the MOVEit Transfer web application.",
+        "evidence_start": 24285,
+        "evidence_end": 24613,
+        "adjudication_basis": "row explicitly states the SQL-injection cause"
+      }
+    },
+    {
+      "doc_id": "aa23-208a",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E2",
+        "evidence": "The apps collected and relayed data from the phones to the same foreign server infrastructure, which contained an IDOR vulnerability, CVE-2022-0732.[3]",
+        "evidence_start": 7106,
+        "evidence_end": 7257,
+        "adjudication_basis": "same sentence explicitly calls CVE-2022-0732 an IDOR vulnerability"
+      }
+    },
+    {
+      "doc_id": "aa23-289a",
+      "relation": {
+        "id": "R5",
+        "type": "instantiates",
+        "head": "E7",
+        "tail": "E18",
+        "evidence": "CVE-2023-22515 is a critical Broken Access Control vulnerability affecting the following versions of Atlassian Confluence Data Center and Server.",
+        "evidence_start": 2968,
+        "evidence_end": 3113,
+        "adjudication_basis": "same sentence explicitly classifies the CVE as Broken Access Control"
+      }
+    },
+    {
+      "doc_id": "aa23-339a",
+      "relation": {
+        "id": "R5",
+        "type": "instantiates",
+        "head": "E2",
+        "tail": "E55",
+        "evidence": "confirmed exploitation of CVE-2023-26360 by unidentified threat actors at a Federal Civilian Executive Branch (FCEB) agency. This vulnerability presents as an improper access control issue impacting Adobe ColdFusion versions 2018 Update 15 (and earlier) and 2021 Update 5 (and earlier).",
+        "evidence_start": 1167,
+        "evidence_end": 1453,
+        "adjudication_basis": "same summary explicitly names improper access control"
+      }
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E19",
+        "tail": "E2",
+        "evidence": "confirmed exploitation of CVE-2023-26360 by unidentified threat actors at a Federal Civilian Executive Branch (FCEB) agency. This vulnerability presents as an improper access control issue impacting Adobe ColdFusion versions 2018 Update 15 (and earlier) and 2021 Update 5 (and earlier).",
+        "evidence_start": 232,
+        "evidence_end": 518,
+        "adjudication_basis": "the anaphoric weakness sentence resolves the preceding CVE mention, not the next repeated mention"
+      }
+    },
+    {
+      "doc_id": "aa24-016a",
+      "relation": {
+        "id": "R8",
+        "type": "instantiates",
+        "head": "E2",
+        "tail": "E42",
+        "evidence": "The vulnerability defined in CVE-2018-15133 indicates that on Laravel applications, XSRF token values are subject to an un-serialized call",
+        "evidence_start": 6409,
+        "evidence_end": 6547,
+        "adjudication_basis": "source-text adjudication: the cited self-contained fact sentence directly binds the typed endpoints"
+      }
+    },
+    {
+      "doc_id": "aa24-016a-androxgh0st",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E2",
+        "tail": "E11",
+        "evidence": "CVE-2018-15133\n indicates that on Laravel applications, XSRF token values are subject to an un-serialized call",
+        "evidence_start": 6192,
+        "evidence_end": 6302,
+        "adjudication_basis": "source-text adjudication: the cited self-contained fact sentence directly binds the typed endpoints"
+      }
+    },
+    {
+      "doc_id": "aa24-038a",
+      "relation": {
+        "id": "R3",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E2",
+        "evidence": "Initial Access To obtain initial access [TA0001], Volt Typhoon actors commonly exploit vulnerabilities in networking appliances such as those from Fortinet, Ivanti Connect Secure (formerly Pulse Secure), NETGEAR, Citrix, and Cisco [T1190]. They often use publicly available exploit code for known vulnerabilities [T1588.005] but are also adept at discovering and exploiting zero-day vulnerabilities [T1587.004]. • In one confirmed compromise, Volt Typhoon actors likely obtained initial access by exploiting CVE-2022-42475 in a network perimeter FortiGate 300D firewall that was not patched. There is evidence of a buffer overflow attack identified within the Secure Sockets Layer (SSL)-VPN crash logs.",
+        "evidence_start": 22042,
+        "evidence_end": 22744,
+        "adjudication_basis": "following sentence explicitly identifies a buffer-overflow attack"
+      }
+    },
+    {
+      "doc_id": "aa24-038a-volt-typhoon",
+      "relation": {
+        "id": "R3",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E132",
+        "evidence": "Initial Access\nTo obtain initial access [\nTA0001\n], Volt Typhoon actors commonly exploit vulnerabilities in networking appliances such as those from Fortinet, Ivanti Connect Secure (formerly Pulse Secure), NETGEAR, Citrix, and Cisco [\nT1190\n]. They often use publicly available exploit code for known vulnerabilities [\nT1588.005\n] but are also adept at discovering and exploiting zero-day vulnerabilities [\nT1587.004\n].\nIn one confirmed compromise, Volt Typhoon actors likely obtained initial access by exploiting \nCVE-2022-42475\n in a network perimeter FortiGate 300D firewall that was not patched. There is evidence of a buffer overflow attack identified within the Secure Sockets Layer (SSL)-VPN crash logs.",
+        "evidence_start": 16022,
+        "evidence_end": 16732,
+        "adjudication_basis": "following sentence explicitly identifies a buffer-overflow attack"
+      }
+    },
+    {
+      "doc_id": "aa24-060b",
+      "relation": {
+        "id": "R5",
+        "type": "instantiates",
+        "head": "E6",
+        "tail": "E23",
+        "evidence": "CVE-2024-21893 is a server-side request forgery",
+        "evidence_start": 7179,
+        "evidence_end": 7226,
+        "adjudication_basis": "source-text adjudication: the cited self-contained fact sentence directly binds the typed endpoints"
+      }
+    },
+    {
+      "doc_id": "aa24-109a",
+      "relation": {
+        "id": "R14",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E158",
+        "evidence": "CVE-2020-3259\n [\nCommon Weakness Enumeration (CWE)-200: Exposure of Sensitive Information to an Unauthorized Actor\n]",
+        "evidence_start": 5854,
+        "evidence_end": 5970,
+        "adjudication_basis": "adjacent bracketed CVE-CWE item"
+      }
+    },
+    {
+      "doc_id": "aa25-071a",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E3",
+        "tail": "E68",
+        "evidence": "Fortinet EMS SQL injection vulnerability [CVE-2023-48788 [CWE 89: SQL Injection].",
+        "evidence_start": 4947,
+        "evidence_end": 5028,
+        "adjudication_basis": "shortest Fortinet EMS CVE/CWE clause"
+      }
+    },
+    {
+      "doc_id": "aa25-163a",
+      "relation": {
+        "id": "R3",
+        "type": "instantiates",
+        "head": "E2",
+        "tail": "E3",
+        "evidence": "SimpleHelp versions 5.5.7 and earlier contain several vulnerabilities, including CVE-2024-57727—a path traversal vulnerability.",
+        "evidence_start": 1525,
+        "evidence_end": 1652,
+        "adjudication_basis": "same sentence explicitly names path traversal"
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E5",
+        "evidence": "CVE-2021-27101 - SQL injection via a crafted Host header\n",
+        "evidence_start": 2930,
+        "evidence_end": 2987
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "relation": {
+        "id": "R2",
+        "type": "instantiates",
+        "head": "E2",
+        "tail": "E6",
+        "evidence": "CVE-2021-27102 - OS command execution via a local web service call\n",
+        "evidence_start": 2987,
+        "evidence_end": 3054
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "relation": {
+        "id": "R3",
+        "type": "instantiates",
+        "head": "E3",
+        "tail": "E7",
+        "evidence": "CVE-2021-27103 - SSRF via a crafted POST request\n",
+        "evidence_start": 3054,
+        "evidence_end": 3103
+      }
+    },
+    {
+      "doc_id": "accellion-fta-google-accellion-data-theft-extortion",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E4",
+        "tail": "E10",
+        "evidence": "CVE-2021-27104 - OS command execution via a crafted POST request\n",
+        "evidence_start": 3103,
+        "evidence_end": 3168
+      }
+    },
+    {
+      "doc_id": "accellion-fta-nvd-accellion-27101",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E2",
+        "evidence": "CVE-2021-27101\n\nPublished: 2021-02-16T21:15:13.077\nLast modified: 2025-11-03T15:06:03.827\nSource identifier: cve@mitre.org\nStatus: Analyzed\n\nDescription:\n- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html.",
+        "evidence_start": 0,
+        "evidence_end": 281,
+        "adjudication_basis": "NVD structured record directly maps CVE-2021-27101 to SQL injection in its description"
+      }
+    },
+    {
+      "doc_id": "apache-httpd-41773-tenable-httpd-41773",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E5",
+        "tail": "E6",
+        "evidence": "October 7, 2021: Apache has updated their advisory to note that the patch for CVE-2021-41773 was incomplete, rendering HTTP Server 2.4.50 versions vulnerable when specific, non-default conditions are met. According to their advisory, \"an attacker could use a path traversal attack to map URLs to files outside the directories configured by Alias-like directives.",
+        "evidence_start": 2580,
+        "evidence_end": 2942,
+        "adjudication_basis": "two adjacent sentences resolve CVE-2021-41773 to path traversal"
+      }
+    },
+    {
+      "doc_id": "apache-httpd-41773-tenable-httpd-41773",
+      "relation": {
+        "id": "R5",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E3",
+        "evidence": "On Monday, October 4, 2021, Apache published an advisory on CVE-2021-41773 , an unauthenticated remote file disclosure vulnerability in HTTP Server version 2.4.49 and 2.4.50 (see the Updates section for more on 2.4.50). The vulnerability arises from the mishandling of URL-encoded path traversal characters in the HTTP GET request.",
+        "evidence_start": 121,
+        "evidence_end": 452,
+        "adjudication_basis": "immediately following anaphoric sentence states the path-traversal cause"
+      }
+    },
+    {
+      "doc_id": "citrix-adc-tenable-citrix-19781-cve",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E2",
+        "evidence": "CVE-2019-19781\nInformation\nCPEs\nAn issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal.",
+        "evidence_start": 0,
+        "evidence_end": 181,
+        "adjudication_basis": "single record header and direct description block"
+      }
+    },
+    {
+      "doc_id": "confluence-nvd-confluence-26084",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E2",
+        "evidence": "CVE-2021-26084\n\nPublished: 2021-08-30T07:15:06.587\nLast modified: 2025-10-24T13:38:44.590\nSource identifier: security@atlassian.com\nStatus: Analyzed\n\nDescription:\n- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance.",
+        "evidence_start": 0,
+        "evidence_end": 381,
+        "adjudication_basis": "NVD CVE header scopes the description; complete the description sentence without crossing into later sections"
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E17",
+        "tail": "E2",
+        "evidence": "CVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs.",
+        "evidence_start": 1881,
+        "evidence_end": 2044
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "relation": {
+        "id": "R5",
+        "type": "instantiates",
+        "head": "E5",
+        "tail": "E15",
+        "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in succ",
+        "evidence_start": 2477,
+        "evidence_end": 2641
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "relation": {
+        "id": "R6",
+        "type": "instantiates",
+        "head": "E10",
+        "tail": "E16",
+        "evidence": "CVE-2016-3976 is a directory traversal vulnerability in SAP NetWeaver AS Java 7.1 through 7.5 that allows remote attackers to read arbitrary files via a ..\\ (dot dot backslash) in the fileName parameter to CrashFileDownloadServlet.",
+        "evidence_start": 6267,
+        "evidence_end": 6498,
+        "adjudication_basis": "complete direct directory-traversal fact"
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "relation": {
+        "id": "R16",
+        "type": "instantiates",
+        "head": "E27",
+        "tail": "E33",
+        "evidence": "CVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager.",
+        "evidence_start": 5109,
+        "evidence_end": 5308,
+        "adjudication_basis": "sentence explicitly states CVE-2020-6207 arises from missing authentication"
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "relation": {
+        "id": "R17",
+        "type": "instantiates",
+        "head": "E9",
+        "tail": "E34",
+        "evidence": "CVE-2016-9563 is a vulnerability in SAP NetWeaver Application Server (AS) Java 7.5 that allows remote authenticated users to conduct XML External Entity (XXE) attacks via the sap.com~tc~bpem~him~uwlconn~provider~web/bpemuwlconn URI.",
+        "evidence_start": 6034,
+        "evidence_end": 6266,
+        "adjudication_basis": "same sentence explicitly states CVE-2016-9563 permits XXE attacks"
+      }
+    },
+    {
+      "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+      "relation": {
+        "id": "R18",
+        "type": "instantiates",
+        "head": "E11",
+        "tail": "E35",
+        "evidence": "CVE-2010-5326 is a CVSS-10 vulnerability in the Invoker Servlet on SAP NetWeaver Application Server Java platforms that arises from a lack of authentication and allows remote attackers to execute arbitrary code via an HTTP or HTTPS request. It was used in attacks from 2013 to 2016.",
+        "evidence_start": 6499,
+        "evidence_end": 6781,
+        "adjudication_basis": "sentence explicitly states CVE-2010-5326 arises from lack of authentication"
+      }
+    },
+    {
+      "doc_id": "goanywhere-nvd-goanywhere-0669",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E1",
+        "tail": "E7",
+        "evidence": "CVE-2023-0669\n\nPublished: 2023-02-06T20:15:14.300\nLast modified: 2025-11-03T15:06:12.700\nSource identifier: cve@rapid7.com\nStatus: Analyzed\n\nDescription:\n- Fortra (formerly, HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This issue was patched in version 7.1.2.",
+        "evidence_start": 0,
+        "evidence_end": 402,
+        "adjudication_basis": "description explicitly states command injection"
+      }
+    },
+    {
+      "doc_id": "ivanti-connect-secure-cisa-ivanti-multiple-vulnerabilities",
+      "relation": {
+        "id": "R3",
+        "type": "instantiates",
+        "head": "E6",
+        "tail": "E23",
+        "evidence": "CVE-2024-21893\nis a server-side request forgery",
+        "evidence_start": 6583,
+        "evidence_end": 6630,
+        "adjudication_basis": "source-text adjudication: the cited self-contained fact sentence directly binds the typed endpoints"
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "relation": {
+        "id": "R1",
+        "type": "instantiates",
+        "head": "E10",
+        "tail": "E5",
+        "evidence": "CVE-2021-26855 is a server-side request forgery (SSRF) vulnerability in Exchange which allowed the attacker to send arbitrary HTTP requests and authenticate as the Exc",
+        "evidence_start": 5122,
+        "evidence_end": 5289
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "relation": {
+        "id": "R2",
+        "type": "instantiates",
+        "head": "E11",
+        "tail": "E6",
+        "evidence": "CVE-2021-26857 is an insecure deserialization vulnerability in the Unified Messaging service.",
+        "evidence_start": 5303,
+        "evidence_end": 5396
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "relation": {
+        "id": "R3",
+        "type": "instantiates",
+        "head": "E12",
+        "tail": "E7",
+        "evidence": "CVE-2021-26858 is a post-authentication arbitrary file write vulnerability in Exchange.",
+        "evidence_start": 5671,
+        "evidence_end": 5758
+      }
+    },
+    {
+      "doc_id": "proxylogon-microsoft-hafnium-exchange",
+      "relation": {
+        "id": "R4",
+        "type": "instantiates",
+        "head": "E13",
+        "tail": "E14",
+        "evidence": "CVE-2021-27065 is a post-authentication arbitrary file write vulnerability in Exchange.",
+        "evidence_start": 6025,
+        "evidence_end": 6112
+      }
+    }
+  ]
+}

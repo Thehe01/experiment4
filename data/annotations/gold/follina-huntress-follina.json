@@ -1,0 +1,46 @@
+{
+  "doc_id": "follina-huntress-follina",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "notes": "CVE-2022-30190 co-occurs with products (Microsoft Office, MSDT, Windows 10, Windows 11) in separate update sections of the text, but there is no explicit contiguous textual evidence directly asserting an affects relation. Under strict blind annotation rules, relations array remains empty.",
+  "text": "﻿Rapid Response: Microsoft Office RCE - “Follina” MSDT Attack | Huntress\nPublished:\nMay 30, 2022\nBy:\nJohn Hammond\nThis post, as is the norm for emerging threats, is a developing article and may be subject to change as the Huntress team learns more about this attack vector and new information is available.\nUPDATE 4:51pm ET June 14, 2022:\nMicrosoft announced an\navailable patch\nfor the Follina exploit. Our team has been working to validate the patch, and\nwe have tested and verified that the patch is effective both for Windows 10 and Windows 11:\nJust to note, your KB# may vary based on your operating system—check out\nMicrosoft's update\nfor the full list.\nBelow, the code fails to execute on Windows 10:\nIn the below image, the raw command fails on Windows 10:\nUPDATE 11:16pm ET May 30, 2022:\nMicrosoft has now revealed the CVE identifier for this vulnerability is\nCVE-2022-30190\n, including a Security Update and article with guidance... but no patch looks to be available as of yet.\nhttps://msrc-blog.microsoft.com/2022/05/30/guidance-for-cve-2022-30190-microsoft-support-diagnostic-tool-vulnerability/\nhttps://msrc.microsoft.com/update-guide/en-US/vulnerability/CVE-2022-30190\nThe Non-Technical Version of What's Happening\n\n",
+  "entities": [
+    {
+      "id": "E7",
+      "type": "Vulnerability",
+      "text": "CVE-2022-30190",
+      "start": 868,
+      "end": 882,
+      "normalized_id": "CVE-2022-30190"
+    },
+    {
+      "id": "E8",
+      "type": "Vulnerability",
+      "text": "cve-2022-30190",
+      "start": 1044,
+      "end": 1058,
+      "normalized_id": "CVE-2022-30190"
+    },
+    {
+      "id": "E9",
+      "type": "Vulnerability",
+      "text": "CVE-2022-30190",
+      "start": 1168,
+      "end": 1182,
+      "normalized_id": "CVE-2022-30190"
+    }
+  ],
+  "relations": [],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

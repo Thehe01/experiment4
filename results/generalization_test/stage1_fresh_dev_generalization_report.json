@@ -1,0 +1,148 @@
+{
+  "timestamp": "2026-09-17T05:19:57Z",
+  "target_documents": [
+    "aa24-249a",
+    "aa23-187a",
+    "aa20-259a-iran-citrix-vpn-cve-19781",
+    "accellion-fta-google-accellion-data-theft-extortion"
+  ],
+  "window_count": 60,
+  "inference_time_seconds": 66.96850180625916,
+  "mode_a_raw": {
+    "by_type": {
+      "Vulnerability": {
+        "tp": 61,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.9838709677419355,
+        "f1": 0.991869918699187
+      },
+      "Configuration": {
+        "tp": 7,
+        "fp": 84,
+        "fn": 7,
+        "precision": 0.07692307692307693,
+        "recall": 0.5,
+        "f1": 0.13333333333333336
+      },
+      "Weakness": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "AttackTechnique": {
+        "tp": 219,
+        "fp": 10,
+        "fn": 4,
+        "precision": 0.9563318777292577,
+        "recall": 0.9820627802690582,
+        "f1": 0.9690265486725663
+      }
+    },
+    "overall": {
+      "tp": 287,
+      "fp": 94,
+      "fn": 12,
+      "precision": 0.7532808398950132,
+      "recall": 0.959866220735786,
+      "f1": 0.8441176470588235
+    }
+  },
+  "mode_b_enhanced": {
+    "by_type": {
+      "Vulnerability": {
+        "tp": 62,
+        "fp": 4,
+        "fn": 0,
+        "precision": 0.9393939393939394,
+        "recall": 1.0,
+        "f1": 0.96875
+      },
+      "Configuration": {
+        "tp": 10,
+        "fp": 85,
+        "fn": 4,
+        "precision": 0.10526315789473684,
+        "recall": 0.7142857142857143,
+        "f1": 0.18348623853211007
+      },
+      "Weakness": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "AttackTechnique": {
+        "tp": 219,
+        "fp": 10,
+        "fn": 4,
+        "precision": 0.9563318777292577,
+        "recall": 0.9820627802690582,
+        "f1": 0.9690265486725663
+      }
+    },
+    "overall": {
+      "tp": 291,
+      "fp": 99,
+      "fn": 8,
+      "precision": 0.7461538461538462,
+      "recall": 0.9732441471571907,
+      "f1": 0.8447024673439768
+    }
+  },
+  "mode_c_doc_level": {
+    "by_type": {
+      "Vulnerability": {
+        "tp": 56,
+        "fp": 4,
+        "fn": 0,
+        "precision": 0.933333,
+        "recall": 1.0,
+        "f1": 0.965517,
+        "details": {}
+      },
+      "Configuration": {
+        "tp": 7,
+        "fp": 81,
+        "fn": 4,
+        "precision": 0.079545,
+        "recall": 0.636364,
+        "f1": 0.141414,
+        "details": {}
+      },
+      "Weakness": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "details": {}
+      },
+      "AttackTechnique": {
+        "tp": 179,
+        "fp": 10,
+        "fn": 3,
+        "precision": 0.94709,
+        "recall": 0.983516,
+        "f1": 0.96496,
+        "details": {}
+      }
+    },
+    "overall": {
+      "tp": 242,
+      "fp": 95,
+      "fn": 7,
+      "precision": 0.718101,
+      "recall": 0.971888,
+      "f1": 0.825939,
+      "details": {}
+    }
+  }
+}

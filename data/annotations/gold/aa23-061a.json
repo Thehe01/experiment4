@@ -1,0 +1,355 @@
+{
+  "doc_id": "aa23-061a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "#StopRansomware: Blacksuit (Royal) Ransomware | CISA\nSkip to main content\n \nOfficial websites use .gov\n A \n.gov\n website belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\n A \nlock\n (\n) or \nhttps://\n means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nStaying Secure at Events\nno-cost Cyber Services\nSecure by design \nSecure Your Business\nReport A Cyber Issue\n \nShare:\nCybersecurity Advisory\n#StopRansomware: Blacksuit (Royal) Ransomware\nLast Revised\nAugust 27, 2024\nAlert Code\nAA23-061A\n Related topics:\nCyber Threats and Response\n ,\nIncident Response\n ,\nMalware, Phishing, and Ransomware\nActions for Organizations to Take Today to Mitigate Cyber Threats Related to BlackSuit Ransomware Activity\nPrioritize remediating known exploited vulnerabilities.\nTrain users to recognize and report phishing attempts.\nEnable and enforce multifactor authentication.\nSummary\nNote: \nThis joint Cybersecurity Advisory is part of an ongoing \n#StopRansomware\n effort to publish advisories for network defenders that detail various ransomware variants and ransomware threat actors. These #StopRansomware advisories include recently and historically observed tactics, techniques, and procedures (TTPs) and indicators of compromise (IOCs) to help organizations protect against ransomware. Visit \nstopransomware.gov\n to see all #StopRansomware advisories and to learn more about other ransomware threats and no-cost resources.\nNote:\n This advisory, originally published March 2, 2023, has been updated four times:\nNovember 13, 2023: \nThe advisory was updated to share new Royal TTPs and IOCs.\nAugust 7, 2024:\n The advisory was updated to notify network defenders of the rebrand of “Royal” ransomware actors to “BlackSuit.” The update includes new TTPs, IOCs, and detection methods related to BlackSuit ransomware. “Royal” was updated to “BlackSuit” throughout unless referring to legacy Royal activity. Updates and new content are noted.\nAugust 14, 2024:\n The STIX files from the previous update (08/07/2024) were refreshed.\nAugust 27, 2024:\n The STIX files from the (08/19/2024) update were refreshed.\n(New August 7, 2024)\n \nThe Federal Bureau of Investigation (FBI) and the Cybersecurity and Infrastructure Security Agency (CISA) are releasing this joint advisory to disseminate known BlackSuit ransomware IOCs and TTPs identified through FBI threat response activities and third-party reporting as recently as of July 2024. BlackSuit ransomware is the evolution of the ransomware previously identified as Royal ransomware, which was used from approximately September 2022 through June 2023. BlackSuit shares numerous coding similarities with Royal ransomware and has exhibited improved capabilities. \n(Updated August 7, 2024)\n BlackSuit conducts data exfiltration and extortion prior to encryption and then publishes victim data to a leak site if a ransom is not paid. Phishing emails are among the most successful vectors for initial access by BlackSuit threat actors. After gaining access to victims’ networks, BlackSuit actors disable antivirus software and exfiltrate large amounts of data before ultimately deploying the ransomware and encrypting the systems. \n(Updated August 7, 2024)\n Ransom demands have typically ranged from approximately $1 million to $10 million USD, with payment demanded in Bitcoin. BlackSuit actors have demanded over $500 million USD in total and the largest individual ransom demand was $60 million. BlackSuit actors have exhibited a willingness to negotiate payment amounts. Ransom amounts are not part of the initial ransom note, but require direct interaction with the threat actor via a \n.onion\n URL (reachable through the Tor browser) provided after encryption. Recently, an uptick was observed in the number of instances where victims received telephonic or email communications from BlackSuit actors regarding the compromise and ransom. BlackSuit uses a leak site to publish victim data based on non-payment.\nFBI and CISA encourage organizations to implement the recommendations found in the Mitigations section of this CSA to reduce the likelihood and impact of ransomware incidents.\nDownload the PDF version of this report:\nAA23-061A #StopRansomware: BlackSuit (Royal) Ransomware\n(PDF, 660.84 KB\n )\nFor a downloadable copy of IOCs, see:\nAA23-061A STIX XML (MAR 2023)\n(XML, 114.26 KB\n )\nAA23-061A STIX XML (NOV 2023 Update)\n(XML, 152.94 KB\n )\nAA23-061A STIX JSON (NOV 2023 Update)\n(JSON, 113.96 KB\n )\nAA23-061A STIX XML (BlackSuit)\n(XML, 242.82 KB\n )\nAA23-061A STIX JSON (BlackSuit)\n(JSON, 162.62 KB\n )\nTechnical Details\nNote:\n This advisory uses the \nMITRE ATT&CK\n®\n for Enterprise\n framework, version 15. See the MITRE ATT&CK Tactics and Techniques section for a table of the threat actors’ activity mapped to MITRE ATT&CK tactics and techniques. For assistance with mapping malicious cyber activity to the MITRE ATT&CK framework, see CISA and MITRE ATT&CK’s \nBest Practices for MITRE ATT&CK Mapping\n and CISA’s \nDecider Tool\n.\nInitial Access\nBlackSuit uses a unique partial encryption approach that allows the threat actor to choose a specific percentage of data in a file to encrypt. This approach allows the actor to lower the encryption percentage for larger files, which helps evade detection, and also significantly improves ransomware speed.[\n1\n] In addition to encrypting files, BlackSuit actors also engage in double extortion tactics in which they threaten to publicly release the exfiltrated data if the victim does not pay the ransom.\nBlackSuit actors gain initial access to victim networks in several ways, including:\nPhishing.\n According to third-party reporting, BlackSuit actors most commonly gain initial access to victim networks via phishing emails [\nT1566\n].\nAccording to open source reporting, victims have unknowingly installed malware that delivers BlackSuit ransomware after receiving phishing emails containing malicious PDF documents [\nT1566.001\n] and malvertising [\nT1566.002\n].[\n2\n]\nRemote Desktop Protocol (RDP).\n The second most common vector (around 13.3% of incidents) BlackSuit actors use for initial access is RDP compromise [\nT1021.001\n].\nPublic-facing applications. \nFBI has observed BlackSuit actors gain initial access through exploiting vulnerable public-facing applications [\nT1190\n].\nBrokers. \nReports from trusted third-party sources indicate that BlackSuit actors may leverage initial access brokers to gain initial access and source traffic by harvesting virtual private network (VPN) credentials from stealer logs [\nT1650\n].\nCommand and Control\nOnce BlackSuit actors gain access to a network, they communicate with command and control (C2) infrastructure and download multiple tools [\nT1105\n]. Legitimate Windows software is repurposed by BlackSuit actors to strengthen their foothold within the victim’s network. Ransomware operators often use open source projects to aid their intrusion activities.\nHistorically, Royal actors were observed leveraging \nChisel\n, Secure Shell (SSH) client, PuTTY, OpenSSH, and MobaXterm [\nT1572\n], to communicate with their C2 infrastructure.\nLateral Movement and Persistence\n(Updated August 7, 2024)\n Historically, Royal threat actors used RDP and legitimate operating system (OS) diagnostic tools to move laterally across a network [\nT1021.001\n]. BlackSuit actors used RDP and PsExec as well but also use SMB [\nT1021.001\n] to move laterally. In one confirmed case, BlackSuit actors used a legitimate admin account [\nT1078\n] to remotely log on to the domain controller via SMB. Once on the domain controller, the threat actor deactivated antivirus software [\nT1562.001\n] by modifying Group Policy Objects [\nT1484.001\n].\n(Updated August 7, 2024)\n FBI observed BlackSuit actors using legitimate remote monitoring and management (RMM) software to maintain persistence in victim networks [\nT1133]\n. \n(New August 7, 2024)\n BlackSuit actors use SystemBC and Gootloader malware to load additional tools and maintain persistence.\nDiscovery and Credential Access\n(New August 7, 2024)\n BlackSuit actors have been observed using SharpShares and SoftPerfect NetWorx to enumerate victim networks. The publicly available credential stealing tool Mimikatz and password harvesting tools from Nirsoft have also been found on victim systems. Tools such as PowerTool and GMER are often used to kill system processes.\nExfiltration\nBlackSuit actors exfiltrate data from victim networks by repurposing legitimate cyber penetration testing tools, such as \nCobalt Strike\n, and malware tools/derivatives, such as \nUrsnif\n/Gozi, for data aggregation and exfiltration. According to third-party reporting, BlackSuit actors’ first hop in exfiltration and other operations is usually a U.S. IP address. \n(New August 7, 2024)\n BlackSuit actors also use RClone and Brute Ratel for exfiltration.\nEncryption\nBefore starting the encryption process, BlackSuit actors:\nUse Windows Restart Manager to determine whether targeted files are currently in use or blocked by other applications [\nT1486\n].[\n1\n]\nUse Windows Volume Shadow Copy service (\nvssadmin.exe\n) to delete shadow copies to inhibit system recovery.[\n1\n]\nFBI has found numerous batch (\n.bat\n) files on impacted systems which are typically transferred as an encrypted 7zip file. Batch files create a new admin user [\nT1078.002\n], force a group policy update, set pertinent registry keys to auto-extract [\nT1119\n] and execute the ransomware, monitor the encryption process, and delete files upon completion—including Application, System, and Security event logs [\nT1070.001\n]. Registry Keys created can be modified and deleted to enable persistence on the victim’s system. \nMalicious files have been found in victim networks in the following directories:\nC:\\Temp\\\nC:\\Users\\<user>\\AppData\\Roaming\\\nC:\\Users\\<users>\\\nC:\\ProgramData\\\nRoot C:\\\n directory has also served as a storage location for malicious files. BlackSuit actors have been observed using legitimate software and open source tools during ransomware operations.\nIndicators of Compromise (IOCs)\nSee \nTable 1\n through \nTable 5\n for Royal ransomware IOCs obtained by FBI during threat response activities as of January 2023.\n(New November 13, 2023)\n \nSee \nTable 6\n and \nTable 7\n for Royal and BlackSuit Ransomware IOCs as of June 2023. See Table 8 for a list of legitimate software used by Royal and BlackSuit threat actors identified through FBI investigations as of June 2023.\n(New August 7, 2024)\n See \nTable 9\n through\n Table 15\n for BlackSuit ransomware IOCs obtained by FBI during threat response activities as of July 2024 and \nFigure 1\n for a sample ransom note.\nDisclaimer\n: Some of the observed IP addresses are several years old. FBI and CISA recommend vetting or investigating these IP addresses prior to taking forward-looking action, such as blocking.\nRoyal IOCs as of January 2023\nTable 1: Royal Ransomware Associated Files as of January 2023\nIOC\nDescription\n.royal\nEncrypted file extension\nREADME.TXT\nRansom note\nTable 2: Royal Ransomware Associated IP addresses as of January 2023\nMalicious IP\nLast Observed Activity\n102.157.44[.]105\nNovember 2022\n105.158.118[.]241\nNovember 2022\n105.69.155[.]85\nNovember 2022\n113.169.187[.]159\nNovember 2022\n134.35.9[.]209\nNovember 2022\n139.195.43[.]166\nNovember 2022\n139.60.161[.]213\nNovember 2022\n148.213.109[.]165\nNovember 2022\n163.182.177[.]80\nNovember 2022\n181.141.3[.]126\nNovember 2022\n181.164.194[.]228\nNovember 2022\n185.143.223[.]69\nNovember 2022\n186.64.67[.]6\nNovember 2022\n186.86.212[.]138\nNovember 2022\n190.193.180[.]228\nNovember 2022\n196.70.77[.]11\nNovember 2022\n197.11.134[.]255\nNovember 2022\n197.158.89[.]85\nNovember 2022\n197.204.247[.]7\nNovember 2022\n197.207.181[.]147\nNovember 2022\n197.207.218[.]27\nNovember 2022\n197.94.67[.]207\nNovember 2022\n23.111.114[.]52\nNovember 2022\n41.100.55[.]97\nNovember 2022\n41.107.77[.]67\nNovember 2022\n41.109.11[.]80\nNovember 2022\n41.251.121[.]35\nNovember 2022\n41.97.65[.]51\nNovember 2022\n42.189.12[.]36\nNovember 2022\n45.227.251[.]167\nNovember 2022\n5.44.42[.]20\nNovember 2022\n61.166.221[.]46\nNovember 2022\n68.83.169[.]91\nNovember 2022\n81.184.181[.]215\nNovember 2022\n82.12.196[.]197\nNovember 2022\n98.143.70[.]147\nNovember 2022\n140.82.48[.]158\nDecember 2022\n147.135.36[.]162\nDecember 2022\n147.135.11[.]223\nDecember 2022\n152.89.247[.]50\nDecember 2022\n172.64.80[.]1\nDecember 2022\n179.43.167[.]10\nDecember 2022\n185.7.214[.]218\nDecember 2022\n193.149.176[.]157\nDecember 2022\n193.235.146[.]104\nDecember 2022\n209.141.36[.]116\nDecember 2022\n45.61.136[.]47\nDecember 2022\n45.8.158[.]104\nDecember 2022\n5.181.234[.]58\nDecember 2022\n5.188.86[.]195\nDecember 2022\n77.73.133[.]84\nDecember 2022\n89.108.65[.]136\nDecember 2022\n94.232.41[.]105\nDecember 2022\n47.87.229[.]39\nJanuary 2023\nTable 3: Royal Ransomware Associated Domains as of January 2023\nMalicious Domain\nLast Observed Activity\nsombrat[.]com\nOctober 2022\ngororama[.]com\nNovember 2022\nsofteruplive[.]com\nNovember 2022\naltocloudzone[.]live\nDecember 2022\nciborkumari[.]xyz\nDecember 2022\nmyappearinc[.]com\nDecember 2022\nparkerpublic[.]com\nDecember 2022\npastebin.mozilla[.]org/Z54Vudf9/raw\nDecember 2022\ntumbleproperty[.]com\nDecember 2022\nmyappearinc[.]com/acquire/draft/c7lh0s5jv\nJanuary 2023\nTable 4: Tools Used by Royal Operators\nTool\nSHA256\nAV tamper\n8A983042278BC5897DBCDD54D1D7E3143F8B7EAD553B5A4713E30DEFFDA16375\nTCP/UDP Tunnel over HTTP (Chisel)\n8a99353662ccae117d2bb22efd8c43d7169060450be413af763e8ad7522d2451\nUrsnif/Gozi\nbe030e685536eb38ba1fec1c90e90a4165f6641c8dc39291db1d23f4ee9fa0b1\nExfil\nB8C4AEC31C134ADBDBE8AAD65D2BCB21CFE62D299696A23ADD9AA1DE082C6E20\nRemote Access (AnyDesk)\n4a9dde3979c2343c024c6eeeddff7639be301826dd637c006074e04a1e4e9fe7\nPowerShell Toolkit Downloader\n4cd00234b18e04dcd745cc81bb928c8451f6601affb5fa45f20bb11bfb5383ce\nPsExec (Microsoft Sysinternals)\n08c6e20b1785d4ec4e3f9956931d992377963580b4b2c6579fd9930e08882b1c\nKeep Host Unlocked (Don’t Sleep)\nf8cff7082a936912baf2124d42ed82403c75c87cb160553a7df862f8d81809ee\nRansomware Executable\nd47d4b52e75e8cf3b11ea171163a66c06d1792227c1cf7ca49d7df60804a1681\nWindows Command Line (NirCmd)\n216047C048BF1DCBF031CF24BD5E0F263994A5DF60B23089E393033D17257CB5\nSystem Management (NSudo)\n19896A23D7B054625C2F6B1EE1551A0DA68AD25CDDBB24510A3B74578418E618\nAV tamper\n8A983042278BC5897DBCDD54D1D7E3143F8B7EAD553B5A4713E30DEFFDA16375\nTCP/UDP Tunnel over HTTP (Chisel)\n8a99353662ccae117d2bb22efd8c43d7169060450be413af763e8ad7522d2451\nUrsnif/Gozi\nbe030e685536eb38ba1fec1c90e90a4165f6641c8dc39291db1d23f4ee9fa0b1\nExfil\nB8C4AEC31C134ADBDBE8AAD65D2BCB21CFE62D299696A23ADD9AA1DE082C6E20\nRemote Access (AnyDesk)\n4a9dde3979c2343c024c6eeeddff7639be301826dd637c006074e04a1e4e9fe7\nPowerShell Toolkit Downloader\n4cd00234b18e04dcd745cc81bb928c8451f6601affb5fa45f20bb11bfb5383ce\nPsExec (Microsoft Sysinternals)\n08c6e20b1785d4ec4e3f9956931d992377963580b4b2c6579fd9930e08882b1c\nKeep Host Unlocked (Don’t Sleep)\nf8cff7082a936912baf2124d42ed82403c75c87cb160553a7df862f8d81809ee\nRansomware Executable\nd47d4b52e75e8cf3b11ea171163a66c06d1792227c1cf7ca49d7df60804a1681\nWindows Command Line (NirCmd)\n216047C048BF1DCBF031CF24BD5E0F263994A5DF60B23089E393033D17257CB5\nSystem Management (NSudo)\n19896A23D7B054625C2F6B1EE1551A0DA68AD25CDDBB24510A3B74578418E618\n \nTable 5: Batch Script Tools Used by Royal Operators\nFile name\nHash Value\n2.bat\n585b05b290d241a249af93b1896a9474128da969\n3.bat\n41a79f83f8b00ac7a9dd06e1e225d64d95d29b1d\n4.bat\na84ed0f3c46b01d66510ccc9b1fc1e07af005c60\n8.bat\nc96154690f60a8e1f2271242e458029014ffe30a\nkl.bat\n65dc04f3f75deb3b287cca3138d9d0ec36b8bea0\ngp.bat\n82f1f72f4b1bfd7cc8afbe6d170686b1066049bc7e5863b51aa15ccc5c841f58\nr.bat\n74d81ef0be02899a177d7ff6374d699b634c70275b3292dbc67e577b5f6a3f3c\nrunanddelete.bat\n342B398647073159DFA8A7D36510171F731B760089A546E96FBB8A292791EFEE\nRoyal and BlackSuit IOCs as of June 2023 (New November 13, 2023)\nTable 6: Royal Ransomware Associated Files, Tools, and Hashes as of June 2023\nName\nDescription or SHA 256 Hash Value\nC:\\Users\\Public\\conhost.exe client 149.28.73.161:443 R:149.28.73.161:43657:socks\nExecuted on the victim’s machine, uses a Chisel client to tunnel traffic through port 443 instead of port 43657.\nroyal_w\nEncryption extension\n%PROGRAMDATA%\nRansomware Filepath\n%TEMP%\\execute.bat\n \nInstallerV20.8.msi\n \nwindows_encryptor.exe\n85087f28a84205e344d7e8e06979e6622fab0cfe1759fd24e38cd0390bca5fa6\n%PROGRAMDATA%\\wine.exe\n5b08c02c141eab94a40b56240a26cab7ff07e9a6e760dfde8b8b053a3526f0e6\n%USERPROFILE%\\Downloads\\run1.bat\nbc609cf53dde126b766d35b5bcf0a530c24d91fe23633dad6c2c59fd1843f781\n%USERPROFILE%\\Downloads\\run2.bat\n13c25164791d3436cf2efbc410caec6b6dd6978d7e83c4766917630e24e1af10\n%USERPROFILE%\\Downloads\\run3.bat\n2b93206d7a36cccdf7d7596b90ead301b2ff7e9a96359f39b6ba31bb13d11f45\n%USERPROFILE%\\Downloads\\run4.bat\n84e1efbed6bb7720caea6720a8bff7cd93b5d42fb1d71ef8031bfd3897ed4435\n%USERPROFILE%\\Downloads\\sc.bat\ne0dbe3a2d07ee10731b68a142c65db077cfb88e5ec5c8415e548d3ede40e7ffc\n%USERPROFILE%\\Downloads\\sr.bat\n34a98f2b54ebab999f218b0990665485eb2bb74babdf7e714cc10a306616b00c\nrunanddelete.bat\n342b398647073159dfa8a7d36510171f731b760089a546e96fbb8a292791efee\nscripttodo.ps1 (94.232.41.105)\n4cd00234b18e04dcd745cc81bb928c8451f6601affb5fa45f20bb11bfb5383ce\ndontsleep.exe\nf8cff7082a936912baf2124d42ed82403c75c87cb160553a7df862f8d81809ee\nwstart.exe\nd47d4b52e75e8cf3b11ea171163a66c06d1792227c1cf7ca49d7df60804a1681\nInstallerV8.1.ms\n3e6e2e0de75896033d91dfd07550c478590ca4cd4598004d9e19246e8a09cb97\nshutdowni.bat\n8a983042278bc5897dbcdd54d1d7e3143f8b7ead553b5a4713e30deffda16375\nf827.exe\n5654f32a4f0f2e900a35761e8caf7ef0c50ee7800e0a3b19354b571bc6876f61\nd2ef5.exe\nbe030e685536eb38ba1fec1c90e90a4165f6641c8dc39291db1d23f4ee9fa0b1\nf24dc8ea.msi\n91605641a4c7e859b7071a9841d1cd154b9027e6a58c20ec4cadafeaf47c9055\ndefw10.bat\nfb638dba20e5fec72f5501d7e0627b302834ec5eaf331dd999763ee925cbc0f9\nll.exe\nf0197bd7ccd568c523df9c7d9afcbac222f14d344312322c04c92e7968859726\nRoyal Ransomware Hash\nb987f738a1e185f71e358b02cafa5fe56a4e3457df3b587d6b40e9c9de1da410\nb34v2.dll\na51b1f1f0636bff199c0f87e2bb300d42e06698b\n1.exe\nd93f1ef533e6b8c95330ba0962e3670eaf94a026\n34.dll\n9e19afc15c5781e8a89a75607578760aabad8e65\nll.exe\n9a92b147cad814bfbd4632b6034b8abf8d84b1a5\nRoyal Ransomware Hash\na4ef01d55e55cebdd37ba71c28b0c448a9c833c0\nTable 7: BlackSuit Ransomware Associated Files, Tools, and Hashes as of June 2023\nIP Address \nMD5 Hash Value\nsys32.exe\n30cc7724be4a09d5bcd9254197af05e9fab76455\nesxi_encryptor\n861793c4e0d4a92844994b640cc6bc3e20944a73\nBlackSuit threat actors have been observed using legitimate software and open source tools during ransomware operations. Threat actors have been observed using open source network tunneling tools such as Chisel and Cloudflared, as well as Secure Shell (SSH) Client, OpenSSH, and MobaXterm to establish SSH connections. The publicly available credential stealing tool Mimikatz and password harvesting tools from Nirsoft have also been found on victim systems. Legitimate RMM tools have also been observed as backdoor access vectors. Some legitimate software and open source tools can be found in \nTable 8\n.\nTable 8: Legitimate Files and Tools Used by Royal and BlackSuit Ransomware\nName\nDescription or SHA 256 Hash Value\nC:\\Program Files\\OpenSSH\\ssh-agent.exe\nC:\\Program Files\\OpenSSH\\sshd.exe\nSSH Client\n%USERPROFILE%\\Downloads\\WinRAR.exe\nCompression tool\n%APPDATA%\\MobaXterm\\\nToolbox for remote computing\n\\Program Files (x86)\\Mobatek\\\nToolbox for remote computing\n\\Program Files (x86)\\Mobatek\\MobaXterm\\\nToolbox for remote computing\nb34v2.dll\nColbaltStrike Beacon\n34.dll\nCobaltStrike Beacon\nmimikatz.exe\nMimikatz credential harvester\ndialuppass.exe\nNirsoft password harvesting utility\niepv.exe\nNirsoft password harvesting utility\nmailpv.exe\nNirsoft password harvesting utility\nnetpass.exe\nNirsoft password harvesting utility\nrouterpassview.exe\nNirsoft password harvesting utility\nAdFind.exe\nADFind tool\nLogMeIn\nRemote access tool\nAtera\nRemote access tool\nC:\\Program Files\\Eraser\\Eraser.exe\nAnti-Forensics Tool used by TA\nadvanced_ip_scanner.exe\nReconnaissance Tool used by TA\nconhost.exe (chisel_windows_1_7_7.exe)\nb9ef2e948a9b49a6930fc190b22cbdb3571579d37a4de56564e41a2ef736767b\n%USERPROFILE%\\Downloads\\svvhost.exe\n\\Users\\Administrator\\AppData\\Local\\Temp\\cloudflared.exe\nc429719a45ca14f52513fe55320ebc49433c729a0d2223479d9d43597eab39fa\nnircmd.exe\n216047c048bf1dcbf031cf24bd5e0f263994a5df60b23089e393033d17257cb5\nnsudo.exe\n19896a23d7b054625c2f6b1ee1551a0da68ad25cddbb24510a3b74578418e618\nIOCs as of July 2024 (New August 7, 2024)\nDisclaimer:\n Several of these observed IP addresses were first observed as early as 2023, although the most recent are from July of 2024 and have been historically linked to BlackSuit (formerly known as Royal) Ransomware. IP addresses in this advisory were maliciously used during the time range highlighted below, and may have been used for legitimate purposes outside of that time span. FBI and CISA recommend these IP addresses be investigated or vetted by organizations prior to taking action, such as blocking.\nTable 9: Malicious URL (s) associated with BlackSuit Ransomware\nURL Association\nMalicious URLs\nURLs from malicious PowerShell on P0, potentially \ndebug.ps1\nhttps://1tvnews[.]af/xmlrpc.php\nhttps://avpvuurwerk[.]nl/xmlrpc.php\nhttps://beautyhabits[.]gr/xmlrpc.php\nhttps://interpolyaris[.]ru/xmlrpc.php\nhttps://libertygospeltracts[.]com/xmlrpc.php\nhttps://oldtimertreffen-rethem[.]de/xmlrpc.php\nhttps://parencyivf[.]com/xmlrpc.php\nhttps://pikaluna[.]com/xmlrpc.php\nhttps://stroeck[.]at/xmlrpc.php\nURL associated to BRC4 / Brute Ratel\nmegupdate[.]com\nURLs associated to Exfiltration\nmystuff[.]bublup[.]com \nURL associated to Cobalt Strike C2\nprovincial-gaiters-gw[.]aws-use1[.]cloud-ara[.]tyk[.]io\nURL associated to Initial Access Download\nzoommanager[.]com\nTable 10: BlackSuit Ransomware Associated Files and Hash Values\nFilename\nHash Value – SHA-256\nDescription\n1.exe\naf9f95497b8503af1a399bc6f070c3bbeabc5aeecd8c09bca80495831ae71e61\nEncryptor\nPowerTool64.exe\n \nHacktool\naaa.exe\nC4A2227CD8D85128EAFEF8EE2298AA105DA892C8B0F37405667C2D1647C35C46\nEncryptor\n aaa.exe\n8d16a23d5a5630502b09c33fbc571d2261c6c98fecc3a79a1e1129354f930d0a\n \nWen.exe\n01ce9cfebb29596d0ab7c99e8dbadf1a8409750b183e6bf73e0de021b365be13\n \netmc.exe\na0a4a99948e12309f54911264261d96f0e40d5fd695bab82e95fbc1f9024482e\n \nsvchost.exe\n9bbc9784ce3c818a127debfe710ec6ce21e7c9dd0daf4e30b8506a6dba533db4\nData Exfiltration Tool ­– Renamed version of \nRClone.exe\nlocker_N1uYkmEsfoHmT4lK66trUjBuy5gyAj7n.ex_\n146335b1be627318ac09476f0c8f8e6e027805e6077673f72d6dce1677a24c78\n \nsocks32.exe\n9493b512d7d15510ebee5b300c55b67f9f2ff1dda64bddc99ba8ba5024113300\n \nC:\\users\\Administrator\\AppData\\Local\\msa.ps1\n \nSystemBC backdoor\n%APPDATA%\\ Zoom\\Alternative Workplace Strategies.js\nE813F8FAF3AA2EB20E285596413F5088B2D7FD153FE9F72F3FF45735D0FDDCED\nGootloader infection\nC:\\Users\\Public\\socks.ps1\n25A6F82936134A6C5C0066F382530B9D6BF2C8DA6FEAFE028F166B1A9D7283CF\nPowerShell Backdoor\n \nHKEY_USERS\\S-1-5-18\\Software\\Microsoft\\Windows\\CurrentVersion\\Run (Value == socks_powershell)\n \nExecutes socks.ps1 on reboot\nshare$.zip\ne3d7c012040962acd66f395d1c5c5f73f305aa1058f2111e8e37d9cb213b80c4\nContains \n_COPY.bat\n, \nPsExec.exe\n, \netmc.exe\n, and \n_EXEC.bat\n to deploy encryptor (\netmc.exe\n) across environment using domain admin credentials\nsocss.exe\nC798B2690C5F16EB2917A679AF3117CFE9C7060FA8BC84FFC3159338EF33508E\nMalware\nqq.exe\n3c8c1b1f53e0767b7291bb1ae605ffa62a93e9c8cc783e4ca47ac84b48320d59\n \ngomer.exe\n \nA renamed executable of GMER used for defense evasion\n288-csrss.exe\nee6ec2810910c6d2a2957f041edd1e39dca4266a1cc8009ae6d7315aba9196f5\n \n372-winlogon.exe\n68c57daed0e5899c49b827042bcf3bbeba33b524bd83315a44d889721664dc34\n \n776-svchost.exe\n bbb7404419f91f82cedfec915931a9339f04165b27d8878d63827c9ee421ed62\n \nExe.exe, aaaa.exe, qq.exe\n338228a3e79f3993abc102cbac2ff253c84965213d59ac30892538cdd9b0a22b\nRansomware file\nMwntv.sys\n6332f189cc71df646ff0f1b9b02a005c9ebda3fe7b9712976660746913b030de\nPotential Tool Ingress\nUn_A.exe\n \nMalicious binary for attempting to disable/uninstall security software\nUn_B.erxe\n \nMalicious binary for attempting to disable/uninstall security software\nTable 11: Batch Script Tools Used by BlackSuit Ransomware Operators and Hash Values\nFilename\nDescription\nHash Value – SHA-256\n2.bat\nBatch Script to copy and execute encryptor\n3041dfc13f356c2f0133a9c11a258f87cb7de1e17bc435e9b623d74bc5e1c6be\nC:\\share$\\_EXEC.bat\nExecute encrypter\n8F87A1542EE790623896BBAAB933D1883484DE02A7B3D65D6C791D50173A923D\nfstart.bat\nA batch script used to enable remote services, perform anti-forensics, and enable clear-text passwords in memory\n \nNLA.bat\nA batch script used to disable Network Level Authentication (NLA) for Remote Desktop Services (RDS)\n \nav.bat\nA batch script that searches for presence of an application and uninstalls it\n \nsysteminfo.bat\nA batch script used for system enumeration\n \nmv.bat\nA batch script used to move the PsExec executable and delete the netscan executable\n \nTable 12: IP addresses from BlackSuit Ransomware Deployments (from November 2023 to July 2024)\nIP Address \nTime Range of Use\nDescription \n143[.]244[.]146[.]183:443\nMay 2024\nUnknown C2 – potential SOCKS Proxy\n45[.]141[.]87[.]218:9000\nMay 2024\nArechclient2 Backdoor/SecTopRAT\n45[.]141[.]87[.]218:443\nMay 2024\nArechclient2 Backdoor/SecTopRAT\n184.174.96[.]16\nMay 2024\nAssociated with download of the binary \nvm.dll\n89.251.22[.]32\nMay 2024\nCobalt Strike\n135.148.67[.]84\nMay 2024\nResolves to domain \nturnovercheck[.]com\n180.131.145[.]85\nMay 2024\nAssociated with malicious PowerShell execution\n180.131.145[.]61\nMay 2024\nSystemBC Command & Control\n138.199.53[.]226\nFeb 2024\n \n184.166.211[.]74\nFeb 2024\n \n185.190.24[.]103\nFeb 2024\n \n5.181.234[.]58\nFeb 2024\n \n137.220.61[.]94\nNov – Feb 2024\nconnecting outbound from Socss.exe\n193.37.69[.]116\nNov – Jan 2024\nAssociated with exfiltration\n144.202.120[.]122\nNov 2023\nsocks1.ps1 backdoor; SystemBC Backdoor C2; www.recruitment-interview[.]org (C2 SystemBC)\n104.21.58[.]219:443\nNov 2023\nCobalt Strike\n141.98.80[.]181:80\nNov 2023\nCobalt Strike\n144.202.120[.]122:433\nNov 2023\nPowerShell Reverse Proxy\n155.138.150[.]236:8088\nNov 2023\nPowerShell Reverse Proxy\n140.82.18[.]48\nNov 2023\n \n141.98.80[.]181\nNov 2023\n \n44.202.120[.]122\nNov 2023\n \n45.76.225[.]156\nNov 2023\n \nTable 13: Legitimate Files and Tools Used by Black Suit Ransomware (1 of 3)\nFile name\nHash Value – SHA-256\nDescription\nshare.exe\nf02af8ffc37d1874b971307fdec80e33e583b56d9ebabda78a4b8ad038bc3bf0\nCobalt Strike\n181.exe\nb028eaa0ec452c6844881dc34be813834813a40591b89ea9a57dd4fb4084e477\nCobalt Strike – File name \n222wqc.exe\nae724dce252c7b05a84bc264993172cf86950d22744b5e3a1b15ba645d9d3733\nCobalt Strike\ngmer.exe\n \nGMER / Rootkit Hunter\nPowerTool64.exe\n \nPowerTool64 for hacking\nPsexesvc.exe\n141b2190f51397dbd0dfde0e3904b264c91b6f81febc823ff0c33da980b69944\nSysinternals\nSocks5.ps1\nSocks.ps1\n25a6f82936134a6c5c0066f382530b9d6bf2c8da6feafe028f166b1a9d7283cf\nPowerShell Reverse Proxy\nnetscan.exe\n \nA network reconnaissance tool\n3iSDtcX.exe\ne87512ea12288acec611cf8e995c4ced3971d9e35c0c5dcfd9ee17c9e3ed913d\nPutty suite\nFile.exe\nf805dafb3c0b7e18aa7d8c96db8e8d4e9301ff619622d1aecc8080e0ecd9ebbe\nPutty.exe\n. Possibly used for C2\nMwntv.sys\n6332f189cc71df646ff0f1b9b02a005c9ebda3fe7b9712976660746913b030de\nPotential Tool Ingress\nAnyDesk\n1cdafbe519f60aaadb4a92e266fff709129f86f0c9ee595c45499c66092e0499\nPotential remote access tool\nScreenConnect\n420db40d26d309d3dba3245abb91207f1bca050530545a8048f856e5840d22a2\nPotential remote access tool\nSharpShares.exe\n \nEnumerate network shares\nNetworx.exe\n \nBandwidth utilization\nTable 14: Legitimate Files and Tools Used by Black Suit Ransomware (2 of 3)\nFilename\nHash Value – SHA-1\nDescription\n181[.]exe\n790d40cd16fb458bf99e3600bce29eca06d40b56\nCobalt Strike – Host name \nTable 15: Legitimate Files and Tools Used by Black Suit Ransomware (3 of 3)\nFilename\nFile Path\nDescription\nAnydesk.exe\nC:\\Program Files(x86)\\AnyDesk\\AnyDesk.exe\nRemote Monitoring and Management (RMM) Tool\nehorus_display.exe\nC:\\Program Files\\ehorus_agent\\ehorus_display\\ehorus_display.exe\nRMM Tool\nehorus_launcher.exe\nC:\\Program Files\\ehorus_agent\\ehorus_launcher.exe\nRMM Tool\nTable 16: Domain(s) associated to BlackSuit Ransomware\nDomain Name \nDescription\nAbbeymathiass[.]com\nCobalt Strike C2\nMail.abbeymathiass[.]com\nCobalt Strike C2\nStore.abbeymathiass[.]com\nCobalt Strike C2\nhttps://file[.]io/ScPd1KcJTtxO\nAssociated with download of the binary disabler.exe by threat actors\nMail.turnovercheck[.]com\nCobalt Strike C2\nStore.turnovercheck[.]com\nCobalt Strike C2\nturnovercheck[.]com\nCobalt Strike C2\nHourlyprofitstore[.]com\nCobalt Strike\nIPs and Domains for downloads / C2 / exfiltration of communication\nhttps://protect-us.mimecast[.]com/s/A2PyC31xN5IpzR0XUvzaAj?domain=5.181.157.8\nhttps://protect-us.mimecast[.]com/s/CcsrC4xyO7fBK73ztjNfPl?domain=5.181.234.58\nhttps://protect-us.mimecast[.]com/s/NwueC5yzP5IZLW4MulfSrc?domain=137.220.61.94\nhttps://protect-us.mimecast[.]com/s/T3InC2kwM5hpzEOVU9S5zn?domain=147.135.36.162\nhttps://protect-us.mimecast[.]com/s/teBrC1wvL8iMNE56tXga0n?domain=147.135.11.223\nTable 17: BlackSuit Ransomware Note and Hash Value\nFile Name\nHash Value\nDescription \nreadme.BlackSuit.txt\n1743494f803bbcbd11150a4a8b7a2c5faba1223da607f67d24b18ca2d95d5ba3\nRansomware note\nRansom Note (New August 7, 2024)\nFigure 1 \nshows the observed BlackSuit ransom notes delivered to victims.\nFigure 1. BlackSuit Ransom Note\nYour safety service did a really poor job of protecting your files against our professionals.\nExtortioner named BlackSuit has attacked your system.\nAs a result all your essential files were encrypted and saved at a secure server for further use and publishing on the Web into the public realm.\nNow we have all your files like: financial reports, intellectual property, accounting, law actions and complaints, personal files and so on and so forth. \nWe are able to solve this problem in one touch.\nWe (BlackSuit) are ready to give you an opportunity to get all the things back if you agree to make a deal with us.\nYou have a chance to get rid of all possible financial, legal, insurance and many others risks and problems for a quite small compensation.\nYou can have a safety review of your systems.\nAll your files will be decrypted, your data will be reset, your systems will stay in safe.\nContact us through TOR browser using the link:\nMITRE ATT&CK Tactics and Techniques\nSee \nTable 18\n through \nTable 23 \nfor all referenced threat actor tactics and techniques in this advisory, as well as corresponding detection and/or mitigation recommendations. For additional mitigations, see the Mitigations section.\nTable 18: BlackSuit Actors ATT&CK Techniques for Resource Development\nTechnique Title\nID\nUse\nAcquire Access\nT1650\nBlackSuit actors may leverage brokers in support of gaining initial access.\nTable 19: Cyber Threat Actors ATT&CK Techniques for Initial Access\nTechnique Title\nID\nUse\nRemote Services: Remote Desktop Protocol\nT1021.001\nBlacSuit actors use RDP compromise as secondary initial access vector.\nExternal Remote Services\nT1133\nBlackSuit actors gain initial access through a variety of RMM software.\nExploit Public Facing Application\nT1190\nBlackSuit actors gain initial access through public-facing applications.\nPhishing\nT1566\nBlackSuit actors most commonly gain initial access to victim networks via phishing. \nPhishing: Spear phishing Attachment\nT1566.001\nBlackSuit actors used malicious PDF document attachments in phishing campaigns.\nPhishing: Spear phishing Link\nT1566.002\nThe actors gain initial access using malvertising links via emails and public-facing sites.\nTable 20: Cyber Threat Actors ATT&CK Techniques for Privilege Escalation\nTechnique Title \nID\nUse\n(New August 7, 2024)\n Valid Accounts\nT1078\nBlackSuit actors used a legitimate admin account to gain access privileges to the domain controller.\nValid Accounts: Domain Accounts\nT1078.002\nBlackSuit actors used encrypted files to create new admin user accounts.\nTable 21: Cyber Threat Actors ATT&CK Techniques for Defense Evasion\nTechnique Title\nID\nUse\nRemote Services: Remote Desktop Protocol\nT1021.001\nBlackSuit actors used valid accounts to move laterally through the domain controller using RDP.\nIndicator Removal: Clear Windows Event Logs\nT1070.001\nBlackSuit actors deleted shadow files and system and security logs after exfiltration.\nAutomated Collection\nT1119\nBlackSuit actors used registry keys to auto-extract and collect files.\nDomain Policy Modification: Group Policy Modification\nT1484.001\nBlackSuit actors modified Group Policy Objects to subvert antivirus protocols.\nImpair Defenses: Disable or Modify Tools\nT1562.001\nBlackSuit actors deactivated antivirus protocols.\nTable 22: Cyber Threat Actors ATT&CK Techniques for Command and Control\nTechnique Title\nID\nUse\nIngress Tool Transfer\nT1105\nBlackSuit actors used C2 infrastructure to download multiple tools.\nProtocol Tunneling\nT1572\nBlackSuit actors used an encrypted SSH tunnel to communicate within C2 infrastructure.\nTable 23: Cyber Threat Actors ATT&CK Techniques for Impact\nTechnique Title\nID\nUse\nData Encrypted for Impact\nT1486\nBlackSuit actors encrypted data to determine which files were being used or blocked by other applications.\nDetection Methods\n(New August 7, 2024)\n Please reference YARA rule below to aid in detecting BlackSuit activity. \nNote: \nThe YARA rule is derived from FBI investigations and is not guaranteed to detect confirmed malicious activity.\nprivate rule is_executable {\n    condition:\n        uint32(uint32(0x3C)) == 0x00004550\n}\nrule obfuscates_dlls {\n            strings:\n            \n                        // Code for unscrambling names of true DLL imports\n                        $code_load_obfuscated = {\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                            c6 84 24 ?? 00 00 00 ??\n                                                                                                }\n                                    // c6 84 24 ?? 00 00 00 ??      | MOV byte ptr [ESP + ??], ??\n                        \n                        $code_deobfuscate = { 99 f7 ?? 8d ?? ?? 99 f7 ?? 88}\n                                    // 99                                                     | CDQ\n                                    // f7 ??                                     | IDIV ??\n                                    // 8d ?? ??                                           | LEA ??, ??\n                                    // 99                                                     | CDQ\n                                    // f7 ??                                     | IDIV ??\n                                    // 88                                                     | MOV\n            condition:\n                        all of them\n}\nrule calls_rsa_function {\n            strings:\n                        \n                        // Code for function calls using RSA key\n                        $code_rsa_function_1 = { 8d4c2410 6a?? 6a?? 51 6a?? 6a?? 6a?? 68???????? ffd0 }\n                                    // 8d 4c 24 10                          | LEA ECX, [esp + 0x10]\n                                    // 6a ??                                                | PUSH ??\n                                    // 6a ??                                                | PUSH ??\n                                    // 51                                                     | PUSH ECX\n                                    // 6a ??                                                | PUSH ??\n                                    // 6a ??                                                | PUSH ??\n                                    // 6a ??                                                | PUSH ??\n                                    // 68 ?? ?? ?? ??                     | PUSH (address of RSA string)\n                                    // ff d0                                      | CALL EAX\n                        \n                        $code_rsa_function_2 = { 8d4c2410 6a?? 6a?? 51 56 6a?? 6a?? 68???????? ffd0 }\n                                    // 8d 4c 24 10                          | LEA ECX, [esp + 0x10]\n                                    // 6a ??                                                | PUSH ??\n                                    // 6a ??                                                | PUSH ??\n                                    // 51                                                     | PUSH ECX\n                                    // 56                                                     | PUSH ESI\n                                    // 6a ??                                                | PUSH ??\n                                    // 6a ??                                                | PUSH ??\n                                    // 68 ?? ?? ?? ??                     | PUSH (address of RSA string)\n                                    // ff d0                                      | CALL EAX\n            condition:\n                        any of them\n}\nrule xor_decoder_functions {\n            strings:\n            \n                        // Functions 402e00 and 402f00 both appear to contain a xor-decoding loop\n                        \n                        // 402e00\n                        $code_xor_loop_1 = { 0f a4 ce ?? 0f ac d5 ?? c1 e1 ?? c1 ea ?? 0b cd 0b f2 99 33 c8 }\n                                    // 0f a4 ce ??                           | SHLD ESI, param_1, ??\n                                    // 0f ac d5 ??                           | SHRD EBP, EDX, ??\n                                    // c1 e1 ??                                           | SHL param_1, ??\n                                    // c1 ea ??                                           | SHR EDX, 0x19\n                                    // 0b cd                                                | OR param_1, EBP\n                                    // 0b f2                                     | OR ESI, EDX\n                                    // 99                                                     | CDQ\n                                    // 33 c8                                                | XOR param_1, EAX\n                        \n                        // 402f00\n                        $code_xor_loop_2 = { 0f a4 ce ?? c1 ea ?? 0b f2 c1 e1 ?? 0b c8 0f be c3 8a 1f 99 33 c8 }\n                                    // 0f a4 ce ??                           | SHLD ESI, param_1, ??\n                                    // c1 ea ??                                           | SHR EDX, ??\n                                    // 0b f2                                     | OR ESI, EDX\n                                    // c1 e1 ??                                           | SHL, param_1, ??\n                                    // 0b c8                                                | OR param_1, EDX\n                                    // 0f be c3                                            | MOVSX EAX, BL\n                                    // 8a 1f                                     | BL, byte ptr [EDI]\n                                    // 99                                                     | CDQ\n                                    // 33 c8                                                | XOR param_1, EAX\n            \n            condition:\n                any of them\n}\nrule win_BlackSuit_manual {\n    meta:\n        author = \"CVH - Raleigh\"\n        date = \"2024-07-12\"\n        version = \"1\"\n        description = \"Detects win.BlackSuit. Rules were manually constructed and results should not be considered conclusive.\"\n        malpedia_reference = \"https://malpedia.caad.fkie.fraunhofer.de/details/win.BlackSuit\"\n    strings:\n                        // Somehow keeps this in plaintext, although in UTF-16\n                        $string_readme = \"readme.BlackSuit.txt\" nocase wide ascii\n                        \n                        // RSA key for encrypting AES encryption key present in plaintext\n                        $string_rsa_key = \"BEGIN RSA PUBLIC KEY\" nocase wide ascii\n                        \n                        // Unusual debug strings\n                        $string_debug_1 = \".rdata$voltmd\"\n                        $string_debug_2 = \".rdata$zzzdbg\"\n                        \n                        // Relevant functions calls\n                        $import_1 = \"MultiByteToWideChar\"\n                        $import_2 = \"EnterCriticalSection\"\n                        $import_3 = \"GetProcessHeap\"\n                        \n                        \n                        \n    condition:\n                (is_executable and $string_readme)\n                        \n                        Or\n            \n                        ($string_readme and\n                        \n                                    (obfuscates_dlls or calls_rsa_function or xor_decoder_functions)\n                        \n                        )\n                                    \n                        or\n                                    \n                        2 of (obfuscates_dlls, calls_rsa_function, xor_decoder_functions)\n                        \n                        or\n                        \n                        1 of (obfuscates_dlls, calls_rsa_function, xor_decoder_functions) and any of them\n            \n}\nMitigations\nNetwork Defenders\nThe FBI and CISA recommend network defenders implement the mitigations below to improve your organization’s cybersecurity posture based on BlackSuit actor’s activity. These mitigations align with the Cross-Sector Cybersecurity Performance Goals (CPGs) developed by CISA and the National Institute of Standards and Technology (NIST). The CPGs provide a minimum set of practices and protections that CISA and NIST recommend all organizations implement. CISA and NIST based the CPGs on existing cybersecurity frameworks and guidance to protect against the most common and impactful threats, tactics, techniques, and procedures. Visit CISA’s \nCross-Sector Cybersecurity Performance Goals\n for more information on the CPGs, including additional recommended baseline protections.\nImplement a recovery plan\nto maintain and retain multiple copies of sensitive or proprietary data and servers in a physically separate, segmented, and secure location (i.e., hard drive, storage device, the cloud).\nRequire all accounts\n with password logins (e.g., service account, admin accounts, and domain admin accounts) to comply with \nNational Institute for Standards and Technology (NIST) standards\n for developing and managing password policies.\nUse longer passwords consisting of at least 8 characters and no more than 64 characters in length;\nStore passwords in hashed format using industry-recognized password managers;\nAdd password user “salts” to shared login credentials;\nAvoid reusing passwords;\nImplement multiple failed login attempt account lockouts;\nDisable password “hints;”\nRefrain from requiring password changes more frequently than once per year.\nNote:\n NIST guidance suggests favoring longer passwords instead of requiring regular and frequent password resets. Frequent password resets are more likely to result in users developing password “patterns” cyber criminals can easily decipher.\nRequire administrator credentials to install software.\nKeep all operating systems, software, and firmware up to date [\nCPG 1.E\n].\n Timely patching is one of the most efficient and cost-effective steps an organization can take to minimize its exposure to cybersecurity threats. Prioritize patching known exploited vulnerabilities in internet-facing systems.\nRequire Phishing-Resistant multifactor authentication to administrator accounts [\nCPG 2.H\n],\n and require standard MFA for all services to the extent possible, particularly for webmail, virtual private networks, and accounts that access critical systems.\nSegment networks [\nCPG 2.F\n]\n to prevent the spread of ransomware. Network segmentation can help prevent the spread of ransomware by controlling traffic flows between—and access to—various subnetworks and by restricting adversary lateral movement.\nIdentify, detect, and investigate abnormal activity and potential traversal of the indicated ransomware with a networking monitoring tool [\nCPG 3.A\n].\n To aid in detecting the ransomware, implement a tool that logs and reports all network traffic, including lateral movement activity on a network. Endpoint detection and response (EDR) tools are particularly useful for detecting lateral connections as they have insight into common and uncommon network connections for each host.\nInstall, regularly update, and enable real time detection for antivirus\n software on all hosts.\nImplement Secure Logging Collection and Storage Practices [\nCPG 2.T\n]. Learn more on logging best practices by referencing \nCISA’s Logging Made Easy\n resources.\nReview domain controllers, servers, workstations, and active directories\n for new and/or unrecognized accounts.\nAudit user accounts \nwith administrative privileges and configure access controls according to the principle of least privilege.\nDisable unused ports.\nImplement and Enforce Email Security Policies [\nCPG 2.M\n].\nDisable Macros by Default [\nCPG 2.N\n].\nConsider adding an email banner to emails\n received from outside your organization.\nDisable hyperlinks in received emails.\nImplement time-based access for accounts set at the admin level and higher.\n For example, the Just-in-Time (JIT) access method provisions privileged access when needed and can support enforcement of the principle of least privilege (as well as the Zero Trust model). This is a process where a network-wide policy is set in place to automatically disable admin accounts at the Active Directory level when the account is not in direct need. Individual users may submit their requests through an automated process that grants them access to a specified system for a set timeframe when they need to support the completion of a certain task.\nDisable command-line and scripting activities and permissions. \nPrivilege escalation and lateral movement often depend on software utilities running from the command line. If threat actors are not able to run these tools, they will have difficulty escalating privileges and/or moving laterally.\nMaintain offline backups of data, and regularly maintain backup and restoration [\nCPG 2.R\n]. \nBy instituting this practice, the organization ensures they will not be severely interrupted, and/or only have irretrievable data.\nEnsure all backup data is encrypted,\n immutable (i.e., cannot be altered or deleted), and covers the entire organization’s data infrastructure.\nSoftware Manufacturers\nThe above mitigations apply to enterprises and critical infrastructure organizations with on-premises or hybrid environments. Recognizing that insecure software is the root cause of the majority of these flaws and that the responsibility should not be on the end user, CISA urges software manufacturers to implement the following to reduce the prevalence of <identified or exploited issues\n (e.g., \nmisconfigurations, weak passwords, and other weaknesses identified and exploited through the assessment team)>:\nEmbed security into product architecture\n throughout the entire software development lifecycle (SDLC).\nMandate MFA, \nideally phishing-resistant\n MFA, for privileged users\n and make MFA a default, rather than opt-in, feature.\nThese mitigations align with tactics provided in the joint guide \nShifting the Balance of Cybersecurity Risk: Principles and Approaches for Secure by Design Software\n. CISA urges software manufacturers to take ownership of improving the security outcomes of their customers by applying these and other secure by design tactics. By using secure by design tactics, software manufacturers can make their product lines secure “out of the box” without requiring customers to spend additional resources making configuration changes, purchasing security software and logs, monitoring, and making routine updates.\nFor more information on secure by design, see CISA’s \nSecure by Design\n webpage.\nValidate Security Controls\nIn addition to applying mitigations, the FBI and CISA recommend exercising, testing, and validating your organization's security program against the threat behaviors mapped to the MITRE ATT&CK for Enterprise framework in this advisory. The FBI and CISA recommend testing your existing security controls inventory to assess how they perform against the ATT&CK techniques described in this advisory.\nTo get started:\nSelect an ATT&CK technique described in this advisory (see\n Table 18 – Table 23\n).\nAlign your security technologies against the technique.\nTest your technologies against the technique.\nAnalyze your detection and prevention technologies’ performance.\nRepeat the process for all security technologies to obtain a set of comprehensive performance data.\nTune your security program, including people, processes, and technologies, based on the data generated by this process.\nThe FBI and CISA recommend continually testing your security program, at scale, in a production environment to ensure optimal performance against the MITRE ATT&CK techniques identified in this advisory.\nResources\nStopransomware.gov\n is a whole-of-government approach that gives one central location for ransomware resources and alerts.\nResource to mitigate a ransomware attack: CISA-Multi-State Information Sharing and Analysis Center (MS-ISAC) Joint Ransomware Guide.\nNote:\n The joint Ransomware Guide provides preparation, prevention, and mitigation best practices as well as a ransomware response checklist.\nNo-cost cyber hygiene services: \nCyber Hygiene Services\n and \nRansomware Readiness Assessment\n.\nReporting\nYour organization has no obligation to respond or provide information back to the FBI in response to this joint CSA. If, after reviewing the information provided, your organization decides to provide information to the FBI, reporting must be consistent with applicable state and federal laws.\nThe FBI is interested in any information that can be shared, to include boundary logs showing communication to and from foreign IP addresses, a sample ransom note, communications with BlackSuit actors, Bitcoin wallet information, decryptor files, and/or a benign sample of an encrypted file.\nAdditional details of interest include: a targeted company point of contact, status, and scope of infection, estimated loss, operational impact, transaction IDs, date of infection, date detected, initial attack vector, and host- and network-based indicators.\nThe FBI and CISA do not encourage paying ransom as payment does not guarantee victim files will be recovered. Furthermore, payment may also embolden adversaries to target additional organizations, encourage other criminal actors to engage in the distribution of ransomware, and/or fund illicit activities. Regardless of whether you or your organization have decided to pay the ransom, the FBI and CISA urge you to promptly report ransomware incidents to the FBI’s Internet Crime Complain Center (IC3), a local FBI Field Office, or CISA via the agency’s Incident Reporting System or its 24/7 Operations Center \n(contact@mail.cisa.dhs.gov\n or by calling 1-844-Say-CISA (1-844-729-2472).\nDisclaimer\nYour organization has no obligation to respond or provide information in response to this product. If, after reviewing the information provided, your organization decides to provide information to the authoring agencies, it must do so consistent with applicable state and federal law.\nThe information in this report is being provided “as is” for informational purposes only. FBI and CISA do not endorse any commercial entity, product, company, or service, including any entities, products, or services linked within this document. Any reference to specific commercial entities, products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply endorsement, recommendation, or favoring by FBI and CISA.\nAcknowledgements\nThe DFIR Report contributed to this advisory.\nVersion History\nJanuary 31, 2023:\n Initial Release (Royal Ransomware)\nNovember 13, 2023:\n First Update (Royal Ransomware)\nAugust 7, 2024:\n Updated title from “Royal Ransomware” to “BlackSuit Ransomware”; updates noted throughout.\nAugust 14, 2024:\n Updated STIX files\nAugust 19, 2024:\n Updated STIX files\nAugust 27, 2024:\n Updated STIX files\nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nTags\nAudience\n:\n Educational Institutions\nCo-Sealers and Partners\n:\n Federal Bureau of Investigation\nMITRE ATT&CK TTP\n:\n Command and Control (TA0011),\n Defense Evasion (TA0005),\n Impact (TA0040),\n Initial Access (TA0001),\n Privilege Escalation (TA0004),\n Resource Development (TA0042)\nSector\n:\nCommunications Sector\n,\nCritical Manufacturing Sector\n,\nHealthcare and Public Health Sector\nTopics\n:\nCyber Threats and Response\n,\nIncident Response\n,\nMalware, Phishing, and Ransomware\nPlease share your thoughts\nWe recently updated our anonymous \nproduct survey\n; we welcome your feedback.\nRelated Advisories\nJul 31, 2025\nCybersecurity Advisory | AA25-212A\nCISA and USCG Identify Areas for Cyber Hygiene Improvement After Conducting Proactive Threat Hunt at US Critical Infrastructure Organization\n \nJul 22, 2025\nCybersecurity Advisory | aa25-203a\n#StopRansomware: Interlock\n \nMay 21, 2025\nCybersecurity Advisory | AA25-141B\nThreat Actors Deploy LummaC2 Malware to Exfiltrate Sensitive Data from Organizations\n \nMar 12, 2025\nCybersecurity Advisory | AA25-071A\n#StopRansomware: Medusa Ransomware",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "T1572",
+      "type": "AttackTechnique",
+      "start": 7104,
+      "end": 7109,
+      "normalized_id": "T1572",
+      "evidence": "T1572\n"
+    },
+    {
+      "id": "E2",
+      "text": "T1566.001",
+      "type": "AttackTechnique",
+      "start": 5999,
+      "end": 6008,
+      "normalized_id": "T1566.001",
+      "evidence": "T1566.001\n"
+    },
+    {
+      "id": "E3",
+      "text": "T1650",
+      "type": "AttackTechnique",
+      "start": 6598,
+      "end": 6603,
+      "normalized_id": "T1650",
+      "evidence": "T1650\n"
+    },
+    {
+      "id": "E4",
+      "text": "T1484.001",
+      "type": "AttackTechnique",
+      "start": 7723,
+      "end": 7732,
+      "normalized_id": "T1484.001",
+      "evidence": "T1484.001\n"
+    },
+    {
+      "id": "E5",
+      "text": "T1486",
+      "type": "AttackTechnique",
+      "start": 9068,
+      "end": 9073,
+      "normalized_id": "T1486",
+      "evidence": "T1486\n"
+    },
+    {
+      "id": "E6",
+      "text": "T1119",
+      "type": "AttackTechnique",
+      "start": 9444,
+      "end": 9449,
+      "normalized_id": "T1119",
+      "evidence": "T1119\n"
+    },
+    {
+      "id": "E7",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 6353,
+      "end": 6358,
+      "normalized_id": "T1190",
+      "evidence": "T1190\n"
+    },
+    {
+      "id": "E8",
+      "text": "T1562.001",
+      "type": "AttackTechnique",
+      "start": 7675,
+      "end": 7684,
+      "normalized_id": "T1562.001",
+      "evidence": "T1562.001\n"
+    },
+    {
+      "id": "E9",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 6198,
+      "end": 6207,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n"
+    },
+    {
+      "id": "E10",
+      "text": "T1105",
+      "type": "AttackTechnique",
+      "start": 6767,
+      "end": 6772,
+      "normalized_id": "T1105",
+      "evidence": "T1105\n"
+    },
+    {
+      "id": "E11",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 7533,
+      "end": 7538,
+      "normalized_id": "T1078",
+      "evidence": "T1078\n"
+    },
+    {
+      "id": "E12",
+      "text": "T1078.002",
+      "type": "AttackTechnique",
+      "start": 9356,
+      "end": 9365,
+      "normalized_id": "T1078.002",
+      "evidence": "T1078.002\n"
+    },
+    {
+      "id": "E13",
+      "text": "T1133",
+      "type": "AttackTechnique",
+      "start": 7902,
+      "end": 7907,
+      "normalized_id": "T1133",
+      "evidence": "T1133]\n"
+    },
+    {
+      "id": "E14",
+      "text": "T1566",
+      "type": "AttackTechnique",
+      "start": 5807,
+      "end": 5812,
+      "normalized_id": "T1566",
+      "evidence": "T1566\n"
+    },
+    {
+      "id": "E15",
+      "text": "T1070.001",
+      "type": "AttackTechnique",
+      "start": 9602,
+      "end": 9611,
+      "normalized_id": "T1070.001",
+      "evidence": "T1070.001\n"
+    },
+    {
+      "id": "E16",
+      "text": "T1566.002",
+      "type": "AttackTechnique",
+      "start": 6030,
+      "end": 6039,
+      "normalized_id": "T1566.002",
+      "evidence": "T1566.002\n"
+    },
+    {
+      "id": "E17",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 7351,
+      "end": 7360,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E18",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 7428,
+      "end": 7437,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E19",
+      "text": "T1650",
+      "type": "AttackTechnique",
+      "start": 30638,
+      "end": 30643,
+      "normalized_id": "T1650",
+      "evidence": "T1650\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E20",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 30851,
+      "end": 30860,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E21",
+      "text": "T1133",
+      "type": "AttackTechnique",
+      "start": 30957,
+      "end": 30962,
+      "normalized_id": "T1133",
+      "evidence": "T1133\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E22",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 31069,
+      "end": 31074,
+      "normalized_id": "T1190",
+      "evidence": "T1190\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E23",
+      "text": "T1566",
+      "type": "AttackTechnique",
+      "start": 31157,
+      "end": 31162,
+      "normalized_id": "T1566",
+      "evidence": "T1566\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E24",
+      "text": "T1566.001",
+      "type": "AttackTechnique",
+      "start": 31284,
+      "end": 31293,
+      "normalized_id": "T1566.001",
+      "evidence": "T1566.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E25",
+      "text": "T1566.002",
+      "type": "AttackTechnique",
+      "start": 31404,
+      "end": 31413,
+      "normalized_id": "T1566.002",
+      "evidence": "T1566.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E26",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 31640,
+      "end": 31645,
+      "normalized_id": "T1078",
+      "evidence": "T1078\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E27",
+      "text": "T1078.002",
+      "type": "AttackTechnique",
+      "start": 31779,
+      "end": 31788,
+      "normalized_id": "T1078.002",
+      "evidence": "T1078.002\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E28",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 31994,
+      "end": 32003,
+      "normalized_id": "T1021.001",
+      "evidence": "T1021.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E29",
+      "text": "T1070.001",
+      "type": "AttackTechnique",
+      "start": 32144,
+      "end": 32153,
+      "normalized_id": "T1070.001",
+      "evidence": "T1070.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E30",
+      "text": "T1119",
+      "type": "AttackTechnique",
+      "start": 32262,
+      "end": 32267,
+      "normalized_id": "T1119",
+      "evidence": "T1119\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E31",
+      "text": "T1484.001",
+      "type": "AttackTechnique",
+      "start": 32393,
+      "end": 32402,
+      "normalized_id": "T1484.001",
+      "evidence": "T1484.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E32",
+      "text": "T1562.001",
+      "type": "AttackTechnique",
+      "start": 32523,
+      "end": 32532,
+      "normalized_id": "T1562.001",
+      "evidence": "T1562.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E33",
+      "text": "T1105",
+      "type": "AttackTechnique",
+      "start": 32700,
+      "end": 32705,
+      "normalized_id": "T1105",
+      "evidence": "T1105\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E34",
+      "text": "T1572",
+      "type": "AttackTechnique",
+      "start": 32793,
+      "end": 32798,
+      "normalized_id": "T1572",
+      "evidence": "T1572\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E35",
+      "text": "T1486",
+      "type": "AttackTechnique",
+      "start": 32994,
+      "end": 32999,
+      "normalized_id": "T1486",
+      "evidence": "T1486\n",
+      "notes": "exhaustive explicit identifier mention"
+    }
+  ],
+  "relations": [],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

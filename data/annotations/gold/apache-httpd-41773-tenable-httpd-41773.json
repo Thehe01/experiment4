@@ -1,0 +1,220 @@
+{
+  "doc_id": "apache-httpd-41773-tenable-httpd-41773",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "See the Updates section at the end of this post for information on developments that occurred after initial publication.\nOn Monday, October 4, 2021, Apache published an advisory on CVE-2021-41773 , an unauthenticated remote file disclosure vulnerability in HTTP Server version 2.4.49 and 2.4.50 (see the Updates section for more on 2.4.50). The vulnerability arises from the mishandling of URL-encoded path traversal characters in the HTTP GET request. Public proof-of-concept exploit code is widely available, and Apache and others have noted that this vulnerability is being exploited in the wild. Note that a non-default configuration is required for exploitability.\nWhile the original advisory indicated that CVE-2021-41773 was merely an information disclosure bug, both Rapid7 and community researchers have verified that the vulnerability can be used for remote code execution when mod_cgi is enabled. While mod_cgi is not enabled in the default Apache Server HTTP configuration, it’s also not an uncommon feature to enable. With mod_cgi enabled, an attacker can execute arbitrary programs via HTTP POST requests. The initial RCE proof of concept resulted in blind command execution, and there have been multiple proofs of concept that coerce the HTTP server into sending the program’s output back to the attacker. Rapid7’s research team has a full root cause analysis of CVE-2021-41773 here along with proofs of concept.\nRapid7 Labs has identified roughly 65,000 potentially vulnerable versions of Apache httpd exposed to the public internet. Our exposure estimate intentionally does not count multiple Apache servers on the same IP as different instances (this would substantially increase the number of exposed instances identified as vulnerable).\nMitigation guidance\nOrganizations that are using Apache HTTP Server 2.4.49 or 2.4.50 should determine whether they are using vulnerable configurations. If a vulnerable server is discovered, the server’s configuration file should be updated to include the filesystem directory directive with require all denied :\nApache HTTP Server users should update to 2.4.51 or later as soon as is practical. Updating to HTTP Server 2.4.51 remediates both CVE-2021-41773 and CVE-2021-42013. For more information, see Apache’s advisory here .\nRapid7 customers\nA remote vulnerability check for CVE-2021-41773 was released to InsightVM and Nexpose customers in the October 6, 2021 content update.\nA remote vulnerability check for CVE-2021-42013 was released to InsightVM and Nexpose customers in the October 7, 2021 content update.\nUpdates\nOctober 7, 2021: Apache has updated their advisory to note that the patch for CVE-2021-41773 was incomplete, rendering HTTP Server 2.4.50 versions vulnerable when specific, non-default conditions are met. According to their advisory, \"an attacker could use a path traversal attack to map URLs to files outside the directories configured by Alias-like directives. If files outside of these directories are not protected by the usual default configuration require all denied , these requests can succeed. If CGI scripts are also enabled for these aliased pathes, this could allow for remote code execution.\"\nCVE-2021-42013 has been assigned to track the incomplete fix for CVE-2021-41773. CVE-2021-42013 has been fixed in HTTP Server version 2.4.51 released October 7, 2021. For more information, see Apache's advisory .\nThis issue only affects Apache 2.4.49 and Apache 2.4.50 and not earlier versions.\nGet the latest stories, expertise, and news about security today.",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 181,
+      "end": 195,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "On Monday, October 4, 2021, Apache published an advisory on CVE-2021-41773 , an unauthenticated remote file disclosure vulnerability in HTTP Server version 2.4.49 and 2.4.50 (see the Updates sec"
+    },
+    {
+      "id": "E2",
+      "text": "CVE-2021-42013",
+      "type": "Vulnerability",
+      "start": 2218,
+      "end": 2232,
+      "normalized_id": "CVE-2021-42013",
+      "evidence": "Updating to HTTP Server 2.4.51 remediates both CVE-2021-41773 and CVE-2021-42013."
+    },
+    {
+      "id": "E5",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 2658,
+      "end": 2672,
+      "normalized_id": "CVE-2021-41773",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "October 7, 2021: Apache has updated their advisory to note that the patch for CVE-2021-41773 was incomplete, rendering HTTP Server 2.4.50 versions vulnerable when specific, non-default conditions are met."
+    },
+    {
+      "id": "E7",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 2199,
+      "end": 2213,
+      "normalized_id": "CVE-2021-41773",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "Updating to HTTP Server 2.4.51 remediates both CVE-2021-41773 and CVE-2021-42013."
+    },
+    {
+      "id": "E8",
+      "text": "Apache HTTP Server",
+      "type": "Configuration",
+      "start": 2069,
+      "end": 2087,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "Apache HTTP Server users should update to 2.4.51 or later as soon as is practical. Updating to HTTP Server 2.4.51 remediates both CVE-2021-41773 and CVE-2021-42013."
+    },
+    {
+      "id": "E9",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 713,
+      "end": 727,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "While the original advisory indicated that CVE-2021-41773 was merely an information disclosure bug, both Rapid7 and community researchers have verified that the vulnerability ca",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E10",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 1378,
+      "end": 1392,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "Rapid7’s research team has a full root cause analysis of CVE-2021-41773 here along with proofs of concept.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E11",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 2335,
+      "end": 2349,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "A remote vulnerability check for CVE-2021-41773 was released to InsightVM and Nexpose customers in the October 6, 2021 content update.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E12",
+      "text": "CVE-2021-42013",
+      "type": "Vulnerability",
+      "start": 2470,
+      "end": 2484,
+      "normalized_id": "CVE-2021-42013",
+      "evidence": "A remote vulnerability check for CVE-2021-42013 was released to InsightVM and Nexpose customers in the October 7, 2021 content update.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E13",
+      "text": "CVE-2021-42013",
+      "type": "Vulnerability",
+      "start": 3186,
+      "end": 3200,
+      "normalized_id": "CVE-2021-42013",
+      "evidence": "CVE-2021-42013 has been assigned to track the incomplete fix for CVE-2021-41773.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E14",
+      "text": "CVE-2021-41773",
+      "type": "Vulnerability",
+      "start": 3251,
+      "end": 3265,
+      "normalized_id": "CVE-2021-41773",
+      "evidence": "CVE-2021-42013 has been assigned to track the incomplete fix for CVE-2021-41773.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E15",
+      "text": "CVE-2021-42013",
+      "type": "Vulnerability",
+      "start": 3267,
+      "end": 3281,
+      "normalized_id": "CVE-2021-42013",
+      "evidence": "CVE-2021-42013 has been fixed in HTTP Server version 2.4.51 released October 7, 2021.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E16",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 257,
+      "end": 268,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "On Monday, October 4, 2021, Apache published an advisory on CVE-2021-41773 , an unauthenticated remote file disclosure vulnerability in HTTP Server version 2.4.49 and 2.4.50 (see the Updates section for more on 2.4.50). The vulnerability arises from the mishandling of URL-encoded path traversal characters in the HTTP GET request.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E17",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 2699,
+      "end": 2710,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "October 7, 2021: Apache has updated their advisory to note that the patch for CVE-2021-41773 was incomplete, rendering HTTP Server 2.4.50 versions vulnerable when specific, non-default conditions are met. According to their advisory, \"an attacker could use a path traversal attack to map URLs to files outside the directories configured by Alias-like directives.",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E18",
+      "text": "HTTP Server",
+      "type": "Configuration",
+      "start": 3300,
+      "end": 3311,
+      "normalized_id": "cpe:2.3:a:apache:http_server:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-42013 has been fixed in HTTP Server version 2.4.51 released October 7, 2021.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E7",
+      "tail": "E8",
+      "evidence": "Apache HTTP Server users should update to 2.4.51 or later as soon as is practical. Updating to HTTP Server 2.4.51 remediates both CVE-2021-41773 and CVE-2021-42013.",
+      "evidence_start": 2069,
+      "evidence_end": 2233,
+      "adjudication_basis": "two-sentence mitigation fact directly scopes both CVEs to Apache HTTP Server"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E2",
+      "tail": "E8",
+      "evidence": "Apache HTTP Server users should update to 2.4.51 or later as soon as is practical. Updating to HTTP Server 2.4.51 remediates both CVE-2021-41773 and CVE-2021-42013.",
+      "evidence_start": 2069,
+      "evidence_end": 2233,
+      "adjudication_basis": "two-sentence mitigation fact directly scopes both CVEs to Apache HTTP Server"
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E16",
+      "evidence": "On Monday, October 4, 2021, Apache published an advisory on CVE-2021-41773 , an unauthenticated remote file disclosure vulnerability in HTTP Server version 2.4.49 and 2.4.50 (see the Updates section for more on 2.4.50). The vulnerability arises from the mishandling of URL-encoded path traversal characters in the HTTP GET request.",
+      "evidence_start": 121,
+      "evidence_end": 452,
+      "adjudication_basis": "introductory sentence directly locates CVE-2021-41773 in HTTP Server versions"
+    },
+    {
+      "id": "R6",
+      "type": "affects",
+      "head": "E5",
+      "tail": "E17",
+      "evidence": "October 7, 2021: Apache has updated their advisory to note that the patch for CVE-2021-41773 was incomplete, rendering HTTP Server 2.4.50 versions vulnerable when specific, non-default conditions are met. According to their advisory, \"an attacker could use a path traversal attack to map URLs to files outside the directories configured by Alias-like directives.",
+      "evidence_start": 2580,
+      "evidence_end": 2942,
+      "adjudication_basis": "sentence explicitly says HTTP Server 2.4.50 remains vulnerable to CVE-2021-41773"
+    },
+    {
+      "id": "R7",
+      "type": "affects",
+      "head": "E15",
+      "tail": "E18",
+      "evidence": "CVE-2021-42013 has been fixed in HTTP Server version 2.4.51 released October 7, 2021.",
+      "evidence_start": 3267,
+      "evidence_end": 3352,
+      "adjudication_basis": "fix statement directly links this CVE mention to HTTP Server"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

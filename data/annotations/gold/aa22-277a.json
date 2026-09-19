@@ -1,0 +1,427 @@
+{
+  "doc_id": "aa22-277a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "Impacket and Exfiltration Tool Used to Steal Sensitive Information from Defense Industrial Base Organization | CISA\nSkip to main content\n \nOfficial websites use .gov\n A \n.gov\n website belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\n A \nlock\n (\n) or \nhttps://\n means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nStaying Secure at Events\nno-cost Cyber Services\nSecure by design \nSecure Your Business\nReport A Cyber Issue\n \nShare:\nArchived Content\n In an effort to keep CISA.gov current, the archive contains outdated information that may not reflect current policy or programs.\nCybersecurity Advisory\nImpacket and Exfiltration Tool Used to Steal Sensitive Information from Defense Industrial Base Organization\nLast Revised\nOctober 05, 2022\nAlert Code\nAA22-277A\nSummary\nActions to Help Protect Against APT Cyber Activity:\n• Enforce multifactor authentication (MFA) on all user accounts.\n• Implement network segmentation to separate network segments based on role and functionality.\n• Update software, including operating systems, applications, and firmware, on network assets.\n• Audit account usage.\nFrom November 2021 through January 2022, the Cybersecurity and Infrastructure Security Agency (CISA) responded to advanced persistent threat (APT) activity on a Defense Industrial Base (DIB) Sector organization’s enterprise network. During incident response activities, CISA uncovered that likely multiple APT groups compromised the organization’s network, and some APT actors had long-term access to the environment. APT actors used an open-source toolkit called Impacket to gain their foothold within the environment and further compromise the network, and also used a custom data exfiltration tool, CovalentStealer, to steal the victim’s sensitive data.\nThis joint Cybersecurity Advisory (CSA) provides APT actors tactics, techniques, and procedures (TTPs) and indicators of compromise (IOCs) identified during the incident response activities by CISA and a third-party incident response organization. The CSA includes detection and mitigation actions to help organizations detect and prevent related APT activity. CISA, the Federal Bureau of Investigation (FBI), and the National Security Agency (NSA) recommend DIB sector and other critical infrastructure organizations implement the mitigations in this CSA to ensure they are managing and reducing the impact of cyber threats to their networks.\nDownload the PDF version of this report: \npdf, 692 KB\nFor a downloadable copy of IOCs, see the following files:\nMalware Analysis Report (MAR)-10365227-1.stix, 966 kb\nMAR-10365227-2.stix, 249B\nMAR-10365227-3.stix, 3.2 MB\nTechnical Details\nThreat Actor Activity\nNote\n: \nThis advisory uses the \nMITRE ATT&CK® for Enterprise\n framework, version 11. See the MITRE ATT&CK Tactics and Techniques section for a table of the APT cyber activity mapped to MITRE ATT&CK for Enterprise framework.\nFrom November 2021 through January 2022, CISA conducted an incident response engagement on a DIB Sector organization’s enterprise network. The victim organization also engaged a third-party incident response organization for assistance. During incident response activities, CISA and the trusted –third-party identified APT activity on the victim’s network.\nSome APT actors gained initial access to the organization’s Microsoft Exchange Server as early as mid-January 2021. The initial access vector is unknown. Based on log analysis, the actors gathered information about the exchange environment and performed mailbox searches within a four-hour period after gaining access. In the same period, these actors used a compromised administrator account (“Admin 1”) to access the EWS Application Programming Interface (API). In early February 2021, the actors returned to the network and used Admin 1 to access EWS API again. In both instances, the actors used a virtual private network (VPN).\nFour days later, the APT actors used Windows Command Shell over a three-day period to interact with the victim’s network. The actors used Command Shell to learn about the organization’s environment and to collect sensitive data, including sensitive contract-related information from shared drives, for eventual exfiltration. The actors manually collected files using the command-line tool, WinRAR. These files were split into approximately 3MB chunks located on the Microsoft Exchange server within the CU2\\he\\debug directory. See Appendix: Windows Command Shell Activity for additional information, including specific commands used.\nDuring the same period, APT actors implanted \nImpacket\n, a Python toolkit for programmatically constructing and manipulating network protocols, on another system. The actors used Impacket to attempt to move laterally to another system.\nIn early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server. Later in March, APT actors installed HyperBro on the Exchange Server and two other systems. For more information on the HyperBro and webshell samples, see CISA \nMAR-10365227-2\n and \n-3\n.\nIn April 2021, APT actors used Impacket for network exploitation activities. See the Use of Impacket section for additional information. From late July through mid-October 2021, APT actors employed a custom exfiltration tool, CovalentStealer, to exfiltrate the remaining sensitive files. See the Use of Custom Exfiltration Tool: CovalentStealer section for additional information.\nAPT actors maintained access through mid-January 2022, likely by relying on legitimate credentials.\nUse of Impacket\nCISA discovered activity indicating the use of two Impacket tools: wmiexec.py and smbexec.py. These tools use Windows Management Instrumentation (WMI) and Server Message Block (SMB) protocol, respectively, for creating a semi-interactive shell with the target device. Through the Command Shell, an Impacket user with credentials can run commands on the remote device using the Windows management protocols required to support an enterprise network.\nThe APT cyber actors used existing, compromised credentials with Impacket to access a higher privileged service account used by the organization's multifunctional devices. The threat actors first used the service account to remotely access the organization’s Microsoft Exchange server via Outlook Web Access (OWA) from multiple external IP addresses; shortly afterwards, the actors assigned the Application Impersonation role to the service account by running the following PowerShell command for managing Exchange:\npowershell add-pssnapin *exchange*;New-ManagementRoleAssignment - name:\"Journaling-Logs\" -Role:ApplicationImpersonation -User:<account>\nThis command gave the service account the ability to access other users’ mailboxes.\nThe APT cyber actors used virtual private network (VPN) and virtual private server (VPS) providers, M247 and SurfShark, as part of their techniques to remotely access the Microsoft Exchange server. Use of these hosting providers, which serves to conceal interaction with victim networks, are common for these threat actors. According to CISA’s analysis of the victim’s Microsoft Exchange server Internet Information Services (IIS) logs, the actors used the account of a former employee to access the EWS. EWS enables access to mailbox items such as email messages, meetings, and contacts. The source IP address for these connections is mostly from the VPS hosting provider, M247.\nUse of Custom Exfiltration Tool: CovalentStealer\nThe threat actors employed a custom exfiltration tool, CovalentStealer, to exfiltrate sensitive files.\nCovalentStealer is designed to identify file shares on a system, categorize the files, and upload the files to a remote server. CovalentStealer includes two configurations that specifically target the victim's documents using predetermined files paths and user credentials. CovalentStealer stores the collected files on a Microsoft OneDrive cloud folder, includes a configuration file to specify the types of files to collect at specified times and uses a 256-bit AES key for encryption. See CISA \nMAR-10365227-1\n for additional technical details, including IOCs and detection signatures.\nMITRE ATT&CK Tactics and Techniques\nMITRE ATT&CK is a globally accessible knowledge base of adversary tactics and techniques based on real-world observations. CISA uses the ATT&CK Framework as a foundation for the development of specific threat models and methodologies. Table 1 lists the ATT&CK techniques employed by the APT actors.\nTable 1: Identified APT Enterprise ATT&CK Tactics and Techniques\nInitial Access\nTechnique Title\nID\nUse\nValid Accounts\nT1078\nActors obtained and abused credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. In this case, they exploited an organization’s multifunctional device domain account used to access the organization’s Microsoft Exchange server via OWA.\nExecution\nTechnique Title\nID\nUse\nWindows Management Instrumentation\nT1047\nActors used Impacket tools wmiexec.py and smbexec.py to leverage Windows Management Instrumentation and execute malicious commands.\nCommand and Scripting Interpreter\nT1059\nActors abused command and script interpreters to execute commands.\nCommand and Scripting Interpreter: PowerShell\nT1059.001\nActors abused \nPowerShell \ncommands and scripts to map shared drives by specifying a path to one location and retrieving the items from another. See Appendix: Windows Command Shell Activity for additional information.\nCommand and Scripting Interpreter: Windows Command Shell\nT1059.003\nActors abused the \nWindows Command Shell\n to learn about the organization’s environment and to collect sensitive data. See Appendix: Windows Command Shell Activity for additional information, including specific commands used.\nThe actors used Impacket tools, which enable a user with credentials to run commands on the remote device through the Command Shell.\nCommand and Scripting Interpreter: Python\nT1059.006\nThe actors used two Impacket tools: wmiexec.py and smbexec.py.\nShared Modules\nT1129\nActors executed malicious payloads via loading shared modules. The Windows module loader can be instructed to load DLLs from arbitrary local paths and arbitrary Universal Naming Convention (UNC) network paths.\nSystem Services\nT1569\nActors abused system services to execute commands or programs on the victim’s network.\nPersistence\nTechnique Title\nID\nUse\nValid Accounts\nT1078\nActors obtained and abused credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.\nCreate or Modify System Process\nT1543\nActors were observed creating or modifying system processes.\nPrivilege Escalation\nTechnique Title\nID\nUse\nValid Accounts\nT1078\nActors obtained and abused credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. In this case, they exploited an organization’s multifunctional device domain account used to access the organization’s Microsoft Exchange server via OWA.\nDefense Evasion\nTechnique Title\nID\nUse\nMasquerading: Match Legitimate Name or Location\nT1036.005\nActors masqueraded the archive utility WinRAR.exe by renaming it VMware.exe to evade defenses and observation.\nIndicator Removal on Host\nT1070\nActors deleted or modified artifacts generated on a host system to remove evidence of their presence or hinder defenses.\nIndicator Removal on Host: File Deletion\nT1070.004\nActors used the del.exe command with the /f parameter to force the deletion of read-only files with the *.rar and tempg* wildcards.\nValid Accounts\nT1078\nActors obtained and abused credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. In this case, they exploited an organization’s multifunctional device domain account used to access the organization’s Microsoft Exchange server via OWA.\nVirtualization/Sandbox Evasion: System Checks\nT1497.001\nActors used \nWindows command shell \ncommands to detect and avoid virtualization and analysis environments. See Appendix: Windows Command Shell Activity for additional information.\nImpair Defenses: Disable or Modify Tools\nT1562.001\nActors used the taskkill command to probably disable security features. CISA was unable to determine which application was associated with the Process ID.\nHijack Execution Flow\nT1574\nActors were observed using hijack execution flow.\nDiscovery\nTechnique Title\nID\nUse\nSystem Network Configuration Discovery\nT1016\nActors used the systeminfo command to look for details about the network configurations and settings and determine if the system was a VMware virtual machine.\nThe threat actor used route print to display the entries in the local IP routing table.\nSystem Network Configuration Discovery: Internet Connection Discovery\nT1016.001\nActors checked for internet connectivity on compromised systems. This may be performed during automated discovery and can be accomplished in numerous ways.\nSystem Owner/User Discovery\nT1033\nActors attempted to identify the primary user, currently logged in user, set of users that commonly use a system, or whether a user is actively using the system.\nSystem Network Connections Discovery\nT1049\nActors used the netstat command to display TCP connections, prevent hostname determination of foreign IP addresses, and specify the protocol for TCP.\nProcess Discovery\nT1057\nActors used the tasklist command to get information about running processes on a system and determine if the system was a VMware virtual machine.\nThe actors used tasklist.exe and find.exe to display a list of applications and services with their PIDs for all tasks running on the computer matching the string “powers.”\nSystem Information Discovery\nT1082\nActors used the ipconfig command to get detailed information about the operating system and hardware and determine if the system was a VMware virtual machine.\nFile and Directory Discovery\nT1083\nActors enumerated files and directories or may search in specific locations of a host or network share for certain information within a file system.\nVirtualization/Sandbox Evasion: System Checks\nT1497.001\nActors used Windows command shell\ncommands to detect and avoid virtualization and analysis environments.\nLateral Movement\nTechnique Title\nID\nUse\nRemote Services: SMB/Windows Admin Shares\nT1021.002\nActors used Valid Accounts to interact with a remote network share using Server Message Block (SMB) and then perform actions as the logged-on user.\nCollection\nTechnique Title\nID\nUse\nArchive Collected Data: Archive via Utility\nT1560.001\nActor used PowerShell commands and WinRAR to compress and/or encrypt collected data prior to exfiltration.\nData from Network Shared Drive\nT1039\nActors likely used net share command to display information about shared resources on the local computer and decide which directories to exploit, the powershell dir\ncommand to map shared drives to a specified path and retrieve items from another, and the ntfsinfo command to search network shares on computers they have compromised to find files of interest.\nThe actors used dir.exe to display a list of a directory's files and subdirectories matching a certain text string.\nData Staged: Remote Data Staging\nT1074.002\nThe actors split collected files into approximately\n3 MB chunks located on the Exchange server within the CU2\\he\\debug directory.\nCommand and Control\nTechnique Title\nID\nUse\nNon-Application Layer Protocol\nT1095\nActors used a non-application layer protocol for communication between host and Command and Control (C2) server or among infected hosts within a network.\nIngress Tool Transfer\nT1105\nActors used the certutil command with three switches to test if they could download files from the internet.\nThe actors employed CovalentStealer to exfiltrate the files.\nProxy\nT1090\nActors are known to use VPN and VPS providers, namely M247 and SurfShark, as part of their techniques to access a network remotely.\nExfiltration\nTechnique Title\nID\nUse\nSchedule Transfer\nT1029\nActors scheduled data exfiltration to be performed only at certain times of day or at certain intervals and blend traffic patterns with normal activity.\nExfiltration Over Web Service: Exfiltration to Cloud Storage\nT1567.002\nThe actor's CovalentStealer tool stores collected files on a Microsoft OneDrive cloud folder.\nDETECTION\nGiven the actors’ demonstrated capability to maintain persistent, long-term access in compromised enterprise environments, CISA, FBI, and NSA encourage organizations to:\nMonitor logs for connections from unusual VPSs and VPNs. \nExamine connection logs for access from unexpected ranges, particularly from machines hosted by SurfShark and M247.\nMonitor for suspicious account use\n (e.g., inappropriate or unauthorized use of administrator accounts, service accounts, or third-party accounts). To detect use of compromised credentials in combination with a VPS, follow the steps below:\nReview logs for \"impossible logins,\"\n such as logins with changing username, user agent strings, and IP address combinations or logins where IP addresses do not align to the expected user’s geographic location.\nSearch for \"impossible travel,\"\n which occurs when a user logs in from multiple IP addresses that are a significant geographic distance apart (i.e., a person could not realistically travel between the geographic locations of the two IP addresses in the time between logins). \nNote:\n This detection opportunity can result in false positives if legitimate users apply VPN solutions before connecting to networks.\nSearch for one IP used across multiple accounts\n, excluding expected logins.\nTake note of any M247-associated IP addresses used along with VPN providers (e.g., SurfShark). Look for successful remote logins (e.g., VPN, OWA) for IPs coming from M247- or using SurfShark-registered IP addresses.\nIdentify suspicious privileged account use\n after resetting passwords or applying user account mitigations.\nSearch for unusual activity in typically dormant accounts.\nSearch for unusual user agent strings,\n such as strings not typically associated with normal user activity, which may indicate bot activity.\nReview the YARA rules provided in MAR-10365227-1\n to assist in determining whether malicious activity has been observed.\nMonitor for the installation of unauthorized software,\n including Remote Server Administration Tools (e.g., psexec, RdClient, VNC, and ScreenConnect).\nMonitor for anomalous and known malicious command-line use. \nSee Appendix: Windows Command Shell Activity for commands used by the actors to interact with the victim’s environment.\nMonitor for unauthorized changes to user accounts \n(e.g., creation, permission changes, and enabling a previously disabled account).\nCONTAINMENT AND REMEDIATION\nOrganizations affected by active or recently active threat actors in their environment can take the following initial steps to aid in eviction efforts and prevent re-entry:\nReport the incident. \nReport the incident to U.S. Government authorities and follow your organization’s incident response plan.\nReport incidents to CISA via CISA’s 24/7 Operations Center (\nSayCISA@cisa.dhs.gov\n or 1-844-Say-CISA).\nReport incidents to your local FBI field office at \nfbi.gov/contact-us/field-offices\n or to FBI’s 24/7 Cyber Watch (CyWatch) via (855) 292-3937 or \nCyWatch@fbi.gov\n.\nFor DIB incident reporting, contact the Defense Cyber Crime Center (DC3) via DIBNET at \ndibnet.dod.mil/portal/intranet\n or (410) 981 0104.\nReset all login accounts. \nReset all accounts used for authentication since it is possible that the threat actors have additional stolen credentials. Password resets should also include accounts outside of Microsoft Active Directory, such as network infrastructure devices and other non-domain joined devices (e.g., IoT devices).\nMonitor SIEM logs and build detections. \nCreate signatures based on the threat actor TTPs and use these signatures to monitor security logs for any signs of threat actor re-entry.\nEnforce MFA on all user accounts.\n Enforce phishing-resistant MFA on all accounts without exception to the greatest extent possible.\nFollow Microsoft’s security guidance for Active Directory\n—\nBest Practices for Securing Active Directory\n.\nAudit accounts and permissions.\n Audit all accounts to ensure all unused accounts are disabled or removed and active accounts do not have excessive privileges. Monitor SIEM logs for any changes to accounts, such as permission changes or enabling a previously disabled account, as this might indicate a threat actor using these accounts.\nHarden and monitor PowerShell\n by reviewing guidance in the joint Cybersecurity Information Sheet—\nKeeping PowerShell: Security Measures to Use and Embrace\n.\nMitigations\nMitigation recommendations are usually longer-term efforts that take place before a compromise as part of risk management efforts, or after the threat actors have been evicted from the environment and the immediate response actions are complete. While some may be tailored to the TTPs used by the threat actor, recovery recommendations are largely general best practices and industry standards aimed at bolstering overall cybersecurity posture.\nSegment Networks Based on Function\nImplement network segmentation to separate network segments based on role and functionality\n. Proper network segmentation significantly reduces the ability for ransomware and other threat actor lateral movement by controlling traffic flows between—and access to—various subnetworks. (See CISA’s Infographic on Layering Network Security Through Segmentation and NSA’s \nSegment Networks and Deploy Application-Aware Defenses\n.)\nIsolate similar systems and implement micro-segmentation with granular access and policy restrictions\n to modernize cybersecurity and adopt Zero Trust (ZT) principles for both network perimeter and internal devices. Logical and physical segmentation are critical to limiting and preventing lateral movement, privilege escalation, and exfiltration.\nManage Vulnerabilities and Configurations\nUpdate software\n, \nincluding operating systems\n, \napplications\n, \nand firmware\n, \non network assets\n. Prioritize patching \nknown exploited vulnerabilities\n and critical and high vulnerabilities that allow for remote code execution or denial-of-service on internet-facing equipment.\nImplement a configuration change control process\n that securely creates device configuration backups to detect unauthorized modifications. When a configuration change is needed, document the change, and include the authorization, purpose, and mission justification. Periodically verify that modifications have not been applied by comparing current device configurations with the most recent backups. If suspicious changes are observed, verify the change was authorized.\nSearch for Anomalous Behavior\nUse cybersecurity visibility and analytics tools\n to improve detection of anomalous behavior and enable dynamic changes to policy and other response actions. Visibility tools include network monitoring tools and host-based logs and monitoring tools, such as an endpoint detection and response (EDR) tool. EDR tools are particularly useful for detecting lateral connections as they have insight into common and uncommon network connections for each host.\nMonitor the use of scripting languages\n (e.g., Python, Powershell) by authorized and unauthorized users. Anomalous use by either group may be indicative of malicious activity, intentional or otherwise.\nRestrict and Secure Use of Remote Admin Tools\nLimit the number of remote access tools as well as who and what can be accessed using them\n. Reducing the number of remote admin tools and their allowed access will increase visibility of unauthorized use of these tools.\nUse encrypted services to protect network communications and disable all clear text administration services\n(e.g., Telnet, HTTP, FTP, SNMP 1/2c). This ensures that sensitive information cannot be easily obtained by a threat actor capturing network traffic.\nImplement a Mandatory Access Control Model\nImplement stringent access controls to sensitive data and resources\n. Access should be restricted to those users who require access and to the minimal level of access needed.\nAudit Account Usage\nMonitor VPN logins to look for suspicious access\n (e.g., logins from unusual geo locations, remote logins from accounts not normally used for remote access, concurrent logins for the same account from different locations, unusual times of the day).\nClosely monitor the use of administrative accounts\n. Admin accounts should be used sparingly and only when necessary, such as installing new software or patches. Any use of admin accounts should be reviewed to determine if the activity is legitimate.\nEnsure standard user accounts do not have elevated privileges\n Any attempt to increase permissions on standard user accounts should be investigated as a potential compromise.\nVALIDATE SECURITY CONTROLS\nIn addition to applying mitigations, CISA, FBI, and NSA recommend exercising, testing, and validating your organization's security program against threat behaviors mapped to the MITRE ATT&CK for Enterprise framework in this advisory. CISA, FBI, and NSA recommend testing your existing security controls inventory to assess how they perform against the ATT&CK techniques described in this advisory.\nTo get started:\nSelect an ATT&CK technique described in this advisory (see Table 1).\nAlign your security technologies against the technique.\nTest your technologies against the technique.\nAnalyze the performance of your detection and prevention technologies.\nRepeat the process for all security technologies to obtain a set of comprehensive performance data.\nTune your security program, including people, processes, and technologies, based on the data generated by this process.\nCISA, FBI, and NSA recommend continually testing your security program, at scale, in a production environment to ensure optimal performance against the MITRE ATT&CK techniques identified in this advisory.\nRESOURCES\nCISA offers several no-cost scanning and testing services to help organizations reduce their exposure to threats by taking a proactive approach to mitigating attack vectors. See \ncisa.gov/cyber-hygiene-services\n.\nU.S. DIB sector organizations may consider signing up for the NSA Cybersecurity Collaboration Center’s DIB Cybersecurity Service Offerings, including Protective Domain Name System (PDNS) services, vulnerability scanning, and threat intelligence collaboration for eligible organizations. For more information on how to enroll in these services, email \ndib_defense@cyber.nsa.gov\n.\nACKNOWLEDGEMENTS\nCISA, FBI, and NSA acknowledge Mandiant for its contributions to this CSA.\nAPPENDIX: WINDOWS COMMAND SHELL ACTIVITY\nOver a three-day period in February 2021, APT cyber actors used Windows Command Shell to interact with the victim’s environment. When interacting with the victim’s system and executing commands, the threat actors used /q and /c parameters to turn the echo off, carry out the command specified by a string, and stop its execution once completed.\nOn the first day, the threat actors consecutively executed many commands within the Windows Command Shell to learn about the organization’s environment and to collect sensitive data for eventual exfiltration (see Table 2).\nTable 2: Windows Command Shell Activity (Day 1)\nCommand\nDescription / Use\nnet share\nUsed to create, configure, and delete network shares from the command-line.[\n1\n] The threat actor likely used this command to display information about shared resources on the local computer and decide which directories to exploit.\npowershell dir\nAn alias (shorthand) for the PowerShell Get-ChildItem cmdlet. This command maps shared drives by specifying a path to one location and retrieving the items from another.[\n2\n] The threat actor added additional switches (aka options, parameters, or flags) to form a “one liner,” an expression to describe commonly used commands used in exploitation: powershell dir -recurse -path e:\\<redacted>|select fullname,length|export-csv c:\\windows\\temp\\temp.txt. This particular command lists subdirectories of the target environment when.\nsysteminfo\nDisplays detailed configuration information [\n3\n], tasklist – lists currently running processes [\n4\n], and ipconfig – displays all current Transmission Control Protocol (TCP)/IP network configuration values and refreshes Dynamic Host Configuration Protocol (DHCP) and Domain Name System (DNS) settings, respectively [\n5\n]. The threat actor used these commands with specific switches to determine if the system was a VMware virtual machine: systeminfo > vmware & date /T, tasklist /v > vmware & date /T, and ipconfig /all >> vmware & date /.\nroute print\nUsed to display and modify the entries in the local IP routing table. [\n6\n] The threat actor used this command to display the entries in the local IP routing table.\nnetstat\nUsed to display active TCP connections, ports on which the computer is listening, Ethernet statistics, the IP routing table, IPv4 statistics, and IPv6 statistics.[\n7\n] The threat actor used this command with three switches to display TCP connections, prevent hostname determination of foreign IP addresses, and specify the protocol for TCP: netstat -anp tcp.\ncertutil\nUsed to dump and display certification authority (CA) configuration information, configure Certificate Services, backup and restore CA components, and verify certificates, key pairs, and certificate chains.[\n8\n] The threat actor used this command with three switches to test if they could download files from the internet: certutil -urlcache -split -f https://microsoft.com temp.html.\nping\nSends Internet Control Message Protocol (ICMP) echoes to verify connectivity to another TCP/IP computer.[\n9\n] The threat actor used ping -n 2 apple.com to either test their internet connection or to detect and avoid virtualization and analysis environments or network restrictions.\ntaskkill\nUsed to end tasks or processes.[\n10\n] The threat actor used taskkill /F /PID 8952 to probably disable security features. CISA was unable to determine what this process was as the process identifier (PID) numbers are dynamic.\nPowerShell Compress-Archive cmdlet\nUsed to create a compressed archive or to zip files from specified files and directories.[\n11\n] The threat actor used parameters indicating shared drives as file and folder sources and the destination archive as zipped files. Specifically, they collected sensitive contract-related information from the shared drives.\n \nOn the second day, the APT cyber actors executed the commands in Table 3 to perform discovery as well as collect and archive data.\nTable 3: Windows Command Shell Activity (Day 2)\nCommand\nDescription / Use\nntfsinfo.exe\nUsed to obtain volume information from the New Technology File System (NTFS) and to print it along with a directory dump of NTFS meta-data files.[\n12\n]\nWinRAR.exe\nUsed to compress files and subsequently masqueraded WinRAR.exe by renaming it VMware.exe.[\n13\n]\n \nOn the third day, the APT cyber actors returned to the organization’s network and executed the commands in Table 4.\nTable 4: Windows Command Shell Activity (Day 3)\nCommand\nDescription / Use\npowershell -ep bypass import-module .\\vmware.ps1;export-mft -volume e\nThreat actors ran a PowerShell command with parameters to change the execution mode and bypass the Execution Policy to run the script from PowerShell and add a module to the current section: powershell -ep bypass import-module .\\vmware.ps1;export-mft -volume e. This module appears to acquire and export the Master File Table (MFT) for volume E for further analysis by the cyber actor.[\n14\n]\nset.exe\nUsed to display the current environment variable settings.[\n15\n] (An environment variable is a dynamic value pointing to system or user environments (folders) of the system. System environment variables are defined by the system and used globally by all users, while user environment variables are only used by the user who declared that variable and they override the system environment variables (even if the variables are named the same).\ndir.exe\nUsed to display a list of a directory's files and subdirectories matching the eagx* text string, likely to confirm the existence of such file.\ntasklist.exe and find.exe\nUsed to display a list of applications and services with their PIDs for all tasks running on the computer matching the string “powers”.[\n16\n][\n17\n][\n18\n]\nping.exe\nUsed to send two ICMP echos to amazon.com. This could have been to detect or avoid virtualization and analysis environments, circumvent network restrictions, or test their internet connection.[\n19\n]\ndel.exe with the /f parameter\nUsed to force the deletion of read-only files with the *.rar and tempg* wildcards.[\n20\n]\nReferences\n[1] Microsoft Net Share\n[2] Microsoft Get-ChildItem\n[3] Microsoft systeminfo\n[4] Microsoft tasklist\n[5] Microsoft ipconfig\n[6] Microsoft Route\n[7] Microsoft netstat\n[8] Microsoft certutil\n[9] Microsoft ping\n[10] Microsoft taskkill\n[11] Microsoft Compress-Archive\n[12] NTFSInfo v1.2\n[13] rarlab\n[14] Microsoft Import-Module\n[15] Microsoft set (environment variable)\n[16] Microsoft tasklist\n[17] Mitre ATT&CK - Sofware: TaskList\n[18] Microsoft find\n[19] Microsoft ping\n[20] Microsoft del\nRevisions\nOctober 4, 2022: Initial version\nThis product is provided subject to this \nNotification\n and this \nPrivacy & Use\n policy.\nPlease share your thoughts\nWe recently updated our anonymous \nproduct survey\n; we welcome your feedback.",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2021-26855",
+      "type": "Vulnerability",
+      "start": 4899,
+      "end": 4913,
+      "normalized_id": "CVE-2021-26855",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server."
+    },
+    {
+      "id": "E2",
+      "text": "CVE-2021-27065",
+      "type": "Vulnerability",
+      "start": 4951,
+      "end": 4965,
+      "normalized_id": "CVE-2021-27065",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server."
+    },
+    {
+      "id": "E3",
+      "text": "CVE-2021-26857",
+      "type": "Vulnerability",
+      "start": 4915,
+      "end": 4929,
+      "normalized_id": "CVE-2021-26857",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server."
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2021-26858",
+      "type": "Vulnerability",
+      "start": 4931,
+      "end": 4945,
+      "normalized_id": "CVE-2021-26858",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server."
+    },
+    {
+      "id": "E6",
+      "text": "T1059.006",
+      "type": "AttackTechnique",
+      "start": 10139,
+      "end": 10148,
+      "normalized_id": "T1059.006",
+      "evidence": "T1059.006\n"
+    },
+    {
+      "id": "E7",
+      "text": "T1070",
+      "type": "AttackTechnique",
+      "start": 11466,
+      "end": 11471,
+      "normalized_id": "T1070",
+      "evidence": "T1070\n"
+    },
+    {
+      "id": "E8",
+      "text": "T1560.001",
+      "type": "AttackTechnique",
+      "start": 14774,
+      "end": 14783,
+      "normalized_id": "T1560.001",
+      "evidence": "T1560.001\n"
+    },
+    {
+      "id": "E9",
+      "text": "T1039",
+      "type": "AttackTechnique",
+      "start": 14922,
+      "end": 14927,
+      "normalized_id": "T1039",
+      "evidence": "T1039\n"
+    },
+    {
+      "id": "E10",
+      "text": "T1567.002",
+      "type": "AttackTechnique",
+      "start": 16426,
+      "end": 16435,
+      "normalized_id": "T1567.002",
+      "evidence": "T1567.002\n"
+    },
+    {
+      "id": "E11",
+      "text": "T1059.001",
+      "type": "AttackTechnique",
+      "start": 9443,
+      "end": 9452,
+      "normalized_id": "T1059.001",
+      "evidence": "T1059.001\n"
+    },
+    {
+      "id": "E12",
+      "text": "T1129",
+      "type": "AttackTechnique",
+      "start": 10227,
+      "end": 10232,
+      "normalized_id": "T1129",
+      "evidence": "T1129\n"
+    },
+    {
+      "id": "E13",
+      "text": "T1059",
+      "type": "AttackTechnique",
+      "start": 9324,
+      "end": 9329,
+      "normalized_id": "T1059",
+      "evidence": "T1059\n"
+    },
+    {
+      "id": "E14",
+      "text": "T1047",
+      "type": "AttackTechnique",
+      "start": 9152,
+      "end": 9157,
+      "normalized_id": "T1047",
+      "evidence": "T1047\n"
+    },
+    {
+      "id": "E15",
+      "text": "T1497.001",
+      "type": "AttackTechnique",
+      "start": 12150,
+      "end": 12159,
+      "normalized_id": "T1497.001",
+      "evidence": "T1497.001\n"
+    },
+    {
+      "id": "E16",
+      "text": "T1057",
+      "type": "AttackTechnique",
+      "start": 13592,
+      "end": 13597,
+      "normalized_id": "T1057",
+      "evidence": "T1057\n"
+    },
+    {
+      "id": "E17",
+      "text": "T1074.002",
+      "type": "AttackTechnique",
+      "start": 15436,
+      "end": 15445,
+      "normalized_id": "T1074.002",
+      "evidence": "T1074.002\n"
+    },
+    {
+      "id": "E18",
+      "text": "T1021.002",
+      "type": "AttackTechnique",
+      "start": 14538,
+      "end": 14547,
+      "normalized_id": "T1021.002",
+      "evidence": "T1021.002\n"
+    },
+    {
+      "id": "E19",
+      "text": "T1049",
+      "type": "AttackTechnique",
+      "start": 13418,
+      "end": 13423,
+      "normalized_id": "T1049",
+      "evidence": "T1049\n"
+    },
+    {
+      "id": "E20",
+      "text": "T1016",
+      "type": "AttackTechnique",
+      "start": 12696,
+      "end": 12701,
+      "normalized_id": "T1016",
+      "evidence": "T1016\n"
+    },
+    {
+      "id": "E21",
+      "text": "T1562.001",
+      "type": "AttackTechnique",
+      "start": 12381,
+      "end": 12390,
+      "normalized_id": "T1562.001",
+      "evidence": "T1562.001\n"
+    },
+    {
+      "id": "E22",
+      "text": "T1569",
+      "type": "AttackTechnique",
+      "start": 10459,
+      "end": 10464,
+      "normalized_id": "T1569",
+      "evidence": "T1569\n"
+    },
+    {
+      "id": "E23",
+      "text": "T1070.004",
+      "type": "AttackTechnique",
+      "start": 11634,
+      "end": 11643,
+      "normalized_id": "T1070.004",
+      "evidence": "T1070.004\n"
+    },
+    {
+      "id": "E24",
+      "text": "T1033",
+      "type": "AttackTechnique",
+      "start": 13213,
+      "end": 13218,
+      "normalized_id": "T1033",
+      "evidence": "T1033\n"
+    },
+    {
+      "id": "E25",
+      "text": "T1059.003",
+      "type": "AttackTechnique",
+      "start": 9728,
+      "end": 9737,
+      "normalized_id": "T1059.003",
+      "evidence": "T1059.003\n"
+    },
+    {
+      "id": "E26",
+      "text": "T1095",
+      "type": "AttackTechnique",
+      "start": 15650,
+      "end": 15655,
+      "normalized_id": "T1095",
+      "evidence": "T1095\n"
+    },
+    {
+      "id": "E27",
+      "text": "T1029",
+      "type": "AttackTechnique",
+      "start": 16206,
+      "end": 16211,
+      "normalized_id": "T1029",
+      "evidence": "T1029\n"
+    },
+    {
+      "id": "E28",
+      "text": "T1082",
+      "type": "AttackTechnique",
+      "start": 13946,
+      "end": 13951,
+      "normalized_id": "T1082",
+      "evidence": "T1082\n"
+    },
+    {
+      "id": "E29",
+      "text": "T1016.001",
+      "type": "AttackTechnique",
+      "start": 13019,
+      "end": 13028,
+      "normalized_id": "T1016.001",
+      "evidence": "T1016.001\n"
+    },
+    {
+      "id": "E30",
+      "text": "T1083",
+      "type": "AttackTechnique",
+      "start": 14140,
+      "end": 14145,
+      "normalized_id": "T1083",
+      "evidence": "T1083\n"
+    },
+    {
+      "id": "E31",
+      "text": "T1105",
+      "type": "AttackTechnique",
+      "start": 15832,
+      "end": 15837,
+      "normalized_id": "T1105",
+      "evidence": "T1105\n"
+    },
+    {
+      "id": "E32",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 8771,
+      "end": 8776,
+      "normalized_id": "T1078",
+      "evidence": "T1078\n"
+    },
+    {
+      "id": "E33",
+      "text": "T1543",
+      "type": "AttackTechnique",
+      "start": 10793,
+      "end": 10798,
+      "normalized_id": "T1543",
+      "evidence": "T1543\n"
+    },
+    {
+      "id": "E34",
+      "text": "T1036.005",
+      "type": "AttackTechnique",
+      "start": 11319,
+      "end": 11328,
+      "normalized_id": "T1036.005",
+      "evidence": "T1036.005\n"
+    },
+    {
+      "id": "E35",
+      "text": "T1090",
+      "type": "AttackTechnique",
+      "start": 16014,
+      "end": 16019,
+      "normalized_id": "T1090",
+      "evidence": "T1090\n"
+    },
+    {
+      "id": "E36",
+      "text": "T1574",
+      "type": "AttackTechnique",
+      "start": 12568,
+      "end": 12573,
+      "normalized_id": "T1574",
+      "evidence": "T1574\n"
+    },
+    {
+      "id": "E37",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 10602,
+      "end": 10607,
+      "normalized_id": "T1078",
+      "evidence": "T1078\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E38",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 10919,
+      "end": 10924,
+      "normalized_id": "T1078",
+      "evidence": "T1078\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E39",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 11791,
+      "end": 11796,
+      "normalized_id": "T1078",
+      "evidence": "T1078\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E40",
+      "text": "T1497.001",
+      "type": "AttackTechnique",
+      "start": 14341,
+      "end": 14350,
+      "normalized_id": "T1497.001",
+      "evidence": "T1497.001\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E41",
+      "text": "Exchange Server",
+      "type": "Configuration",
+      "start": 5011,
+      "end": 5026,
+      "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E41",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server.",
+      "evidence_start": 4857,
+      "evidence_end": 5027,
+      "adjudication_basis": "same sentence explicitly scopes all four CVEs to Exchange Server"
+    },
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E3",
+      "tail": "E41",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server.",
+      "evidence_start": 4857,
+      "evidence_end": 5027,
+      "adjudication_basis": "same sentence explicitly scopes all four CVEs to Exchange Server"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E4",
+      "tail": "E41",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server.",
+      "evidence_start": 4857,
+      "evidence_end": 5027,
+      "adjudication_basis": "same sentence explicitly scopes all four CVEs to Exchange Server"
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E2",
+      "tail": "E41",
+      "evidence": "In early March 2021, APT actors exploited CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, and CVE-2021-27065 to install 17 China Chopper webshells on the Exchange Server.",
+      "evidence_start": 4857,
+      "evidence_end": 5027,
+      "adjudication_basis": "same sentence explicitly scopes all four CVEs to Exchange Server"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

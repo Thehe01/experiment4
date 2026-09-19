@@ -1,0 +1,237 @@
+{
+  "version": "configuration-mcpu-v2",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "boundary_contract_version": "chapter3-boundary-sync-v2",
+  "prediction_outputs_used": false,
+  "policy": {
+    "name": "Minimum Canonical Product Unit (MCPU)",
+    "surface_rule": "Annotate the shortest continuous source span that preserves the canonical affected product identity.",
+    "vendor_rule": "Retain an explicitly adjacent vendor when it belongs to the same continuous product noun phrase. Never cross a table column, conjunction, list item, sentence, or other non-contiguous structure to manufacture a vendor-bearing span.",
+    "designator_rule": "Retain Server, Gateway, Manager, Appliance, Controller, Service, Driver and similar tokens only when they are part of the official product or affected component identity; remove purely descriptive class nouns.",
+    "version_rule": "Exclude ordinary release versions, updates, patches and builds from the product surface. Preserve full literal CPE URIs and lexicalized generation or model tokens required for product identity.",
+    "normalization_rule": "Use a family-level CPE with wildcard version for ordinary prose product mentions. A non-wildcard CPE version is retained only for a full literal CPE surface or a lexicalized generation identity approved by this contract."
+  },
+  "allowed_non_wildcard_cpe_surface_patterns": [
+    "^cpe:2\\.3:",
+    "^SMB version 1$"
+  ],
+  "span_revisions": [
+    {
+      "doc_id": "aa22-228a",
+      "entity_id": "E53",
+      "old_text": "ZCS webmail clients",
+      "old_start": 6389,
+      "old_end": 6408,
+      "new_text": "ZCS",
+      "new_start": 6389,
+      "new_end": 6392,
+      "basis": "Remove the generic deployment/class suffix; ZCS is the independently identifiable affected product mention."
+    },
+    {
+      "doc_id": "aa23-074a-telerik-cve-18935",
+      "entity_id": "E81",
+      "old_text": "Telerik user interface (UI) for ASP.NET AJAX",
+      "old_start": 454,
+      "old_end": 498,
+      "new_text": "Progress Telerik user interface (UI) for ASP.NET AJAX",
+      "new_start": 445,
+      "new_end": 498,
+      "basis": "Progress is an immediately adjacent vendor token in the same continuous product noun phrase."
+    },
+    {
+      "doc_id": "aa23-215a",
+      "entity_id": "E165",
+      "old_text": "Microsoft Exchange email servers",
+      "old_start": 5374,
+      "old_end": 5406,
+      "new_text": "Microsoft Exchange",
+      "new_start": 5374,
+      "new_end": 5392,
+      "basis": "Retain the adjacent vendor-product identity and remove the generic email-server class suffix."
+    },
+    {
+      "doc_id": "aa23-215a",
+      "entity_id": "E168",
+      "old_text": "Apache’s Log4j library",
+      "old_start": 6652,
+      "old_end": 6674,
+      "new_text": "Apache’s Log4j",
+      "new_start": 6652,
+      "new_end": 6666,
+      "basis": "Retain the adjacent vendor-product identity and remove the generic library class suffix."
+    },
+    {
+      "doc_id": "aa23-215a",
+      "entity_id": "E206",
+      "old_text": "SMA 100 Series Appliances",
+      "old_start": 12712,
+      "old_end": 12737,
+      "new_text": "SMA 100 Series",
+      "new_start": 12712,
+      "new_end": 12726,
+      "basis": "SMA 100 Series is the product-family identity; Appliances is a generic class suffix in this occurrence."
+    },
+    {
+      "doc_id": "aa23-215a",
+      "entity_id": "E224",
+      "old_text": "SD-WAN WANOP appliance",
+      "old_start": 27729,
+      "old_end": 27751,
+      "new_text": "SD-WAN WANOP",
+      "new_start": 27729,
+      "new_end": 27741,
+      "basis": "Remove the generic appliance class suffix while retaining the named SD-WAN WANOP product form."
+    },
+    {
+      "doc_id": "aa23-325a",
+      "entity_id": "E12",
+      "old_text": "NetScaler Gateway appliances",
+      "old_start": 4912,
+      "old_end": 4940,
+      "new_text": "NetScaler Gateway",
+      "new_start": 4912,
+      "new_end": 4929,
+      "basis": "NetScaler Gateway is the formal product identity; appliances is a descriptive plural suffix."
+    },
+    {
+      "doc_id": "aa23-325a",
+      "entity_id": "E20",
+      "old_text": "Citrix NetScaler web application delivery control (ADC)",
+      "old_start": 2192,
+      "old_end": 2247,
+      "new_text": "Citrix NetScaler",
+      "new_start": 2192,
+      "new_end": 2208,
+      "basis": "Retain the adjacent vendor-product identity and remove the explanatory product-class gloss."
+    },
+    {
+      "doc_id": "aa23-325a-citrix-bleed-cve-4966",
+      "entity_id": "E23",
+      "old_text": "Citrix NetScaler web application delivery control (ADC)",
+      "old_start": 1815,
+      "old_end": 1870,
+      "new_text": "Citrix NetScaler",
+      "new_start": 1815,
+      "new_end": 1831,
+      "basis": "Retain the adjacent vendor-product identity and remove the explanatory product-class gloss."
+    },
+    {
+      "doc_id": "aa23-339a",
+      "entity_id": "E56",
+      "old_text": "ColdFusion 2016",
+      "old_start": 1482,
+      "old_end": 1497,
+      "new_text": "ColdFusion",
+      "new_start": 1482,
+      "new_end": 1492,
+      "basis": "2016 is an ordinary ColdFusion release version and is excluded from the product surface."
+    },
+    {
+      "doc_id": "aa23-339a",
+      "entity_id": "E57",
+      "old_text": "ColdFusion 11",
+      "old_start": 1502,
+      "old_end": 1515,
+      "new_text": "ColdFusion",
+      "new_start": 1502,
+      "new_end": 1512,
+      "basis": "11 is an ordinary ColdFusion release version and is excluded from the product surface."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E3",
+      "old_text": "Adobe ColdFusion versions 2018",
+      "old_start": 431,
+      "old_end": 461,
+      "new_text": "Adobe ColdFusion",
+      "new_start": 431,
+      "new_end": 447,
+      "basis": "Retain the adjacent vendor-product identity and exclude the ordinary release phrase versions 2018."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E44",
+      "old_text": "ColdFusion 2016",
+      "old_start": 547,
+      "old_end": 562,
+      "new_text": "ColdFusion",
+      "new_start": 547,
+      "new_end": 557,
+      "basis": "2016 is an ordinary ColdFusion release version and is excluded from the product surface."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E45",
+      "old_text": "ColdFusion 11",
+      "old_start": 567,
+      "old_end": 580,
+      "new_text": "ColdFusion",
+      "new_start": 567,
+      "new_end": 577,
+      "basis": "11 is an ordinary ColdFusion release version and is excluded from the product surface."
+    },
+    {
+      "doc_id": "aa24-207a",
+      "entity_id": "E108",
+      "old_text": "Apache’s Log4j software library",
+      "old_start": 17433,
+      "old_end": 17464,
+      "new_text": "Apache’s Log4j",
+      "new_start": 17433,
+      "new_end": 17447,
+      "basis": "Retain the adjacent vendor-product identity and remove the generic software-library class suffix."
+    }
+  ],
+  "normalization_revisions": [
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E3",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:2018:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E4",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:2021.0.0.2:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "The surface is a product-family mention; do not encode an ordinary runtime release as the entity identity."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E5",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:2016.0.0.3:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "The surface is a product-family mention; do not encode an ordinary runtime release as the entity identity."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E44",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:2016:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence."
+    },
+    {
+      "doc_id": "aa23-339a-coldfusion-cve-26360",
+      "entity_id": "E45",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:11:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence."
+    },
+    {
+      "doc_id": "aa23-339a",
+      "entity_id": "E56",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:2016:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence."
+    },
+    {
+      "doc_id": "aa23-339a",
+      "entity_id": "E57",
+      "old_cpe": "cpe:2.3:a:adobe:coldfusion:11:*:*:*:*:*:*:*",
+      "new_cpe": "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+      "basis": "MCPU product mentions normalize to the ColdFusion family; ordinary release constraints remain in source evidence."
+    }
+  ]
+}

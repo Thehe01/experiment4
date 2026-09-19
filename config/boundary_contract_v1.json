@@ -1,0 +1,74 @@
+{
+  "contract_version": "chapter3-boundary-sync-v1",
+  "authority": "Chapter 3 of the thesis",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.5-mention-fact-dual-layer-v1",
+  "text_extraction_layer": {
+    "entities": [
+      "Configuration",
+      "Vulnerability",
+      "Weakness",
+      "AttackTechnique"
+    ],
+    "relations": [
+      "affects",
+      "instantiates",
+      "exploited_by"
+    ]
+  },
+  "mapping_completion_layer": {
+    "entities": [
+      "AttackTactic",
+      "KillChainPhase"
+    ],
+    "relations": [
+      "implies",
+      "belongs_to_phase"
+    ]
+  },
+  "entity_boundaries": {
+    "Configuration": {
+      "surface": "shortest independently identifiable product or component mention",
+      "exclude": [
+        "ordinary release version",
+        "patch identifier",
+        "build identifier",
+        "deployment qualifier"
+      ],
+      "exceptions": [
+        "full literal CPE 2.3 URI",
+        "conventional generation token required for unique product normalization"
+      ]
+    },
+    "Weakness": {
+      "formal_surface": "explicit CWE mention or a descriptive flaw phrase uniquely tied to an explicit CWE in the same fact block",
+      "candidate_only": "description-only phrase without a locally explicit CWE",
+      "forbidden_normalization_sources": [
+        "model background knowledge",
+        "external CVE-CWE lookup",
+        "temporary unversioned phrase dictionary"
+      ]
+    }
+  },
+  "relation_boundaries": {
+    "exploited_by": {
+      "required": "the AttackTechnique directly performs the specified CVE exploitation or entry behavior",
+      "excluded": "activity that occurs before or after exploitation without a direct exploitation role",
+      "adjudication": "semantic source-text review; no fixed ATT&CK ID blacklist"
+    }
+  },
+  "apo": {
+    "may_edit": [
+      "stage1 decision guidance",
+      "stage2 decision guidance"
+    ],
+    "must_not_edit": [
+      "entity definitions",
+      "relation definitions and directions",
+      "surface-boundary policy",
+      "direct-evidence policy",
+      "output schema"
+    ],
+    "test_policy": "freeze one non-P0 prompt after train/dev optimization, then evaluate once on the frozen test set"
+  }
+}

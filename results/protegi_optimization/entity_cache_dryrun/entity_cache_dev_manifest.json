@@ -1,0 +1,7 @@
+{
+  "split_name": "dev",
+  "entity_prompt_sha256": "761be9ffe1c2a36899647e70444ffb4732ebae6d9cb4de61b9ad5dfb5b1dd886",
+  "num_samples": 2,
+  "created_at_utc": "2026-09-15T16:26:43.561266+00:00",
+  "cache_file": "entity_cache_dev.jsonl"
+}

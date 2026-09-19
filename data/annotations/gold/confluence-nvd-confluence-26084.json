@@ -1,0 +1,91 @@
+{
+  "doc_id": "confluence-nvd-confluence-26084",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "CVE-2021-26084\n\nPublished: 2021-08-30T07:15:06.587\nLast modified: 2025-10-24T13:38:44.590\nSource identifier: security@atlassian.com\nStatus: Analyzed\n\nDescription:\n- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are before version 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.\n\nWeaknesses:\n- CWE-917\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*\n- cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*\n\nReferences:\n- http://packetstormsecurity.com/files/167449/Atlassian-Confluence-Namespace-OGNL-Injection.html\n- https://jira.atlassian.com/browse/CONFSERVER-67940\n- https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2021-26084\n",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 0,
+      "end": 14,
+      "normalized_id": "CVE-2021-26084",
+      "evidence": "CVE-2021-26084\n"
+    },
+    {
+      "id": "E3",
+      "text": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+      "type": "Configuration",
+      "start": 746,
+      "end": 804,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+      "notes": "v4.2 explicit affected-CPE priority",
+      "evidence": "CVE-2021-26084\n\nPublished: 2021-08-30T07:15:06.587\nLast modified: 2025-10-24T13:38:44.590\nSource identifier: security@atlassian.com\nStatus: Analyzed\n\nDescription:\n- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are before version 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.\n\nWeaknesses:\n- CWE-917\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2021-26084",
+      "type": "Vulnerability",
+      "start": 1097,
+      "end": 1111,
+      "normalized_id": "CVE-2021-26084",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "- https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2021-26084\n"
+    },
+    {
+      "id": "E6",
+      "text": "CWE-917",
+      "type": "Weakness",
+      "start": 555,
+      "end": 562,
+      "normalized_id": "CWE-917",
+      "evidence": "- CWE-917\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E7",
+      "text": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+      "type": "Configuration",
+      "start": 807,
+      "end": 860,
+      "normalized_id": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+      "notes": "v4.2 explicit affected-CPE priority",
+      "evidence": "CVE-2021-26084\n\nPublished: 2021-08-30T07:15:06.587\nLast modified: 2025-10-24T13:38:44.590\nSource identifier: security@atlassian.com\nStatus: Analyzed\n\nDescription:\n- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are before version 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.\n\nWeaknesses:\n- CWE-917\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*\n- cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E3",
+      "evidence": "CVE-2021-26084\n\nPublished: 2021-08-30T07:15:06.587\nLast modified: 2025-10-24T13:38:44.590\nSource identifier: security@atlassian.com\nStatus: Analyzed\n\nDescription:\n- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are before version 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.\n\nWeaknesses:\n- CWE-917\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 804,
+      "adjudication_basis": "CVE header plus explicit Affected configurations CPE list"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E7",
+      "evidence": "CVE-2021-26084\n\nPublished: 2021-08-30T07:15:06.587\nLast modified: 2025-10-24T13:38:44.590\nSource identifier: security@atlassian.com\nStatus: Analyzed\n\nDescription:\n- In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are before version 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.\n\nWeaknesses:\n- CWE-917\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*\n- cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 860,
+      "adjudication_basis": "CVE header plus explicit Affected configurations CPE list"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

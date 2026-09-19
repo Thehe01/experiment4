@@ -1,0 +1,9 @@
+[
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The prompt's definition of the \"AttackTechnique\" entity type is ambiguous and incomplete regarding the scope of MITRE ATT&CK identifiers. It states: \"AttackTechnique: a MITRE ATT&CK technique ID (e.g., T1190) or explicitly named attack technique.\" This wording does not explicitly exclude or include MITRE ATT&CK tactic IDs (e.g., TA0043, TA0011) or sub-technique IDs with decimal notation (e.g., T1585.002, T1566.001), and it fails to clarify whether only \"T\" codes are valid technique IDs. Consequently, the model erroneously extracted tactic IDs (TAxxxx) as AttackTechnique entities and also produced inconsistent spans (e.g., extracting both \"T1589\" and \"T1589.001\" from the same location, or \"1585.001\" missing the \"T\" prefix) because the prompt never specified that technique IDs must strictly follow the \"T\\d{4}(\\.\\d{3})?\" pattern and that tactics (TA codes) are out of scope. To fix this, the prompt should precisely define accepted ATT&CK identifier formats (explicitly listing technique and sub-technique regex, and explicitly excluding tactic/upload IDs), and provide instruction that only verbatim matches of those exact patterns are to be extracted as AttackTechnique, with no inference or normalization of incomplete strings.",
+    "round_idx": 0
+  }
+]

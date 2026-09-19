@@ -1,0 +1,1203 @@
+"""ProTeGi 提示词优化搜索核心引擎 (ProTeGi Optimizer).
+
+支持两阶段独立搜索与五种对照实验方法：
+- initial: 零优化对照基线 (仅评估 P0)
+- mc: 蒙特卡洛释义消融基线 (无梯度批评，仅做语义保持变体搜索)
+- greedy_protegi: 贪心消融基线 (Beam=1)
+- protegi: Full ProTeGi (主方法: Beam=4, UCB 自适应臂分配)
+- protegi_uniform: 均匀预算分配消融基线 (Beam=4, Uniform 评估分配)
+"""
+
+from __future__ import annotations
+
+import json
+import random
+import sys
+import hashlib
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+from llm_methods import (
+    build_text_windows,
+    merge_window_predictions,
+    make_extractor,
+)
+from schema import EXTRACTION_ENTITY_TYPES, EXTRACTION_RELATION_TYPES
+from protegi.contract_validator import PromptContractValidator
+from protegi.document_context import (
+    extract_explicit_abbreviation_pairs,
+    format_abbreviation_context,
+)
+from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
+from protegi.evaluator import TaskEvaluator, focus_entity_error_examples
+from protegi.lineage import PromptLineageTracker
+from protegi.logging_utils import ProTeGiLogger
+from protegi.metrics import (
+    aggregate_micro_f1,
+    calc_strict_entity_sample_counts,
+    calc_strict_relation_sample_counts,
+)
+from protegi.models import (
+    CallStats,
+    ErrorExample,
+    EvaluationResult,
+    PromptCandidate,
+    PromptGradient,
+)
+from protegi.mutators import (
+    GradientGenerator,
+    MonteCarloParaphraser,
+    PromptEditor,
+    deduplicate_and_sample_successors,
+)
+from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
+from protegi.selectors import (
+    UCBPromptSelector,
+    UniformPromptSelector,
+    selection_counts_from_result,
+)
+
+
+def load_split_doc_ids(split_file: Path) -> Dict[str, List[str]]:
+    """加载切分清单中的 doc_id 列表。"""
+    data = json.loads(Path(split_file).read_text(encoding="utf-8"))
+    return {
+        "train": data.get("train", []),
+        "dev": data.get("dev", []),
+        "test": data.get("test", []),
+    }
+
+
+def prepare_stage1_window_samples(
+    doc_ids: List[str],
+    gold_dir: Path,
+    max_chars: int = 3000,
+    overlap: int = 400,
+    max_docs: Optional[int] = None,
+    include_document_abbreviations: bool = False,
+    snap_sentence_boundary: bool = False,
+) -> List[dict]:
+    """将 Gold 文档按字符窗口切分，并映射局部实体真值标注。"""
+    samples: List[dict] = []
+    target_doc_ids = doc_ids[:max_docs] if max_docs else doc_ids
+
+    allowed_types = set(EXTRACTION_ENTITY_TYPES)
+
+    for doc_id in target_doc_ids:
+        doc_path = Path(gold_dir) / f"{doc_id}.json"
+        if not doc_path.is_file():
+            continue
+        doc_data = json.loads(doc_path.read_text(encoding="utf-8"))
+        full_text = doc_data.get("text", "")
+        abbreviation_pairs = (
+            extract_explicit_abbreviation_pairs(full_text)
+            if include_document_abbreviations
+            else []
+        )
+        abbreviation_context = (
+            format_abbreviation_context(abbreviation_pairs)
+            if include_document_abbreviations
+            else None
+        )
+        gold_entities = [
+            e for e in doc_data.get("entities", [])
+            if e.get("type") in allowed_types
+        ]
+
+        windows = build_text_windows(
+            full_text,
+            max_chars=max_chars,
+            overlap=overlap,
+            snap_sentence_boundary=snap_sentence_boundary,
+        )
+        for w_idx, win in enumerate(windows):
+            w_start, w_end = win["start"], win["end"]
+            w_text = win["text"]
+
+            # 过滤落在当前窗口内的实体并转换为窗口相对偏移
+            local_entities = []
+            for e in gold_entities:
+                e_start = e.get("start")
+                e_end = e.get("end")
+                if e_start is not None and e_end is not None:
+                    if e_start >= w_start and e_end <= w_end:
+                        rel_e = dict(e)
+                        rel_e["start"] = e_start - w_start
+                        rel_e["end"] = e_end - w_start
+                        local_entities.append(rel_e)
+
+            sample = {
+                "sample_id": f"{doc_id}_w{w_idx}",
+                "doc_id": doc_id,
+                "window_index": w_idx,
+                "window_start": w_start,
+                "window_end": w_end,
+                "text": w_text,
+                "gold_entities": local_entities,
+            }
+            if include_document_abbreviations:
+                sample["document_abbreviations"] = abbreviation_context
+                sample["document_abbreviation_pairs"] = abbreviation_pairs
+            samples.append(sample)
+
+    return samples
+
+
+def prepare_stage2_window_samples(
+    doc_ids: List[str],
+    gold_dir: Path,
+    fixed_entity_predictions: Optional[Dict[str, List[dict]]] = None,
+    max_chars: int = 3000,
+    overlap: int = 400,
+    max_docs: Optional[int] = None,
+    include_document_abbreviations: bool = False,
+    snap_sentence_boundary: bool = False,
+) -> List[dict]:
+    """为 Stage 2 准备带有固定实体输入的窗口样本。
+
+    fixed_entity_predictions: {sample_id: pred_entities} 或 {doc_id: pred_entities}
+    """
+    samples: List[dict] = []
+    target_doc_ids = doc_ids[:max_docs] if max_docs else doc_ids
+
+    allowed_ent_types = set(EXTRACTION_ENTITY_TYPES)
+    allowed_rel_types = set(EXTRACTION_RELATION_TYPES)
+
+    for doc_id in target_doc_ids:
+        doc_path = Path(gold_dir) / f"{doc_id}.json"
+        if not doc_path.is_file():
+            continue
+        doc_data = json.loads(doc_path.read_text(encoding="utf-8"))
+        full_text = doc_data.get("text", "")
+        abbreviation_pairs = (
+            extract_explicit_abbreviation_pairs(full_text)
+            if include_document_abbreviations
+            else []
+        )
+        abbreviation_context = (
+            format_abbreviation_context(abbreviation_pairs)
+            if include_document_abbreviations
+            else None
+        )
+        gold_entities = [
+            e for e in doc_data.get("entities", [])
+            if e.get("type") in allowed_ent_types
+        ]
+        gold_relations = [
+            r for r in doc_data.get("relations", [])
+            if r.get("type") in allowed_rel_types
+        ]
+
+        windows = build_text_windows(
+            full_text,
+            max_chars=max_chars,
+            overlap=overlap,
+            snap_sentence_boundary=snap_sentence_boundary,
+        )
+        for w_idx, win in enumerate(windows):
+            w_start, w_end = win["start"], win["end"]
+            w_text = win["text"]
+            sample_id = f"{doc_id}_w{w_idx}"
+
+            # 对应局部金标实体与关系
+            local_gold_ents = []
+            local_ent_ids = set()
+            for e in gold_entities:
+                e_start, e_end = e.get("start"), e.get("end")
+                if e_start is not None and e_end is not None:
+                    if e_start >= w_start and e_end <= w_end:
+                        rel_e = dict(e)
+                        rel_e["start"] = e_start - w_start
+                        rel_e["end"] = e_end - w_start
+                        local_gold_ents.append(rel_e)
+                        local_ent_ids.add(e["id"])
+
+            local_gold_rels = []
+            for relation in gold_relations:
+                if (
+                    relation.get("head") not in local_ent_ids
+                    or relation.get("tail") not in local_ent_ids
+                ):
+                    continue
+                local_relation = dict(relation)
+                evidence_start = relation.get("evidence_start")
+                evidence_end = relation.get("evidence_end")
+                if isinstance(evidence_start, int) and isinstance(evidence_end, int):
+                    # 关系 Gold 只进入能够完整承载证据的窗口，并转换为窗口坐标。
+                    if evidence_start < w_start or evidence_end > w_end:
+                        continue
+                    local_relation["evidence_start"] = evidence_start - w_start
+                    local_relation["evidence_end"] = evidence_end - w_start
+                local_gold_rels.append(local_relation)
+
+            # 固定的前序实体输入。禁止静默使用 Gold 实体冒充 Stage 1 预测。
+            fixed_ents = (
+                fixed_entity_predictions.get(sample_id, [])
+                if fixed_entity_predictions
+                else []
+            )
+
+            sample = {
+                "sample_id": sample_id,
+                "doc_id": doc_id,
+                "window_index": w_idx,
+                "window_start": w_start,
+                "window_end": w_end,
+                "text": w_text,
+                "fixed_entities": fixed_ents,
+                "gold_entities": local_gold_ents,
+                "gold_relations": local_gold_rels,
+            }
+            if include_document_abbreviations:
+                sample["document_abbreviations"] = abbreviation_context
+                sample["document_abbreviation_pairs"] = abbreviation_pairs
+            samples.append(sample)
+
+    return samples
+
+
+def select_final_candidate(
+    candidates: List[PromptCandidate],
+    dev_results_by_id: Dict[str, EvaluationResult],
+    *,
+    p0_candidate_id: str,
+    objective_entity_type: Optional[str] = None,
+    guardrail_entity_types: Optional[List[str]] = None,
+    guardrail_max_f1_drop: float = 0.0,
+) -> Tuple[PromptCandidate, Dict[str, dict]]:
+    """Apply a deterministic, preregistered Dev selection policy.
+
+    Strict per-type metrics are the only objective and guardrail inputs.
+    Auxiliary overlap diagnostics remain visible in ``EvaluationResult`` but
+    are intentionally ignored here.
+    """
+    if not candidates:
+        raise ValueError("final candidate list is empty")
+    if p0_candidate_id not in dev_results_by_id:
+        raise ValueError("P0 Dev evaluation is required for guardrails")
+    if guardrail_max_f1_drop < 0:
+        raise ValueError("guardrail_max_f1_drop must be non-negative")
+
+    guardrail_entity_types = list(guardrail_entity_types or [])
+    p0_result = dev_results_by_id[p0_candidate_id]
+    p0_by_type = p0_result.details.get("by_type", {})
+    audits: Dict[str, dict] = {}
+
+    for candidate in candidates:
+        result = dev_results_by_id[candidate.candidate_id]
+        by_type = result.details.get("by_type", {})
+        objective_payload = by_type.get(objective_entity_type, {}) if objective_entity_type else {}
+        objective_f1 = (
+            float(objective_payload.get("f1") or 0.0)
+            if objective_entity_type
+            else result.f1
+        )
+        guardrails = {}
+        eligible = True
+        for entity_type in guardrail_entity_types:
+            baseline_payload = p0_by_type.get(entity_type, {})
+            candidate_payload = by_type.get(entity_type, {})
+            baseline_f1 = baseline_payload.get("f1")
+            candidate_f1 = candidate_payload.get("f1")
+            applicable = bool(baseline_payload.get("applicable"))
+            passed = (
+                not applicable
+                or (
+                    candidate_f1 is not None
+                    and float(candidate_f1)
+                    >= float(baseline_f1 or 0.0) - guardrail_max_f1_drop
+                )
+            )
+            guardrails[entity_type] = {
+                "applicable": applicable,
+                "p0_strict_f1": baseline_f1,
+                "candidate_strict_f1": candidate_f1,
+                "max_allowed_drop": guardrail_max_f1_drop,
+                "passed": passed,
+            }
+            eligible = eligible and passed
+        audits[candidate.candidate_id] = {
+            "eligible": eligible,
+            "objective": (
+                f"strict_{objective_entity_type}_f1"
+                if objective_entity_type
+                else "strict_micro_f1"
+            ),
+            "objective_f1": objective_f1,
+            "overall_strict_f1": result.f1,
+            "overall_strict_precision": result.precision,
+            "guardrails": guardrails,
+            "overlap_metrics_used_for_selection": False,
+        }
+
+    eligible_candidates = [
+        candidate
+        for candidate in candidates
+        if audits[candidate.candidate_id]["eligible"]
+    ]
+    if not eligible_candidates:
+        raise RuntimeError("no final candidate satisfies the preregistered guardrails")
+
+    def sort_key(candidate: PromptCandidate):
+        audit = audits[candidate.candidate_id]
+        return (
+            audit["objective_f1"],
+            audit["overall_strict_f1"],
+            audit["overall_strict_precision"],
+            -len(candidate.prompt_text),
+            candidate.candidate_id,
+        )
+
+    return max(eligible_candidates, key=sort_key), audits
+
+
+class ProTeGiOptimizer:
+    """ProTeGi 两阶段、双提示搜索范围的自动优化控制器。"""
+
+    def __init__(
+        self,
+        stage: str,  # "entity" or "relation"
+        method: str,  # "initial", "mc", "greedy_protegi", "protegi", "protegi_uniform"
+        config: dict,
+        output_dir: Path,
+        gold_dir: Path,
+        split_file: Path,
+        entity_cache_dir: Optional[Path] = None,
+        task_client=None,
+        optimizer_client=None,
+    ):
+        self.stage = stage.lower()
+        self.method = method.lower()
+        self.config = config
+        if "prompt_scope" not in config:
+            raise ValueError(
+                "配置文件必须显式声明 prompt_scope: constrained 或 unconstrained"
+            )
+        self.prompt_scope = str(config["prompt_scope"]).strip().lower()
+        if self.prompt_scope not in {"constrained", "unconstrained"}:
+            raise ValueError(
+                f"未知 prompt_scope: {self.prompt_scope!r}；必须为 constrained 或 unconstrained"
+            )
+        self.experiment_pair_id = config.get("experiment_pair_id")
+        self.output_dir = Path(output_dir)
+        self.gold_dir = Path(gold_dir)
+        self.split_file = Path(split_file)
+        self.entity_cache_dir = Path(entity_cache_dir) if entity_cache_dir else output_dir / "entity_cache"
+        self._preexisting_output_entries = (
+            sorted(path.name for path in self.output_dir.iterdir())
+            if self.output_dir.exists()
+            else []
+        )
+        if self._preexisting_output_entries:
+            raise RuntimeError(
+                "输出目录在本次启动前非空。为保证可审计性，请指定新的空 "
+                f"--output-dir；检测到: {self._preexisting_output_entries[:8]}"
+            )
+
+        # 校验合法性
+        valid_methods = {"initial", "mc", "greedy_protegi", "protegi", "protegi_uniform"}
+        if self.method not in valid_methods:
+            raise ValueError(f"未知方法: {self.method}，必须在 {valid_methods} 之中")
+
+        self.seed = int(config.get("seed", 42))
+        self.beam_width = int(config.get("beam_width", 4 if self.method not in {"initial", "greedy_protegi"} else 1))
+        if self.method == "greedy_protegi":
+            self.beam_width = 1
+
+        self.optimization_steps = int(config.get("optimization_steps", 6 if self.method != "initial" else 0))
+        self.minibatch_size = int(config.get("minibatch_size", 64))
+        self.eval_batch_size = int(config.get("eval_batch_size", 8))
+        self.total_pull_budget_per_round = int(
+            config.get("total_pull_budget_per_round", config.get("total_eval_budget", 64))
+        )
+        self.errors_per_group = int(config.get("errors_per_group", 4))
+        self.gradients_per_error_group = int(config.get("gradients_per_error_group", 4))
+        self.max_error_groups = int(config.get("max_error_groups", 1))
+        self.edits_per_gradient = int(config.get("edits_per_gradient", 1))
+        self.paraphrases_per_edit = int(config.get("paraphrases_per_edit", 2))
+        self.successors_per_parent = int(config.get("successors_per_parent", 8))
+        self.min_pulls_per_candidate = int(config.get("min_pulls_per_candidate", 1))
+        self.ucb_c = float(config.get("ucb_c", 2.0))
+        self.document_abbreviation_context = bool(
+            config.get("document_abbreviation_context", False)
+        )
+        self.selection_entity_type = config.get("selection_entity_type")
+        self.error_focus_entity_type = config.get("error_focus_entity_type")
+        self.final_selection_entity_type = config.get("final_selection_entity_type")
+        self.include_p0_in_final_selection = bool(
+            config.get("include_p0_in_final_selection", False)
+        )
+        self.guardrail_entity_types = list(
+            config.get("guardrail_entity_types", []) or []
+        )
+        self.guardrail_max_f1_drop = float(
+            config.get("guardrail_max_f1_drop", 0.0)
+        )
+        if self.stage != "entity" and any((
+            self.selection_entity_type,
+            self.error_focus_entity_type,
+            self.final_selection_entity_type,
+            self.guardrail_entity_types,
+        )):
+            raise ValueError("实体类型定向配置只能用于 entity 阶段")
+        for config_name, entity_type in (
+            ("selection_entity_type", self.selection_entity_type),
+            ("error_focus_entity_type", self.error_focus_entity_type),
+            ("final_selection_entity_type", self.final_selection_entity_type),
+        ):
+            if entity_type and entity_type not in EXTRACTION_ENTITY_TYPES:
+                raise ValueError(f"{config_name} 不是合法实体类型: {entity_type}")
+        invalid_guardrails = sorted(
+            set(self.guardrail_entity_types) - set(EXTRACTION_ENTITY_TYPES)
+        )
+        if invalid_guardrails:
+            raise ValueError(f"guardrail_entity_types 含非法类型: {invalid_guardrails}")
+        if self.guardrail_max_f1_drop < 0:
+            raise ValueError("guardrail_max_f1_drop 必须为非负数")
+
+        # 统计与日志器
+        self.call_stats = CallStats()
+        self._evaluated_candidate_ids: set[str] = set()
+        self.logger = ProTeGiLogger(output_dir=self.output_dir, stage=self.stage, method=self.method)
+        self.lineage_tracker = PromptLineageTracker()
+
+        # 模型客户端
+        if task_client is None:
+            required_task_keys = {
+                "task_model",
+                "task_max_workers",
+                "task_temperature",
+                "task_thinking",
+                "task_reasoning_effort",
+                "task_top_p",
+                "task_max_tokens",
+            }
+            missing_task_keys = sorted(
+                key for key in required_task_keys
+                if key not in config or config.get(key) is None
+            )
+            if missing_task_keys:
+                raise ValueError(f"任务模型配置不完整: {missing_task_keys}")
+        task_max_tokens = int(config["task_max_tokens"]) if config.get("task_max_tokens") else None
+        task_top_p = float(config["task_top_p"]) if config.get("task_top_p") is not None else None
+        self.evaluator = TaskEvaluator(
+            task_client=task_client,
+            max_workers=int(config.get("task_max_workers", 8)),
+            task_model=config.get("task_model"),
+            task_temperature=float(config.get("task_temperature", 0.0)),
+            task_thinking=config.get("task_thinking", "disabled"),
+            task_max_tokens=task_max_tokens,
+            task_top_p=task_top_p,
+            task_reasoning_effort=config.get("task_reasoning_effort", "none"),
+            vulnerability_anchored_backfill=bool(config.get("vulnerability_anchored_backfill", False)),
+        )
+        opt_max_tokens = int(config["optimizer_max_tokens"]) if config.get("optimizer_max_tokens") else None
+        opt_top_p = float(config["optimizer_top_p"]) if config.get("optimizer_top_p") else None
+        opt_reasoning = config.get("optimizer_reasoning_effort")
+        if optimizer_client is None:
+            required_optimizer_keys = {
+                "optimizer_model",
+                "optimizer_temperature",
+                "optimizer_thinking",
+                "optimizer_reasoning_effort",
+                "optimizer_top_p",
+                "optimizer_max_tokens",
+            }
+            missing_optimizer_keys = sorted(
+                key for key in required_optimizer_keys
+                if key not in config or config.get(key) is None
+            )
+            if missing_optimizer_keys:
+                raise ValueError(f"优化模型配置不完整: {missing_optimizer_keys}")
+        self.opt_client = optimizer_client or make_extractor(
+            model=config.get("optimizer_model"),
+            temperature=float(config.get("optimizer_temperature", 0.1)),
+            thinking=config.get("optimizer_thinking", "disabled"),
+            max_tokens=opt_max_tokens,
+            top_p=opt_top_p,
+            reasoning_effort=opt_reasoning,
+        )
+
+        # 突变器
+        self.gradient_generator = GradientGenerator(
+            self.opt_client,
+            self.call_stats,
+            prompt_scope=self.prompt_scope,
+        )
+        self.prompt_editor = PromptEditor(
+            self.opt_client,
+            self.call_stats,
+            prompt_scope=self.prompt_scope,
+        )
+        self.paraphraser = MonteCarloParaphraser(
+            self.opt_client,
+            self.call_stats,
+            prompt_scope=self.prompt_scope,
+        )
+
+        # 选择器 (统一使用 total_pull_budget_per_round 保证总预算严格公平)
+        if self.method == "protegi_uniform":
+            self.selector = UniformPromptSelector(
+                total_pull_budget_per_round=self.total_pull_budget_per_round,
+                batch_size=self.eval_batch_size,
+                min_pulls_per_candidate=self.min_pulls_per_candidate,
+                objective_entity_type=self.selection_entity_type,
+            )
+        else:
+            self.selector = UCBPromptSelector(
+                c=self.ucb_c,
+                total_pull_budget_per_round=self.total_pull_budget_per_round,
+                batch_size=self.eval_batch_size,
+                min_pulls_per_candidate=self.min_pulls_per_candidate,
+                objective_entity_type=self.selection_entity_type,
+            )
+
+        self.cache_manager = EntityCacheManager(self.entity_cache_dir)
+
+    def _validate_candidate_for_arm(self, prompt_text: str):
+        """按当前实验臂执行准入校验。"""
+        return PromptContractValidator.validate_candidate(
+            self.stage,
+            prompt_text,
+            prompt_scope=self.prompt_scope,
+        )
+
+    def _attach_prompt_scope_audit(self, candidate: PromptCandidate) -> None:
+        """同时记录运行接口与冻结契约状态，避免把二者混为一谈。"""
+        runtime_result = PromptContractValidator.validate_candidate(
+            self.stage,
+            candidate.prompt_text,
+            prompt_scope="unconstrained",
+        )
+        frozen_result = PromptContractValidator.validate_candidate(
+            self.stage,
+            candidate.prompt_text,
+            prompt_scope="constrained",
+        )
+        candidate.metrics["prompt_scope_audit"] = {
+            "configured_scope": self.prompt_scope,
+            "runtime_interface_valid": bool(runtime_result),
+            "runtime_interface_reasons": runtime_result.reasons,
+            "frozen_contract_exact_match": bool(frozen_result),
+            "frozen_contract_reasons": frozen_result.reasons,
+        }
+
+    def _get_p0_text(self) -> str:
+        """获取当前阶段的种子 P0 提示词。"""
+        if self.stage == "entity":
+            return ENTITY_PROMPT_P0
+        elif self.stage == "relation":
+            return RELATION_PROMPT_P0
+        else:
+            raise ValueError(f"未知阶段: {self.stage}")
+
+    def _evaluate_candidate_batch(
+        self,
+        candidate: PromptCandidate,
+        batch_samples: List[dict],
+        collect_errors: bool = True,
+        capture_predictions: bool = False,
+    ) -> Tuple[EvaluationResult, List[ErrorExample]]:
+        """在样本批次上评估单个候选。"""
+        before_calls = self.evaluator.call_count
+        before_input_tokens = self.evaluator.input_tokens_est
+        before_output_tokens = self.evaluator.output_tokens_est
+        if self.stage == "entity":
+            res, errs = self.evaluator.evaluate_stage1_batch(
+                samples=batch_samples,
+                full_entity_prompt=candidate.prompt_text,
+                collect_errors=collect_errors,
+                capture_predictions=capture_predictions,
+            )
+        else:
+            res, errs = self.evaluator.evaluate_stage2_batch(
+                samples=batch_samples,
+                full_relation_prompt=candidate.prompt_text,
+                collect_errors=collect_errors,
+                capture_predictions=capture_predictions,
+            )
+
+        self.call_stats.task_model_calls += self.evaluator.call_count - before_calls
+        self.call_stats.task_input_tokens += self.evaluator.input_tokens_est - before_input_tokens
+        self.call_stats.task_output_tokens += self.evaluator.output_tokens_est - before_output_tokens
+        self.call_stats.num_evaluated_samples += len(batch_samples)
+        res.details["sample_ids"] = [
+            sample.get("sample_id") or sample.get("id") or "unknown"
+            for sample in batch_samples
+        ]
+        return res, errs
+
+    def _evaluate_candidate_on_dev(
+        self,
+        candidate: PromptCandidate,
+        dev_samples: List[dict],
+    ) -> EvaluationResult:
+        """在完整或选定的 Dev 集上评估单个候选。"""
+        res, _ = self._evaluate_candidate_batch(
+            candidate,
+            dev_samples,
+            collect_errors=False,
+            capture_predictions=True,
+        )
+        return res
+
+    def run_optimization(
+        self,
+        train_samples: List[dict],
+        dev_samples: List[dict],
+    ) -> PromptCandidate:
+        """运行完整的 ProTeGi 提示词搜索循环。"""
+        start_time_utc = datetime.now(timezone.utc).isoformat()
+        rng = random.Random(self.seed)
+        if not train_samples:
+            raise ValueError("Train 样本为空，禁止启动 ProTeGi")
+        if not dev_samples:
+            raise ValueError("Dev 样本为空，禁止启动最终候选决选")
+        if self.document_abbreviation_context:
+            missing_context = [
+                sample.get("sample_id") or sample.get("id") or "unknown"
+                for sample in list(train_samples) + list(dev_samples)
+                if "document_abbreviations" not in sample
+            ]
+            if missing_context:
+                raise ValueError(
+                    "document_abbreviation_context=true 但样本缺少固定上下文: "
+                    f"{missing_context[:5]}"
+                )
+
+        # 1. 种子初始化与结构契约检查
+        p0_text = self._get_p0_text()
+        p0_frozen_val = PromptContractValidator.validate_candidate(
+            self.stage,
+            p0_text,
+            prompt_scope="constrained",
+        )
+        if not p0_frozen_val:
+            raise ValueError(
+                f"{self.stage} 种子提示词 P0 未通过冻结契约校验: "
+                f"{p0_frozen_val.error_message}"
+            )
+
+        p0_candidate = PromptCandidate(
+            candidate_id=f"P_{self.stage[0].upper()}0",
+            prompt_text=p0_text,
+            parent_id=None,
+            generation_type="initial",
+            round_idx=0,
+        )
+
+        self.lineage_tracker.register_candidate(p0_candidate)
+
+        # 未实现输入/配置/随机状态完整绑定前，禁止静默续跑并混合两次实验。
+        # 初始训练集评估使用固定种子的随机共享批次，不采用文件顺序前缀。
+        p0_init_pool = list(train_samples)
+        random.Random(self.seed).shuffle(p0_init_pool)
+        p0_init_batch = p0_init_pool[: self.eval_batch_size]
+        p0_train_eval, _ = self._evaluate_candidate_batch(
+            p0_candidate,
+            p0_init_batch,
+            collect_errors=False,
+        )
+        self._evaluated_candidate_ids.add(p0_candidate.candidate_id)
+        self.call_stats.num_evaluated_candidates = len(self._evaluated_candidate_ids)
+        p0_selection_counts = selection_counts_from_result(
+            p0_train_eval, self.selection_entity_type
+        )
+        p0_selection_eval = aggregate_micro_f1(*p0_selection_counts)
+        p0_candidate.tp, p0_candidate.fp, p0_candidate.fn = p0_selection_counts
+        p0_candidate.estimated_reward = p0_selection_eval.f1
+        p0_candidate.selection_status = "selected"
+        p0_candidate.metrics = {
+            "train_f1": p0_train_eval.f1,
+            "train_precision": p0_train_eval.precision,
+            "train_recall": p0_train_eval.recall,
+            "train_selection_objective": (
+                f"strict_{self.selection_entity_type}_f1"
+                if self.selection_entity_type
+                else "strict_micro_f1"
+            ),
+            "train_selection_f1": p0_selection_eval.f1,
+            "train_sample_ids": p0_train_eval.details.get("sample_ids", []),
+        }
+        self._attach_prompt_scope_audit(p0_candidate)
+
+        beam = [p0_candidate]
+        self.lineage_tracker.register_candidate(p0_candidate)
+        self.logger.log_round(
+            round_idx=0,
+            beam=beam,
+            candidates=[p0_candidate],
+            generated_candidates=[p0_candidate],
+            gradients=[],
+            call_stats=self.call_stats,
+        )
+        start_round = 1
+
+        # 若方法为 initial，则对 P0 进行 Dev 评估并输出
+        if self.method == "initial" or self.optimization_steps <= 0:
+            dev_eval_p0 = self._evaluate_candidate_on_dev(p0_candidate, dev_samples)
+            p0_candidate.metrics["dev_f1"] = dev_eval_p0.f1
+            p0_candidate.metrics["dev_precision"] = dev_eval_p0.precision
+            p0_candidate.metrics["dev_recall"] = dev_eval_p0.recall
+            p0_candidate.metrics["dev_by_type"] = dev_eval_p0.details.get("by_type", {})
+            if "normalization" in dev_eval_p0.details:
+                p0_candidate.metrics["dev_normalization"] = dev_eval_p0.details["normalization"]
+            p0_candidate.selection_status = "final_winner"
+            self.lineage_tracker.register_candidate(p0_candidate)
+            self.logger.save_json(
+                {
+                    "stage": self.stage,
+                    "prompt_scope": self.prompt_scope,
+                    "experiment_pair_id": self.experiment_pair_id,
+                    "selection_scope": "frozen_dev_once_after_search",
+                    "winner_candidate_id": p0_candidate.candidate_id,
+                    "candidates": [{
+                        "candidate_id": p0_candidate.candidate_id,
+                        "prompt_sha256": compute_prompt_hash(p0_candidate.prompt_text),
+                        "prompt_scope_audit": p0_candidate.metrics.get(
+                            "prompt_scope_audit", {}
+                        ),
+                        "selected": True,
+                        "evaluation": dev_eval_p0.to_dict(),
+                    }],
+                },
+                "final_dev_evaluations.json",
+            )
+            self.logger.save_json(
+                [p0_candidate.to_dict()],
+                "final_beam_dev.json",
+            )
+            final_prompt_name = f"final_{self.stage}_prompt.txt"
+            self.logger.save_final_prompt(p0_candidate.prompt_text, filename=final_prompt_name)
+            self._save_final_artifacts(
+                p0_candidate,
+                start_time_utc,
+                p0_metrics=p0_candidate.metrics,
+            )
+            return p0_candidate
+
+        # 2. 搜索迭代循环 (从 start_round 到 Round T)
+        for r_idx in range(start_round, self.optimization_steps + 1):
+            round_candidates: List[PromptCandidate] = []
+            round_generated: List[PromptCandidate] = []
+            round_gradients: List[PromptGradient] = []
+            round_error_examples: List[dict] = []
+            round_gradient_minibatches: List[dict] = []
+            selector_history: List[dict] = []
+
+            # (1) 候选扩展生成阶段 (Expansion)
+            for parent_idx, parent in enumerate(beam):
+                generated_before_parent = len(round_generated)
+                # 抽取错误样本 minibatch (严格来自 train_samples)
+                minibatch = rng.sample(train_samples, min(self.minibatch_size, len(train_samples)))
+                _, errors = self._evaluate_candidate_batch(parent, minibatch, collect_errors=True)
+                if self.error_focus_entity_type:
+                    errors = focus_entity_error_examples(
+                        errors, self.error_focus_entity_type
+                    )
+                round_gradient_minibatches.append({
+                    "parent_candidate_id": parent.candidate_id,
+                    "sample_ids": [
+                        sample.get("sample_id") or sample.get("id") or "unknown"
+                        for sample in minibatch
+                    ],
+                    "error_sample_ids": [error.sample_id for error in errors],
+                    "error_focus_entity_type": self.error_focus_entity_type,
+                })
+                for error in errors:
+                    record = error.to_dict()
+                    record["parent_candidate_id"] = parent.candidate_id
+                    round_error_examples.append(record)
+
+                parent_successors: List[PromptCandidate] = []
+
+                if self.method == "mc":
+                    # MC 基线：无梯度生成，仅做释义扩展
+                    paras = self.paraphraser.paraphrase_prompt(
+                        base_candidate=parent,
+                        num_paraphrases=self.successors_per_parent,
+                        id_prefix=f"c_r{r_idx}_p{parent_idx}_mc",
+                    )
+                    for para in paras:
+                        round_generated.append(para)
+                        para_val = self._validate_candidate_for_arm(para.prompt_text)
+                        self._attach_prompt_scope_audit(para)
+                        if not para_val:
+                            para.selection_status = "invalid_contract"
+                            para.metrics["rejection_reason"] = para_val.error_message
+                            self.lineage_tracker.register_candidate(para)
+                            continue
+                        parent_successors.append(para)
+                else:
+                    # ProTeGi 模式：梯度批评 -> 针对性重写 -> 释义扩展
+                    # 生成文本梯度 (max_error_groups=1 确保单父代调用严格受控)
+                    grads = self.gradient_generator.generate_gradients(
+                        parent_candidate=parent,
+                        errors=errors,
+                        errors_per_group=self.errors_per_group,
+                        gradients_per_error_group=self.gradients_per_error_group,
+                        max_error_groups=self.max_error_groups,
+                    )
+                    round_gradients.extend(grads)
+
+                    for g_idx, grad in enumerate(grads):
+                        # 编辑重写
+                        edit_cand = self.prompt_editor.edit_prompt(
+                            parent_candidate=parent,
+                            gradient=grad,
+                            errors=errors,
+                            errors_per_group=self.errors_per_group,
+                            next_candidate_id=f"c_r{r_idx}_p{parent_idx}_g{g_idx}_edit",
+                        )
+                        if edit_cand:
+                            round_generated.append(edit_cand)
+                            # 结构契约校验 (Contract Validation)
+                            contract_val = self._validate_candidate_for_arm(
+                                edit_cand.prompt_text
+                            )
+                            self._attach_prompt_scope_audit(edit_cand)
+                            if not contract_val:
+                                edit_cand.selection_status = "invalid_contract"
+                                edit_cand.metrics["rejection_reason"] = contract_val.error_message
+                                self.lineage_tracker.register_candidate(edit_cand, gradient_text=grad.gradient_text)
+                                # 不合规候选直接淘汰，不得调用任务模型，也不对其进行释义
+                                continue
+
+                            parent_successors.append(edit_cand)
+                            # 对合规的编辑版本进行释义扩充
+                            paras = self.paraphraser.paraphrase_prompt(
+                                base_candidate=edit_cand,
+                                num_paraphrases=self.paraphrases_per_edit,
+                                id_prefix=f"c_r{r_idx}_p{parent_idx}_g{g_idx}_para",
+                            )
+                            for para in paras:
+                                round_generated.append(para)
+                                para_val = self._validate_candidate_for_arm(
+                                    para.prompt_text
+                                )
+                                self._attach_prompt_scope_audit(para)
+                                if not para_val:
+                                    para.selection_status = "invalid_contract"
+                                    para.metrics["rejection_reason"] = para_val.error_message
+                                    self.lineage_tracker.register_candidate(
+                                        para,
+                                        gradient_text=grad.gradient_text,
+                                    )
+                                    continue
+                                parent_successors.append(para)
+
+                # 去重与后继采样控制
+                sampled_succs, dup_stats = deduplicate_and_sample_successors(
+                    parent_candidate=parent,
+                    successors=parent_successors,
+                    max_successors=self.successors_per_parent,
+                    seed=self.seed + r_idx * 100 + parent_idx,
+                    call_stats=None,
+                )
+
+                self.call_stats.num_generated_candidates += (
+                    len(round_generated) - generated_before_parent
+                )
+                self.call_stats.num_duplicate_candidates += dup_stats["duplicate_count"]
+                sampled_ids = {candidate.candidate_id for candidate in sampled_succs}
+                gradient_text_by_id = {
+                    gradient.gradient_id: gradient.gradient_text
+                    for gradient in round_gradients
+                }
+                seen_signatures = {"".join(parent.prompt_text.split())}
+                for generated in parent_successors:
+                    signature = "".join(generated.prompt_text.split())
+                    if signature in seen_signatures:
+                        generated.selection_status = "duplicate"
+                    elif generated.candidate_id not in sampled_ids:
+                        generated.selection_status = "not_sampled"
+                    seen_signatures.add(signature)
+                    self.lineage_tracker.register_candidate(
+                        generated,
+                        gradient_text=gradient_text_by_id.get(generated.gradient_id),
+                    )
+
+                for succ in sampled_succs:
+                    succ.round_idx = r_idx
+                    succ.selection_status = "pending"
+                    round_candidates.append(succ)
+                    self.lineage_tracker.register_candidate(
+                        succ,
+                        gradient_text=gradient_text_by_id.get(succ.gradient_id),
+                    )
+
+            # 将上一轮 Beam 也作为候选之一参与本轮竞争 (允许保留优质父代)
+            all_pool = list(round_candidates) + list(beam)
+
+            # (2) 候选评估与选择阶段 (Selection / Bandits - 严格在 train_samples 上进行)
+            if not all_pool:
+                # 容错：若无有效候选生成，保留当前 beam
+                selector_history = []
+            else:
+                # 每轮候选臂状态重新开始，禁止继承上一轮不同样本上的 UCB 统计。
+                for candidate in all_pool:
+                    candidate.num_evaluations = 0
+                    candidate.samples_seen = 0
+                    candidate.tp = 0
+                    candidate.fp = 0
+                    candidate.fn = 0
+                    candidate.estimated_reward = 0.0
+                    candidate.ucb_score = 0.0
+                    candidate.selection_status = "pending"
+
+                # 每轮固定种子洗牌并覆盖完整 Train；candidate-local pull index
+                # 映射到同一共享批次，避免候选顺序和文件前缀偏差。
+                round_train_samples = list(train_samples)
+                random.Random(self.seed + r_idx * 10000).shuffle(round_train_samples)
+                eval_batches = [
+                    round_train_samples[i : i + self.eval_batch_size]
+                    for i in range(0, len(round_train_samples), self.eval_batch_size)
+                ]
+                if not eval_batches:
+                    raise ValueError("Train 样本为空，无法运行候选选择")
+
+                def eval_batch_fn(cand: PromptCandidate, candidate_pull_idx: int) -> EvaluationResult:
+                    eval_b = eval_batches[candidate_pull_idx % len(eval_batches)]
+                    res, _ = self._evaluate_candidate_batch(cand, eval_b, collect_errors=False)
+                    return res
+
+                selector_history = self.selector.execute_evaluation_budget(all_pool, eval_batch_fn)
+                self._evaluated_candidate_ids.update(
+                    candidate.candidate_id for candidate in all_pool
+                )
+                self.call_stats.num_evaluated_candidates = len(
+                    self._evaluated_candidate_ids
+                )
+                beam = self.selector.rank_and_select_top_k(all_pool, top_k=self.beam_width)
+                for candidate in all_pool:
+                    self.lineage_tracker.register_candidate(candidate)
+
+            # (3) 中间过程归档 (Dev 集完全隔离，仅记录由 Train UCB/Uniform 估计的奖励)
+            self.logger.log_round(
+                round_idx=r_idx,
+                beam=beam,
+                candidates=all_pool,
+                generated_candidates=round_generated,
+                gradients=round_gradients,
+                selector_history=selector_history,
+                call_stats=self.call_stats,
+                error_examples=round_error_examples,
+                gradient_minibatches=round_gradient_minibatches,
+            )
+
+        # 3. 搜索结束，对最终 Beam (B_T) 执行全流程唯一一次 Dev 验证集统一评估决选
+        # Dev is used only in the final selection phase after all optimization rounds are completed.
+        print(f"\n[ProTeGi 搜索结束] 共完成 {self.optimization_steps} 轮 Train 搜索。Dev is used only in the final selection phase after all optimization rounds are completed. 开始对最终 Beam ({len(beam)} 个候选) 执行统一 Dev 评估选优...")
+        dev_results_by_id: Dict[str, EvaluationResult] = {}
+        for cand in beam:
+            dev_eval = self._evaluate_candidate_on_dev(cand, dev_samples)
+            dev_results_by_id[cand.candidate_id] = dev_eval
+            cand.metrics["dev_f1"] = dev_eval.f1
+            cand.metrics["dev_precision"] = dev_eval.precision
+            cand.metrics["dev_recall"] = dev_eval.recall
+            cand.metrics["dev_by_type"] = dev_eval.details.get("by_type", {})
+            if "normalization" in dev_eval.details:
+                cand.metrics["dev_normalization"] = dev_eval.details["normalization"]
+
+        # 单独跑 P0 的 Dev baseline 用于记录初始对比，绝不参与 Full ProTeGi 候选决赛
+        dev_eval_p0 = dev_results_by_id.get(p0_candidate.candidate_id)
+        if dev_eval_p0 is None:
+            dev_eval_p0 = self._evaluate_candidate_on_dev(p0_candidate, dev_samples)
+            dev_results_by_id[p0_candidate.candidate_id] = dev_eval_p0
+        p0_candidate.metrics["dev_f1"] = dev_eval_p0.f1
+        p0_candidate.metrics["dev_precision"] = dev_eval_p0.precision
+        p0_candidate.metrics["dev_recall"] = dev_eval_p0.recall
+        p0_candidate.metrics["dev_by_type"] = dev_eval_p0.details.get("by_type", {})
+        if "normalization" in dev_eval_p0.details:
+            p0_candidate.metrics["dev_normalization"] = dev_eval_p0.details["normalization"]
+
+        # 默认保留旧实验“P0 仅作 baseline”的行为；定向分支显式允许 P0
+        # 参与自动决选，使“没有合格改进”能够成为可审计结果。
+        finalists = list(beam)
+        if self.include_p0_in_final_selection:
+            if all(c.candidate_id != p0_candidate.candidate_id for c in finalists):
+                finalists.append(p0_candidate)
+        else:
+            non_initial = [c for c in finalists if c.generation_type != "initial"]
+            finalists = non_initial or finalists
+
+        winner, final_selection_audits = select_final_candidate(
+            finalists,
+            dev_results_by_id,
+            p0_candidate_id=p0_candidate.candidate_id,
+            objective_entity_type=self.final_selection_entity_type,
+            guardrail_entity_types=self.guardrail_entity_types,
+            guardrail_max_f1_drop=self.guardrail_max_f1_drop,
+        )
+        for candidate in finalists:
+            candidate.metrics["final_selection"] = final_selection_audits[
+                candidate.candidate_id
+            ]
+            candidate.selection_status = (
+                "final_winner" if candidate.candidate_id == winner.candidate_id
+                else "final_not_selected"
+            )
+            self.lineage_tracker.register_candidate(candidate)
+        self.lineage_tracker.register_candidate(p0_candidate)
+
+        dev_records = []
+        dev_candidates = list(beam)
+        if all(candidate.candidate_id != p0_candidate.candidate_id for candidate in dev_candidates):
+            dev_candidates.append(p0_candidate)
+        for candidate in dev_candidates:
+            dev_records.append({
+                "candidate_id": candidate.candidate_id,
+                "generation_type": candidate.generation_type,
+                "prompt_sha256": compute_prompt_hash(candidate.prompt_text),
+                "prompt_scope_audit": candidate.metrics.get("prompt_scope_audit", {}),
+                "selected": candidate.candidate_id == winner.candidate_id,
+                "is_p0_baseline": candidate.candidate_id == p0_candidate.candidate_id,
+                "selection_audit": final_selection_audits.get(candidate.candidate_id),
+                "evaluation": dev_results_by_id[candidate.candidate_id].to_dict(),
+            })
+        self.logger.save_json(
+            {
+                "stage": self.stage,
+                "prompt_scope": self.prompt_scope,
+                "experiment_pair_id": self.experiment_pair_id,
+                "selection_scope": "frozen_dev_once_after_all_train_search_rounds",
+                "selection_policy": {
+                    "objective": (
+                        f"strict_{self.final_selection_entity_type}_f1"
+                        if self.final_selection_entity_type
+                        else "strict_micro_f1"
+                    ),
+                    "include_p0": self.include_p0_in_final_selection,
+                    "guardrail_entity_types": self.guardrail_entity_types,
+                    "guardrail_max_f1_drop": self.guardrail_max_f1_drop,
+                    "overlap_metrics_used_for_selection": False,
+                },
+                "winner_candidate_id": winner.candidate_id,
+                "candidates": dev_records,
+            },
+            "final_dev_evaluations.json",
+        )
+        self.logger.save_json(
+            [candidate.to_dict() for candidate in dev_candidates],
+            "final_beam_dev.json",
+        )
+        final_prompt_name = f"final_{self.stage}_prompt.txt"
+        self.logger.save_final_prompt(winner.prompt_text, filename=final_prompt_name)
+        self._save_final_artifacts(winner, start_time_utc, p0_metrics=p0_candidate.metrics)
+        return winner
+
+    def _save_final_artifacts(
+        self,
+        winner: PromptCandidate,
+        start_time_utc: str,
+        p0_metrics: Optional[dict] = None,
+    ) -> None:
+        """导出谱系跟踪图与最终总结摘要。"""
+        self.lineage_tracker.register_candidate(winner)
+        # 导出 Lineage JSON 与 DOT
+        self.lineage_tracker.export_json(
+            self.output_dir / "prompt_lineage.json",
+            final_candidate_id=winner.candidate_id,
+        )
+        self.lineage_tracker.export_dot(
+            self.output_dir / "prompt_lineage.dot",
+            final_candidate_id=winner.candidate_id,
+        )
+
+        final_prompt_filename = f"final_{self.stage}_prompt.txt"
+        final_prompt_path = self.output_dir / final_prompt_filename
+
+        def public_client_config(client) -> dict:
+            return {
+                key: value
+                for key, value in getattr(client, "config", {}).items()
+                if key not in {"api_key", "authorization", "headers"}
+            }
+
+        def file_hash(path: Path) -> Optional[str]:
+            if not path.is_file():
+                return None
+            return hashlib.sha256(path.read_bytes()).hexdigest()
+
+        freeze_manifest_path = ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        scope_protocol_path = ROOT / "protegi" / "PROMPT_SCOPE_EXPERIMENT.md"
+        implementation_paths = [
+            Path(__file__),
+            ROOT / "protegi" / "prompts_p0.py",
+            ROOT / "protegi" / "templates.py",
+            ROOT / "protegi" / "mutators.py",
+            ROOT / "protegi" / "contract_validator.py",
+            ROOT / "protegi" / "document_context.py",
+            ROOT / "protegi" / "selectors.py",
+            ROOT / "protegi" / "evaluator.py",
+            ROOT / "protegi" / "entity_cache.py",
+            ROOT / "protegi" / "logging_utils.py",
+            ROOT / "protegi" / "lineage.py",
+        ]
+
+        summary = {
+            "stage": self.stage,
+            "method": self.method,
+            "prompt_scope": self.prompt_scope,
+            "experiment_pair_id": self.experiment_pair_id,
+            "candidate_admission_policy": (
+                "frozen_contract_exact_match"
+                if self.prompt_scope == "constrained"
+                else "runtime_interface_only"
+            ),
+            "winner_candidate_id": winner.candidate_id,
+            "winner_round": winner.round_idx,
+            "winner_metrics": winner.metrics,
+            "winner_prompt_sha256": compute_prompt_hash(winner.prompt_text),
+            "winner_prompt_sha256_raw_bytes": file_hash(final_prompt_path),
+            "winner_prompt_scope_audit": winner.metrics.get(
+                "prompt_scope_audit", {}
+            ),
+            "initial_p0_metrics": p0_metrics or {},
+            "total_candidates_registered": len(self.lineage_tracker.nodes),
+            "call_stats": self.call_stats.to_dict(),
+            "config": self.config,
+            "runtime": {
+                "task_client": public_client_config(self.evaluator.client),
+                "task_max_workers": self.evaluator.max_workers,
+                "optimizer_client": public_client_config(self.opt_client),
+                "token_counts_are_estimates": True,
+            },
+            "input_bindings": {
+                "split_file": str(self.split_file),
+                "split_file_sha256_raw_bytes": file_hash(self.split_file),
+                "gold_dir": str(self.gold_dir),
+                "entity_cache_dir": str(self.entity_cache_dir),
+                "entity_cache_train_manifest_sha256_raw_bytes": file_hash(
+                    self.entity_cache_dir / "entity_cache_train_manifest.json"
+                ),
+                "entity_cache_dev_manifest_sha256_raw_bytes": file_hash(
+                    self.entity_cache_dir / "entity_cache_dev_manifest.json"
+                ),
+                "dataset_freeze_manifest": str(freeze_manifest_path),
+                "dataset_freeze_manifest_sha256_raw_bytes": file_hash(freeze_manifest_path),
+                "prompt_scope_experiment_protocol": str(scope_protocol_path),
+                "prompt_scope_experiment_protocol_sha256_raw_bytes": file_hash(
+                    scope_protocol_path
+                ),
+                "config_file": self.config.get("_config_file"),
+                "config_file_sha256_raw_bytes": self.config.get("_config_file_sha256"),
+                "implementation_sha256_raw_bytes": {
+                    str(path.relative_to(ROOT)).replace("\\", "/"): file_hash(path)
+                    for path in implementation_paths
+                },
+            },
+            "start_time_utc": start_time_utc,
+            "end_time_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        self.logger.save_summary(summary)
+        self.logger.create_artifact_manifest(
+            final_prompt_filename=final_prompt_filename,
+            canonical_prompt_sha256=compute_prompt_hash(winner.prompt_text),
+        )

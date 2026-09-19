@@ -1,0 +1,821 @@
+{
+  "timestamp": "2026-09-19T08:51:22Z",
+  "target_documents": [
+    "aa20-259a-iran-citrix-vpn-cve-19781",
+    "aa21-200b",
+    "aa22-074a",
+    "aa22-181a",
+    "aa22-265a",
+    "aa23-187a",
+    "aa24-249a",
+    "aa24-326a",
+    "aa25-022a",
+    "aa25-141b",
+    "aa25-239a",
+    "aa26-097a",
+    "confluence-nvd-confluence-26084",
+    "proxylogon-microsoft-hafnium-exchange",
+    "aa24-242a",
+    "accellion-fta-google-accellion-data-theft-extortion",
+    "aa23-213a",
+    "aa22-257a",
+    "aa24-207a",
+    "aa22-228a",
+    "aa24-109a"
+  ],
+  "window_count": 319,
+  "mode_a_raw": {
+    "by_type": {
+      "Vulnerability": {
+        "tp": 351,
+        "fp": 22,
+        "fn": 47,
+        "precision": 0.9410187667560321,
+        "recall": 0.8819095477386935,
+        "f1": 0.9105058365758756
+      },
+      "Configuration": {
+        "tp": 29,
+        "fp": 297,
+        "fn": 52,
+        "precision": 0.08895705521472393,
+        "recall": 0.35802469135802467,
+        "f1": 0.14250614250614252
+      },
+      "Weakness": {
+        "tp": 19,
+        "fp": 22,
+        "fn": 10,
+        "precision": 0.4634146341463415,
+        "recall": 0.6551724137931034,
+        "f1": 0.5428571428571429
+      },
+      "AttackTechnique": {
+        "tp": 961,
+        "fp": 114,
+        "fn": 28,
+        "precision": 0.893953488372093,
+        "recall": 0.9716885743174924,
+        "f1": 0.9312015503875969
+      }
+    },
+    "overall": {
+      "tp": 1360,
+      "fp": 455,
+      "fn": 137,
+      "precision": 0.7493112947658402,
+      "recall": 0.9084836339345357,
+      "f1": 0.821256038647343
+    }
+  },
+  "mode_b_enhanced": {
+    "by_type": {
+      "Vulnerability": {
+        "tp": 351,
+        "fp": 22,
+        "fn": 47,
+        "precision": 0.9410187667560321,
+        "recall": 0.8819095477386935,
+        "f1": 0.9105058365758756
+      },
+      "Configuration": {
+        "tp": 55,
+        "fp": 389,
+        "fn": 26,
+        "precision": 0.12387387387387387,
+        "recall": 0.6790123456790124,
+        "f1": 0.20952380952380953
+      },
+      "Weakness": {
+        "tp": 19,
+        "fp": 22,
+        "fn": 10,
+        "precision": 0.4634146341463415,
+        "recall": 0.6551724137931034,
+        "f1": 0.5428571428571429
+      },
+      "AttackTechnique": {
+        "tp": 961,
+        "fp": 114,
+        "fn": 28,
+        "precision": 0.893953488372093,
+        "recall": 0.9716885743174924,
+        "f1": 0.9312015503875969
+      }
+    },
+    "overall": {
+      "tp": 1386,
+      "fp": 547,
+      "fn": 111,
+      "precision": 0.7170201758923952,
+      "recall": 0.9258517034068137,
+      "f1": 0.8081632653061225
+    }
+  },
+  "configuration_per_doc": {
+    "aa20-259a-iran-citrix-vpn-cve-19781": {
+      "tp": 1,
+      "fp": 6,
+      "fn": 0,
+      "gold_count": 1
+    },
+    "aa21-200b": {
+      "tp": 0,
+      "fp": 7,
+      "fn": 0,
+      "gold_count": 0
+    },
+    "aa22-074a": {
+      "tp": 1,
+      "fp": 10,
+      "fn": 0,
+      "gold_count": 1
+    },
+    "aa22-181a": {
+      "tp": 0,
+      "fp": 3,
+      "fn": 0,
+      "gold_count": 0
+    },
+    "aa22-265a": {
+      "tp": 0,
+      "fp": 9,
+      "fn": 0,
+      "gold_count": 0
+    },
+    "aa23-187a": {
+      "tp": 5,
+      "fp": 21,
+      "fn": 0,
+      "gold_count": 5
+    },
+    "aa24-249a": {
+      "tp": 2,
+      "fp": 40,
+      "fn": 4,
+      "gold_count": 6
+    },
+    "aa24-326a": {
+      "tp": 0,
+      "fp": 30,
+      "fn": 0,
+      "gold_count": 0
+    },
+    "aa25-022a": {
+      "tp": 1,
+      "fp": 26,
+      "fn": 0,
+      "gold_count": 1
+    },
+    "aa25-141b": {
+      "tp": 0,
+      "fp": 11,
+      "fn": 0,
+      "gold_count": 0
+    },
+    "aa25-239a": {
+      "tp": 12,
+      "fp": 31,
+      "fn": 4,
+      "gold_count": 16
+    },
+    "aa26-097a": {
+      "tp": 0,
+      "fp": 26,
+      "fn": 0,
+      "gold_count": 0
+    },
+    "confluence-nvd-confluence-26084": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "gold_count": 2
+    },
+    "proxylogon-microsoft-hafnium-exchange": {
+      "tp": 4,
+      "fp": 16,
+      "fn": 0,
+      "gold_count": 4
+    },
+    "aa24-242a": {
+      "tp": 5,
+      "fp": 21,
+      "fn": 6,
+      "gold_count": 11
+    },
+    "accellion-fta-google-accellion-data-theft-extortion": {
+      "tp": 2,
+      "fp": 9,
+      "fn": 0,
+      "gold_count": 2
+    },
+    "aa23-213a": {
+      "tp": 6,
+      "fp": 30,
+      "fn": 4,
+      "gold_count": 10
+    },
+    "aa22-257a": {
+      "tp": 6,
+      "fp": 21,
+      "fn": 2,
+      "gold_count": 8
+    },
+    "aa24-207a": {
+      "tp": 0,
+      "fp": 41,
+      "fn": 1,
+      "gold_count": 1
+    },
+    "aa22-228a": {
+      "tp": 8,
+      "fp": 9,
+      "fn": 3,
+      "gold_count": 11
+    },
+    "aa24-109a": {
+      "tp": 0,
+      "fp": 22,
+      "fn": 2,
+      "gold_count": 2
+    }
+  },
+  "configuration_fns": [
+    {
+      "doc_id": "aa24-249a",
+      "sample_id": "aa24-249a_w4",
+      "gold_text": "Atlassian Confluence",
+      "gold_span": [
+        591,
+        611
+      ],
+      "context": " Windows Server)  CVE-2021-26084 (Atlassian Confluence Server and Data Center)  CVE-2021",
+      "cause": "Boundary Mismatch (Predicted: 'Confluence Server' [601:618])",
+      "overlap_pred": {
+        "id": "E_bf_25",
+        "text": "Confluence Server",
+        "type": "Configuration",
+        "start": 601,
+        "end": 618,
+        "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa24-249a",
+      "sample_id": "aa24-249a_w4",
+      "gold_text": "Polkit",
+      "gold_span": [
+        744,
+        750
+      ],
+      "context": "Parsing)  CVE-2021-4034 (Red Hat: Polkit Privilege Escalation)  CVE-2022-2",
+      "cause": "Boundary Mismatch (Predicted: 'Polkit Privilege Escalation' [744:771])",
+      "overlap_pred": {
+        "text": "Polkit Privilege Escalation",
+        "type": "Configuration",
+        "start": 744,
+        "end": 771,
+        "normalized_id": "cpe:2.3:a:redhat:polkit_privilege_escalation:*:*:*:*:*:*:*:*",
+        "id": "E8"
+      }
+    },
+    {
+      "doc_id": "aa24-249a",
+      "sample_id": "aa24-249a_w4",
+      "gold_text": "Atlassian Confluence",
+      "gold_span": [
+        1139,
+        1159
+      ],
+      "context": ":CLEAR TLP:CLEAR  CVE-2022-26134 (Atlassian Confluence Server and Data Center)  CVE-2022",
+      "cause": "Boundary Mismatch (Predicted: 'Confluence Server' [1149:1166])",
+      "overlap_pred": {
+        "id": "E_bf_26",
+        "text": "Confluence Server",
+        "type": "Configuration",
+        "start": 1149,
+        "end": 1166,
+        "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa24-249a",
+      "sample_id": "aa24-249a_w4",
+      "gold_text": "Atlassian Confluence",
+      "gold_span": [
+        1202,
+        1222
+      ],
+      "context": "and Data Center)  CVE-2022-26138 (Atlassian Confluence Server and Data Center)  CVE-2022",
+      "cause": "Boundary Mismatch (Predicted: 'Confluence' [1212:1222])",
+      "overlap_pred": {
+        "id": "E_bf_27",
+        "text": "Confluence",
+        "type": "Configuration",
+        "start": 1212,
+        "end": 1222,
+        "normalized_id": "cpe:2.3:a:atlassian:confluence:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa25-239a",
+      "sample_id": "aa25-239a_w6",
+      "gold_text": "Palo Alto Networks PAN-OS GlobalProtect",
+      "gold_span": [
+        1487,
+        1526
+      ],
+      "context": "tication bypass)  CVE-2024-3400 - Palo Alto Networks PAN-OS GlobalProtect arbitrary file creation leading to",
+      "cause": "Boundary Mismatch (Predicted: 'Palo Alto Networks PAN-OS' [1487:1512])",
+      "overlap_pred": {
+        "text": "Palo Alto Networks PAN-OS",
+        "type": "Configuration",
+        "start": 1487,
+        "end": 1512,
+        "normalized_id": "cpe:2.3:o:paloaltonetworks:pan-os:*:*:*:*:*:*:*:*",
+        "id": "E10"
+      }
+    },
+    {
+      "doc_id": "aa25-239a",
+      "sample_id": "aa25-239a_w32",
+      "gold_text": "Palo Alto Networks PAN-OS GlobalProtect",
+      "gold_span": [
+        2162,
+        2201
+      ],
+      "context": "thentication bypass) CVE-2024-3400 Palo Alto Networks PAN-OS GlobalProtect Arbitrary file creation leading to",
+      "cause": "Boundary Mismatch (Predicted: 'Palo Alto Networks PAN-OS' [2162:2187])",
+      "overlap_pred": {
+        "text": "Palo Alto Networks PAN-OS",
+        "type": "Configuration",
+        "start": 2162,
+        "end": 2187,
+        "normalized_id": "cpe:2.3:o:palo_alto_networks:pan-os:*:*:*:*:*:*:*:*",
+        "id": "E17"
+      }
+    },
+    {
+      "doc_id": "aa25-239a",
+      "sample_id": "aa25-239a_w32",
+      "gold_text": "Cisco IOS XE",
+      "gold_span": [
+        2621,
+        2633
+      ],
+      "context": " execution as root) CVE-2023-20198 Cisco IOS XE Authentication bypass vulnerabilit",
+      "cause": "Boundary Mismatch (Predicted: 'Cisco IOS' [2621:2630])",
+      "overlap_pred": {
+        "id": "E_bf_23",
+        "text": "Cisco IOS",
+        "type": "Configuration",
+        "start": 2621,
+        "end": 2630,
+        "normalized_id": "cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa25-239a",
+      "sample_id": "aa25-239a_w32",
+      "gold_text": "Cisco IOS",
+      "gold_span": [
+        2731,
+        2740
+      ],
+      "context": "inistrative accounts CVE-2018-0171 Cisco IOS and IOS XE Smart Install remote co",
+      "cause": "Boundary Mismatch (Predicted: 'IOS' [2737:2740])",
+      "overlap_pred": {
+        "id": "E_bf_27",
+        "text": "IOS",
+        "type": "Configuration",
+        "start": 2737,
+        "end": 2740,
+        "normalized_id": "cpe:2.3:o:cisco:ios_xe:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa24-242a",
+      "sample_id": "aa24-242a_w1",
+      "gold_text": "Citrix ADC",
+      "gold_span": [
+        2301,
+        2311
+      ],
+      "context": "bserved: CVE-2023-3519  ( CWE-94 ) Citrix ADC (NetScaler) Remote Code Execution.",
+      "cause": "Completely Missing (Window preds: ['NSPPE'])",
+      "overlap_pred": null
+    },
+    {
+      "doc_id": "aa24-242a",
+      "sample_id": "aa24-242a_w2",
+      "gold_text": "Confluence",
+      "gold_span": [
+        1411,
+        1421
+      ],
+      "context": "lnerability in publicly accessible Confluence Data Center and Server instances t",
+      "cause": "Boundary Mismatch (Predicted: 'Confluence Data Center and Server' [1411:1444])",
+      "overlap_pred": {
+        "text": "Confluence Data Center and Server",
+        "type": "Configuration",
+        "start": 1411,
+        "end": 1444,
+        "normalized_id": "cpe:2.3:a:atlassian:confluence_data_center_and_server:*:*:*:*:*:*:*:*",
+        "id": "E15"
+      }
+    },
+    {
+      "doc_id": "aa24-242a",
+      "sample_id": "aa24-242a_w2",
+      "gold_text": "Citrix ADC",
+      "gold_span": [
+        26,
+        36
+      ],
+      "context": "CVE-2023-3519  ( CWE-94 ) Citrix ADC (NetScaler) Remote Code Execution.",
+      "cause": "Boundary Mismatch (Predicted: 'Citrix ADC (NetScaler)' [26:48])",
+      "overlap_pred": {
+        "text": "Citrix ADC (NetScaler)",
+        "type": "Configuration",
+        "start": 26,
+        "end": 48,
+        "normalized_id": "cpe:2.3:a:citrix:netscaler_adc:*:*:*:*:*:*:*:*",
+        "id": "E3"
+      }
+    },
+    {
+      "doc_id": "aa24-242a",
+      "sample_id": "aa24-242a_w2",
+      "gold_text": "Microsoft Windows",
+      "gold_span": [
+        2446,
+        2463
+      ],
+      "context": " CVE-2017-0144 The SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2",
+      "cause": "Boundary Mismatch (Predicted: 'SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2 and R2 SP1; Windows 7 SP1; Windows 8.1; Windows Server 2012 Gold and R2; Windows RT 8.1; and Windows 10 Gold, 1511, and 1607; and Windows Server 2016' [2430:2648])",
+      "overlap_pred": {
+        "text": "SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2 and R2 SP1; Windows 7 SP1; Windows 8.1; Windows Server 2012 Gold and R2; Windows RT 8.1; and Windows 10 Gold, 1511, and 1607; and Windows Server 2016",
+        "type": "Configuration",
+        "start": 2430,
+        "end": 2648,
+        "normalized_id": "cpe:2.3:o:microsoft:windows:*:*:*:*:*:*:*:*",
+        "id": "E24"
+      }
+    },
+    {
+      "doc_id": "aa24-242a",
+      "sample_id": "aa24-242a_w3",
+      "gold_text": "Netlogon",
+      "gold_span": [
+        486,
+        494
+      ],
+      "context": " attacker establishes a vulnerable Netlogon secure channel connection to a dom",
+      "cause": "Completely Missing (Window preds: ['Microsoft Windows Vista SP2', 'Windows Server 2008 SP2', 'Windows 7 SP1', 'Windows 8.1', 'Windows Server 2012', 'Windows RT 8.1', 'Windows 10', 'Windows Server 2016'])",
+      "overlap_pred": null
+    },
+    {
+      "doc_id": "aa24-242a",
+      "sample_id": "aa24-242a_w3",
+      "gold_text": "Microsoft Windows",
+      "gold_span": [
+        34,
+        51
+      ],
+      "context": "CVE-2017-0144 The SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2",
+      "cause": "Boundary Mismatch (Predicted: 'Microsoft Windows Vista SP2' [34:61])",
+      "overlap_pred": {
+        "text": "Microsoft Windows Vista SP2",
+        "type": "Configuration",
+        "start": 34,
+        "end": 61,
+        "normalized_id": "cpe:2.3:o:microsoft:windows_vista:*:*:*:*:*:*:*:*",
+        "id": "E2"
+      }
+    },
+    {
+      "doc_id": "aa23-213a",
+      "sample_id": "aa23-213a_w0",
+      "gold_text": "Ivanti Endpoint Manager Mobile (EPMM)",
+      "gold_span": [
+        2035,
+        2072
+      ],
+      "context": "a critical vulnerability affecting Ivanti Endpoint Manager Mobile (EPMM) (formerly known as MobileIron Core",
+      "cause": "Boundary Mismatch (Predicted: 'EPMM' [2067:2071])",
+      "overlap_pred": {
+        "id": "E_bf_14",
+        "text": "EPMM",
+        "type": "Configuration",
+        "start": 2067,
+        "end": 2071,
+        "normalized_id": "cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa23-213a",
+      "sample_id": "aa23-213a_w1",
+      "gold_text": "Ivanti Endpoint Manager Mobile (EPMM)",
+      "gold_span": [
+        2163,
+        2200
+      ],
+      "context": " [CWE-288] vulnerability affecting Ivanti Endpoint Manager Mobile (EPMM), formerly known as MobileIron Core",
+      "cause": "Boundary Mismatch (Predicted: 'EPMM' [2195:2199])",
+      "overlap_pred": {
+        "id": "E_bf_13",
+        "text": "EPMM",
+        "type": "Configuration",
+        "start": 2195,
+        "end": 2199,
+        "normalized_id": "cpe:2.3:a:ivanti:endpoint_manager_mobile:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa23-213a",
+      "sample_id": "aa23-213a_w2",
+      "gold_text": "EPMM",
+      "gold_span": [
+        2588,
+        2592
+      ],
+      "context": "3-35081 to upload webshells on the EPMM device and run commands [T1059]. T",
+      "cause": "Completely Missing (Window preds: ['EPMM', 'ASUS routers', 'EPMM', 'EPMM', 'Ivanti Sentry'])",
+      "overlap_pred": null
+    },
+    {
+      "doc_id": "aa23-213a",
+      "sample_id": "aa23-213a_w3",
+      "gold_text": "Ivanti EPMM",
+      "gold_span": [
+        1022,
+        1033
+      ],
+      "context": "ed CVE-2023-35078 in public facing Ivanti EPMM appliances since at least April 20",
+      "cause": "Boundary Mismatch (Predicted: 'Ivanti EPMM appliances' [1022:1044])",
+      "overlap_pred": {
+        "text": "Ivanti EPMM appliances",
+        "type": "Configuration",
+        "start": 1022,
+        "end": 1044,
+        "normalized_id": "cpe:2.3:a:ivanti:epmm:*:*:*:*:*:*:*:*",
+        "id": "E8"
+      }
+    },
+    {
+      "doc_id": "aa22-257a",
+      "sample_id": "aa22-257a_w2",
+      "gold_text": "Microsoft Exchange",
+      "gold_span": [
+        1852,
+        1870
+      ],
+      "context": "21-34523, and CVE-2021-31207) on a Microsoft Exchange server to gain access to the netwo",
+      "cause": "Boundary Mismatch (Predicted: 'Microsoft Exchange server' [1852:1877])",
+      "overlap_pred": {
+        "id": "E_bf_23",
+        "text": "Microsoft Exchange server",
+        "type": "Configuration",
+        "start": 1852,
+        "end": 1877,
+        "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa22-257a",
+      "sample_id": "aa22-257a_w2",
+      "gold_text": "Microsoft Exchange",
+      "gold_span": [
+        2217,
+        2235
+      ],
+      "context": "1-34523, and CVE-2021-31207), on a Microsoft Exchange server to gain access to the netwo",
+      "cause": "Boundary Mismatch (Predicted: 'Microsoft Exchange server' [2217:2242])",
+      "overlap_pred": {
+        "id": "E_bf_24",
+        "text": "Microsoft Exchange server",
+        "type": "Configuration",
+        "start": 2217,
+        "end": 2242,
+        "normalized_id": "cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*",
+        "_source": "cve_anchored_backfill"
+      }
+    },
+    {
+      "doc_id": "aa24-207a",
+      "sample_id": "aa24-207a_w7",
+      "gold_text": "Apache’s Log4j",
+      "gold_span": [
+        1029,
+        1043
+      ],
+      "context": "as CVE-2021-44228 (“Log4Shell”) in Apache’s Log4j software library and other CVEs li",
+      "cause": "Boundary Mismatch (Predicted: 'Log4j' [1038:1043])",
+      "overlap_pred": {
+        "text": "Log4j",
+        "type": "Configuration",
+        "start": 1038,
+        "end": 1043,
+        "normalized_id": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+        "id": "E13"
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "sample_id": "aa22-228a_w0",
+      "gold_text": "Zimbra Collaboration",
+      "gold_span": [
+        1486,
+        1506
+      ],
+      "context": "ities and Exposures (CVEs) against Zimbra Collaboration Suite (ZCS), an enterprise cloud-h",
+      "cause": "Boundary Mismatch (Predicted: 'Zimbra Collaboration Suite' [1486:1512])",
+      "overlap_pred": {
+        "text": "Zimbra Collaboration Suite",
+        "type": "Configuration",
+        "start": 1486,
+        "end": 1512,
+        "normalized_id": "cpe:2.3:a:zimbra:collaboration_suite:*:*:*:*:*:*:*:*",
+        "id": "E4"
+      }
+    },
+    {
+      "doc_id": "aa22-228a",
+      "sample_id": "aa22-228a_w2",
+      "gold_text": "ZCS",
+      "gold_span": [
+        725,
+        728
+      ],
+      "context": " check for spam or malware.[5] Any ZCS instance with unrar installed is v",
+      "cause": "Completely Missing (Window preds: ['ZCS', 'MailboxImportServlet', 'RARLAB UnRAR', 'ZCS', 'ZCS', 'ZCS', 'ZCS'])",
+      "overlap_pred": null
+    },
+    {
+      "doc_id": "aa22-228a",
+      "sample_id": "aa22-228a_w2",
+      "gold_text": "ZCS",
+      "gold_span": [
+        1404,
+        1407
+      ],
+      "context": "everity vulnerability that impacts ZCS webmail clients running releases b",
+      "cause": "Completely Missing (Window preds: ['ZCS', 'MailboxImportServlet', 'RARLAB UnRAR', 'ZCS', 'ZCS', 'ZCS', 'ZCS'])",
+      "overlap_pred": null
+    },
+    {
+      "doc_id": "aa24-109a",
+      "sample_id": "aa24-109a_w2",
+      "gold_text": "SonicWall",
+      "gold_span": [
+        2005,
+        2014
+      ],
+      "context": "ain access to VPN products such as SonicWall, by stealing login credentials or ",
+      "cause": "Completely Missing (Window preds: ['Nutanix Acropolis Hypervisor', 'Nutanix AHV virtual machine (VM) disk files', 'VMware ESXi', 'Hyper-V'])",
+      "overlap_pred": null
+    },
+    {
+      "doc_id": "aa24-109a",
+      "sample_id": "aa24-109a_w3",
+      "gold_text": "Veeam",
+      "gold_span": [
+        681,
+        686
+      ],
+      "context": "Replication component of unpatched Veeam backup servers [ T1068 ] ( CVE-202",
+      "cause": "Completely Missing (Window preds: ['Nutanix Acropolis Hypervisor', 'Nutanix AHV', 'VMware ESXi', 'Hyper-V', 'Veeam Backup and Replication'])",
+      "overlap_pred": null
+    }
+  ],
+  "configuration_fps_top": [
+    [
+      "Log4j",
+      11
+    ],
+    [
+      "ZCS",
+      7
+    ],
+    [
+      "Exchange Server",
+      6
+    ],
+    [
+      "Ivanti EPMM",
+      6
+    ],
+    [
+      "EPMM",
+      6
+    ],
+    [
+      "Server Message Block",
+      5
+    ],
+    [
+      "Confluence Server",
+      5
+    ],
+    [
+      "DMZ",
+      4
+    ],
+    [
+      "endpoint detection and response",
+      4
+    ],
+    [
+      "Active Directory",
+      4
+    ],
+    [
+      "Ivanti CSA 4.6",
+      4
+    ],
+    [
+      "Cisco",
+      4
+    ],
+    [
+      "Ivanti Endpoint Manager Mobile",
+      4
+    ],
+    [
+      "MobileIron Core",
+      4
+    ],
+    [
+      "RDP",
+      3
+    ],
+    [
+      "National Institute of Standards and Technology",
+      3
+    ],
+    [
+      "Windows 10",
+      3
+    ],
+    [
+      "Confluence",
+      3
+    ],
+    [
+      "Confluence server",
+      3
+    ],
+    [
+      "SMB",
+      3
+    ],
+    [
+      "software development lifecycle",
+      3
+    ],
+    [
+      "EDR",
+      3
+    ],
+    [
+      "Windows Server 2012",
+      3
+    ],
+    [
+      "appliance",
+      3
+    ],
+    [
+      "Ivanti CSA",
+      3
+    ],
+    [
+      "IOS XR",
+      3
+    ],
+    [
+      "remote code execution",
+      3
+    ],
+    [
+      "Cisco IOS",
+      3
+    ],
+    [
+      "Remote Desktop Protocol",
+      3
+    ],
+    [
+      "Exchange",
+      3
+    ]
+  ]
+}

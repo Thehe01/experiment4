@@ -1,0 +1,91 @@
+{
+  "doc_id": "accellion-fta-nvd-accellion-27101",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "CVE-2021-27101\n\nPublished: 2021-02-16T21:15:13.077\nLast modified: 2025-11-03T15:06:03.827\nSource identifier: cve@mitre.org\nStatus: Analyzed\n\nDescription:\n- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html. The fixed version is FTA_9_12_380 and later.\n\nWeaknesses:\n- NVD-CWE-Other\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*\n\nReferences:\n- https://github.com/accellion/CVEs/blob/main/CVE-2021-27101.txt\n- https://www.accellion.com/products/fta/\n- https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2021-27101\n",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2021-27101",
+      "type": "Vulnerability",
+      "start": 0,
+      "end": 14,
+      "normalized_id": "CVE-2021-27101",
+      "evidence": "CVE-2021-27101\n"
+    },
+    {
+      "id": "E3",
+      "text": "cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*",
+      "type": "Configuration",
+      "start": 539,
+      "end": 578,
+      "normalized_id": "cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*",
+      "notes": "v4.2 explicit affected-CPE priority",
+      "evidence": "CVE-2021-27101\n\nPublished: 2021-02-16T21:15:13.077\nLast modified: 2025-11-03T15:06:03.827\nSource identifier: cve@mitre.org\nStatus: Analyzed\n\nDescription:\n- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html. The fixed version is FTA_9_12_380 and later.\n\nWeaknesses:\n- NVD-CWE-Other\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*"
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2021-27101",
+      "type": "Vulnerability",
+      "start": 638,
+      "end": 652,
+      "normalized_id": "CVE-2021-27101",
+      "evidence": "- https://github.com/accellion/CVEs/blob/main/CVE-2021-27101.txt\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E5",
+      "text": "CVE-2021-27101",
+      "type": "Vulnerability",
+      "start": 772,
+      "end": 786,
+      "normalized_id": "CVE-2021-27101",
+      "evidence": "- https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2021-27101\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E6",
+      "text": "Accellion FTA",
+      "type": "Configuration",
+      "start": 156,
+      "end": 169,
+      "normalized_id": "cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2021-27101\n\nPublished: 2021-02-16T21:15:13.077\nLast modified: 2025-11-03T15:06:03.827\nSource identifier: cve@mitre.org\nStatus: Analyzed\n\nDescription:\n- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E3",
+      "evidence": "CVE-2021-27101\n\nPublished: 2021-02-16T21:15:13.077\nLast modified: 2025-11-03T15:06:03.827\nSource identifier: cve@mitre.org\nStatus: Analyzed\n\nDescription:\n- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html. The fixed version is FTA_9_12_380 and later.\n\nWeaknesses:\n- NVD-CWE-Other\n\nSeverity:\n- CVSS 3.1; base score 9.8; CRITICAL; CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n- CVSS 2.0; base score 7.5; HIGH; AV:N/AC:L/Au:N/C:P/I:P/A:P\n\nAffected configurations:\n- cpe:2.3:a:accellion:fta:*:*:*:*:*:*:*:*",
+      "evidence_start": 0,
+      "evidence_end": 578,
+      "adjudication_basis": "CVE header plus explicit Affected configurations CPE list"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E6",
+      "evidence": "CVE-2021-27101\n\nPublished: 2021-02-16T21:15:13.077\nLast modified: 2025-11-03T15:06:03.827\nSource identifier: cve@mitre.org\nStatus: Analyzed\n\nDescription:\n- Accellion FTA 9_12_370 and earlier is affected by SQL injection via a crafted Host header in a request to document_root.html.",
+      "evidence_start": 0,
+      "evidence_end": 281,
+      "adjudication_basis": "description explicitly says Accellion FTA is affected by this CVE"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

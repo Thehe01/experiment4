@@ -1,0 +1,17 @@
+digraph PromptLineage {
+  rankdir="LR";
+  node [shape="box", style="rounded,filled", fontname="Arial"];
+  "P_E0" [label="P_E0\n(R0, F1:0.8382)\ninitial", fillcolor="#e6f2ff"];
+  "c_r1_p0_g0_edit" [label="c_r1_p0_g0_edit\n(R1, F1:0.0000)\ngradient_edit_full", fillcolor="#f9f9f9"];
+  "c_r1_p0_g0_para_0" [label="c_r1_p0_g0_para_0\n(R1, F1:0.8186)\nparaphrase_full", fillcolor="#f9f9f9"];
+  "c_r2_p0_g0_edit" [label="c_r2_p0_g0_edit\n(R1, F1:0.0000)\ngradient_edit_full", fillcolor="#e6f2ff"];
+  "c_r2_p0_g0_para_0" [label="c_r2_p0_g0_para_0\n(R2, F1:0.8634)\nparaphrase_full", fillcolor="#ffcccc"];
+  "c_r2_p1_g0_edit" [label="c_r2_p1_g0_edit\n(R2, F1:0.0000)\ngradient_edit_full", fillcolor="#f9f9f9"];
+  "c_r2_p1_g0_para_0" [label="c_r2_p1_g0_para_0\n(R2, F1:0.8485)\nparaphrase_full", fillcolor="#f9f9f9"];
+  "P_E0" -> "c_r1_p0_g0_edit" [label="gradient_edit_full", color="#aaaaaa"];
+  "c_r1_p0_g0_edit" -> "c_r1_p0_g0_para_0" [label="paraphrase_full", color="#aaaaaa"];
+  "P_E0" -> "c_r2_p0_g0_edit" [label="gradient_edit_full", color="#0066cc", penwidth=2.0];
+  "c_r2_p0_g0_edit" -> "c_r2_p0_g0_para_0" [label="paraphrase_full", color="#0066cc", penwidth=2.0];
+  "c_r1_p0_g0_para_0" -> "c_r2_p1_g0_edit" [label="gradient_edit_full", color="#aaaaaa"];
+  "c_r2_p1_g0_edit" -> "c_r2_p1_g0_para_0" [label="paraphrase_full", color="#aaaaaa"];
+}

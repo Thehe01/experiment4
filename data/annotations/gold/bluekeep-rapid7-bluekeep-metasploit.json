@@ -1,0 +1,40 @@
+{
+  "doc_id": "bluekeep-rapid7-bluekeep-metasploit",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "Today, Metasploit is releasing an initial public exploit module for CVE-2019-0708 , also known as BlueKeep, as a pull request on Metasploit Framework. The initial PR of the exploit module targets 64-bit versions of Windows 7 and Windows 2008 R2. The module builds on proof-of-concept code from Metasploit contributor @zerosum0x0 , who also contributed Metasploit’s BlueKeep scanner module and the scanner and exploit modules for EternalBlue . Metasploit’s exploit makes use of an improved general-purpose RDP protocol library , as well as enhanced RDP fingerprinting capabilities , both of which will benefit Metasploit users and contributors well beyond the context of BlueKeep scanning and exploitation.\nAs an open-source project, one of Metasploit’s guiding principles is that knowledge is most powerful when shared. Democratic access to attacker capabilities, including exploits, is critical for defenders—particularly those who rely on open-source tooling to understand and effectively mitigate risk.\nExploitation notes\nBy default, Metasploit’s BlueKeep exploit only identifies the target operating system version and whether the target is likely to be vulnerable. The exploit does not currently support automatic targeting; it requires the user to manually specify target details before it will attempt further exploitation. If the module is interrupted during exploitation, or if the incorrect target is specified, the target will crash with a bluescreen . Users should also note that some elements of the exploit require knowledge of how Windows kernel memory is laid out, which varies depending on both OS version and the underlying host platform (virtual or physical); the user currently needs to specify this correctly to run the exploit successfully. Server versions of Windows also require a non-default configuration for successful exploitation—namely, changing a registry setting to enable audio sharing. This limitation may be removed in the future.\nOne of the drivers in our releasing the exploit code today as a PR on Metasploit Framework is to enlist the help of the global developer and user community to test, verify, and extend reliability across target environments. As with many Metasploit exploits whose utility has endured over the years, we expect to continue refining the BlueKeep exploit over time. We look forward to working with the Metasploit community to add support for automatic targeting, improve reliability, and expand the range of possible targets. In addition to PoC contributors @zerosum0x0 and @ryHanson , we owe many (many!) enthusiastic thanks to @TheColonial , @rickoates , @zeroSteiner , @TomSellers , @wvu , @bwatters , @sinn3r , and the rest of the Metasploit development team for their invaluable assistance and leadership on development (which included an extensive port of zerosum0x0’s original Python exploit code to Ruby), testing, and integration. New folks interested in joining the list of testers and contributors can get started here !\nDetection and solution notes\nDefenders may want to note that BlueKeep exploitation looks similar to a BlueKeep vulnerability scanner at the network level. If your network IDS/IPS is already able to detect the scanner sequence, it almost certainly detects the exploit as well. For host-based IDS/IPS users, the kernel shellcode loads a child process to the Windows process spoolsv.exe by default, which is a similar indicator of compromise to exploits such as EternalBlue (MS17-010).\nAll that said, there's one important caveat for Metasploit payload detection tools, such as those that alert on generic meterpreter payloads in network traffic: If an intrusion prevention system interrupts in-progress BlueKeep exploitation simply because it detects a payload signature against an unpatched target, breaking that network connection will likely crash the target as a side effect, since the exploit code is actually triggered by a network disconnect. Because of this, users are urged to test their IPS against this Metasploit module once the PR is merged into the Framework master branch.\nWhile specific defenses and detection against this particular exploit are useful, newer RDP vulnerabilities in the ‘DejaBlue’ family have underscored this protocol in general as a risk. The protocol’s inherent complexity suggests that the known bugs today will not be the last, particularly since exploit developers and researchers now have a more nuanced understanding of RDP and its weaknesses. Continued exploitation is likely, as is increased exploit sophistication. If you still need to use RDP in your environment, then in addition to standard recommendations such as enabling Network Level Authentication , tightening your network access controls will also go a long way toward mitigating future vulnerabilities.\nThe broader security community has emphasized the importance and urgency of patching against CVE-2019-0708. We echo this advice: Rapid7 Labs has previously written about the uptick in malicious RDP activity they have observed since the publication of the BlueKeep vulnerability.\nRapid7 Labs has not observed an increased barrage of incoming attacks against RDP past the initial uptick in malicious activity after BlueKeep was published. The chart above looks similar to the Labs team’s previous report on RDP . While activity is at elevated levels when compared to a year ago, overall opportunistic attacker activity is much lower than we expected to see by this point in the post-vulnerability release cycle. Our research partners at BinaryEdge have up-to-date scan results for systems vulnerable to BlueKeep and have indicated they are still observing just over 1 million exposed nodes.\nFor profiles of attacker activity and detailed recommendations on defending against BlueKeep exploitation, see Rapid7’s previous analysis here .\nAbout Metasploit and Rapid7\nMetasploit is a collaboration between Rapid7 and the open-source community. Together, we empower defenders with world-class offensive security content and the ability to understand, exploit, and share vulnerabilities. For more information, see https://www.metasploit.com .\nGet the latest stories, expertise, and news about security today.\n",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2019-0708",
+      "type": "Vulnerability",
+      "start": 68,
+      "end": 81,
+      "normalized_id": "CVE-2019-0708",
+      "evidence": "Today, Metasploit is releasing an initial public exploit module for CVE-2019-0708 , also known as BlueKeep, as a pull request on Metasploit Framework."
+    },
+    {
+      "id": "E3",
+      "text": "CVE-2019-0708",
+      "type": "Vulnerability",
+      "start": 4893,
+      "end": 4906,
+      "normalized_id": "CVE-2019-0708",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "The broader security community has emphasized the importance and urgency of patching against CVE-2019-0708."
+    }
+  ],
+  "relations": [],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

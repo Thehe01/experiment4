@@ -1,0 +1,30 @@
+[
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The prompt's definition of \"AttackTechnique\" is ambiguous regarding MITRE ATT&CK sub-technique and tactic identifiers, as well as ICS technique IDs. It states \"a MITRE ATT&CK technique ID (e.g., T1190) or explicitly named attack technique\" but does not clarify whether parent techniques (e.g., T1090 alongside T1090.002), tactics (TA0011, TA0008), or ICS-specific IDs (T0859) should be extracted as separate entities when explicitly mentioned. This caused the model to miss T1090 in Error 1, include TA* as AttackTechnique in Error 2 (which may be undesired), and fail to extract T0859 in Error 4. The prompt should explicitly enumerate which ATT&CK identifier forms (technique, sub-technique, tactic, ICS) constitute distinct entity mentions and require span-level extraction of each ID string rather than the surrounding phrase.",
+    "round_idx": 0
+  },
+  {
+    "gradient_id": "grad_P_E0_0_1",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The prompt's \"Configuration\" type is defined as \"a concrete product, software, component, device, or CPE identifier that can be affected by vulnerabilities,\" but this lacks negative constraints and contextual scoping. Consequently, the model erroneously tagged IP addresses (109.248.150[.]13), filenames (comadmin.dat, winds.exe), ports (443), and generic tool names (PsPing) as Configuration in Errors 2 and 3, even when they were indicators, malware artifacts, or unrelated to a vulnerable product. The prompt should add explicit exclusion rules (e.g., \"do not extract IP addresses, hashes, filenames, ports, or tools unless they are named vulnerable products/components\") and clarify that Configuration requires an association with a vulnerability or affected asset context.",
+    "round_idx": 0
+  },
+  {
+    "gradient_id": "grad_P_E0_0_2",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The prompt does not specify how to handle parent/child technique ID co-mentions and overlapping spans. In Error 1, the gold output includes both \"T1090\" and \"T1090.002\" as separate entities with the same start but different ends, while the model only extracted the sub-technique. In Error 4, the gold output extracts each ID token (T1078, T0859, T1110.001) separately rather than the full phrase. The prompt should instruct that every distinct explicit identifier string is a separate entity even if nested/overlapping, and that the entity text must be only the ID token (not the descriptive phrase like \"Valid Accounts (T1078, ICS T0859)\").",
+    "round_idx": 0
+  },
+  {
+    "gradient_id": "grad_P_E0_0_3",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "The prompt lacks guidance on \"Vulnerability\" extraction beyond CVE IDs, causing inconsistent behavior. In Error 2, the model extracted \"Log4Shell\" as a Vulnerability with normalized_id null, but the gold output omitted it (implying only explicit CVE IDs are in scope, or that named vulnerabilities without CVE are excluded). The prompt says \"an explicit CVE identifier (e.g., CVE-YYYY-NNNN)\" but does not state whether well-known vulnerability names (e.g., Log4Shell, Snake) are to be included or ignored. It should clarify that only CVE-format identifiers are extracted under Vulnerability, or define a separate policy for named flaws, to prevent spurious picks.",
+    "round_idx": 0
+  }
+]

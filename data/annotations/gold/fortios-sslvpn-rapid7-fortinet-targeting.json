@@ -1,0 +1,413 @@
+{
+  "doc_id": "fortios-sslvpn-rapid7-fortinet-targeting",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "cpe_audit": {
+      "version": "cpe-gold-audit-v1",
+      "prediction_outputs_used": false,
+      "decision_count": 7
+    },
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "The following blog was co-authored by Caitlin Condon and Bob Rudis , also known (in his own words) as “some caveman from Maine.”\nLast week, the U.S. Cybersecurity and Infrastructure Security Agency (CISA) and the FBI published a joint alert to warn users that APT threat actors were likely exploiting unpatched Fortinet FortiOS devices to gain initial access to government, commercial, technology, and other organizations’ networks. The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months. This week, CISA published an additional alert amplifying a threat report from security firm Onapsis, which describes ongoing attacks against SAP applications .\nRapid7 has previously analyzed a number of the highest-severity vulnerabilities enumerated in this latest set of alerts. The CVEs included in these reports have been detailed below, along with recommendations for organizations seeking to defend themselves against ongoing exploitation. Notably, none of these vulnerabilities are new—many of them are a year or more old, which underscores the need for a regular patch cycle, as well as a defined patch cycle exception process.\nFortiOS vulnerabilities\nFortinet devices are what we call network pivots —that is, the position they occupy in organizations’ networks gives external attackers the ability to access internal networks if exploited successfully, which in turn allows for a range of secondary attacks and other nefarious activities. If at all possible, defenders should strongly consider implementing a “zero-day” patch cycle for internet-exposed and other network pivot products, including (but not only) Fortinet and other VPNs. InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\nCVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs. The vulnerability allows external attackers to download FortiOS system files through specially crafted HTTP resource requests and has been exploited in the wild since 2019 . Read our full analysis of CVE-2018-13379 and its history here .\nCVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP server.\nCVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for the second factor of authentication (FortiToken) if that user changes the case of their username.\nSince the beginning of March, Rapid7 Labs' Heisenberg Honeypot fleet has seen nearly 60 IP addresses attempting common, known single GET request exploits against Fortinet devices (we’ve grouped the IP addresses up to the hosting provider/ISP level):\nUnfortunately, our fleet does not emulate Fortinet devices. Since these devices are fairly easy to distinguish on the internet (nearly 1 million of them in the image, below)—due to the common, vendor SSL certificate they use—it is surprising to see opportunistic exploit attempts versus just inventory/discovery scans.\nThat last sentence should help organizations underscore why CISA and the FBI raised the Fortinet exploitation campaign to the level of a joint alert: Attackers can easily identify legitimate Fortinet endpoints on the internet, and it takes virtually no time from discovery to exploit if a target system is not patched and configured properly.\nAs Fortinet notes in that post, these weaknesses have had patches available for quite some time, so if you’re just getting around to fixing them, you may need to dedicate some further cycles to some forensic activity, as it is very likely one or more attackers have already taken advantage of these vulnerabilities.\nTo learn more about other vulnerabilities that functioned as network pivots for attackers, read Rapid7’s 2020 Vulnerability Intelligence Report .\nActively exploited SAP vulnerabilities\nThe two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207. Both of these vulnerabilities allow broad compromise of SAP applications and environments.\nCVE-2020-6287 is present by default in SAP applications running on top of SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP NetWeaver 7.5). It allows remote, unauthenticated attackers to exploit and fully compromise vulnerable SAP installations. Exploitation of CVE-2020-6287 through the HTTP interface allows for modification or extraction of highly sensitive information and disruption of critical business processes. For a list of affected applications and additional guidance, read Rapid7’s full analysis here .\nCVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager. SAP customers should pay close attention to their access logs and monitor for unauthorized user account creation; they should also ensure that web services in general do not run using privileged accounts. InsightVM and Nexpose customers can assess their risk to CVE-2020-6287 with a remote vulnerability check. A check for CVE-2020-6207 is currently under development.\nOther SAP vulnerabilities noted as being exploited in the wild include:\nCVE-2018-2380 affects SAP CRM versions 7.01, 7.02, 7.30, 7.31, 7.33, and 7.54. The vulnerability allows an attacker to exploit insufficient validation of path information provided by users, letting characters representing \"traverse to parent directory\" pass through to the file APIs.\nCVE-2016-9563 is a vulnerability in SAP NetWeaver Application Server (AS) Java 7.5 that allows remote authenticated users to conduct XML External Entity (XXE) attacks via the sap.com~tc~bpem~him~uwlconn~provider~web/bpemuwlconn URI.\nCVE-2016-3976 is a directory traversal vulnerability in SAP NetWeaver AS Java 7.1 through 7.5 that allows remote attackers to read arbitrary files via a ..\\ (dot dot backslash) in the fileName parameter to CrashFileDownloadServlet.\nCVE-2010-5326 is a CVSS-10 vulnerability in the Invoker Servlet on SAP NetWeaver Application Server Java platforms that arises from a lack of authentication and allows remote attackers to execute arbitrary code via an HTTP or HTTPS request. It was used in attacks from 2013 to 2016.\nGet the latest stories, expertise, and news about security today.\n",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "CVE-2018-13379",
+      "type": "Vulnerability",
+      "start": 549,
+      "end": 563,
+      "normalized_id": "CVE-2018-13379",
+      "evidence": "The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months."
+    },
+    {
+      "id": "E4",
+      "text": "CVE-2019-5591",
+      "type": "Vulnerability",
+      "start": 2283,
+      "end": 2296,
+      "normalized_id": "CVE-2019-5591",
+      "evidence": "CVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to inter"
+    },
+    {
+      "id": "E5",
+      "text": "CVE-2020-12812",
+      "type": "Vulnerability",
+      "start": 2477,
+      "end": 2491,
+      "normalized_id": "CVE-2020-12812",
+      "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a u"
+    },
+    {
+      "id": "E6",
+      "text": "CVE-2020-6287",
+      "type": "Vulnerability",
+      "start": 4267,
+      "end": 4280,
+      "normalized_id": "CVE-2020-6287",
+      "evidence": "The two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has b"
+    },
+    {
+      "id": "E7",
+      "text": "CVE-2020-6207",
+      "type": "Vulnerability",
+      "start": 4477,
+      "end": 4490,
+      "normalized_id": "CVE-2020-6207",
+      "evidence": "omponent LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207."
+    },
+    {
+      "id": "E8",
+      "text": "CVE-2018-2380",
+      "type": "Vulnerability",
+      "start": 5750,
+      "end": 5763,
+      "normalized_id": "CVE-2018-2380",
+      "evidence": "CVE-2018-2380 affects SAP CRM versions 7.01, 7.02, 7.30, 7.31, 7.33, and 7.54."
+    },
+    {
+      "id": "E9",
+      "text": "CVE-2016-9563",
+      "type": "Vulnerability",
+      "start": 6034,
+      "end": 6047,
+      "normalized_id": "CVE-2016-9563",
+      "evidence": "CVE-2016-9563 is a vulnerability in SAP NetWeaver Application Server (AS) Java 7.5 that allows remote authenticated users to conduct "
+    },
+    {
+      "id": "E10",
+      "text": "CVE-2016-3976",
+      "type": "Vulnerability",
+      "start": 6267,
+      "end": 6280,
+      "normalized_id": "CVE-2016-3976",
+      "evidence": "CVE-2016-3976 is a directory traversal vulnerability in SAP NetWeaver AS Java 7.1 through 7.5 that allows remote attackers to read ar"
+    },
+    {
+      "id": "E11",
+      "text": "CVE-2010-5326",
+      "type": "Vulnerability",
+      "start": 6499,
+      "end": 6512,
+      "normalized_id": "CVE-2010-5326",
+      "evidence": "CVE-2010-5326 is a CVSS-10 vulnerability in the Invoker Servlet on SAP NetWeaver Application Server Java platforms that arises from a"
+    },
+    {
+      "id": "E12",
+      "text": "SAP NetWeaver",
+      "type": "Configuration",
+      "start": 4313,
+      "end": 4326,
+      "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+      "evidence": "The two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207."
+    },
+    {
+      "id": "E13",
+      "text": "SAP CRM",
+      "type": "Configuration",
+      "start": 5772,
+      "end": 5779,
+      "normalized_id": "cpe:2.3:a:sap:customer_relationship_management:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2018-2380 affects SAP CRM versions 7.01, 7.02, 7.30, 7.31, 7.33, and 7.54.",
+      "notes": "SAP CRM 的相关 NVD 配置采用完整 product 字段 customer_relationship_management。"
+    },
+    {
+      "id": "E14",
+      "text": "SAP Solution Manager",
+      "type": "Configuration",
+      "start": 4456,
+      "end": 4476,
+      "normalized_id": "cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*",
+      "evidence": "The two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207."
+    },
+    {
+      "id": "E17",
+      "text": "CVE-2018-13379",
+      "type": "Vulnerability",
+      "start": 1881,
+      "end": 1895,
+      "normalized_id": "CVE-2018-13379",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal c"
+    },
+    {
+      "id": "E18",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 1835,
+      "end": 1842,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+      "evidence": "InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\nCVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs."
+    },
+    {
+      "id": "E19",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 2341,
+      "end": 2348,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+      "evidence": "CVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP"
+    },
+    {
+      "id": "E20",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 2550,
+      "end": 2557,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。",
+      "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for the"
+    },
+    {
+      "id": "E21",
+      "text": "SAP NetWeaver",
+      "type": "Configuration",
+      "start": 6070,
+      "end": 6083,
+      "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2016-9563 is a vulnerability in SAP NetWeaver Application Server (AS) Java 7.5 that allows remote authenticated users to conduct XML External Entity (XXE) attacks via the sap.com~tc~bpem~him~uwlconn~provider~web/bpemuwlconn URI."
+    },
+    {
+      "id": "E22",
+      "text": "SAP NetWeaver",
+      "type": "Configuration",
+      "start": 6323,
+      "end": 6336,
+      "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2016-3976 is a directory traversal vulnerability in SAP NetWeaver AS Java 7.1 through 7.5 that allows remote attackers to read arbitrary files via a ..\\ (dot dot backslash) in the fileName parameter to CrashFileDownloadServlet."
+    },
+    {
+      "id": "E23",
+      "text": "SAP NetWeaver",
+      "type": "Configuration",
+      "start": 6566,
+      "end": 6579,
+      "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+      "notes": "relation-localized mention added by repair_gold_v4",
+      "evidence": "CVE-2010-5326 is a CVSS-10 vulnerability in the Invoker Servlet on SAP NetWeaver Application Server Java platforms that arises from a lack of authentication and allows remote attackers to execute arbitrary code via an HTTP or HTTPS request. It was used in attacks from 2013 to 2016."
+    },
+    {
+      "id": "E24",
+      "text": "CVE-2018-13379",
+      "type": "Vulnerability",
+      "start": 2245,
+      "end": 2259,
+      "normalized_id": "CVE-2018-13379",
+      "evidence": "Read our full analysis of CVE-2018-13379 and its history here .\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E25",
+      "text": "CVE-2020-6287",
+      "type": "Vulnerability",
+      "start": 4583,
+      "end": 4596,
+      "normalized_id": "CVE-2020-6287",
+      "evidence": "CVE-2020-6287 is present by default in SAP applications running on top of SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E26",
+      "text": "CVE-2020-6287",
+      "type": "Vulnerability",
+      "start": 4855,
+      "end": 4868,
+      "normalized_id": "CVE-2020-6287",
+      "evidence": "Exploitation of CVE-2020-6287 through the HTTP interface allows for modification or extraction of highly sensitive information and disruption of crit",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E27",
+      "text": "CVE-2020-6207",
+      "type": "Vulnerability",
+      "start": 5109,
+      "end": 5122,
+      "normalized_id": "CVE-2020-6207",
+      "evidence": "CVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to comp",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E28",
+      "text": "CVE-2020-6287",
+      "type": "Vulnerability",
+      "start": 5571,
+      "end": 5584,
+      "normalized_id": "CVE-2020-6287",
+      "evidence": "InsightVM and Nexpose customers can assess their risk to CVE-2020-6287 with a remote vulnerability check.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E29",
+      "text": "CVE-2020-6207",
+      "type": "Vulnerability",
+      "start": 5632,
+      "end": 5645,
+      "normalized_id": "CVE-2020-6207",
+      "evidence": "A check for CVE-2020-6207 is currently under development.\n",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E30",
+      "text": "FortiOS",
+      "type": "Configuration",
+      "start": 461,
+      "end": 468,
+      "normalized_id": "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "evidence": "The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months.",
+      "notes": "FortiOS 的正式 CPE 使用 part=o；a:fortinet:fortios 在当前 NVD CPE 检索中无匹配。"
+    },
+    {
+      "id": "E31",
+      "text": "SAP NetWeaver",
+      "type": "Configuration",
+      "start": 4657,
+      "end": 4670,
+      "normalized_id": "cpe:2.3:a:sap:netweaver:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-6287 is present by default in SAP applications running on top of SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP NetWeaver 7.5).",
+      "notes": "v4.5 human reannotation and adjudication"
+    },
+    {
+      "id": "E32",
+      "text": "SAP’s Solution Manager",
+      "type": "Configuration",
+      "start": 5184,
+      "end": 5206,
+      "normalized_id": "cpe:2.3:a:sap:solution_manager:*:*:*:*:*:*:*:*",
+      "evidence": "CVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager.",
+      "notes": "v4.5 human reannotation and adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R2",
+      "type": "affects",
+      "head": "E17",
+      "tail": "E18",
+      "evidence": "InsightVM and Nexpose customers can assess their exposure to all three FortiOS CVEs below with vulnerability checks.\nCVE-2018-13379 is a pre-authentication information disclosure vulnerability that arises from a path traversal flaw in the web portal component of FortiOS SSL VPNs.",
+      "evidence_start": 1764,
+      "evidence_end": 2044,
+      "adjudication_basis": "heading and immediately following CVE sentence form one product-scoped fact block"
+    },
+    {
+      "id": "R3",
+      "type": "affects",
+      "head": "E4",
+      "tail": "E19",
+      "evidence": "CVE-2019-5591 is a default configuration vulnerability in FortiOS that allows an unauthenticated attacker on the same subnet to intercept sensitive information by impersonating the LDAP",
+      "evidence_start": 2283,
+      "evidence_end": 2468
+    },
+    {
+      "id": "R4",
+      "type": "affects",
+      "head": "E5",
+      "tail": "E20",
+      "evidence": "CVE-2020-12812 is an improper authentication vulnerability in SSL VPN in FortiOS 6.4.0, 6.2.0 to 6.2.3, 6.0.9 and below that gives a user the ability to log in successfully without being prompted for ",
+      "evidence_start": 2477,
+      "evidence_end": 2677
+    },
+    {
+      "id": "R7",
+      "type": "affects",
+      "head": "E6",
+      "tail": "E12",
+      "evidence": "The two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207.",
+      "evidence_start": 4188,
+      "evidence_end": 4491,
+      "adjudication_basis": "single sentence explicitly pairs each named SAP product and CVE"
+    },
+    {
+      "id": "R8",
+      "type": "affects",
+      "head": "E9",
+      "tail": "E21",
+      "evidence": "CVE-2016-9563 is a vulnerability in SAP NetWeaver Application Server (AS) Java 7.5 that allows remote authenticated users to conduct XML External Entity (XXE) attacks via the sap.com~tc~bpem~him~uwlconn~provider~web/bpemuwlconn URI.",
+      "evidence_start": 6034,
+      "evidence_end": 6266,
+      "adjudication_basis": "complete sentence directly identifies the affected SAP NetWeaver product"
+    },
+    {
+      "id": "R9",
+      "type": "affects",
+      "head": "E10",
+      "tail": "E22",
+      "evidence": "CVE-2016-3976 is a directory traversal vulnerability in SAP NetWeaver AS Java 7.1 through 7.5 that allows remote attackers to read arbitrary files via a ..\\ (dot dot backslash) in the fileName parameter to CrashFileDownloadServlet.",
+      "evidence_start": 6267,
+      "evidence_end": 6498,
+      "adjudication_basis": "complete direct SAP NetWeaver fact"
+    },
+    {
+      "id": "R10",
+      "type": "affects",
+      "head": "E11",
+      "tail": "E23",
+      "evidence": "CVE-2010-5326 is a CVSS-10 vulnerability in the Invoker Servlet on SAP NetWeaver Application Server Java platforms that arises from a lack of authentication and allows remote attackers to execute arbitrary code via an HTTP or HTTPS request. It was used in attacks from 2013 to 2016.",
+      "evidence_start": 6499,
+      "evidence_end": 6781,
+      "adjudication_basis": "complete direct SAP NetWeaver fact"
+    },
+    {
+      "id": "R11",
+      "type": "affects",
+      "head": "E8",
+      "tail": "E13",
+      "evidence": "CVE-2018-2380 affects SAP CRM versions 7.01, 7.02, 7.30, 7.31, 7.33, and 7.54.",
+      "evidence_start": 5750,
+      "evidence_end": 5828
+    },
+    {
+      "id": "R12",
+      "type": "affects",
+      "head": "E7",
+      "tail": "E14",
+      "evidence": "The two most recent SAP vulnerabilities detailed in Onapsis’ threat report are CVE-2020-6287, a CVSS-10 vulnerability in the SAP NetWeaver Application Server (AS) Java component LM Configuration Wizard that has been actively exploited in the wild since July 2020, and SAP Solution Manager CVE-2020-6207.",
+      "evidence_start": 4188,
+      "evidence_end": 4491,
+      "adjudication_basis": "single sentence explicitly pairs each named SAP product and CVE"
+    },
+    {
+      "id": "R13",
+      "type": "affects",
+      "head": "E1",
+      "tail": "E30",
+      "evidence": "The alert highlighted three FortiOS vulnerabilities, all of which were previously known, and at least one of which (CVE-2018-13379) has been broadly exploited for more than 18 months.",
+      "evidence_start": 433,
+      "evidence_end": 616,
+      "adjudication_basis": "summary explicitly identifies CVE-2018-13379 among the FortiOS vulnerabilities"
+    },
+    {
+      "id": "R14",
+      "type": "affects",
+      "head": "E25",
+      "tail": "E31",
+      "evidence": "CVE-2020-6287 is present by default in SAP applications running on top of SAP NetWeaver AS Java 7.3 and any newer versions (up to SAP NetWeaver 7.5).",
+      "evidence_start": 4583,
+      "evidence_end": 4732,
+      "adjudication_basis": "sentence explicitly states CVE-2020-6287 is present on SAP NetWeaver"
+    },
+    {
+      "id": "R15",
+      "type": "affects",
+      "head": "E27",
+      "tail": "E32",
+      "evidence": "CVE-2020-6207 arises from a missing authentication check in version 7.2 of SAP’s Solution Manager product, allowing attackers to completely compromise all SMDAgents connected to the Solution Manager.",
+      "evidence_start": 5109,
+      "evidence_end": 5308,
+      "adjudication_basis": "sentence explicitly places CVE-2020-6207 in SAP Solution Manager"
+    }
+  ],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

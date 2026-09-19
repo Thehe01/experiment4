@@ -1,0 +1,9 @@
+[
+  {
+    "gradient_id": "grad_P_E0_0_0",
+    "parent_prompt_id": "P_E0",
+    "error_group_id": "G0_0",
+    "gradient_text": "OPTIMIZABLE_GUIDANCE only says to apply frozen definitions conservatively with no ordered decision procedure for Configuration, so it fails to operationalize minimality and relevance. It should direct a two-step filter-then-minimize check: first test if a candidate product mention can plausibly serve as the tail of a directly supported vulnerability-affects fact and reject incidental tools, protocols, services, OS or environment mentions and generic placeholders, then shrink any surviving span to the shortest independently identifiable core by stripping version lists/ranges, feature/component qualifiers, parenthetical expansions, and trailing generic nouns before verifying exact offsets. Without that explicit procedure the model defaults to maximal noun phrases and to any technology-like token, producing overlong boundaries and systematic false positives.",
+    "round_idx": 0
+  }
+]

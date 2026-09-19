@@ -1,0 +1,478 @@
+{
+  "total_nodes": 7,
+  "total_edges": 6,
+  "final_candidate_id": "c_r2_p0_g0_para_0",
+  "trace_to_root": [
+    "P_E0",
+    "c_r2_p0_g0_edit",
+    "c_r2_p0_g0_para_0"
+  ],
+  "nodes": {
+    "P_E0": {
+      "candidate_id": "P_E0",
+      "parent_id": null,
+      "round_idx": 0,
+      "generation_type": "initial",
+      "gradient_id": null,
+      "gradient_text": null,
+      "estimated_reward": 0.838174,
+      "selection_status": "dropped",
+      "num_evaluations": 2,
+      "samples_seen": 16,
+      "tp": 101,
+      "fp": 20,
+      "fn": 19,
+      "ucb_score": 0.0,
+      "metrics": {
+        "train_f1": 0.8285714285714286,
+        "train_precision": 0.8405797101449275,
+        "train_recall": 0.8169014084507042,
+        "train_sample_ids": [
+          "aa25-266a_w6",
+          "aa25-266a_w2",
+          "fortios-sslvpn-rapid7-fortinet-targeting_w2",
+          "aa25-266a_w9",
+          "aa25-266a_w8",
+          "aa23-339a-coldfusion-cve-26360_w1",
+          "aa23-339a-coldfusion-cve-26360_w0",
+          "aa25-266a_w0"
+        ],
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": true,
+          "frozen_contract_reasons": []
+        },
+        "dev_f1": 0.8470588235294118,
+        "dev_precision": 0.8228571428571428,
+        "dev_recall": 0.8727272727272727,
+        "dev_by_type": {
+          "AttackTechnique": {
+            "tp": 46,
+            "fp": 6,
+            "fn": 0,
+            "precision": 0.884615,
+            "recall": 1.0,
+            "f1": 0.938776,
+            "details": {},
+            "gold_support": 46,
+            "predicted_support": 52,
+            "applicable": true
+          },
+          "Configuration": {
+            "tp": 7,
+            "fp": 17,
+            "fn": 19,
+            "precision": 0.291667,
+            "recall": 0.269231,
+            "f1": 0.28,
+            "details": {},
+            "gold_support": 26,
+            "predicted_support": 24,
+            "applicable": true
+          },
+          "Vulnerability": {
+            "tp": 86,
+            "fp": 7,
+            "fn": 0,
+            "precision": 0.924731,
+            "recall": 1.0,
+            "f1": 0.960894,
+            "details": {},
+            "gold_support": 86,
+            "predicted_support": 93,
+            "applicable": true
+          },
+          "Weakness": {
+            "tp": 5,
+            "fp": 1,
+            "fn": 2,
+            "precision": 0.833333,
+            "recall": 0.714286,
+            "f1": 0.769231,
+            "details": {},
+            "gold_support": 7,
+            "predicted_support": 6,
+            "applicable": true
+          }
+        },
+        "dev_normalization": {
+          "correct": 139,
+          "total": 144,
+          "accuracy": 0.9652777777777778,
+          "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+        }
+      },
+      "prompt_sha256": "931a2afb5f106214720f6d66f24d58acd39680581be87ba5cfe962b781e27c56",
+      "prompt_text": "<IMMUTABLE_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</IMMUTABLE_CONTRACT>\n\n<OPTIMIZABLE_GUIDANCE>\nScan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Apply the frozen definitions conservatively and check every emitted span against the source before returning JSON.\n</OPTIMIZABLE_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<IMMUTABLE_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these fo..."
+    },
+    "c_r1_p0_g0_edit": {
+      "candidate_id": "c_r1_p0_g0_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit_full",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The Configuration wording ties entity existence to a future relation tail and relies on vague shortest-identifiable language without testable span rules, so rewrite it as standalone mention detection with explicit trimming operations: keep only the minimal bare product or platform token, strip vendor prefixes, versions, feature or capability qualifiers and surrounding component chains instead of merging them into one long span, apply the rule uniformly to titles, body and lists to enforce exhaustive mention coverage rather than only relation-adjacent cases, and restrict normalization to a verified canonical form with null fallback rather than composing a new identifier from surface words.",
+      "estimated_reward": 0.0,
+      "selection_status": "not_sampled",
+      "num_evaluations": 0,
+      "samples_seen": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "无法解析冻结契约块",
+            "无法解析可优化 guidance 块"
+          ]
+        }
+      },
+      "prompt_sha256": "da64c6a9ab270949e6a6541e671f133304038020612b8fc1260d9c976a5526fa",
+      "prompt_text": "TASK_STAGE: entity-only - Cybersecurity Knowledge Extraction\n\nExtract only these four entity types from the input text. Detect each mention standalone; do not require co-occurrence with another entity type.\n\n- Vulnerability: every explicit CVE identifier mention (e.g., CVE-YYYY-NNNN). Preserve the identifier as written and normalize to canonical CVE form.\n- Weakness: an explicit CWE identifier (e.g., CWE-XXX), or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: a standalone mention of a concrete, independently identifiable product, platform, operating system, device, or component, or a complete CPE string when present. Existence does NOT depend on a future relation. Extract mentions uniformly in titles, headings, prose, tables, lists, captions, and references, not only when near a Vulnerability.\n  Span determination - keep only the minimal bare product or platform token(s):\n  1. Start from the noun phrase and reduce to the shortest independently identifiable core product name.\n  2. Strip leading vendor / organization prefix when it is a separate token before a standalone product name; keep vendor+product only when the core alone is generic and the short vendor+product pair is needed for independent identifiability.\n  3. Strip trailing version numbers, patches, builds, updates, and version-like qualifiers. Never extract a version number alone.\n  4. Strip trailing feature, capability, function, module, or component-chain qualifiers. Do not merge a product with a following component, feature, or capability chain into one long span. Keep only the head product mention. Exclude pure feature-only phrases, tools, services, filenames, IP addresses, ports, and generic placeholders.\n  5. Exclude incidental vendors, tools, services, filenames, IP addresses, ports, ordinary versions, patches, builds, and generic product placeholders standing alone.\n- AttackTechnique: an explicit ATT&CK T-code (e.g., TXXXX) or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention at its own span, including repeats in titles, body, tables, and lists; do not deduplicate across different spans and do not skip header/title mentions; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null. For Configuration, use only a verified canonical CPE 2.3 URI; if uncertain of part/vendor/product, use null. Never compose or synthesize a CPE by lowercasing, joining, or underscoring surface words.\n5. Output entities only. Do not extract, define, or output relations.\n6. Return exactly these entity fields for each item: id, text, type, start, end, normalized_id.\n\nReference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nOperational guidance:\nScan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Apply the definitions conservatively, apply Configuration trimming uniformly to enforce exhaustive mention coverage, and check every emitted span against the source before returning JSON.\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\nOutput JSON only.",
+      "prompt_text_preview": "TASK_STAGE: entity-only - Cybersecurity Knowledge Extraction  Extract only these four entity types from the input text. ..."
+    },
+    "c_r1_p0_g0_para_0": {
+      "candidate_id": "c_r1_p0_g0_para_0",
+      "parent_id": "c_r1_p0_g0_edit",
+      "round_idx": 1,
+      "generation_type": "paraphrase_full",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The Configuration wording ties entity existence to a future relation tail and relies on vague shortest-identifiable language without testable span rules, so rewrite it as standalone mention detection with explicit trimming operations: keep only the minimal bare product or platform token, strip vendor prefixes, versions, feature or capability qualifiers and surrounding component chains instead of merging them into one long span, apply the rule uniformly to titles, body and lists to enforce exhaustive mention coverage rather than only relation-adjacent cases, and restrict normalization to a verified canonical form with null fallback rather than composing a new identifier from surface words.",
+      "estimated_reward": 0.818565,
+      "selection_status": "dropped",
+      "num_evaluations": 2,
+      "samples_seen": 16,
+      "tp": 97,
+      "fp": 20,
+      "fn": 23,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "无法解析冻结契约块",
+            "无法解析可优化 guidance 块"
+          ]
+        }
+      },
+      "prompt_sha256": "761c63da9adf44d47db3973d9aa14999f1f5fc65dda3b36703ac035296cb8f79",
+      "prompt_text": "PHASE: Standalone Entities Only — Cyber Threat Knowledge Harvest\n\nGoal: Identify and mark up every in-scope entity mention appearing on its own. Do not wait for a second entity type to appear nearby — tag each mention independently.\n\nTag these four categories and nothing else:\n\n• Vulnerability — Any literal CVE code written as CVE-YYYY-NNNN (or with extra digits). Keep the surface form exactly as printed, but set the normalized form to the standard uppercase CVE representation.\n\n• Weakness — Either a literal CWE code such as CWE-XXX, or a natural-language flaw description that is explicitly linked to a CWE code inside the same immediate factual context. A generic flaw description with no CWE code visible in that local block must be ignored. Do not guess a CWE from background knowledge and do not use an external CVE-to-CWE lookup.\n\n• Configuration — Any self-sufficient reference to a specific real product, platform, operating system, hardware device, or software component, plus any full CPE string if shown. A Configuration mention is valid by itself; it does not need to be tied to a future link. Tag it everywhere it occurs — titles, headers, body paragraphs, tables, bulleted lists, figure captions, footnotes — not just next to a Vulnerability.\n  How to choose the span — retain only the shortest bare core name:\n  a. Begin with the full noun phrase and shrink to the minimal token(s) that still independently identify the product.\n  b. Remove a leading vendor / maker token when it stands apart from a self-identifying product; keep vendor+product together only if the product word alone is too generic and the vendor pairing is required to recognize it.\n  c. Remove trailing release information — version numbers, patches, builds, updates, and similar qualifiers. A version string by itself is never a valid span.\n  d. Remove trailing feature / function / module / sub-component chains. Do not combine a product with a following capability chain into one long mention; keep only the head product. Pure feature phrases, general tools, services, file names, IP addresses, port numbers, and vague placeholders are not valid.\n  e. Do not tag stand-alone incidental vendors, utilities, services, file names, IPs, ports, plain versions / patches / builds, or generic product placeholders.\n\n• AttackTechnique — Either a literal ATT&CK technique code like TXXXX (including dotted sub-techniques) or a technique name that can be unambiguously mapped from the surrounding wording. If a name sits directly next to its T-code, keep only the T-code mention. Tactic TA-IDs and software / group / campaign S/G/C IDs are excluded.\n\nStrict handling rules:\n1. The `text` of every entity must occur verbatim in the source.\n2. `start` and `end` are zero-based character offsets with exclusive `end`, so that slicing the source as source[start:end] reproduces `text` exactly.\n3. Capture each separate occurrence at its own location, including repetitions across headings, prose, tables and lists. Never collapse duplicates from different spans, never omit title/header occurrences, and never emit the same type over the identical span twice.\n4. `normalized_id` must be the canonical CVE, the locally-shown CWE, an attested CPE 2.3 URI, or the ATT&CK T-code; use null otherwise. For Configuration, only use a confirmed canonical CPE 2.3 URI — if the part/vendor/product is doubtful, use null. Do not fabricate a CPE by lower-casing, concatenating, or adding underscores to display words.\n5. Emit entities alone. Do not extract, invent, or print relationships.\n6. Every entity object must contain exactly these members: `id`, `text`, `type`, `start`, `end`, `normalized_id`, and the top-level object must have the single key `entities`.\n\nGuiding samples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nSource document to process:\n<text>\n{text}\n</text>\n\nWork plan: Read the full source including prose, tables, lists, captions, and identifiers split across lines. Apply the category definitions strictly, apply the Configuration shortening uniformly for complete coverage, and verify each span against the source before emitting.\n\nFinal output: Emit a single JSON object only, shaped as {\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}. No extra prose.",
+      "prompt_text_preview": "PHASE: Standalone Entities Only — Cyber Threat Knowledge Harvest  Goal: Identify and mark up every in-scope entity menti..."
+    },
+    "c_r2_p0_g0_edit": {
+      "candidate_id": "c_r2_p0_g0_edit",
+      "parent_id": "P_E0",
+      "round_idx": 1,
+      "generation_type": "gradient_edit_full",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The Configuration wording invites both over-extraction and under-extraction because it couples entity identity to a future relation judgment without operational span tests. Strengthen the optimizable guidance to define eligibility as a canonical product/component substring only, require stripping instance numerals, deployment qualifiers, plural inflection and version-like suffixes from the emitted span, explicitly forbid generic infrastructure-role nouns, incidental tools, files and deployment-specific labels even when adjacent to vulnerability context, clarify when a multi-token suite name should be kept whole versus reduced to its base product, and constrain normalized_id to a verified base-product lookup with null fallback rather than concatenating qualifiers, supported by contrastive positive and negative illustrations.",
+      "estimated_reward": 0.0,
+      "selection_status": "not_sampled",
+      "num_evaluations": 0,
+      "samples_seen": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "无法解析冻结契约块",
+            "无法解析可优化 guidance 块"
+          ]
+        }
+      },
+      "prompt_sha256": "bf0fa4801c1058f6b2940ca8b8b641a104b06356b2c1a55f9eb0371719cad688",
+      "prompt_text": "<TASK_CONTRACT>\nBOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1\nTASK_STAGE: entity-only\n\nExtract only these four entity types:\n- Vulnerability: every explicit CVE identifier mention. Preserve PDF spacing or hyphen breaks in text and normalize the identifier.\n- Weakness: an explicit CWE identifier, or a descriptive flaw phrase uniquely tied to an explicit CWE in the same local fact block. A description-only phrase without a locally explicit CWE is out of scope. Never infer a CWE from model knowledge or an external CVE-CWE mapping.\n- Configuration: the shortest independently identifiable concrete product, component, device, or complete CPE mention that can serve as the tail of a directly supported Vulnerability-affects->Configuration fact. Exclude ordinary versions, patches, builds, incidental vendors, tools, services, filenames, IP addresses, ports, and generic product placeholders.\n- AttackTechnique: an explicit ATT&CK T-code or a technique name that is uniquely normalizable from the local text. When a name and its T-code are adjacent, retain only the T-code. TA tactic IDs and S/G/C identifiers are out of scope.\n\nEntity rules:\n1. Entity text must be an exact substring of the input.\n2. start/end are 0-based offsets and end is exclusive; text[start:end] must equal entity text.\n3. Extract every distinct explicit mention; do not duplicate the same type and span.\n4. normalized_id uses the canonical CVE, locally explicit CWE, verified CPE 2.3 URI, or ATT&CK T-code; otherwise null.\n5. Output entities only. Stage 1 must not extract, define, or output relations.\n6. Return exactly these entity fields: id, text, type, start, end, normalized_id.\n\nFrozen reference examples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\nInput text:\n<text>\n{text}\n</text>\n\nReturn one JSON object only:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}\n</TASK_CONTRACT>\n\n<OPERATIONAL_GUIDANCE>\nScan the entire input, including prose, tables, lists, captions, and line-broken identifiers. Apply the frozen definitions conservatively and check every emitted span against the source before returning JSON.\n\nCONFIGURATION ELIGIBILITY AND SPAN TESTS - apply in order for every candidate:\n\n1. Canonical product-only eligibility: Emit a Configuration only if the substring itself names a concrete vendor product, component, device model, or complete CPE string that is independently identifiable without surrounding context. If the phrase needs surrounding vulnerability context to seem like a product, skip it.\n\n2. Strip to base form and adjust offsets: The emitted span must exclude instance numerals, deployment qualifiers, plural inflection, and version-like suffixes. Adjust start/end to cover only the base product substring so text[start:end] equals the emitted text.\n- Instance numerals: \"ExampleApp 1\", \"ExampleApp 2\" -> emit \"ExampleApp\" for each occurrence, with span covering only \"ExampleApp\", never including \" 1\" / \" 2\".\n- Deployment / status qualifiers: \"public-facing ExampleApp\", \"affected ExampleApp\", \"compromised ExampleApp\" -> emit only \"ExampleApp\".\n- Plural inflection: if source writes pluralized product such as \"ExampleApps\", emit only the singular base \"ExampleApp\" with end offset reduced by 1 to exclude trailing \"s\". If no singular base is present as substring, skip.\n- Versions, patches, builds: never include them in span.\n\n3. Explicit forbiddens even adjacent to vulnerability context: Never emit generic infrastructure-role nouns, incidental actor/defender tools, files, or deployment-specific labels, even when sentence says vulnerability was exploited on/in them or they were used for scanning, proxying, archiving, or persistence.\n- Forbid: \"Web Server\", \"endpoint\", \"workstation\", \"network\", \"agency\", \"server\" alone, \"EDR tool\", \"scanner\", \"proxy tool\", \"archive tool\", \"trojan multi-tool\", filenames, script names (.exe, .rar, .zip, .sh, .jsp, .ashx), IP addresses, ports, service names, vendor alone, generic placeholders.\n- Contrast: In \"exploited flaw in Acme Portal on public-facing host using ScannerTool\", POSITIVE is \"Acme Portal\" only. NEGATIVE - do not emit \"public-facing host\", \"host\", or \"ScannerTool\".\n\n4. Multi-token suite vs base product:\n- Keep whole only when the contiguous phrase is the official product-family name as written (vendor + product + edition family). Example POSITIVE: \"Acme Portal Data Center and Server\" kept as one span when that full family phrase appears contiguously, minus any instance numeral.\n- Reduce when second part is deployment/instance context, not part of family name. Example: \"Acme Portal on Web Server\" -> emit only \"Acme Portal\", never \"Acme Portal on Web Server\" and never \"Web Server\".\n- Never create a suite span by joining non-contiguous tokens or by adding qualifiers from elsewhere in the sentence.\n\n5. normalized_id constraint: Set normalized_id only to a verified base-product CPE 2.3 URI for vendor:product. Never construct a CPE by concatenating edition words, suite connectors, numerals, or qualifiers with underscores. If no confident verified base-product mapping exists, use null.\n- POSITIVE: \"Acme Portal\" -> \"cpe:2.3:a:acme:portal:*:*:*:*:*:*:*:*\" if verified, else null.\n- NEGATIVE: do not emit \"cpe:2.3:a:acme:portal_data_center_and_server:...\" by joining span tokens, and do not invent a product token from an instance label or plural form.\n\nIf any test fails, skip the candidate. When in doubt between emitting a longer qualified span versus a shorter base span, emit the shorter base span. When in doubt between emitting a generic noun versus nothing, emit nothing.\n</OPERATIONAL_GUIDANCE>\n\nFollow the immutable contract and the operational guidance. Output JSON only.",
+      "prompt_text_preview": "<TASK_CONTRACT> BOUNDARY_CONTRACT_VERSION: chapter3-boundary-sync-v1 TASK_STAGE: entity-only  Extract only these four en..."
+    },
+    "c_r2_p0_g0_para_0": {
+      "candidate_id": "c_r2_p0_g0_para_0",
+      "parent_id": "c_r2_p0_g0_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase_full",
+      "gradient_id": "grad_P_E0_0_0",
+      "gradient_text": "The Configuration wording invites both over-extraction and under-extraction because it couples entity identity to a future relation judgment without operational span tests. Strengthen the optimizable guidance to define eligibility as a canonical product/component substring only, require stripping instance numerals, deployment qualifiers, plural inflection and version-like suffixes from the emitted span, explicitly forbid generic infrastructure-role nouns, incidental tools, files and deployment-specific labels even when adjacent to vulnerability context, clarify when a multi-token suite name should be kept whole versus reduced to its base product, and constrain normalized_id to a verified base-product lookup with null fallback rather than concatenating qualifiers, supported by contrastive positive and negative illustrations.",
+      "estimated_reward": 0.863436,
+      "selection_status": "final_winner",
+      "num_evaluations": 2,
+      "samples_seen": 16,
+      "tp": 98,
+      "fp": 9,
+      "fn": 22,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "无法解析冻结契约块",
+            "无法解析可优化 guidance 块"
+          ]
+        },
+        "dev_f1": 0.8246153846153846,
+        "dev_precision": 0.8375,
+        "dev_recall": 0.8121212121212121,
+        "dev_by_type": {
+          "AttackTechnique": {
+            "tp": 46,
+            "fp": 6,
+            "fn": 0,
+            "precision": 0.884615,
+            "recall": 1.0,
+            "f1": 0.938776,
+            "details": {},
+            "gold_support": 46,
+            "predicted_support": 52,
+            "applicable": true
+          },
+          "Configuration": {
+            "tp": 6,
+            "fp": 13,
+            "fn": 20,
+            "precision": 0.315789,
+            "recall": 0.230769,
+            "f1": 0.266667,
+            "details": {},
+            "gold_support": 26,
+            "predicted_support": 19,
+            "applicable": true
+          },
+          "Vulnerability": {
+            "tp": 78,
+            "fp": 7,
+            "fn": 8,
+            "precision": 0.917647,
+            "recall": 0.906977,
+            "f1": 0.912281,
+            "details": {},
+            "gold_support": 86,
+            "predicted_support": 85,
+            "applicable": true
+          },
+          "Weakness": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.571429,
+            "f1": 0.727273,
+            "details": {},
+            "gold_support": 7,
+            "predicted_support": 4,
+            "applicable": true
+          }
+        },
+        "dev_normalization": {
+          "correct": 131,
+          "total": 134,
+          "accuracy": 0.9776119402985075,
+          "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+        }
+      },
+      "prompt_sha256": "934cf1a15d9dc5a190e4695699e088d35e7e2e7f23072c9ffdcb0efca463fa4b",
+      "prompt_text": "You are an entity extractor for cybersecurity reports. Perform entity-only extraction. Do not extract relations.\n\nGOAL\nRead the supplied passage and list every explicit mention of the four allowed categories below. Do not create any other label and do not output relationships.\n\nALLOWED CATEGORIES\n\n1. Vulnerability — Any directly written CVE ID. Keep the surface form exactly as it appears, including odd spacing or line-break hyphens from PDFs, but put the cleaned canonical form in normalized_id.\n\n2. Weakness — Either:\n   a) a directly written CWE ID, or\n   b) a natural-language flaw description that is explicitly linked to a CWE ID inside the same nearby factual unit.\n   If there is no CWE ID written nearby in the text, do not tag a generic flaw description. Never guess a CWE from background knowledge or from a known CVE-to-CWE mapping.\n\n3. Configuration — The minimal standalone name of a specific vendor product, software component, hardware device, or a full CPE string that could plausibly be the target of a Vulnerability-affects-Configuration statement.\n   Keep only independently recognizable products. Omit version numbers, patch/build strings, vendor names alone, attacker or defender utilities, scanners, proxies, services, file/script names, IP addresses, ports, and vague placeholders like “server” or “endpoint”.\n\n4. AttackTechnique — A directly written MITRE ATT&CK technique code (Txxxx) or a technique name that can be mapped to a single T-code purely from the wording in the passage. If a name appears immediately next to its code, keep the code only and drop the name. Do not tag tactic IDs starting with TA, nor software/group/campaign IDs starting with S/G/C.\n\nCORE SPAN AND OUTPUT RULES\n- Every `text` must occur verbatim in the input. `start` is inclusive, `end` is exclusive, both 0-based, and `text` must equal input[start:end].\n- Tag each distinct occurrence separately; never emit two items with identical type and identical span.\n- `normalized_id` must be: canonical CVE for Vulnerability, the locally written CWE for Weakness, a verified CPE 2.3 URI for Configuration, or the T-code for AttackTechnique. Use null when no verified value applies.\n- Emit entities only. Do not define, infer, or print relations.\n- Check the whole document: body paragraphs, tables, bullet lists, figure captions, and identifiers split across lines.\n\nPRODUCT MENTION FILTER — evaluate every Configuration candidate in this order, skip if it fails:\n\nA. Standalone recognizability: The substring alone must identify a concrete product/component/device/CPE without needing the surrounding vulnerability sentence. If it only looks like a product because of context, discard it.\n\nB. Reduce to base name and fix offsets:\n- Remove instance numbers: for “MyApp 1” / “MyApp 2” keep only “MyApp” with offsets covering just that word.\n- Remove deployment adjectives: for “affected MyApp”, “public-facing MyApp”, “compromised MyApp” keep only “MyApp”.\n- De-pluralize: if written as “MyApps”, keep only “MyApp” and shorten `end` by 1 to drop the trailing “s”. If no singular substring exists, discard.\n- Never include version, patch, or build tokens in the span.\n\nC. Hard exclusions even near exploit language: Never tag role nouns, generic infrastructure, security tooling, or operational artifacts, even if the sentence says the flaw was exploited on them or they were used for scanning, proxying, archiving, or persistence.\nExamples to reject: Web Server, host, endpoint, workstation, network, agency, server alone, EDR, scanner, proxy, archiver, multi-tool, .exe/.rar/.zip/.sh/.jsp/.ashx names, IPs, ports, service labels, lone vendor, generic placeholders.\nIllustration: in “flaw in Acme Portal on public-facing host using ScannerTool” the only valid product is “Acme Portal”.\n\nD. Suite versus base:\n- Keep a long multi-word span only when that contiguous string is the official family/edition name as printed, e.g. “Acme Portal Data Center and Server” when it appears contiguously as a family label, minus any instance number.\n- Shorten when the extra words are location/deployment context, e.g. “Acme Portal on Web Server” -> keep only “Acme Portal”.\n- Never assemble a span from non-adjacent tokens or import qualifiers from elsewhere.\n\nE. Normalization for products: `normalized_id` may only be a verified base vendor:product CPE 2.3 URI. Do not build a CPE by joining edition words or numbers with underscores and do not invent tokens from instance labels or plurals. Example: “Acme Portal” may map to “cpe:2.3:a:acme:portal:*:*:*:*:*:*:*:*” if verified, otherwise null. If uncertain, use null.\n\nILLUSTRATIVE EXAMPLES — follow the same logic, do not copy spans:\n\nExample 1\nInput: CVE-2023-1234 in MyApp exploited via T1059.\nOutput:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"CVE-2023-1234\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 13, \"normalized_id\": \"CVE-2023-1234\"}, {\"id\": \"E2\", \"text\": \"MyApp\", \"type\": \"Configuration\", \"start\": 17, \"end\": 22, \"normalized_id\": null}, {\"id\": \"E3\", \"text\": \"T1059\", \"type\": \"AttackTechnique\", \"start\": 37, \"end\": 42, \"normalized_id\": \"T1059\"}]}\n\nExample 2\nInput: Buffer overflow (CWE-119) in FooBar from CVE-2024-0001.\nOutput:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"Buffer overflow\", \"type\": \"Weakness\", \"start\": 0, \"end\": 15, \"normalized_id\": \"CWE-119\"}, {\"id\": \"E2\", \"text\": \"CWE-119\", \"type\": \"Weakness\", \"start\": 17, \"end\": 24, \"normalized_id\": \"CWE-119\"}, {\"id\": \"E3\", \"text\": \"FooBar\", \"type\": \"Configuration\", \"start\": 29, \"end\": 35, \"normalized_id\": null}, {\"id\": \"E4\", \"text\": \"CVE-2024-0001\", \"type\": \"Vulnerability\", \"start\": 41, \"end\": 54, \"normalized_id\": \"CVE-2024-0001\"}]}\n\nDOCUMENT TO PROCESS\n<text>\n{text}\n</text>\n\nRESPONSE FORMAT\nReturn a single JSON object and nothing else, with this shape:\n{\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 13, \"normalized_id\": \"CVE-...\"}]}\nEach item must contain exactly these fields: \"id\", \"text\", \"type\", \"start\", \"end\", \"normalized_id\". If no entities are found, return {\"entities\": []}.",
+      "prompt_text_preview": "You are an entity extractor for cybersecurity reports. Perform entity-only extraction. Do not extract relations.  GOAL R..."
+    },
+    "c_r2_p1_g0_edit": {
+      "candidate_id": "c_r2_p1_g0_edit",
+      "parent_id": "c_r1_p0_g0_para_0",
+      "round_idx": 2,
+      "generation_type": "gradient_edit_full",
+      "gradient_id": "grad_c_r1_p0_g0_para_0_0_0",
+      "gradient_text": "The Configuration definition is over-broad and under-specified, which drives systematic false-positives and span errors. Tighten it from \"any product/platform/component\" to only in-scope system under analysis, with explicit allow vs deny guidance: define positive as installed OS / application / firmware / hardware that can be vulnerable or targeted, and explicitly forbid dual-use command-line utilities, attacker proxy/transfer/scan tooling, defender scanner products, cloud/service providers, generic application families, file names, commands, IPs/ports, and bare versions. Make span selection deterministic: require shortest self-identifying core, mandatory stripping of leading vendor when product alone is distinctive, mandatory stripping of trailing versions/builds/patches so a version token can never be part of the span, no merging of product + feature/module chain, and suppression of a Configuration tag when the surface form is functioning as the technique label immediately adjacent to its technique code. Add contrastive negative guiding samples showing tool-like and scanner-like mentions getting no tag and showing vendor-prefixed vs bare-product and version-inclusive vs version-stripped spans, so the model learns boundaries instead of generalizing from only clean positive examples.",
+      "estimated_reward": 0.0,
+      "selection_status": "not_sampled",
+      "num_evaluations": 0,
+      "samples_seen": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "无法解析冻结契约块",
+            "无法解析可优化 guidance 块"
+          ]
+        }
+      },
+      "prompt_sha256": "527e6679d737389ae4a0233cc6e16985fd0193b3f556e2ac447d395c14fe71e3",
+      "prompt_text": "PHASE: Standalone Entities Only — Cyber Threat Knowledge Harvest\n\nGoal: Identify and mark up every in-scope entity mention appearing on its own. Do not wait for a second entity type to appear nearby — tag each mention independently.\n\nTag these four categories and nothing else:\n\n• Vulnerability — Any literal CVE code written as CVE-YYYY-NNNN (or with extra digits). Keep the surface form exactly as printed, but set the normalized form to the standard uppercase CVE representation.\n\n• Weakness — Either a literal CWE code such as CWE-XXX, or a natural-language flaw description that is explicitly linked to a CWE code inside the same immediate factual context. A generic flaw description with no CWE code visible in that local block must be ignored. Do not guess a CWE from background knowledge and do not use an external CVE-to-CWE lookup.\n\n• Configuration — Only the in-scope system under analysis that can be vulnerable or targeted: an installed operating system, application, firmware / OS distribution, or hardware device / appliance.\n  Positive scope: a specific real product, platform, OS, hardware device, or software component that is installed, runs, or is attacked, plus any full CPE string if shown. A Configuration mention is valid by itself; it does not need to be tied to a future link. Tag it everywhere it occurs — titles, headers, body paragraphs, tables, bulleted lists, figure captions, footnotes — not just next to a Vulnerability.\n  Explicit deny — never tag:\n  a. dual-use command-line utilities and data-transfer / sync tools used by actors;\n  b. attacker proxy / transfer / scan / discovery tooling and post-exploitation frameworks;\n  c. defender scanner / assessment products and services;\n  d. cloud / hosting / service providers and generic infrastructure operators;\n  e. generic application families, general tools, services, pure feature phrases;\n  f. file names, commands / flags, scripts, IP addresses, port numbers, URLs;\n  g. bare versions / patches / builds / updates, or vague placeholders.\n  If the surface form is functioning as the technique label immediately adjacent to its technique code — e.g., Name (TXXXX) — tag only the T-code as AttackTechnique and suppress any Configuration tag on the name, even if the name resembles a utility or platform.\n  How to choose the span — shortest self-identifying core, deterministically:\n  a. Begin with the full noun phrase and shrink to the minimal token(s) that still independently identify the product.\n  b. Mandatory strip of leading vendor / maker token when the product alone is distinctive and self-identifying; keep vendor+product together only if the product word alone is too generic and the vendor pairing is required to recognize it.\n  c. Mandatory strip of trailing release information — version numbers, patches, builds, updates, and similar qualifiers. A version string by itself is never a valid span and a version token can never be part of the span.\n  d. No merging of product + feature / function / module / sub-component chain. Keep only the head product. Do not combine a product with a following capability chain into one long mention.\n  e. Do not tag stand-alone incidental vendors, utilities, services, file names, IPs, ports, plain versions / patches / builds, or generic product placeholders.\n\n• AttackTechnique — Either a literal ATT&CK technique code like TXXXX (including dotted sub-techniques) or a technique name that can be unambiguously mapped from the surrounding wording. If a name sits directly next to its T-code, keep only the T-code mention. Tactic TA-IDs and software / group / campaign S/G/C IDs are excluded.\n\nStrict handling rules:\n1. The `text` of every entity must occur verbatim in the source.\n2. `start` and `end` are zero-based character offsets with exclusive `end`, so that slicing the source as source[start:end] reproduces `text` exactly.\n3. Capture each separate occurrence at its own location, including repetitions across headings, prose, tables and lists. Never collapse duplicates from different spans, never omit title/header occurrences, and never emit the same type over the identical span twice.\n4. `normalized_id` must be the canonical CVE, the locally-shown CWE, an attested CPE 2.3 URI, or the ATT&CK T-code; use null otherwise. For Configuration, only use a confirmed canonical CPE 2.3 URI — if the part/vendor/product is doubtful, use null. Do not fabricate a CPE by lower-casing, concatenating, or adding underscores to display words.\n5. Emit entities alone. Do not extract, invent, or print relationships.\n6. Every entity object must contain exactly these members: `id`, `text`, `type`, `start`, `end`, `normalized_id`, and the top-level object must have the single key `entities`.\n\nGuiding samples:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nUsed DataSync tool and NetScan scanner against VaultServer.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"VaultServer\", \"type\": \"Configuration\", \"start\": 47, \"end\": 58, \"normalized_id\": null}\n]\n</entities>\n</example>\n\n<example>\n<text>\nGlobex VaultServer 4.2.1 affected; Exploit Public-Facing Application (T1190) used.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"VaultServer\", \"type\": \"Configuration\", \"start\": 7, \"end\": 18, \"normalized_id\": null},\n  {\"id\": \"E2\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 70, \"end\": 75, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\nSource document to process:\n<text>\n{text}\n</text>\n\nWork plan: Read the full source including prose, tables, lists, captions, and identifiers split across lines. Apply the category definitions strictly, apply the Configuration allow vs deny list and shortening rules uniformly for complete coverage, verify each span against the source before emitting, and suppress Configuration when the candidate is tooling / scanner / provider / generic family / file / command / IP / port / version or is the technique label adjacent to its T-code.\n\nFinal output: Emit a single JSON object only, shaped as {\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}. No extra prose.",
+      "prompt_text_preview": "PHASE: Standalone Entities Only — Cyber Threat Knowledge Harvest  Goal: Identify and mark up every in-scope entity menti..."
+    },
+    "c_r2_p1_g0_para_0": {
+      "candidate_id": "c_r2_p1_g0_para_0",
+      "parent_id": "c_r2_p1_g0_edit",
+      "round_idx": 2,
+      "generation_type": "paraphrase_full",
+      "gradient_id": "grad_c_r1_p0_g0_para_0_0_0",
+      "gradient_text": "The Configuration definition is over-broad and under-specified, which drives systematic false-positives and span errors. Tighten it from \"any product/platform/component\" to only in-scope system under analysis, with explicit allow vs deny guidance: define positive as installed OS / application / firmware / hardware that can be vulnerable or targeted, and explicitly forbid dual-use command-line utilities, attacker proxy/transfer/scan tooling, defender scanner products, cloud/service providers, generic application families, file names, commands, IPs/ports, and bare versions. Make span selection deterministic: require shortest self-identifying core, mandatory stripping of leading vendor when product alone is distinctive, mandatory stripping of trailing versions/builds/patches so a version token can never be part of the span, no merging of product + feature/module chain, and suppression of a Configuration tag when the surface form is functioning as the technique label immediately adjacent to its technique code. Add contrastive negative guiding samples showing tool-like and scanner-like mentions getting no tag and showing vendor-prefixed vs bare-product and version-inclusive vs version-stripped spans, so the model learns boundaries instead of generalizing from only clean positive examples.",
+      "estimated_reward": 0.848485,
+      "selection_status": "final_not_selected",
+      "num_evaluations": 2,
+      "samples_seen": 16,
+      "tp": 98,
+      "fp": 13,
+      "fn": 22,
+      "ucb_score": 0.0,
+      "metrics": {
+        "prompt_scope_audit": {
+          "configured_scope": "unconstrained",
+          "runtime_interface_valid": true,
+          "runtime_interface_reasons": [],
+          "frozen_contract_exact_match": false,
+          "frozen_contract_reasons": [
+            "标记 <IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 </IMMUTABLE_CONTRACT> 必须且只能出现一次",
+            "标记 <OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "标记 </OPTIMIZABLE_GUIDANCE> 必须且只能出现一次",
+            "无法解析冻结契约块",
+            "无法解析可优化 guidance 块"
+          ]
+        },
+        "dev_f1": 0.8036253776435045,
+        "dev_precision": 0.8012048192771084,
+        "dev_recall": 0.806060606060606,
+        "dev_by_type": {
+          "AttackTechnique": {
+            "tp": 46,
+            "fp": 4,
+            "fn": 0,
+            "precision": 0.92,
+            "recall": 1.0,
+            "f1": 0.958333,
+            "details": {},
+            "gold_support": 46,
+            "predicted_support": 50,
+            "applicable": true
+          },
+          "Configuration": {
+            "tp": 7,
+            "fp": 21,
+            "fn": 19,
+            "precision": 0.25,
+            "recall": 0.269231,
+            "f1": 0.259259,
+            "details": {},
+            "gold_support": 26,
+            "predicted_support": 28,
+            "applicable": true
+          },
+          "Vulnerability": {
+            "tp": 75,
+            "fp": 7,
+            "fn": 11,
+            "precision": 0.914634,
+            "recall": 0.872093,
+            "f1": 0.892857,
+            "details": {},
+            "gold_support": 86,
+            "predicted_support": 82,
+            "applicable": true
+          },
+          "Weakness": {
+            "tp": 5,
+            "fp": 1,
+            "fn": 2,
+            "precision": 0.833333,
+            "recall": 0.714286,
+            "f1": 0.769231,
+            "details": {},
+            "gold_support": 7,
+            "predicted_support": 6,
+            "applicable": true
+          }
+        },
+        "dev_normalization": {
+          "correct": 128,
+          "total": 133,
+          "accuracy": 0.9624060150375939,
+          "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+        }
+      },
+      "prompt_sha256": "24f92a7c67d26434d2356f4ee9d41df7a88704eb9e1944354190cd14084e0c8d",
+      "prompt_text": "MISSION: Isolated Mention Capture — Cyber Threat Entity Collection\n\nObjective: Find and annotate all qualifying entity mentions that stand alone. Treat every mention as independent — do not require co-occurrence with another entity type to justify tagging.\n\nAnnotate exactly these four types, no others:\n\n• Vulnerability — Any verbatim CVE identifier in the form CVE-YYYY-NNNN, allowing longer digit sequences. Preserve the printed surface exactly, while normalizing to the canonical upper-case CVE value.\n\n• Weakness — Either a verbatim CWE identifier like CWE-XXX, or a plain-language defect phrase that is directly tied to a CWE identifier within the same tight factual passage. Disregard a generic defect phrase when no CWE identifier appears in that local passage. Never infer a CWE from prior knowledge and never resolve it via an outside CVE-to-CWE mapping.\n\n• Configuration — Only the examined system that could be vulnerable or be targeted: a deployed operating system, application, firmware / OS distro, or hardware device / appliance.\n  In-scope positives: a concrete real product, platform, OS, hardware unit, or software component that is installed, executes, or is attacked, plus any complete CPE string when present. A Configuration is legitimate on its own; no linkage is needed. Label it in every location — titles, headings, main text, tables, bullet lists, figure captions, footnotes — not only beside a Vulnerability.\n  Hard exclusions — do not label:\n  a. multi-purpose shell utilities and file-transfer / synchronization programs wielded by actors;\n  b. adversary proxy / exfiltration / scanning / reconnaissance utilities and post-compromise frameworks;\n  c. defensive scanning / auditing offerings and services;\n  d. cloud / hosting / managed-service vendors and generic infrastructure providers;\n  e. broad software categories, general-purpose tools, services, bare capability descriptions;\n  f. filenames, command lines / options, scripts, IP literals, port numbers, URLs;\n  g. lone version / patch / build / update strings, or imprecise placeholders.\n  If a surface string acts as the technique title immediately beside its technique identifier — for instance Name (TXXXX) — retain only the T-code as AttackTechnique and block any Configuration label on the name, even when the name looks like a utility or platform.\n  Span selection — minimal self-sufficient core, applied consistently:\n  a. Start from the full noun phrase and reduce to the fewest token(s) that still uniquely denote the product.\n  b. Obligatory removal of the leading vendor / manufacturer token when the product name alone is unique and recognizable; retain vendor+product only when the product token alone is overly generic and needs the vendor to be identifiable.\n  c. Obligatory removal of trailing release detail — version numbers, patches, builds, updates, and equivalent qualifiers. A version alone is never a valid extent and a version token may never be included in the extent.\n  d. Never fuse product plus trailing feature / capability / module / sub-part sequence. Keep just the head product. Do not create one extended mention from a product plus capability chain.\n  e. Never label isolated incidental vendors, utilities, services, filenames, IPs, ports, bare versions / patches / builds, or generic placeholders.\n\n• AttackTechnique — Either a verbatim ATT&CK code such as TXXXX, including dotted sub-technique forms, or a technique title that maps unambiguously from the nearby phrasing. When a title stands immediately beside its T-code, retain only the T-code occurrence. Exclude tactic TA-IDs and software / group / campaign S/G/C identifiers.\n\nBinding output constraints:\n1. Each entity `text` must appear character-for-character in the source.\n2. `start` and `end` are zero-based offsets with `end` exclusive, such that source[start:end] yields `text` verbatim.\n3. Record every distinct occurrence at its own position, including repeats in headings, narrative, tables and lists. Do not merge duplicates from separate spans, do not skip title / header hits, and do not output the same type twice on the identical span.\n4. `normalized_id` must be the canonical CVE, the CWE shown locally, a verified CPE 2.3 URI, or the ATT&CK T-code; otherwise null. For Configuration, employ only a verified canonical CPE 2.3 URI — when part/vendor/product is uncertain use null. Never synthesize a CPE by lowercasing, joining, or underscoring display words.\n5. Output entities only. Do not derive, hallucinate, or print relations.\n6. Each entity entry must hold exactly `id`, `text`, `type`, `start`, `end`, `normalized_id`, and the root object must contain the sole key `entities`.\n\nIllustrative instances:\n<example>\n<text>\nAttackers exploited CVE-2021-44228 in the Log4j component to gain initial access by exploiting a public-facing application (T1190).\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-44228\", \"type\": \"Vulnerability\", \"start\": 20, \"end\": 34, \"normalized_id\": \"CVE-2021-44228\"},\n  {\"id\": \"E2\", \"text\": \"Log4j\", \"type\": \"Configuration\", \"start\": 42, \"end\": 47, \"normalized_id\": \"cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*\"},\n  {\"id\": \"E3\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 124, \"end\": 129, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nCVE-2021-26855 is a server-side request forgery (CWE-918) vulnerability in Microsoft Exchange Server.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"CVE-2021-26855\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-2021-26855\"},\n  {\"id\": \"E2\", \"text\": \"server-side request forgery\", \"type\": \"Weakness\", \"start\": 20, \"end\": 47, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E3\", \"text\": \"CWE-918\", \"type\": \"Weakness\", \"start\": 49, \"end\": 56, \"normalized_id\": \"CWE-918\"},\n  {\"id\": \"E4\", \"text\": \"Microsoft Exchange Server\", \"type\": \"Configuration\", \"start\": 75, \"end\": 100, \"normalized_id\": \"cpe:2.3:a:microsoft:exchange_server:*:*:*:*:*:*:*:*\"}\n]\n</entities>\n</example>\n\n<example>\n<text>\nUsed DataSync tool and NetScan scanner against VaultServer.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"VaultServer\", \"type\": \"Configuration\", \"start\": 47, \"end\": 58, \"normalized_id\": null}\n]\n</entities>\n</example>\n\n<example>\n<text>\nGlobex VaultServer 4.2.1 affected; Exploit Public-Facing Application (T1190) used.\n</text>\n<entities>\n[\n  {\"id\": \"E1\", \"text\": \"VaultServer\", \"type\": \"Configuration\", \"start\": 7, \"end\": 18, \"normalized_id\": null},\n  {\"id\": \"E2\", \"text\": \"T1190\", \"type\": \"AttackTechnique\", \"start\": 70, \"end\": 75, \"normalized_id\": \"T1190\"}\n]\n</entities>\n</example>\n\nDocument for analysis:\n<text>\n{text}\n</text>\n\nProcedure: Inspect the entire input including narrative, tables, lists, captions, and identifiers broken over lines. Enforce the type definitions rigorously, enforce the Configuration inclusion versus exclusion catalog and the shortening directives evenly for full coverage, confirm every extent against the source prior to emission, and withhold Configuration where the candidate is tooling / scanner / provider / generic family / file / command / IP / port / version or is the technique title beside its T-code.\n\nRequired result: Return solely one JSON object, in the form {\"entities\": [{\"id\": \"E1\", \"text\": \"exact substring\", \"type\": \"Vulnerability\", \"start\": 0, \"end\": 14, \"normalized_id\": \"CVE-...\"}]}. No surrounding commentary.",
+      "prompt_text_preview": "MISSION: Isolated Mention Capture — Cyber Threat Entity Collection  Objective: Find and annotate all qualifying entity m..."
+    }
+  },
+  "edges": [
+    {
+      "source": "P_E0",
+      "target": "c_r1_p0_g0_edit",
+      "generation_type": "gradient_edit_full",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g0_edit",
+      "target": "c_r1_p0_g0_para_0",
+      "generation_type": "paraphrase_full",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "P_E0",
+      "target": "c_r2_p0_g0_edit",
+      "generation_type": "gradient_edit_full",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "c_r2_p0_g0_edit",
+      "target": "c_r2_p0_g0_para_0",
+      "generation_type": "paraphrase_full",
+      "gradient_id": "grad_P_E0_0_0"
+    },
+    {
+      "source": "c_r1_p0_g0_para_0",
+      "target": "c_r2_p1_g0_edit",
+      "generation_type": "gradient_edit_full",
+      "gradient_id": "grad_c_r1_p0_g0_para_0_0_0"
+    },
+    {
+      "source": "c_r2_p1_g0_edit",
+      "target": "c_r2_p1_g0_para_0",
+      "generation_type": "paraphrase_full",
+      "gradient_id": "grad_c_r1_p0_g0_para_0_0_0"
+    }
+  ]
+}

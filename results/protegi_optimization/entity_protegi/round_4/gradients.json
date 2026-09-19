@@ -1,0 +1,114 @@
+[
+  {
+    "gradient_id": "grad_c_r2_p1_g0_para_1_0_0",
+    "parent_prompt_id": "c_r2_p1_g0_para_1",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt's definition of \"Configuration\" is too broad and ambiguous regarding what constitutes an \"identifiable affected product/component\" versus a generic tool or filename, causing the model to over-extract in Error Examples 1 and 3. In Example 1, the model labeled Splashtop Streamer, PuTTy, AnyDesk, PsExec, etc. as Configuration, while gold output omitted them; in Example 3, it labeled version strings like \"Sophos Firewall v19.0 MR1 (19.0.1) and older\" and DLL names like \"Telerik.Web.UI.dll\" as Configuration, which gold partially tolerated but the pattern shows inconsistency. The prompt says \"a specific product, software, component, device, or CPE identifier that may be impacted by vulnerabilities\" and excludes \"generic filenames... unless clearly given as a product/component name,\" but does not specify whether admin/tools or malware binaries named in narrative are in scope, nor does it align with the gold standard's apparent selectivity. Improvement direction: Tighten the Configuration category by explicitly listing inclusion/exclusion criteria with examples of tools vs. products, state whether named malware or RMM tools are excluded, and require a vulnerability or impact context linkage in the same sentence/segment to qualify.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r2_p1_g0_para_1_0_1",
+    "parent_prompt_id": "c_r2_p1_g0_para_1",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt fails to instruct the model to extract both parent and sub-technique ATT&CK IDs when a sub-technique is explicitly given, leading to under-extraction in Error Example 2. Gold output for \"[T1036.004]\" includes both \"T1036.004\" (sub) and \"T1036\" (parent) as separate entities, but the prompt only says \"Sub-technique IDs and parent technique IDs are both valid when explicitly present\" — meaning when the text contains the parent ID string. It does not say to derive or infer the parent ID from a sub-technique mention. The model correctly extracted only the verbatim \"T1036.004\" and missed the gold's expectation of an additional synthesized parent entity. Improvement direction: Add an explicit rule that when a sub-technique ID (Txxxx.yyy) is extracted, you MUST also emit the corresponding parent technique ID (Txxxx) as a distinct entity with its own offsets (pointing to the same substring start of the sub-technique, end at the dot or parent length) and normalized_id, unless the parent ID appears separately as its own verbatim span.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r2_p1_g0_para_1_0_2",
+    "parent_prompt_id": "c_r2_p1_g0_para_1",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt lacks guidance on handling bracketed or non-standard formatted ATT&CK mentions (e.g., \"[T1574.014]\"), causing potential confusion, though Example 2 shows the model handled brackets fine — the deeper issue is the prompt's silence on parent technique inference (above) and on technique mentions inside evidence-like appended text. More critically, the prompt does not define how to treat \"named attack technique\" mentions without IDs (e.g., \"pass-the-hash\") — gold in Example 2 includes only IDs, but the model might otherwise add named ones. However, the observable error is missing parent IDs. A separate deficiency: the prompt's examples never show a sub-technique with parent derivation, so the model cannot learn the gold convention. Improvement direction: Include a reference example demonstrating sub-technique and parent technique co-extraction from a single \"[Txxxx.yyy]\" token, and explicitly state the parent derivation rule with offset mechanics.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r2_p1_g0_para_1_0_3",
+    "parent_prompt_id": "c_r2_p1_g0_para_1",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt does not specify the expected behavior for product/component names that appear adjacent to CVEs in condensed advisory lists (Error Example 3), nor does it reconcile the \"Configuration\" exclusions with the gold's apparent tolerance for some product names but not others (e.g., gold omitted \"Confluence Server\" as Configuration but model included it). The prompt's instruction \"Generic filenames, IP addresses, ports... MUST NOT be treated as Configuration\" is negative-only and does not positively define the boundary for partial product strings, versioned product phrases, or vendor+product tokens. This ambiguity produces false positives (model) vs. false negatives (gold) mismatch. Improvement direction: Provide a positive decision procedure for Configuration — e.g., \"Extract only vendor-declared product names or CPE-mappable strings when they are the impacted target of a stated vulnerability; ignore descriptive phrases, version ranges, and component filenames unless the gold schema example specifically shows them; when in doubt, omit.\" Also add a few negative Configuration examples (like those in the prompt's own exclusion list but as full entities) to calibrate.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r3_p0_g2_edit_0_0",
+    "parent_prompt_id": "c_r3_p0_g2_edit",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt explicitly allows MITRE ATT&CK tactic IDs (TA-codes such as TA0011, TA0008, TA0007, TA0005, TA0006) as valid AttackTechnique entities, stating \"or explicitly named attack method\" and listing \"TA0011\" as an example in the category definition. However, the gold annotations in the error examples consistently exclude TA-codes (e.g., Error Example 1 gold has no TA0007/TA0011/TA0005; Error Example 3 gold omits TA0011/TA0008/TA0006). This creates a direct contradiction between the prompt's stated schema and the expected extraction behavior. The prompt must be revised to clearly distinguish whether tactic IDs (TAxxxx) are in-scope or explicitly out-of-scope, and if out-of-scope, remove them from the category definition and examples entirely to prevent the model from hallucinating them as valid entities.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r3_p0_g2_edit_0_1",
+    "parent_prompt_id": "c_r3_p0_g2_edit",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt's Configuration rules require a product/component to be \"EXPLICITLY stated as being affected by, targeted by, or subject to a vulnerability or attack technique\" with specific phrasing patterns, but the examples and gold outputs show that mere incidental co-occurrence in a vulnerability context (e.g., \"three FortiOS vulnerabilities\", \"servers hosting JetBrains TeamCity software\", \"unpatched VMware Horizon server\" implicitly via Log4Shell) qualifies as Configuration. The prompt's example 4 explicitly EXCLUDES \"Microsoft OneDrive\" and \"Webroot\" as not affected/targeted, yet gold outputs in Error 2 and 4 extract \"FortiOS\" and \"JetBrains TeamCity\" from similarly loose phrasing (\"three FortiOS vulnerabilities\", \"targeting servers hosting JetBrains TeamCity software\"). The prompt lacks a clear, consistent definition of what level of contextual linkage is sufficient, causing the model to under-extract Configuration entities when the linkage is implicit rather than using the exact prohibited phrases. The instruction should be refined to specify that products named in the same clause/sentence as a CVE or attack technique reference are considered affected/targeted even without explicit \"vulnerability in X\" wording.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r3_p0_g2_edit_0_2",
+    "parent_prompt_id": "c_r3_p0_g2_edit",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt instructs the model to \"Output ONLY the specified JSON schema fields per entity: id, text, type, start, end, normalized_id\" and \"Do not add fields beyond the specified schema (e.g., no 'evidence', 'notes', or other extra keys)\". While this correctly suppresses extra fields in model output, the gold standard data includes \"evidence\" and \"notes\" fields, indicating the annotation pipeline expects or tolerates them. More critically, the prompt gives no guidance on how to handle multi-mention duplicates of the same entity (e.g., CVE-2019-18935 appearing 3 times in Error 2, CVE-2019-18935 twice in Error 1). Rule 4 says \"Do not output repeated duplicate entries for the identical mention span\" but the gold outputs include multiple distinct spans of the same CVE with different IDs and evidence. The prompt is ambiguous on whether distinct textual occurrences at different offsets should each be extracted as separate entities (they should, per gold). The prompt should clarify that each unique (start,end) span is a separate entity even if the normalized_id repeats, and that \"duplicate\" means identical span only.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r3_p0_g2_edit_0_3",
+    "parent_prompt_id": "c_r3_p0_g2_edit",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt provides reference examples but none of them demonstrate the extraction of a CWE identifier as a \"fundamental flaw class\" without an explicit CWE-xxx token, nor do they show how to handle sub-technique IDs presented with brackets (e.g., \"[T1055.001]\") or newline-separated IDs (e.g., \"T1059.001\\n\" in Error 3). The model correctly extracted these in Error 3 but the gold omitted TA-codes, revealing a training/annotation mismatch not reflected in the prompt's examples. Additionally, the prompt's AttackTechnique definition says \"a MITRE ATT&CK technique ID (e.g., T1190, T1090.002, T1078, TA0011)\" which implicitly validates TA0011, but the gold standard treats TA-codes as non-entities. The prompt needs to either (a) align its examples with the true gold standard by removing TA-codes from valid examples and adding negative examples showing TA-codes are skipped, or (b) explicitly state the relationship between tactic (TA) and technique (T) codes and which are in evaluation scope. The current example set creates a false sense of validity for TA-codes.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r2_p3_g3_para_0_0_0",
+    "parent_prompt_id": "c_r2_p3_g3_para_0",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt’s definition of the “Configuration” category is too permissive and ambiguous regarding what counts as a “specific product, software, component, device, or CPE identifier that could be affected by vulnerabilities.” It explicitly allows product/component names (e.g., Log4j, Microsoft Exchange Server) but fails to distinguish between (a) products mentioned as affected components in a vulnerability context versus (b) tools, malware, or administrative utilities merely referenced in narrative text (e.g., PsExec, Mimikatz, Confluence in passing). The gold outputs show that such tools are NOT labeled as Configuration, yet the prompt gives no rule excluding attacker tools, malware, or generic mentions not explicitly tied to being an affected target. Improvement direction: tighten the Configuration definition to require explicit framing as an affected/vulnerable product or component (e.g., “in X”, “affecting X”, “X vulnerability”) and explicitly exclude adversary tools, malware, and non-target software named only in attack descriptions.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r2_p3_g3_para_0_0_1",
+    "parent_prompt_id": "c_r2_p3_g3_para_0",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt’s AttackTechnique rules cover T-codes and TA-codes but create ambiguity around parent/sub-technique overlap and ID formatting in noisy text. In Error Example 1, the gold output includes both “T1557” and “T1557.001” as separate spans at the same start when only the sub-technique is written, and the model failed to emit the parent. Conversely, the prompt says “Both sub-technique IDs and parent technique IDs are valid when explicitly stated” but does not specify whether a written sub-technique implies extraction of the parent ID as a distinct entity (as gold expects). Additionally, the prompt does not clarify handling of IDs split across lines or bracketed (e.g., “[\\nT1190\\n]”). Improvement direction: add an explicit rule that if a sub-technique ID (Txxxx.yyy) is present verbatim, also extract the parent technique ID (Txxxx) as a separate entity span covering only that substring, and specify that MITRE IDs may appear with surrounding whitespace/newlines and should be extracted as the exact ID token regardless of formatting.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r2_p3_g3_para_0_0_2",
+    "parent_prompt_id": "c_r2_p3_g3_para_0",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt instructs to “Provide 0-based start and end character offsets” and gives examples, but does not enforce or illustrate that offsets must correspond to the exact verbatim input including all whitespace, brackets, and line breaks. Error Example 4 shows gold entities with IDs on their own lines (e.g., “T1190\\n”) and specific offsets that the model approximated from a truncated snippet; the prompt’s examples are all single-line and cleanly bracketed, leaving unclear how to count offsets in multi-line or partially redacted texts (e.g., “182.54.217[.]2”). Improvement direction: add a directive that offsets must be computed on the raw input exactly as provided, with explicit note that brackets, redaction markers, and newline characters occupy positions, and include a multi-line example with a MITRE ID separated by whitespace to demonstrate correct offset calculation.",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r2_p3_g3_para_0_0_3",
+    "parent_prompt_id": "c_r2_p3_g3_para_0",
+    "error_group_id": "G2_0",
+    "gradient_text": "The prompt prohibits extra fields (Rule 8: “Do not add fields beyond the specified schema”) and the output template shows only id/text/type/start/end/normalized_id, yet the gold standard outputs in all error examples include “evidence” and/or “notes” keys. This mismatch signals to the model (and to evaluators) that the task expectation is ambiguous: the prompt says never output extra fields, but ground truth uses them. The model correctly omitted them, but the discrepancy indicates the prompt lacks clarity on whether it is producing training data (where gold has extra debug fields) or strict inference output. Improvement direction: explicitly state the prompt is for model inference only and that gold examples with evidence/notes are for human reference and must NOT be copied; alternatively, if evidence is required, add it to the schema and instructions. This removes the latent contradiction that may cause inconsistent extraction behavior (e.g., missing entities when confused by gold format).",
+    "round_idx": 2
+  },
+  {
+    "gradient_id": "grad_c_r3_p3_g2_para_0_0_0",
+    "parent_prompt_id": "c_r3_p3_g2_para_0",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt’s definition of AttackTechnique IDs is too permissive regarding tactic IDs (TAxxxx) and does not clearly constrain extraction to *explicitly mentioned* technique/tactic identifiers that appear as discrete annotation tokens in the source. In Error Example 4, the model hallucinated TA0001–TA0011 entities at various offsets despite the gold output being empty, because the input only said “11 of the MITRE ATT&CK framework’s 14 tactics” with no verbatim TA codes; the prompt lists “tactic IDs like TA0011” as valid but never states they must be written exactly as standalone ID strings in the text and prohibits inferring them from counts or prose. Improvement direction: explicitly instruct that AttackTechnique entities (including TA codes) are extracted *only* when the exact ID token appears verbatim as a discrete string in the input, and that references to “tactics,” “techniques,” or numeric counts of them without the ID token must not generate any entity.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r3_p3_g2_para_0_0_1",
+    "parent_prompt_id": "c_r3_p3_g2_para_0",
+    "error_group_id": "G3_0",
+    "gradient_text": "The Configuration category instruction conflicts with itself and with the examples about how to handle multi-component product names containing parentheses, registered symbols, or line breaks. In Error Example 3, the gold entity is “Telerik® UI for ASP.NET” (verbatim including newline and symbol), but the prompt says to extract “up to the version or descriptive parenthetical boundary” and the examples show truncating at “Telerik UI for ASP.NET AJAX” from a parenthetical; the model thus split “Telerik” and “UI for ASP.NET” and dropped “®” and the newline. The prompt never defines how to treat non-version descriptive content like “®” or embedded line breaks, nor that the full base product name may include such characters when verbatim. Improvement direction: clarify that the Configuration entity is the full product/component name *exactly as written up to the first version string or purely version-descriptive parenthetical*, and explicitly state that symbols (e.g., ®) and whitespace/newlines within the name are retained verbatim; add an example showing a multi-token name with symbol and line break.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r3_p3_g2_para_0_0_2",
+    "parent_prompt_id": "c_r3_p3_g2_para_0",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt’s guidance on Weakness entities and “descriptive vulnerability phrases” creates ambiguity that may cause the model to over-suppress or mis-handle adjacent categories, but more critically it fails to address extraction of *product lists with shared vulnerabilities* such as “Citrix ADC and Gateway” as separate Configuration entities. In Error Example 2, gold extracts both “Citrix Application Delivery Controller” and “Gateway” (as Citrix product), but the model only got CVEs—likely because the prompt’s Configuration rule emphasizes a single base name before version/parenthetical and does not instruct to split coordinated product names (A and B) into distinct Configuration entities when both are vulnerable components. Improvement direction: add explicit instruction that when multiple distinct products/components are conjoined (e.g., “X and Y”) and both are affected, each is a separate Configuration entity with its own span, and provide an illustrative example of coordinated product extraction.",
+    "round_idx": 3
+  },
+  {
+    "gradient_id": "grad_c_r3_p3_g2_para_0_0_3",
+    "parent_prompt_id": "c_r3_p3_g2_para_0",
+    "error_group_id": "G3_0",
+    "gradient_text": "The prompt does not specify how to handle *whitespace anomalies inside identifiers* such as “CVE-2022- 21587” (space in middle) or ensure the model treats such as a single Vulnerability entity with verbatim text and normalized_id without space. In Error Example 1, the model correctly extracted “CVE-2022- 21587” with space (matching gold), but the prompt’s Vulnerability definition says “precise CVE identifier (e.g., CVE-YYYY-NNNN)” implying no space; a stricter reading could cause rejection. Conversely, the prompt never tells the model to preserve weird spacing as verbatim and set normalized_id to canonical form. Improvement direction: state that Vulnerability text must be copied verbatim even if it contains OCR/PDF spacing errors (e.g., internal spaces), and normalized_id must be the canonical CVE with no spaces; add an example with a spaced CVE to lock this behavior.",
+    "round_idx": 3
+  }
+]

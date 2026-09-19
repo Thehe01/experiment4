@@ -1,0 +1,24 @@
+[
+  {
+    "parent_candidate_id": "P_E0",
+    "sample_ids": [
+      "aa25-266a_w10",
+      "aa23-289a_w3",
+      "aa23-289a_w0",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w1",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+      "aa25-266a_w14",
+      "aa23-289a_w4",
+      "aa25-266a_w13"
+    ],
+    "error_sample_ids": [
+      "fortios-sslvpn-rapid7-fortinet-targeting_w1",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+      "aa23-289a_w0",
+      "aa25-266a_w10",
+      "aa23-289a_w3",
+      "aa23-289a_w4"
+    ],
+    "error_focus_entity_type": "Configuration"
+  }
+]

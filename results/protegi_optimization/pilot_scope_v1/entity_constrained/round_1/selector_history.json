@@ -1,0 +1,128 @@
+[
+  {
+    "type": "initial_pull",
+    "pull_index": 1,
+    "candidate_pull_index": 0,
+    "candidate_id": "c_r1_p0_g0_para_0",
+    "batch_sample_ids": [
+      "aa23-339a-coldfusion-cve-26360_w0",
+      "aa25-266a_w4",
+      "aa23-339a-coldfusion-cve-26360_w1",
+      "aa25-266a_w8",
+      "aa25-266a_w5",
+      "aa23-289a_w4",
+      "aa23-289a_w1",
+      "aa25-266a_w12"
+    ],
+    "reward": 0.8275862068965517
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 2,
+    "candidate_pull_index": 0,
+    "candidate_id": "P_E0",
+    "batch_sample_ids": [
+      "aa23-339a-coldfusion-cve-26360_w0",
+      "aa25-266a_w4",
+      "aa23-339a-coldfusion-cve-26360_w1",
+      "aa25-266a_w8",
+      "aa25-266a_w5",
+      "aa23-289a_w4",
+      "aa23-289a_w1",
+      "aa25-266a_w12"
+    ],
+    "reward": 0.8391608391608392
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 3,
+    "candidate_pull_index": 1,
+    "candidate_id": "c_r1_p0_g0_para_0",
+    "batch_sample_ids": [
+      "aa25-266a_w7",
+      "aa23-289a_w0",
+      "aa25-266a_w0",
+      "aa25-266a_w9",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w1",
+      "aa23-289a_w2",
+      "aa25-266a_w13",
+      "aa23-289a_w3"
+    ],
+    "reward": 0.8240740740740742
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 4,
+    "candidate_pull_index": 1,
+    "candidate_id": "P_E0",
+    "batch_sample_ids": [
+      "aa25-266a_w7",
+      "aa23-289a_w0",
+      "aa25-266a_w0",
+      "aa25-266a_w9",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w1",
+      "aa23-289a_w2",
+      "aa25-266a_w13",
+      "aa23-289a_w3"
+    ],
+    "reward": 0.8436018957345972
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 5,
+    "candidate_pull_index": 2,
+    "candidate_id": "P_E0",
+    "batch_sample_ids": [
+      "aa25-266a_w6",
+      "aa25-266a_w11",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w2",
+      "aa25-266a_w3",
+      "aa25-266a_w14",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+      "aa25-266a_w2",
+      "aa25-266a_w10"
+    ],
+    "ucb_score": 2.508711118049993,
+    "reward": 0.8359133126934984
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 6,
+    "candidate_pull_index": 2,
+    "candidate_id": "c_r1_p0_g0_para_0",
+    "batch_sample_ids": [
+      "aa25-266a_w6",
+      "aa25-266a_w11",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w2",
+      "aa25-266a_w3",
+      "aa25-266a_w14",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w0",
+      "aa25-266a_w2",
+      "aa25-266a_w10"
+    ],
+    "ucb_score": 2.6181966520681756,
+    "reward": 0.8132530120481928
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 7,
+    "candidate_pull_index": 3,
+    "candidate_id": "P_E0",
+    "batch_sample_ids": [
+      "aa25-266a_w1"
+    ],
+    "ucb_score": 2.38155642338801,
+    "reward": 0.8359133126934984
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 8,
+    "candidate_pull_index": 3,
+    "candidate_id": "c_r1_p0_g0_para_0",
+    "batch_sample_ids": [
+      "aa25-266a_w1"
+    ],
+    "ucb_score": 2.4240127288921065,
+    "reward": 0.8132530120481928
+  }
+]

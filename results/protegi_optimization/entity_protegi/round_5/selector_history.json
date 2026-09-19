@@ -1,0 +1,414 @@
+[
+  {
+    "type": "initial_pull",
+    "pull_index": 1,
+    "candidate_id": "c_r5_p0_g2_para_0",
+    "reward": 0.7789473684210527
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 2,
+    "candidate_id": "c_r5_p0_g0_para_0",
+    "reward": 0.8247422680412371
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 3,
+    "candidate_id": "c_r5_p0_g0_para_1",
+    "reward": 0.8399999999999999
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 4,
+    "candidate_id": "c_r5_p0_g2_edit",
+    "reward": 0.8275862068965517
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 5,
+    "candidate_id": "c_r5_p0_g1_edit",
+    "reward": 0.6666666666666666
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 6,
+    "candidate_id": "c_r5_p0_g3_para_0",
+    "reward": 0.6666666666666666
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 7,
+    "candidate_id": "c_r5_p0_g3_para_1",
+    "reward": 0.8333333333333333
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 8,
+    "candidate_id": "c_r5_p0_g1_para_0",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 9,
+    "candidate_id": "c_r5_p1_g3_para_0",
+    "reward": 0.9166666666666665
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 10,
+    "candidate_id": "c_r5_p1_g0_para_1",
+    "reward": 0.7058823529411765
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 11,
+    "candidate_id": "c_r5_p1_g0_para_0",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 12,
+    "candidate_id": "c_r5_p1_g2_para_0",
+    "reward": 0.918918918918919
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 13,
+    "candidate_id": "c_r5_p1_g3_para_1",
+    "reward": 0.9268292682926829
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 14,
+    "candidate_id": "c_r5_p1_g2_para_1",
+    "reward": 0.9411764705882353
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 15,
+    "candidate_id": "c_r5_p1_g0_edit",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 16,
+    "candidate_id": "c_r5_p1_g1_para_0",
+    "reward": 0.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 17,
+    "candidate_id": "c_r5_p2_g3_para_0",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 18,
+    "candidate_id": "c_r5_p2_g1_para_0",
+    "reward": 0.9310344827586207
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 19,
+    "candidate_id": "c_r5_p2_g0_para_0",
+    "reward": 0.9941520467836257
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 20,
+    "candidate_id": "c_r5_p2_g3_para_1",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 21,
+    "candidate_id": "c_r5_p2_g2_para_1",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 22,
+    "candidate_id": "c_r5_p2_g1_para_1",
+    "reward": 0.9782608695652174
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 23,
+    "candidate_id": "c_r5_p2_g2_edit",
+    "reward": 0.9354838709677419
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 24,
+    "candidate_id": "c_r5_p2_g0_edit",
+    "reward": 0.9514563106796117
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 25,
+    "candidate_id": "c_r5_p3_g1_edit",
+    "reward": 0.9333333333333333
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 26,
+    "candidate_id": "c_r5_p3_g3_para_0",
+    "reward": 0.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 27,
+    "candidate_id": "c_r5_p3_g0_edit",
+    "reward": 0.8840579710144928
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 28,
+    "candidate_id": "c_r5_p3_g3_para_1",
+    "reward": 0.8571428571428571
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 29,
+    "candidate_id": "c_r5_p3_g2_para_0",
+    "reward": 0.9059829059829059
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 30,
+    "candidate_id": "c_r5_p3_g3_edit",
+    "reward": 0.9354838709677419
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 31,
+    "candidate_id": "c_r5_p3_g2_para_1",
+    "reward": 0.9655172413793104
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 32,
+    "candidate_id": "c_r5_p3_g0_para_1",
+    "reward": 1.0
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 33,
+    "candidate_id": "c_r4_p2_g3_para_0",
+    "reward": 0.9613733905579399
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 34,
+    "candidate_id": "c_r4_p1_g3_para_1",
+    "reward": 0.9753694581280787
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 35,
+    "candidate_id": "c_r3_p0_g2_edit",
+    "reward": 0.9587628865979382
+  },
+  {
+    "type": "initial_pull",
+    "pull_index": 36,
+    "candidate_id": "c_r2_p3_g3_para_0",
+    "reward": 0.9506493506493506
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 37,
+    "candidate_id": "c_r5_p3_g0_para_1",
+    "ucb_score": 4.786036945649691,
+    "reward": 0.9793103448275863
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 38,
+    "candidate_id": "c_r5_p2_g2_para_1",
+    "ucb_score": 4.800483081211768,
+    "reward": 0.9764705882352941
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 39,
+    "candidate_id": "c_r5_p0_g1_para_0",
+    "ucb_score": 4.8144913997681975,
+    "reward": 0.7692307692307692
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 40,
+    "candidate_id": "c_r5_p2_g3_para_0",
+    "ucb_score": 4.828086543499061,
+    "reward": 0.7608695652173912
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 41,
+    "candidate_id": "c_r5_p2_g3_para_1",
+    "ucb_score": 4.841291165279683,
+    "reward": 0.5833333333333334
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 42,
+    "candidate_id": "c_r5_p1_g0_para_0",
+    "ucb_score": 4.854126135301909,
+    "reward": 0.9320388349514563
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 43,
+    "candidate_id": "c_r5_p1_g0_edit",
+    "ucb_score": 4.8666107216958725,
+    "reward": 0.975609756097561
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 44,
+    "candidate_id": "c_r5_p2_g0_para_0",
+    "ucb_score": 4.872914795750653,
+    "reward": 0.9782608695652174
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 45,
+    "candidate_id": "c_r5_p2_g1_para_1",
+    "ucb_score": 4.8688596069927925,
+    "reward": 0.9287925696594428
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 46,
+    "candidate_id": "c_r5_p3_g2_para_1",
+    "ucb_score": 4.867651267663041,
+    "reward": 0.7567567567567568
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 47,
+    "candidate_id": "c_r5_p2_g0_edit",
+    "ucb_score": 4.8648391932961825,
+    "reward": 0.8809523809523809
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 48,
+    "candidate_id": "c_r5_p1_g2_para_1",
+    "ucb_score": 4.865535068733954,
+    "reward": 0.4978165938864629
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 49,
+    "candidate_id": "c_r5_p3_g3_edit",
+    "ucb_score": 4.8705574463448995,
+    "reward": 0.49397590361445787
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 50,
+    "candidate_id": "c_r5_p2_g2_edit",
+    "ucb_score": 4.881023275465244,
+    "reward": 0.9152542372881356
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 51,
+    "candidate_id": "c_r5_p3_g1_edit",
+    "ucb_score": 4.889100265511288,
+    "reward": 0.8226950354609929
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 52,
+    "candidate_id": "c_r5_p2_g1_para_0",
+    "ucb_score": 4.8968008060431005,
+    "reward": 0.8176100628930818
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 53,
+    "candidate_id": "c_r5_p1_g3_para_1",
+    "ucb_score": 4.902376384643552,
+    "reward": 0.9411764705882353
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 54,
+    "candidate_id": "c_r5_p1_g2_para_0",
+    "ucb_score": 4.9040371924722255,
+    "reward": 0.9459459459459459
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 55,
+    "candidate_id": "c_r5_p1_g3_para_0",
+    "ucb_score": 4.911154892491984,
+    "reward": 0.9090909090909091
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 56,
+    "candidate_id": "c_r5_p3_g2_para_0",
+    "ucb_score": 4.909647819650118,
+    "reward": 0.9016393442622951
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 57,
+    "candidate_id": "c_r5_p3_g0_edit",
+    "ucb_score": 4.8967137951465105,
+    "reward": 0.8799999999999999
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 58,
+    "candidate_id": "c_r5_p3_g3_para_1",
+    "ucb_score": 4.878610881551133,
+    "reward": 0.888888888888889
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 59,
+    "candidate_id": "c_r5_p0_g0_para_1",
+    "ucb_score": 4.8701081923672564,
+    "reward": 0.8557213930348258
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 60,
+    "candidate_id": "c_r5_p0_g3_para_1",
+    "ucb_score": 4.8719159777301115,
+    "reward": 0.6799999999999999
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 61,
+    "candidate_id": "c_r5_p0_g2_edit",
+    "ucb_score": 4.874483567701295,
+    "reward": 0.7868852459016393
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 62,
+    "candidate_id": "c_r5_p0_g0_para_0",
+    "ucb_score": 4.879800277082938,
+    "reward": 0.8268156424581006
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 63,
+    "candidate_id": "c_r5_p0_g2_para_0",
+    "ucb_score": 4.842017333383552,
+    "reward": 0.8571428571428572
+  },
+  {
+    "type": "ucb_pull",
+    "pull_index": 64,
+    "candidate_id": "c_r5_p1_g0_para_1",
+    "ucb_score": 4.77682068526287,
+    "reward": 0.8115942028985508
+  }
+]

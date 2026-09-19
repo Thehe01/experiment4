@@ -1,0 +1,14 @@
+[
+  {"doc_id": "aa20-259a-iran-citrix-vpn-cve-19781", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa20-259a", "topic": "Iran Citrix VPN CVE-2019-19781"},
+  {"doc_id": "aa22-138b-vmware-cve-22954", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-138b", "topic": "VMware Workspace ONE CVE-2022-22954/22960"},
+  {"doc_id": "aa22-174a-log4shell-vmware-cve-44228", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-174a", "topic": "Log4Shell VMware Horizon CVE-2021-44228"},
+  {"doc_id": "aa23-250a-manageengine-cve-47966", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-250a", "topic": "ManageEngine CVE-2022-47966"},
+  {"doc_id": "aa23-325a-citrix-bleed-cve-4966", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-325a", "topic": "Citrix Bleed CVE-2023-4966"},
+  {"doc_id": "aa24-016a-androxgh0st", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-016a", "topic": "Androxgh0st (multiple CVE)"},
+  {"doc_id": "aa22-321a-hive-exchange", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-321a", "topic": "Hive ransomware (Exchange CVEs)"},
+  {"doc_id": "aa24-131a-black-basta-cve-1709", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-131a", "topic": "Black Basta CVE-2024-1709"},
+  {"doc_id": "aa23-201a-citrix-3519-webshells", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-201a", "topic": "Citrix CVE-2023-3519 webshells (full ATT&CK)"},
+  {"doc_id": "aa24-060b-ivanti-multiple", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-060b", "topic": "Ivanti Connect Secure multiple CVE (full ATT&CK)"},
+  {"doc_id": "aa23-339a-coldfusion-cve-26360-v2", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-339a", "topic": "Adobe ColdFusion CVE-2023-26360"},
+  {"doc_id": "aa23-074a-telerik-cve-18935-v2", "url": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-074a", "topic": "Progress Telerik CVE-2019-18935"}
+]

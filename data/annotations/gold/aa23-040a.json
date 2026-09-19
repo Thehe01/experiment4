@@ -1,0 +1,1133 @@
+{
+  "doc_id": "aa23-040a",
+  "schema_version": "chapter3-no-capec-v1",
+  "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+  "annotation_status": "v4.5_human_reannotated_adjudicated",
+  "gold_review": {
+    "kind": "human reannotation and adjudication",
+    "formal_human_iaa": false,
+    "prediction_outputs_used": false,
+    "configuration_boundary": {
+      "version": "configuration-mcpu-v2",
+      "prediction_outputs_used": false,
+      "policy_file": "config/configuration_boundary_mcpu_v2.json"
+    }
+  },
+  "text": "PERFORMANCE GOALS CPG Cross-Sector Cybersecurity Performance Goals 2022 2 A LETTER FROM OUR DIRECTOR As the nation’s cyber defense agency, one of CISA’s most important roles is to understand the challenges facing organizations, both large and small, in order to make progress on the shared goal of reducing cyber risk to the critical infrastructure Americans rely on every day. Over the past several years, as our nation has faced unprecedented cyber threats from ransomware to nation-state espionage, we have heard a common refrain from organizations across the spectrum, from the largest multinational corporations to state and local governments, to critical infrastructure entities of all sizes: How can we focus investment toward to the most impactful security outcomes? We hear small- and medium-sized hospitals and utilities ask how they can make progress with limited budgets, staffing, and expertise. We hear organizations with mature cyber programs ask what more they can do to prevent attacks from advanced adversaries, manage risks to less mature organizations in their supply chain, and help reduce broader risk to the nation. We hear the global Operational Technology and Industrial Control Systems (OT/ICS) community clamor to be seen and recognized alongside traditional IT security and supported in their essential role of defending our increasingly connected electric grids, hospitals, water facilities, and other critical infrastructure. It became clear that even with comprehensive guidance from sources like the NIST Cybersecurity Framework, many organizations would benefit from help identifying and prioritizing the most important cybersecurity practices along with support in making a compelling argument to ensure adequate resources for driving down risk. Ultimately, prioritized investment will help meaningfully address serious risks to the safety, health, and livelihoods of the American people. The Cross-Sector Cybersecurity Performance Goals (CPGs) strive to address this need by providing an approachable common set of IT and OT cybersecurity protections that are clearly defined, straightforward to implement, and aimed at addressing some of the most common and impactful cyber risks. The CPGs are written and designed to be easy to understand and relatively easy to communicate with non-technical audiences, including senior business leadership. Informed by extensive input from experts across sectors, public and private, domestic and international, the CPGs reflect some of the best thinking gleaned from across the cybersecurity community. As in all things, we look forward to continuous feedback on them so we can regularly refresh these goals based on the constantly evolving technology and threat landscapes. Ultimately, our hope is that the CPGs will not only serve as a strong foundation for improving cybersecurity across our nation’s critical infrastructure sectors, but also as a baseline of security outcomes that merit the trust of the American people. JEN Jen Easterly Director Cybersecurity and Infrastructure Security Agency (CISA) October 2022 3 1.0– 2.0– 3.0– 4.0– 5.0– 6.0– 7.0– 8.0– Background and Context Account Security Device Security Data Security Governance and Training Vulnerability Management Supply Chain / Third Party Response and Recovery Other Glossary Acknowledgements 4-7 8-10 11-12 13-14 15-16 17-18 19 20-21 22 23-27 28 CONTENT 4 BACKGROUND AND CONTEXT OUR CHALLENGE AHEAD CISA works every day with government, private sector, and international partners to gain unique insight into the state of cybersecurity across U.S. critical infrastructure (CI) and the nature of the threat landscape. Leveraging partnerships across all critical infrastructure sectors and with their respective sector risk management agencies (SRMAs), insights from government partners both in the U.S. and abroad, and our own cyber assessments, hunts, and incident response efforts, CISA regularly observes patterns across our critical infrastructure where essential cybersecurity best practices are not sufficiently applied. Subject matter experts and critical infrastructure operators providing input during the course of this document’s development shared similar observations. Our concerns with these gaps are not merely theoretical or philosophical. Our nation has seen the real impact of some of these gaps, whether ransomware attacks affecting critical functions from hospitals to school districts or sophisticated nation-state campaigns that target government agencies and critical infrastructure. Collectively, these intrusions place our national security, economic security, and the health and safety of American people at risk. Over the past year, CISA has worked with hundreds of partners, received thousands of comments, and analyzed years of data from our efforts to assess, protect, and respond to cyber incidents to identify key challenges that leave our nation at serious risk. 1. Many organizations have not adopted fundamental security protections. The absence of basic protections such as multi-factor authentication (MFA), strong password management, and maintaining backups, among other foundational measures, repeatedly exposes critical infrastructure to damaging cyber intrusions. 2. Small- and medium-sized organizations are left behind. Organizations with limited resources or less mature cybersecurity programs often face challenges determining where to start to put in place reasonable cybersecurity measures. While existing resources like the NIST Cybersecurity Framework are invaluable, small organizations face difficulties in identifying where to invest for the greatest impact to their cybersecurity posture and specific guidance on how to effectively implement cybersecurity protections. 3. Lack of consistent standards and cyber maturity across CI sectors. There is significant inconsistency in cybersecurity capabilities, investment, and baseline practices within and across CI sectors. This diversity leads to gaps that can be exploited by our adversaries to cause functional impacts and cascading impacts. 4. OT cybersecurity often remains overlooked and under-resourced. The cybersecurity industry is still largely focused on business IT systems, often neglecting the critical risk in OT, which were designed to optimize reliability and availability and often lack native security capabilities. This puts CI entities at serious risk as more OT devices become network- connected. Even so, many CI entities lack adequate OT cybersecurity programs, especially where cybersecurity is still seen as primarily an IT concern. Entities that do have OT cybersecurity programs often lack basic OT cyber protections and are unable to find relevant OT-specific guidance for their environments. 5 CONFRONTING THIS CHALLENGE: National Security Memorandum 5 In July 2021, President Biden signed National Security Memorandum (NSM)-5: Improving Cybersecurity for Critical Infrastructure Control Systems. This memorandum required CISA, in coordination with the National Institute of Standards and Technology (NIST) and the interagency community, to develop baseline cybersecurity goals that are consistent across all critical infrastructure sectors. This document contains the first iteration of the Cross-Sector Cybersecurity Performance Goals (CPGs). CISA, in coordination with NIST, will regularly update the goals, and starting in late 2022, CISA will begin working with Sector Risk Management Agencies (SRMAs) to build on this foundation to develop sector-specific goals. WHAT ARE THE CPGs? Simply put, the CPGs are a prioritized subset of IT and OT cybersecurity practices aimed at meaningfully reducing risks to both CI operations and to the American people. These goals are applicable across all CI sectors and are informed by the most common and impactful threats and adversary tactics, techniques, and procedures (TTPs) observed by CISA and its government and industry partners, making them a common set of protections that all CI entities — from large to small — should implement. The CPGs do not reflect an all-encompassing cybersecurity program – rather, they are a minimum set of practices that organizations should implement and aim to help CI entities, particularly small and medium organizations get started on their path towards a strong cybersecurity posture. As such, the CPGs are intended to be a floor, not a ceiling, for what cybersecurity protections organizations should implement to reduce their cyber risk. Important, the CPGs are not: • Comprehensive: The CPGs do not identify all the cybersecurity practices needed to protect every organization or fully safeguard national and economic security and public health and safety against all potential risks. They represent a minimum baseline of cybersecurity practices with known risk-reduction value broadly applicable across all sectors, and will be followed by sector-specific goals that dive deeper into the unique constraints, threats, and maturity of each sector where applicable. • A risk management or full cybersecurity program: The CPGs do not cover broader approaches to risk management or risk prioritization, which are well articulated in other frameworks such as the NIST Cybersecurity Framework (NIST CSF). • Mandated by CISA: The CPGs are intended to be voluntarily adopted by organizations to enable prioritization of security investments toward the most critical outcomes, in conjunction with broader frameworks like the NIST CSF. • A maturity model: The practices in the CPGs apply to all CI organizations, and are not tiered into ‘maturity’ categories. (However, the CPG Worksheet includes criteria such as “Impact,” “Cost,” and “Complexity” to help organizations internally prioritize their investment). The CPGs will also be regularly updated, with a targeted revision cycle of at least every 6 to 12 months. CISA has also set up a Discussions page to receive feedback and ideas for new CPGs at https://www.github.com/cisagov/cyber-performance- goals. A link to this site will also be available via https://www.cisa.gov/cpgs. KEY CHARACTERISTICS OF THE CPGs • A prioritized subset of cybersecurity practices • For IT and OT • Prioritized for risk reduction • Informed by threats observed by CISA and its government and industry partners • Applicable across all CI sectors • Intended to meaningfully reduce risks to both CI operations and to the American people 6 CPG SELECTION CRITERIA As previously mentioned, the CPGs are a subset of cybersecurity practices, selected through a thorough process of industry, government, and expert consultation using several criteria: 1. Significantly and directly reduce the risk or impact caused by commonly observed, cross-sector threats and adversary TTPs. 2. Clear, actionable, and easily definable. 3. Reasonably straightforward and not cost-prohibitive for even small- and medium-sized entities to successfully implement. An example of a CPG that meets this criteria is: “ensuring that none of an organization’s internet-facing systems have any Known Exploited Vulnerabilities (KEV).” This CPG is definable, achievable, and directly reduces the risk from a known threat — that nation-state adversaries actively exploit those weaknesses in the wild. Conversely, a practice such as “Implement Zero Trust (ZT)” would not be a suitable CPG, as this practice is vague, insufficiently defined, hard to measure, and can be overly burdensome for small organizations. CPG MODEL The CPGs in this document are displayed in a visual model to help readers understand not only the goals themselves, but the intended outcomes, the risks or TTPs that the goals address, what ‘good’ looks like, and other important information. Each goal is composed of the following components: MODEL COMPONENT COMPONENT DESCRIPTION Outcome The ultimate security outcome that each CPG strives to enable. TTP/Risk Addressed Either (a) the primary set of MITRE ATT&CK TTPs or (b) the set of organizational risks that would be rendered less likely or impactful if the goal is implemented. Security Practice The mitigation(s) that organizations should implement to achieve the outcome and reduce the impact of the TTP or Risk. Scope The set or subset of assets to which organizations should apply the security practice. Recommended Action Example approaches to help organizations progress toward achievement of the Performance Goal, based on input from CISA’s collaborative stakeholder process. These actions will be updated regularly as new threats and defenses are identified. NIST CSF Reference The CSF subcategory that most closely relates to the security practice. 7 HOW ARE THESE DIFFERENT FROM NIST CSF AND OTHER STANDARDS? Plenty of existing cybersecurity guidance and frameworks exist — especially from the U.S. government. For example, the NIST CSF continues to be one of the most widely adopted and well-known cybersecurity frameworks. CISA and the broader U.S. government supports adoption of the NIST CSF by every organization to enable development and maintenance of a sustainable, risk information cybersecurity program. Based on stakeholder feedback, the CPGs can be leveraged by organizations as part of a broader cybersecurity program based on the NIST CSF or other frameworks and standards. 1. A Quick-Start Guide. The CPGs can help organizations that may lack the cybersecurity experience, resources, or structure in place to quickly identify and implement basic cybersecurity practices. After or in parallel to applying the CPGs, organizations can continue to leverage the NIST CSF to build a holistic risk management program and implement additional NIST controls. 2. Prioritization and Getting Funding. The CPGs contain a worksheet, described more below, that can help organizations with smaller or less mature cybersecurity programs prioritize which protections to implement, and communicate the importance and relative impact and cost of those protections to (non-technical) executives. 3. NIST CSF Mappings. Every security practice in the CPGs aligns and is mapped to a corresponding subcategory in the NIST CSF. Note the CPGs do not fully address each NIST CSF Subcategory. For each security practice, identification of the CSF subcategory indicates a relationship between the CPG and the NIST CSF. Organizations that have already adopted and implemented the NIST CSF will not need to perform additional work to implement the relevant CPGs. HOW TO USE THE CPGs CPG Package Contents There are three documents provided on the CPGs: 1. The CPG List (this document) 2. The CPG Worksheet (attached PDF). See more below. 3. The CPG Full Data Matrix (attached excel document), which contains all the raw data of the CPGs, their mappings to other frameworks, and more. The CPG Worksheet In addition to the list of CPGs, there is a user-friendly worksheet for asset owners and operators to (1) review and prioritize which CPGs to implement, (2) track the current and future state of CPG implementation, and (3) clearly communicate the priorities, trade-offs, and statuses of the CPGs to other stakeholders, such as non-technical executives. The worksheet includes general estimates of the cost, complexity, and impact of implementing each goal. These estimates are intended to be used as an aid to help inform investment strategy to address known gaps in baseline cybersecurity capability. Using the CPG Worksheet 1. Perform an initial self-evaluation. Organizations should review their existing security programs and security controls to determine which CPGs are already implemented. Organizations may have already implemented CPGs-based adherence to existing guidance or regulation, such as NIST CSF or ISA 62443, and all CPGs are mapped to corresponding controls in those common frameworks. 2. Identify and prioritize gaps. Organizations review gaps in their CPG implementation and prioritize those areas for investment based on factors such as cost, complexity, and impact, which are all included in the CPG Worksheet. 3. Invest and execute. Organizations can start implementing the prioritized gaps identified in the previous steps. Some organizations may find materials such as the worksheet helpful when working with their leadership to request funding for cybersecurity focused projects. 4. Review progress regularly after 12 months. To track progress towards improved cybersecurity practices, organizations should go through the worksheet after 12 months to capture progress, both for their own leadership as well for third-parties. 8 ACCOUNT SECURITY Changing Default Passwords 1.1– 1.3– 1.2– 1.0 RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Prevent adversaries from using default passwords to achieve initial access or move laterally in a network. An enforced organization-wide policy and/or process that requires changing default manufacturer passwords for any/all hardware, software, and firmware before being put on any internal or external network. This includes IT assets for OT, such as OT administration web pages. In instances where changing default passwords is not feasible (e.g., a control system with a hard-coded password), implement and document appropriate compensating security controls, and monitor logs for network traffic and login attempts on those devices. OT: While changing default passwords on an organization’s existing OT requires significantly more work, we still recommend having such a policy to change default credentials for all new or future devices. This is not only easier to achieve, but also reduces potential risk in the future if adversary TTPs change. Password protected IT assets, and newly acquired OT assets Valid Accounts - Default Accounts (T1078.001) Valid Accounts (ICS T0859) PR.AC-1 Detection of Unsuccessful (Automated) Login Attempts RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Protect organizations from automated, credential-based attacks. All unsuccessful logins are logged and sent to an organization’s security team or relevant logging system. Security teams are notified (e.g., by an alert) after a specific number of consecutive, unsuccessful login attempts in a short period (e.g., 5 failed attempts over 2 minutes). This alert is logged and stored in the relevant security or ticketing system for retroactive analysis. For IT assets, there is a system-enforced policy that prevents future logins for the suspicious account. For example, this could be for some minimum time, or until the account is re-enabled by a privileged user. This configuration is enabled when available on an asset. For example, Windows 11 can automatically lock out accounts for 10 minutes after 10 incorrect logins over a 10 minute period. Password protected IT assets, and newly acquired OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-7 Multi-Factor Authentication (MFA) RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Add a critical, additional layer of security to protect assets accounts whose credentials have been compromised. Hardware-based MFA is enabled when available; if not, then soft tokens (such as via mobile app) should be used; MFA via SMS should only be used when no other options are possible. IT: IT accounts leverage multi-factor authentication to access organizational resources. OT: Within OT environments, MFA is enabled on all accounts and systems that can be accessed remotely, including vendor/maintenance accounts, remotely accessible user and engineering workstations, and remotely accessible Human Machine Interfaces (HMIs). IT assets, and OT assets with remote access, such as workstations, and HMI’s, where safe and technically capable Brute Force (T1110) Remote Services - Remote Desktop Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T0859) External Remote Services (ICS T0822) PR.AC-7 9 1.0 1.5– 1.6– 1.4– Separating User and Privileged Accounts Unique Credentials RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE Make it harder for adversaries to gain access to administrator or privileged accounts, even if common user accounts are compromised. Attackers are unable to reuse compromised credentials to move laterally across the organization, particularly between IT and OT networks. No user accounts always have administrator or super-user privileges. Administrators maintain separate user accounts for all actions and activities not associated with the administrator role (e.g. for business email, web browsing, etc.). Privileges are revaluated on a recurring basis to validate continued need for a given set of permissions. Organizations provision unique and separate credentials for similar services and asset access on IT and OT networks. Users do not (or cannot) reuse passwords for accounts, applications, services, etc. Service accounts/machine accounts have unique passwords from all member user accounts. IT and OT assets, where safe and technically capable IT and OT assets Valid Accounts (T1078, ICS T0859) Valid Accounts (T1078, ICS T0859) Brute Force - Password Guessing (T1110.001) PR.AC-4 PR.AC-1 Minimum Password Strength RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Organizational passwords are harder to guess or crack by adversaries. Organizations have a system-enforced policy that requires a minimum password length of 15* or more characters for all password protected IT assets, and all OT assets where technically possible.** Organizations should consider leveraging passphrases and password managers to make it easier for users to maintain sufficiently long passwords. In instances where minimum password lengths are not technically feasible, compensating controls are applied and recorded, and all login attempts to those assets are logged. Assets that cannot support passwords of sufficient strength length are prioritized for upgrade or replacement. This goal is particularly important for organizations that lack widespread implementation of MFA and capabilities to protect against brute-force attacks (such as Web Application Firewalls and third-party Content Delivery Networks) or are unable to adopt passwordless authentication methods. * Modern attacker tools can crack 8 character passwords quickly. Length is a more impactful and important factor in password strength than complexity or frequent password rotations, and makes it easier for humans to create and remember passwords. ** OT assets that use a central authentication mechanism (such as Active Directory) are most important to address. Examples of low-risk OT assets that may not be technically feasible include those in remote locations, such as those on offshore rigs or on top of wind turbines. Password protected IT and Windows-based OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-1 10 1.0 1.7– Revoking Credentials for Departing Employees RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Prevent unauthorized access to organizational accounts or resources by former employees. A defined and enforced administrative process applied to all departing employees by the day of their departure that (1) revokes and securely return all physical badges, key cards, tokens, etc., and (2) disables all user accounts and access to organizational resources. Departing/Departed Employees Valid Accounts (T1078, ICS T0859) PR.AC-1 11 DEVICE SECURITY 2.0 2.1– 2.3– 2.2– Hardware and Software Approval Process Disable Macros by Default Asset Inventory RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE Increase visibility into deployed technology assets, and reduce the likelihood of breach by users installing unapproved hardware, firmware, or software. Reduce the risk from embedded macros and similar executable code, a common and highly-effective adversary TTP. Better identify known, unknown (shadow), and unmanaged assets, and more rapidly detect and respond to new vulnerabilities. Implement an administrative policy or automated process that requires approval before new hardware, firmware, or software/software version is installed or deployed. Organizations maintain a risk-informed allowlist of approved hardware, firmware, and software, to include specification of approved versions, when technically feasible. For OT assets specifically, these actions should also be aligned with defined change control and testing activities. A system-enforced policy that disables Microsoft Office macros, or similar embedded code, by default on all devices. If macros must be enabled in specific circumstances, there is a policy for authorized users to request that macros are enabled on specific assets. Maintain a regularly updated inventory of all organizational assets with an IP address (including IPv6), including OT. This inventory is updated on a recurring basis, no less than monthly for both IT and OT. IT and OT assets IT assets IT and OT assets Supply Chain Compromise (T1195, ICS T0862) Hardware Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T0819) Internet Accessible Device (ICS T0883) PR.IP-3 PR.IP-1, PR.IP-3 ID.AM-1 12 2.0 2.5– Document Device Configurations RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE More efficiently and effectively manage, respond to, and recover from cyberattacks against the organization and maintain service continuity. Organizations maintain accurate documentation describing the baseline and current configuration details of all critical IT and OT assets, to facilitate more effective vulnerability management and response & recovery activities. Periodic reviews and updates are performed and tracked on a recurring basis. IT and OT assets Delayed, insufficient, or incomplete ability to maintain or restore functionality of critical devices and service operations. PR.IP-1 2.4– Prohibit Connection of Unauthorized Devices RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Prevent malicious actors from achieving initial access or data exfiltration via unauthorized portable media devices. Organizations maintain policies and processes to ensure that unauthorized media and hardware are not connected to IT and OT assets, such as by limiting use of USB devices and removable media or disabling AutoRun. OT: When feasible, establish procedures to remove, disable, or otherwise secure physical ports to prevent the connection of unauthorized devices, or establish procedures for granting access through approved exceptions. IT and OT assets Hardware Additions (T1200) Replication Through Removable Media (T1091, ICS T0847) PR.PT-2 13 DATA SECURITY 3.0 3.1– 3.3– 3.2– Log Collection Secure Log Storage Strong and Agile Encryption RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE Achieve better visibility to detect and effectively respond to cyber-attacks. Organizations’ security logs are protected from unauthorized access and tampering. Effective encryption deployed to maintain confidentiality of sensitive data and integrity of IT and OT traffic. Access and security focused (e.g., IDS/IDPS, firewall, DLP, VPN) logs are collected and stored for use in both detection and incident response activities (e.g. forensics). Security teams are notified when a critical log source is disabled, such as Windows Event Logging. OT: For OT assets where logs are non-standard or not available, network traffic and communications to and from log-less assets is collected. Logs are stored in a central system, such as a Security Information and Event Management (SIEM) tool or central database, and can only be accessed or modified by authorized and authenticated users. Logs are stored for a duration informed by risk or pertinent regulatory guidelines. Properly configured and up-to-date transport layer security (TLS) is utilized to protect data in transit where technically feasible. Organizations should also plan for identifying any use of outdated or weak encryption and updating to sufficiently strong algorithms, and consideration for managing the implications of post-quantum cryptography. OT: To minimize the impact to latency and availability; encryption is used where feasible, usually for OT communications connecting with remote/external assets. IT and OT assets IT and OT assets All IT traffic and remote OT assets (those that communicate with external entities) Delayed, insufficient, or incomplete ability to detect and respond to potential cyber incidents. Impair Defenses (T1562) Indicator Removal on Host - Clear Windows Event Logs (T1070.001) Indicator Removal on Host - Clear Linux or Mac System Logs (T1070.002) Indicator Removal on Host - File Deletion (T1070.004) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (ICS T0887) PR.PT-1 PR.PT-1 PR.DS-1, PR.DS-2 14 3.4– Secure Sensitive Data RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Protect sensitive information from unauthorized access. Sensitive data, including credentials, are not stored in plaintext anywhere in the organization, and can only be accessed by authenticated and authorized users. Credentials are stored in a secure manner, such as with a credential/password manager or vault, or other privileged account management solution. All passwords, credentials, secrets, and other sensitive or controlled information Unsecured Credentials (T1552) Steal or Forge Kerberos Tickets (T1558) OS Credential Dumping (T1003) Data from Information Repositories (ICS T0811) Theft of Operational Information (T0882) PR.DS-1, PR.DS-2, PR.DS-5 3.0 15 GOVERNANCE AND TRAINING 4.0 4.1– 4.3– 4.4– 4.2– Organizational Cybersecurity Leadership OT Cybersecurity Leadership Basic Cybersecurity Training OT Cybersecurity Training RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE SCOPE A single leader is responsible and accountable for cybersecurity within an organization. A single leader is responsible and accountable for OT-specific cybersecurity within an organization with OT assets. Organizational users learn and perform more secure behaviors. Personnel responsible for securing OT assets received specialized OT- focused cybersecurity training. A named role/position/title is identified as responsible and accountable for planning, resourcing, and execution of cybersecurity activities. This role may undertake activities such as managing cybersecurity operations at the senior level, requesting and securing budget resources, or leading strategy development to inform future positioning. A named role/position/title is identified as responsible and accountable for planning, resourcing, and execution of OT-specific cybersecurity activities. In some organizations this may be the same position as identified in 4.1. At least annual trainings for all organizational employees and contractors that covers basic security concepts, such as phishing, business email compromise, basic operational security (OPSEC), password security, etc., as well as fostering an internal culture of security and cyber awareness. New employees receive initial cybersecurity training within 10 days of onboarding, and recurring training on at least an annual basis. In addition to basic cybersecurity training, personnel who maintain or secure OT as part of their regular duties receive OT-specific cybersecurity training on at least an annual basis. N/A N/A All employees and contractors All personnel responsible for OT security Lack of sufficient cybersecurity accountability, investment, or effectiveness. Lack of accountability, investment, or effectiveness of OT cybersecurity program. User Training (M1017, ICS M0917) User Training (M1017, ICS M0917) ID.GV-1, ID.GV-2 ID.GV1, ID.GV-2 PR.AT-1 PR.AT-2, PR.AT-3, PR.AT-5 16 4.0 4.5– Improving IT and OT Cybersecurity Relationships RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Improve OT cybersecurity and more rapidly and effectively respond to OT cyber incidents. Organizations sponsor at least one ‘pizza party’ or equivalent social gathering per year that is focused on strengthening working relationships between IT and OT security personnel, and is not a working event (such as providing meals during an incident response). All IT and OT security personnel Poor working relationships and a lack of mutual understanding between IT and OT cybersecurity can often result in increased risk for OT cybersecurity. ID.GV-2 17 VULNERABILITY MANAGEMENT 5.0 5.1– 5.3– 5.2– Mitigating Known Vulnerabilities Vulnerability Disclosure/Reporting Deploy Security.txt Files RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE Reduce the likelihood of adversaries exploiting known vulnerabilities to breach organizational networks. Organizations more rapidly learn about vulnerabilities or weaknesses in their assets discovered by security researchers; researchers are more incentivized to responsibly share their findings. Allow security researchers to submit discovered weaknesses or vulnerabilities faster. All known exploited vulnerabilities (listed in CISA’s KEV catalog - https://www.cisa. gov/known-exploited-vulnerabilities-catalog) in internet-facing systems are patched or otherwise mitigated within a risk-informed span of time, prioritizing more critical assets first. OT: For assets where patching is either not possible or may substantially compromise availability or safety, compensating controls are applied (e.g. segmentation, monitoring) and recorded. Sufficient controls either make the asset inaccessible from the public internet, or reduce the ability of adversaries to exploit the vulnerabilities in these assets. Consistent with NIST SP 800-53 Revision 5, organizations maintain a public, easily- discoverable method for security researchers to notify (e.g. via email address or web form) organizations’ security teams of vulnerable, mis-configured, or otherwise exploitable assets. Valid submissions are acknowledged and responded to in a timely manner, taking into account the completeness and complexity of the vulnerability. Validated and exploitable weaknesses are mitigated consistent with their severity. Security researchers sharing vulnerabilities discovered in good faith are protected under Safe Harbor rules. In instances where vulnerabilities are validated and disclosed, public acknowledgement is given to the researcher who originally submitted the notification. All public-facing web domains have a security.txt file that conforms to the recommendations in RFC 9116. Internet-facing assets All assets All public-facing web domains. Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.RA-1, DE.CM-8, RS.MI-3 RS.AN-5 RS.AN-5 18 5.0 5.4– 5.6– 5.5– No Exploitable Services on the Internet Limit OT Connections to Public Internet Third-Party Validation of Cybersecurity Control Effectiveness RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE Unauthorized users cannot gain an initial system foothold by exploiting known weaknesses in public-facing assets. Reduce the risk of adversaries exploiting or interrupting OT assets connected to the public internet. Identify TTPs that lack proper defenses, and establish confidence in organizational cyber defenses. Assets on the public internet expose no exploitable services, such as RDP. Where these services must be exposed, appropriate compensating controls are implemented to prevent common forms of abuse and exploitation. All unnecessary OS applications and network protocols are disabled on internet-facing assets. No OT assets are on the public internet, unless explicitly required for operation. Exceptions must be justified and documented, and excepted assets must have additional protections in place to prevent and detect exploitation attempts (such as logging, MFA, mandatory access via proxy or other intermediary, etc.). Third-parties with demonstrated expertise in (IT and/or OT) cybersecurity regularly validate the effectiveness and coverage of an organization’s cybersecurity defenses. These exercises, which may include penetration tests, bug bounties, incident simulations, or table-top exercises, should include both unannounced and announced tests. Exercises consider both the ability and impact of a potential adversary to infiltrate the network from the outside, as well as the ability of an adversary within the network (e.g., “assume breach”) to pivot laterally to demonstrate potential impact on critical (including OT/ICS) systems. High-impact findings from previous tests are mitigated in a timely manner and are not re-observed in future tests. IT and OT assets on the public internet OT assets on the public internet IT and OT assets and networks Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk of gaps in cyber defenses or a false sense of security in existing protections. PR.PT-4 PR.PT-4 ID.RA-1, ID.RA-3 19 SUPPLY CHAIN / THIRD PARTY 6.0 6.1– 6.3– 6.2– Vendor/Supplier Cybersecurity Requirements Supply Chain Incident Reporting Supply Chain Vulnerability Disclosure RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE Reduce risk by buying more secure products and services from more secure suppliers. Organizations more rapidly learn about and respond to known incidents or breaches across vendors and service providers. Organizations more rapidly learn about and respond to vulnerabilities in assets provided by vendors and service providers. Organizations’ procurement documents include cybersecurity requirements and questions, which are evaluated in vendor selection such that, given two offerings of roughly similar cost and function, the more secure offering and/or supplier is preferred. Procurement documents and contracts, such as Service Level Agreements (SLAs), stipulate that vendors and/or service providers notify the procuring customer of security incidents within a risk-informed timeframe as determined by the organization. Procurement documents and contracts, such as Service Level Agreements (SLAs), stipulate that vendors and/or service providers notify the procuring customer of confirmed security vulnerabilities in their assets within a risk-informed timeframe as determined by the organization. Suppliers of IT and OT asset and services Suppliers of IT and OT asset and services Suppliers of IT and OT asset and services Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.SC-3 ID.SC-1, ID.SC-3 20 RESPONSE AND RECOVERY 7.0 7.1– 7.3– 7.2– Incident Reporting Incident Response (IR) Plans System Back Ups RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE CISA and other organizations are better able to provide assistance or understand the broader scope of a cyber-attack. Organizations maintain, practice, and update cybersecurity incident response plans for relevant threat scenarios. Organizations reduce the likelihood and duration of data loss and loss of service delivery or operations. Organizations maintain codified policy and procedures on to whom and how to report all confirmed cybersecurity incidents to appropriate external entities (e.g. state/federal regulators or SRMA’s as required, ISAC/ISAO, as well as CISA). Known incidents are reported to CISA as well as other necessary parties within timeframes directed by applicable regulatory guidance or in the absence of guidance, as soon as safely capable. This goal will be revisited following full implementation of the Cyber Incident Reporting for Critical Infrastructure Act of 2022 (CIRCIA). Organizations have, maintain, update, and regularly drill IT and OT cybersecurity incident response plans for both common and organizationally-specific (e.g. by sector, locality, etc.) threat scenarios and TTPs. When conducted, tests or drills are as realistic in nature as feasible. IR plans are drilled at least annually, and are updated within a risk-informed time frame following the lessons learned portion of any exercise or drill. All systems that are necessary for operations are regularly backed up on a regular cadence, no less than once per year. Backups are stored separately from the source systems and tested on a recurring basis, no less than once per year. Stored information for OT assets includes at a minimum: configurations, roles, PLC logic, engineering drawings and tools. Organization-wide Organization-wide IT and OT assets necessary for business operations Without timely incident reporting, CISA and other groups are less able to assist affected organizations, and lack critical information into the broader threat landscape (such as whether a broader attack is occurring against a specific sector). Inability to quickly and effectively contain, mitigate, and communicate about cybersecurity incidents. Data Destruction (T1485, ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-2, RS.CO-4 PR.IP-9, PR.IP-10 PR.IP-4 21 7.0 7.4– Document Network Topology RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE More efficiently and effectively respond to cyber-attacks and maintain service continuity. Organizations maintain accurate documentation describing updated network topology and relevant information across all IT and OT networks. Periodic reviews and updates should be performed and tracked on a recurring basis. All IT and OT networks Incomplete or inaccurate understanding of network topology inhibits effective incident response and recovery. PR.IP-1 22 OTHER 8.0 8.1– 8.3– 8.2– Network Segmentation Detecting Relevant Threats and TTPs Email Security RECOMMENDED ACTION RECOMMENDED ACTION RECOMMENDED ACTION OUTCOME OUTCOME OUTCOME TTP or RISK ADDRESSED TTP or RISK ADDRESSED TTP or RISK ADDRESSED SCOPE SCOPE SCOPE Reduce the likelihood of adversaries accessing the OT network after compromising the IT network. Organizations are aware of and able to detect relevant threats and TTPs. Reduce risk from common email-based threats, such as spoofing, phishing, and interception. All connections to the OT network are denied by default unless explicitly allowed (e.g. by IP address and port) for specific system functionality. Necessary communications paths between the IT and OT networks must pass through an intermediary, such as a properly configured firewall, bastion host, “jump box,” or a demilitarized zone (DMZ), which is closely monitored, captures network logs, and only allows connections from approved assets. Organizations have documented a list of threats and adversary TTPs relevant to their organization (for example, based on industry, sectors, etc.), and have the ability (such as via rules, alerting, or commercial prevention and detection systems) to detect instances of those key threats. On all corporate email infrastructure (1) STARTTLS is enabled, (2) SPF and DKIM are enabled, and (3) DMARC is enabled and set to “reject.” For further examples and information, see CISA’s past guidance for Federal Agencies at https://www.cisa.gov/ binding-operational-directive-18-01. IT and OT assets, where safe and technically capable N/A All organizational email infrastructure Network Service Discovery (T1046) Trusted Relationship (T1199) Network Connection Enumeration (ICS T0840) Network Sniffing (T1040, ICS T0842) Without the knowledge of relevant threats and ability to detect them, organizations risk adversaries existing in their networks undetected for long periods. Phishing (T1566) Business Email Compromise PR.AC-5, PR.PT-4, DE.CM-1 ID.RA-3, DE.CM-1 PR.DS-1, PR.DS-2, PR.DS-5 23 GLOSSARY Access Control Lists: A mechanism that implements access control for a system resource by enumerating the identities of the system entities that are permitted to access the resources. Administrative Domain: A logical collection of hosts and network resources (e.g., department, building, company, organization) governed by common policies. Assets: A person, structure, facility, information, material, or process that has value. Automatic Account Lockout or Account Lockout Threshold: Policy that determines the number of failed sign-in attempts that will cause a user account to be locked. Baseline Configuration: A documented set of specifications for an information system, or a configuration item within a system, that has been formally reviewed and agreed on at a given point in time, and which can be changed only through change control procedures. Business Impact Assessment or Business Impact Analysis: An analysis of an information system’s requirements, functions, and interdependencies used to characterize system contingency requirements and priorities in the event of a significant disruption. Change Management: The practice of applying a structured approach to transition an organization from a current state to a future state to achieve expected benefits. Configuration: The possible conditions, parameters, and specifications with which an information system or system component can be described or arranged. Continuous Monitoring: Maintaining ongoing awareness to support organizational risk decisions. Common Vulnerabilities and Exposures (CVE): A nomenclature and dictionary of security-related software flaws. Compensating Controls: The security and privacy controls implemented in lieu of the controls in the baselines described in NIST Special Publication 800-53 that provide equivalent or comparable protection for a system or organization. Control Systems: A system in which deliberate guidance or manipulation is used to achieve a prescribed value for a variable. Control systems include SCADA, DCS, PLCs and other types of industrial measurement and control systems. Cybersecurity Awareness Training or IT Security Awareness and Training Program: Explains proper rules of behavior for the use of agency information systems and information. The program communicates information technology (IT) security policies and procedures that need to be followed. Cybersecurity Lifecycle: Federal agencies are heavily dependent upon their information and information systems to successfully conduct critical missions. With an increasing reliability on and growing complexity of information systems, as well as a constantly changing risk environment, information security has become a mission-essential function. This function must be conducted in a manner that reduces the risks to the information entrusted to the agency, its overall mission, and its ability to do business and to serve the American public. Information security is a business enabler when applied through proper and effective management of risks to information confidentiality, integrity, and availability. 24 Cybersecurity Response Plans or Incident Response Plan: The documentation of a predetermined set of instructions or procedures to detect, respond to, and limit consequences of a malicious cyber-attacks against an organization’s information systems(s). Default Passwords: Factory default software configurations for embedded systems, devices, and appliances often include simple, publicly documented passwords. These systems usually do not provide a full operating system interface for user management, and the default passwords are typically identical (shared) among all systems from a vendor or within product lines. Default passwords are intended for initial testing, installation, and configuration operations, and many vendors recommend changing the default password before deploying the system in a production environment. Demilitarized Zone (DMZ): Perimeter network segment that is logically between internal and external networks. Its purpose is to enforce the internal network’s Information Assurance policy for external information exchange and to provide external, untrusted sources with restricted access to releasable information while shielding the internal networks from outside attacks. Encrypt: Cryptographically transform data to produce cipher text. Encryption: Any procedure used in cryptography to convert plain text into cipher text to prevent anyone but the intended recipient from reading that data. Executable Files or Executable: Perform indicated tasks according to encoded instructions —used of a computer program or routine. Firewall: An inter-network connection device that restricts data communication traffic between two connected networks. A firewall may be either an application installed on a general-purpose computer or a dedicated platform (appliance), which forwards or rejects/drops packets on a network. Typically, firewalls are used to define zone borders. Firewalls generally have rules restricting which ports are open. Firmware: Software program or set of instructions programmed on the flash ROM of a hardware device. It provides the necessary instructions for how the device communicates with the other computer hardware. Hashing: A process of applying a mathematical algorithm against a set of data to produce a numeric value (a ‘hash value’) that represents the data. Human Machine Interfaces (HMI): Software and hardware that allows human operators to monitor the state of a process under control, modify control settings to change the control objective, and manually override automatic control operations in the event of an emergency. The HMI also allows a control engineer or operator to configure set points or control algorithms and parameters in the controller. The HMI also displays process status information, historical information, reports, and other information to operators, administrators, managers, business partners, and other authorized users. Operators and engineers use HMIs to monitor and configure set points, control algorithms, send commands, and adjust and establish parameters in the controller. The HMI also displays process status information and historical information. Incident Response Plan: A set of predetermined and documented procedures to detect and respond to a cyber incident. 25 Information Sharing and Analysis Organizations (ISAOs): Any formal or informal entity or collaboration created or employed by public or private sector organizations for the purposes of: a) Gathering and analyzing critical infrastructure information in order to better understand security problems and interdependencies related to critical infrastructure and protected systems, so as to ensure the availability, integrity, and reliability thereof; b) Communicating or disclosing critical infrastructure information to help prevent, detect, mitigate, or recover from the effects of a interference, compromise, or incapacitation problem related to critical infrastructure or protected systems; and, c) Voluntarily disseminating critical infrastructure information to its members; State, local, and Federal Governments; or any other entities that may be of assistance in carrying out the purposes specified above. Information Sharing and Analysis Centers (ISACs): A trusted operational entity established by private sector critical infrastructure owners and operators in consultation with and with assistance from the Federal Government (as requested) to serve as a mechanism for gathering, analyzing, appropriately sanitizing, and disseminating information about vulnerabilities, threats, intrusions, and anomalies to industry and government partners. Information Sharing and Analysis Centers (ISACs) operate through a sector-based model; facilities and organizations within a particular critical infrastructure sector collaborate to share information and best practices about physical and cyber threats and mitigation strategies. Most ISACs maintain situational awareness of their sectors and provide threat warning and incident reporting 24 hours a day, 7 days a week; some also set the threat level for their sectors. While crucial to successful public-private partnerships, ISACs are not intended to interfere with direct exchanges of information between individual companies and the government. Information Technology (IT): Any equipment or interconnected system or subsystem of equipment, used in the automatic acquisition, storage, analysis, evaluation, manipulation, management, movement, control, display, switching, interchange, transmission, or reception of data or information by the executive agency, if the equipment is used by the executive agency directly or is used by a contractor under a contract with the executive agency that requires the use of that equipment. International Electrotechnical Commission (IEC): The IEC is a global, not-for-profit membership organization that brings together 173 countries and coordinates the work of 20 000 experts globally. IEC International Standards and conformity assessment work underpins international trade in electrical and electronic goods. It facilitates electricity access, and verifies the safety, performance and interoperability of electric and electronic devices and systems, including for example consumer devices such as mobile phones or refrigerators, office and medical equipment, information technology, electricity generation, and much more. International Society of Automation (ISA): The International Society of Automation (ISA) is a non-profit professional association founded in 1945 to create a better world through automation. ISA advances technical competence by connecting the automation community to achieve operational excellence and is the trusted provider of standards-based foundational technical resources, driving the advancement of individual careers and the overall profession. ISA develops widely used global standards; certifies professionals; provides education and training; publishes books and technical articles; hosts conferences and exhibits; and provides networking and career development programs for its members and customers around the world. International Society of Automation/International Electrotechnical Commission (ISA/IEC) 62443: The ISA/IEC 62443 series of standards, developed by the ISA99 committee and adopted by the International Electrotechnical Commission (IEC), provides a flexible framework to address and mitigate current and future security vulnerabilities in industrial automation and control systems (IACSs). Inventory: The formal listing or property record of personal property assigned to an organization. Known Exploitable Vulnerabilities Catalog (KEV): A list of vulnerabilities that CISA has identified as being exploited, or that have been used by threat actors. As a part of the Binding Operations Directive 22-01, it instructs Federal Civilian Executive Branch Agencies (FCEB) that they must remediate these issues within the specific timeframe, in order to protect federal infrastructure and reduce cyber-attacks. 26 Least Privilege: The principle that a security architecture is designed so that each entity is granted the minimum system resources and authorizations that the entity needs to perform its function. Logs: A record of the events occurring within an organization’s systems and networks. Microsoft Office Macros: A macro in Access is a tool that allows you to automate tasks and add functionality to your forms, reports, and controls. For example, if you add a command button to a form, you associate the button’s OnClick event to a macro, and the macro contains the commands that you want the button to perform each time it is clicked. Multifactor Authentication: An authenticator that provides more than one distinct authentication factor, such as a cryptographic authentication device with an integrated biometric sensor that is required to activate the device. National Institute of Standards and Technology (NIST): The National Institute of Standards and Technology promotes U.S. innovation and industrial competitiveness by advancing measurement science, standards, and technology in ways that enhance economic security and improve our quality of life. Network Segmentation and Segregation: Network segmentation involves partitioning a network into smaller networks, while network segregation involves developing and enforcing a ruleset for controlling the communications between specific hosts and services. NIST Cybersecurity Framework (CSF): A set of cybersecurity activities and references that are common across critical infrastructure sectors and are organized around particular outcomes. The Framework Core comprises four types of elements: Functions, Categories, Subcategories, and Informative References. NIST Risk Management Framework: The Risk Management Framework (RMF), presented in NIST SP 800-37, provides a disciplined and structured process that integrates information security and risk management activities into the system development life cycle. NIST SP 800-30: Provides guidance for conducting risk assessments of federal information systems and organizations, amplifying the guidance in Special Publication 800-39. Risk assessments, carried out at all three tiers in the risk management hierarchy, are part of an overall risk management process—providing senior leaders/executives with the information needed to determine appropriate courses of action in response to identified risks. NIST SP 800-53: This publication establishes controls for systems and organizations. The controls can be implemented within any organization or system that processes, stores, or transmits information. The use of these controls is mandatory for federal information systems. NIST SP 800-53 accomplishes this objective by providing a comprehensive and flexible catalog of security and privacy controls to meet current and future protection needs based on changing threats, vulnerabilities, requirements, and technologies. The publication also improves communication among organizations by providing a common lexicon that supports the discussion of security, privacy, and risk management concepts. NIST SP 800-82: Provides guidance for securing industrial control systems (ICS), including supervisory control and data acquisition (SCADA) systems, distributed control systems (DCS), and other systems performing control functions. The document provides a notional overview of ICS, reviews typical system topologies and architectures, identifies known threats and vulnerabilities to these systems, and provides recommended security countermeasures to mitigate the associated risks. Operational Technology (OT): Programmable systems or devices that interact with the physical environment (or manage devices that interact with the physical environment). These systems/devices detect or cause a direct change through the monitoring and/or control of devices, processes, and events. Examples include industrial control systems, building management systems, fire control systems, and physical access control mechanisms. Penetration Testing (remote): Simulates the tactics and techniques of real-world adversaries to identify and validate exploitable pathways. This service is ideal for testing perimeter defenses, the security of externally available applications, and the potential for exploitation of open-source information. 27 Phishing: A digital form of social engineering to deceive individuals into providing sensitive information. Privileged Accounts: An information system account with approved authorizations of a privileged user. Remote Desktop Protocol (RDP): Microsoft proprietary protocol that enables remote connections to other computers, typically over TCP port 3389. It provides network access for a remote user over an encrypted channel. Network administrators use RDP to diagnose issues, login to servers, and to perform other remote actions. Remote users use RDP to log into the organization’s network to access email and files. Salting Passwords or Password Salt: A random number added to a password to make it more difficult to crack. It is common practice to take passwords and run them through a hashing algorithm and store the results in the login database. When users enter their passwords, they are once again hashed and matched against the database. A salt is a random number added to the password prior to hashing to make the result more difficult to uncover by using a “brute force” dictionary attack. System Architecture: An architecture is “the fundamental organization of a system, embodied in its components, their relationships to each other and the environment, and the principles governing its design and evolution. Table-Top Exercise (TTX): A discussion-based exercise where personnel with roles and responsibilities in a particular IT plan meet in a classroom setting or in breakout groups to validate the content of the plan by discussing their roles during an emergency and their responses to a particular emergency situation. A facilitator initiates the discussion by presenting a scenario and asking questions based on the scenario. Transport Layer Security (TLS): An authentication and encryption protocol widely implemented in browsers and Web servers. HTTP traffic transmitted using TLS is known as HTTPS. Vulnerability Disclosure Program: Gives security researchers clear guidelines for conducting vulnerability discovery activities and to convey our preferences in how to submit discovered vulnerabilities to an organization. 28 ACKNOWLEDGMENTS The cybersecurity performance goals would not have been possible without crosscutting input from public and private stakeholders. CISA and NIST would like to thank the following companies, organizations, U.S. federal agencies, and international partners for their contributing comments on these goals: 1898 & Co; AAC Cyber Group; ABS Group; Administration for Strategic Preparedness and Response (ASPR); Amazon Web Services; American Chemistry Council (AAC) Cybersecurity Information Sharing Group; American Fuel and Petrochemical Manufacturers (AFPM); American Gas Association; American Petroleum Institute (API); American Public Power Association (APPA); American Water Works Association; Area Maritime Security Committee Houston-Galveston; Bechtel; Boeing; Chemical Sector Coordinating Council (CSCC); City of Crystal, Minnesota; City of Phoenix Department of Aviation (Phoenix Sky Harbor International Airport); City of Pittsburgh Housing Authority; Claroty; Colorado River Energy Distributors Association; Consolidated Communications; CTIA, NCTA, USTelecom; Cyber Threat Alliance; D.L.; Discover Financial Services; Eclypsium, Inc.; Dragos; Edison Electric Institute; Enbridge, Inc.; Exxon; Federal Deposit Insurance Corporation (FDIC); Federal Housing Finance Agency (FHFA); Federal Reserve (and Federal Reserve, Financial Services); FERC, Division of Dam Safety and Inspections; Financial Services Sector Coordinating Council (FSSCC); FireEye; GE; Granite Falls Consulting; Information Security Officer, Maersk Line, Limited; Honeywell; Information Technology Industry Council (ITI); Israel National Cyber Directorate (INCD); IT Sector Coordinating Council (IT-SCC); JP Morgan; Marsh; Matson Navigation Company; Microsoft; National Air Transportation Association; National Rural Electric Cooperative Association (NRECA); National Water Resources Association (CREDA/NWRA); National Cyber Security Centre (NCSC (UK)); NCTA; Netrise; Network Perception; Netwrix Corporation; Nozomi Networks; NTCA – The Rural Broadband Association; Office of the Comptroller of the Currency (OCC); Operational Technology Cybersecurity Coalition; Pacific Northwest National Laboratory (PNNL); Port Authority of New York and New Jersey; Port of Houston Authority; Schneider Electric; Securities and Exchange Commission (SEC); Securities Investor Protection Corporation (SIPC); Sera-Brynn Consulting; Siemens Government Technologies; Southern California Edison; Southern Company; State of Washington, Cybersecurity & Critical Infrastructure Protection Unit; Transportation Security Administration (TSA); U.S. Army, Materiel Command; U.S. Department of Energy (DOE); U.S. Environmental Protection Agency (EPA); U.S. Nuclear Regulatory Commission; U.S. Coast Guard; University of Miami Health System; U.S. Mint – Philadelphia; Both public and private members of CISA’s Control Systems Working Group (CSWG) and Control Systems Interagency Working Group (CSIWG); Department of Health and Human Services (HHS), Food and Drug Administration (FDA), Office of the National Coordinator for Health Information Technology (ONC)); Water Environment Federation; Water Sector Coordinating Council; Waterfall Security; Woodard & Curran; Xylem. In addition to organizations, CISA would like to recognize the following individuals who provided particularly valuable feedback: Marco Ayala, David Batz, Bryson Bort, Mark Bristow, Lance Cleghorn, Josh Corman, Curt Dukes, David Foose, Danielle Jablanski, Chris Jager, Isaiah Jones, Robert M. Lee, Joe Marshall, Patrick Miller, Thomas Reagan, Alexander Romero, Marty Rubin, Kimberly Sanders, Gus Serino, Nicole Thompson, and Virginia Wright. ",
+  "entities": [
+    {
+      "id": "E1",
+      "text": "T0872",
+      "type": "AttackTechnique",
+      "start": 29279,
+      "end": 29284,
+      "normalized_id": "T0872",
+      "evidence": "nux or Mac System Logs (T1070.002) Indicator Removal on Host - File Deletion (T1070.004) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise ("
+    },
+    {
+      "id": "E2",
+      "text": "T0887",
+      "type": "AttackTechnique",
+      "start": 29438,
+      "end": 29443,
+      "normalized_id": "T0887",
+      "evidence": "Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (ICS T0887) PR.PT-1 PR.PT-1 PR.DS-1, PR.DS-2 14 3.4– Secure Sensitive Data RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE "
+    },
+    {
+      "id": "E3",
+      "text": "T1566.001",
+      "type": "AttackTechnique",
+      "start": 25421,
+      "end": 25430,
+      "normalized_id": "T1566.001",
+      "evidence": "are Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T"
+    },
+    {
+      "id": "E4",
+      "text": "T0847",
+      "type": "AttackTechnique",
+      "start": 27068,
+      "end": 27073,
+      "normalized_id": "T0847",
+      "evidence": "IT and OT assets Hardware Additions (T1200) Replication Through Removable Media (T1091, ICS T0847) PR.PT-2 13 DATA SECURITY 3.0 3.1– 3.3– 3.2– Log Collection Secure Log Storage Strong and Agile Encryption RECOMMENDED "
+    },
+    {
+      "id": "E5",
+      "text": "T1486",
+      "type": "AttackTechnique",
+      "start": 43036,
+      "end": 43041,
+      "normalized_id": "T1486",
+      "evidence": "Data Destruction (T1485, ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829)"
+    },
+    {
+      "id": "E6",
+      "text": "T0815",
+      "type": "AttackTechnique",
+      "start": 43148,
+      "end": 43153,
+      "normalized_id": "T0815",
+      "evidence": "Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-2, RS.CO-4 PR.IP-9, PR.IP-10 PR."
+    },
+    {
+      "id": "E7",
+      "text": "T1200",
+      "type": "AttackTechnique",
+      "start": 25316,
+      "end": 25321,
+      "normalized_id": "T1200",
+      "evidence": "IT and OT assets IT assets IT and OT assets Supply Chain Compromise (T1195, ICS T0862) Hardware Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Exec"
+    },
+    {
+      "id": "E8",
+      "text": "T1204.002",
+      "type": "AttackTechnique",
+      "start": 25465,
+      "end": 25474,
+      "normalized_id": "T1204.002",
+      "evidence": "176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T0819) Internet Accessible Device (ICS T0883)"
+    },
+    {
+      "id": "E9",
+      "text": "T1046",
+      "type": "AttackTechnique",
+      "start": 45489,
+      "end": 45494,
+      "normalized_id": "T1046",
+      "evidence": "nd OT assets, where safe and technically capable N/A All organizational email infrastructure Network Service Discovery (T1046) Trusted Relationship (T1199) Network Connection Enumeration (ICS T0840) Network Sniffing (T1040, ICS T0842) Without th"
+    },
+    {
+      "id": "E10",
+      "text": "T1070.004",
+      "type": "AttackTechnique",
+      "start": 29237,
+      "end": 29246,
+      "normalized_id": "T1070.004",
+      "evidence": ".001) Indicator Removal on Host - Clear Linux or Mac System Logs (T1070.002) Indicator Removal on Host - File Deletion (T1070.004) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T"
+    },
+    {
+      "id": "E11",
+      "text": "T1176",
+      "type": "AttackTechnique",
+      "start": 25343,
+      "end": 25348,
+      "normalized_id": "T1176",
+      "evidence": "ts IT assets IT and OT assets Supply Chain Compromise (T1195, ICS T0862) Hardware Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T12"
+    },
+    {
+      "id": "E12",
+      "text": "T0822",
+      "type": "AttackTechnique",
+      "start": 19943,
+      "end": 19948,
+      "normalized_id": "T0822",
+      "evidence": " Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T0859) External Remote Services (ICS T0822) PR.AC-7 9 1.0 1.5– 1.6– 1.4– Separating User and Privileged Accounts Unique Credentials RECOMMENDED ACTION RECOMMENDED"
+    },
+    {
+      "id": "E13",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 35595,
+      "end": 35600,
+      "normalized_id": "T1210",
+      "evidence": "Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vu"
+    },
+    {
+      "id": "E14",
+      "text": "T1485",
+      "type": "AttackTechnique",
+      "start": 42991,
+      "end": 42996,
+      "normalized_id": "T1485",
+      "evidence": "Data Destruction (T1485, ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS "
+    },
+    {
+      "id": "E15",
+      "text": "T0828",
+      "type": "AttackTechnique",
+      "start": 43221,
+      "end": 43226,
+      "normalized_id": "T0828",
+      "evidence": "f Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-2, RS.CO-4 PR.IP-9, PR.IP-10 PR.IP-4 21 7.0 7.4– Document Network Topology RECOMMENDED ACTION OUTCOME TTP"
+    },
+    {
+      "id": "E16",
+      "text": "T1558",
+      "type": "AttackTechnique",
+      "start": 30071,
+      "end": 30076,
+      "normalized_id": "T1558",
+      "evidence": ", secrets, and other sensitive or controlled information Unsecured Credentials (T1552) Steal or Forge Kerberos Tickets (T1558) OS Credential Dumping (T1003) Data from Information Repositories (ICS T0811) Theft of Operational Information (T0882) "
+    },
+    {
+      "id": "E17",
+      "text": "T1119",
+      "type": "AttackTechnique",
+      "start": 29340,
+      "end": 29345,
+      "normalized_id": "T1119",
+      "evidence": "- File Deletion (T1070.004) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (ICS T0887) PR.PT-1 PR.PT-1 PR.D"
+    },
+    {
+      "id": "E18",
+      "text": "T0829",
+      "type": "AttackTechnique",
+      "start": 43155,
+      "end": 43160,
+      "normalized_id": "T0829",
+      "evidence": "(T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-2, RS.CO-4 PR.IP-9, PR.IP-10 PR.IP-4 21"
+    },
+    {
+      "id": "E19",
+      "text": "T1070.001",
+      "type": "AttackTechnique",
+      "start": 29112,
+      "end": 29121,
+      "normalized_id": "T1070.001",
+      "evidence": "Impair Defenses (T1562) Indicator Removal on Host - Clear Windows Event Logs (T1070.001) Indicator Removal on Host - Clear Linux or Mac System Logs (T1070.002) Indicator Removal on Host - File Deletion (T107"
+    },
+    {
+      "id": "E20",
+      "text": "T1003",
+      "type": "AttackTechnique",
+      "start": 30101,
+      "end": 30106,
+      "normalized_id": "T1003",
+      "evidence": " or controlled information Unsecured Credentials (T1552) Steal or Forge Kerberos Tickets (T1558) OS Credential Dumping (T1003) Data from Information Repositories (ICS T0811) Theft of Operational Information (T0882) PR.DS-1, PR.DS-2, PR.DS-5 3.0 "
+    },
+    {
+      "id": "E21",
+      "text": "T1552",
+      "type": "AttackTechnique",
+      "start": 30031,
+      "end": 30036,
+      "normalized_id": "T1552",
+      "evidence": "All passwords, credentials, secrets, and other sensitive or controlled information Unsecured Credentials (T1552) Steal or Forge Kerberos Tickets (T1558) OS Credential Dumping (T1003) Data from Information Repositories (ICS T0811) T"
+    },
+    {
+      "id": "E22",
+      "text": "T0866",
+      "type": "AttackTechnique",
+      "start": 35606,
+      "end": 35611,
+      "normalized_id": "T0866",
+      "evidence": "ty Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability"
+    },
+    {
+      "id": "E23",
+      "text": "T0826",
+      "type": "AttackTechnique",
+      "start": 43184,
+      "end": 43189,
+      "normalized_id": "T0826",
+      "evidence": "ibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-2, RS.CO-4 PR.IP-9, PR.IP-10 PR.IP-4 21 7.0 7.4– Document Network To"
+    },
+    {
+      "id": "E24",
+      "text": "T1078.001",
+      "type": "AttackTechnique",
+      "start": 17689,
+      "end": 17698,
+      "normalized_id": "T1078.001",
+      "evidence": "Password protected IT assets, and newly acquired OT assets Valid Accounts - Default Accounts (T1078.001) Valid Accounts (ICS T0859) PR.AC-1 Detection of Unsuccessful (Automated) Login Attempts RECOMMENDED ACTION OUTCOME TTP"
+    },
+    {
+      "id": "E25",
+      "text": "T0864",
+      "type": "AttackTechnique",
+      "start": 25377,
+      "end": 25382,
+      "normalized_id": "T0864",
+      "evidence": "ly Chain Compromise (T1195, ICS T0862) Hardware Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200)"
+    },
+    {
+      "id": "E26",
+      "text": "T0831",
+      "type": "AttackTechnique",
+      "start": 43228,
+      "end": 43233,
+      "normalized_id": "T0831",
+      "evidence": "ol (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-2, RS.CO-4 PR.IP-9, PR.IP-10 PR.IP-4 21 7.0 7.4– Document Network Topology RECOMMENDED ACTION OUTCOME TTP or RIS"
+    },
+    {
+      "id": "E27",
+      "text": "T1199",
+      "type": "AttackTechnique",
+      "start": 45518,
+      "end": 45523,
+      "normalized_id": "T1199",
+      "evidence": "technically capable N/A All organizational email infrastructure Network Service Discovery (T1046) Trusted Relationship (T1199) Network Connection Enumeration (ICS T0840) Network Sniffing (T1040, ICS T0842) Without the knowledge of relevant threa"
+    },
+    {
+      "id": "E28",
+      "text": "T0813",
+      "type": "AttackTechnique",
+      "start": 43116,
+      "end": 43121,
+      "normalized_id": "T0813",
+      "evidence": ", ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of Control (T0828, T0831) RS.CO-"
+    },
+    {
+      "id": "E29",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 19834,
+      "end": 19843,
+      "normalized_id": "T1021.001",
+      "evidence": "kstations, and HMI’s, where safe and technically capable Brute Force (T1110) Remote Services - Remote Desktop Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T0859) External Remote Services (ICS T0822) PR.AC-7 9 1.0"
+    },
+    {
+      "id": "E30",
+      "text": "T1021.004",
+      "type": "AttackTechnique",
+      "start": 19868,
+      "end": 19877,
+      "normalized_id": "T1021.004",
+      "evidence": "nd technically capable Brute Force (T1110) Remote Services - Remote Desktop Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T0859) External Remote Services (ICS T0822) PR.AC-7 9 1.0 1.5– 1.6– 1.4– Separating User an"
+    },
+    {
+      "id": "E31",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 25289,
+      "end": 25294,
+      "normalized_id": "T0862",
+      "evidence": "IT and OT assets IT assets IT and OT assets Supply Chain Compromise (T1195, ICS T0862) Hardware Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attac"
+    },
+    {
+      "id": "E32",
+      "text": "T0883",
+      "type": "AttackTechnique",
+      "start": 25588,
+      "end": 25593,
+      "normalized_id": "T0883",
+      "evidence": "04.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T0819) Internet Accessible Device (ICS T0883) PR.IP-3 PR.IP-1, PR.IP-3 ID.AM-1 12 2.0 2.5– Document Device Configurations RECOMMENDED ACTION OUTCOME TTP or RISK ADD"
+    },
+    {
+      "id": "E33",
+      "text": "T0811",
+      "type": "AttackTechnique",
+      "start": 30148,
+      "end": 30153,
+      "normalized_id": "T0811",
+      "evidence": "s (T1552) Steal or Forge Kerberos Tickets (T1558) OS Credential Dumping (T1003) Data from Information Repositories (ICS T0811) Theft of Operational Information (T0882) PR.DS-1, PR.DS-2, PR.DS-5 3.0 15 GOVERNANCE AND TRAINING 4.0 4.1– 4.3– 4.4– 4"
+    },
+    {
+      "id": "E34",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 35545,
+      "end": 35550,
+      "normalized_id": "T1190",
+      "evidence": "Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remot"
+    },
+    {
+      "id": "E35",
+      "text": "T1557",
+      "type": "AttackTechnique",
+      "start": 29311,
+      "end": 29316,
+      "normalized_id": "T1557",
+      "evidence": "2) Indicator Removal on Host - File Deletion (T1070.004) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (IC"
+    },
+    {
+      "id": "E36",
+      "text": "T1561",
+      "type": "AttackTechnique",
+      "start": 43054,
+      "end": 43059,
+      "normalized_id": "T1561",
+      "evidence": "Data Destruction (T1485, ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availabil"
+    },
+    {
+      "id": "E37",
+      "text": "T0859",
+      "type": "AttackTechnique",
+      "start": 17720,
+      "end": 17725,
+      "normalized_id": "T0859",
+      "evidence": "ord protected IT assets, and newly acquired OT assets Valid Accounts - Default Accounts (T1078.001) Valid Accounts (ICS T0859) PR.AC-1 Detection of Unsuccessful (Automated) Login Attempts RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Pr"
+    },
+    {
+      "id": "E38",
+      "text": "T1490",
+      "type": "AttackTechnique",
+      "start": 43086,
+      "end": 43091,
+      "normalized_id": "T1490",
+      "evidence": "Data Destruction (T1485, ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Denial/Loss of View (ICS T0815, T0829) Loss of Availability (T0826) Loss/Manipulation of"
+    },
+    {
+      "id": "E39",
+      "text": "T0840",
+      "type": "AttackTechnique",
+      "start": 45561,
+      "end": 45566,
+      "normalized_id": "T0840",
+      "evidence": "email infrastructure Network Service Discovery (T1046) Trusted Relationship (T1199) Network Connection Enumeration (ICS T0840) Network Sniffing (T1040, ICS T0842) Without the knowledge of relevant threats and ability to detect them, organization"
+    },
+    {
+      "id": "E40",
+      "text": "T0860",
+      "type": "AttackTechnique",
+      "start": 29408,
+      "end": 29413,
+      "normalized_id": "T0860",
+      "evidence": "versary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (ICS T0887) PR.PT-1 PR.PT-1 PR.DS-1, PR.DS-2 14 3.4– Secure Sensitive Data RECOMMENDED ACTION OUTCOM"
+    },
+    {
+      "id": "E41",
+      "text": "T1110.001",
+      "type": "AttackTechnique",
+      "start": 18781,
+      "end": 18790,
+      "normalized_id": "T1110.001",
+      "evidence": "Password protected IT assets, and newly acquired OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuff"
+    },
+    {
+      "id": "E42",
+      "text": "T0809",
+      "type": "AttackTechnique",
+      "start": 43002,
+      "end": 43007,
+      "normalized_id": "T0809",
+      "evidence": "Data Destruction (T1485, ICS T0809) Data Encrypted for Impact (T1486) Disk Wipe (T1561) Inhibit System Recovery (T1490) Denial of Control (ICS T0813) Deni"
+    },
+    {
+      "id": "E43",
+      "text": "T1091",
+      "type": "AttackTechnique",
+      "start": 27057,
+      "end": 27062,
+      "normalized_id": "T1091",
+      "evidence": "IT and OT assets Hardware Additions (T1200) Replication Through Removable Media (T1091, ICS T0847) PR.PT-2 13 DATA SECURITY 3.0 3.1– 3.3– 3.2– Log Collection Secure Log Storage Strong and Agile Encryption R"
+    },
+    {
+      "id": "E44",
+      "text": "T1040",
+      "type": "AttackTechnique",
+      "start": 29365,
+      "end": 29370,
+      "normalized_id": "T1040",
+      "evidence": "4) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (ICS T0887) PR.PT-1 PR.PT-1 PR.DS-1, PR.DS-2 14 3.4– Secu"
+    },
+    {
+      "id": "E45",
+      "text": "T1133",
+      "type": "AttackTechnique",
+      "start": 35682,
+      "end": 35687,
+      "normalized_id": "T1133",
+      "evidence": " Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) E"
+    },
+    {
+      "id": "E46",
+      "text": "T1070.002",
+      "type": "AttackTechnique",
+      "start": 29183,
+      "end": 29192,
+      "normalized_id": "T1070.002",
+      "evidence": "ator Removal on Host - Clear Windows Event Logs (T1070.001) Indicator Removal on Host - Clear Linux or Mac System Logs (T1070.002) Indicator Removal on Host - File Deletion (T1070.004) Indicator Removal on Host (ICS T0872) Adversary-in-the-Middle (T"
+    },
+    {
+      "id": "E47",
+      "text": "T1110.002",
+      "type": "AttackTechnique",
+      "start": 18825,
+      "end": 18834,
+      "normalized_id": "T1110.002",
+      "evidence": "ed IT assets, and newly acquired OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-7 Multi-Factor Authent"
+    },
+    {
+      "id": "E48",
+      "text": "T1566",
+      "type": "AttackTechnique",
+      "start": 25421,
+      "end": 25426,
+      "normalized_id": "T1566",
+      "evidence": "are Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, I"
+    },
+    {
+      "id": "E49",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 25278,
+      "end": 25283,
+      "normalized_id": "T1195",
+      "evidence": "IT and OT assets IT assets IT and OT assets Supply Chain Compromise (T1195, ICS T0862) Hardware Additions (T1200) Browser Extensions (T1176) Transient Cyber Asset (ICS T0864) Phishing - Spearphi"
+    },
+    {
+      "id": "E50",
+      "text": "T1110.003",
+      "type": "AttackTechnique",
+      "start": 18869,
+      "end": 18878,
+      "normalized_id": "T1110.003",
+      "evidence": "rute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-7 Multi-Factor Authentication (MFA) RECOMMENDED ACTION OUTCOME TTP"
+    },
+    {
+      "id": "E51",
+      "text": "T1110.004",
+      "type": "AttackTechnique",
+      "start": 18915,
+      "end": 18924,
+      "normalized_id": "T1110.004",
+      "evidence": "te Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-7 Multi-Factor Authentication (MFA) RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Add a critical, addit"
+    },
+    {
+      "id": "E52",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 17689,
+      "end": 17694,
+      "normalized_id": "T1078",
+      "evidence": "Password protected IT assets, and newly acquired OT assets Valid Accounts - Default Accounts (T1078.001) Valid Accounts (ICS T0859) PR.AC-1 Detection of Unsuccessful (Automated) Login Attempts RECOMMENDED ACTION OUTCOME"
+    },
+    {
+      "id": "E53",
+      "text": "T1562",
+      "type": "AttackTechnique",
+      "start": 29051,
+      "end": 29056,
+      "normalized_id": "T1562",
+      "evidence": "Impair Defenses (T1562) Indicator Removal on Host - Clear Windows Event Logs (T1070.001) Indicator Removal on Host - Clear Linux or Mac System"
+    },
+    {
+      "id": "E54",
+      "text": "T0842",
+      "type": "AttackTechnique",
+      "start": 29376,
+      "end": 29381,
+      "normalized_id": "T0842",
+      "evidence": "r Removal on Host (ICS T0872) Adversary-in-the-Middle (T1557) Automated Collection (T1119) Network Sniffing (T1040, ICS T0842) Wireless Compromise (ICS T0860) Wireness Sniffing (ICS T0887) PR.PT-1 PR.PT-1 PR.DS-1, PR.DS-2 14 3.4– Secure Sensitiv"
+    },
+    {
+      "id": "E55",
+      "text": "T0882",
+      "type": "AttackTechnique",
+      "start": 30189,
+      "end": 30194,
+      "normalized_id": "T0882",
+      "evidence": " (T1558) OS Credential Dumping (T1003) Data from Information Repositories (ICS T0811) Theft of Operational Information (T0882) PR.DS-1, PR.DS-2, PR.DS-5 3.0 15 GOVERNANCE AND TRAINING 4.0 4.1– 4.3– 4.4– 4.2– Organizational Cybersecurity Leadersh"
+    },
+    {
+      "id": "E56",
+      "text": "T1595.002",
+      "type": "AttackTechnique",
+      "start": 35499,
+      "end": 35508,
+      "normalized_id": "T1595.002",
+      "evidence": "Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Co"
+    },
+    {
+      "id": "E57",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 25538,
+      "end": 25543,
+      "normalized_id": "T0819",
+      "evidence": "t (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T0819) Internet Accessible Device (ICS T0883) PR.IP-3 PR.IP-1, PR.IP-3 ID.AM-1 12 2.0 2.5– Document Device Configu"
+    },
+    {
+      "id": "E58",
+      "text": "T1110",
+      "type": "AttackTechnique",
+      "start": 18781,
+      "end": 18786,
+      "normalized_id": "T1110",
+      "evidence": "Password protected IT assets, and newly acquired OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential S"
+    },
+    {
+      "id": "E59",
+      "text": "T1110",
+      "type": "AttackTechnique",
+      "start": 19784,
+      "end": 19789,
+      "normalized_id": "T1110",
+      "evidence": "ets, and OT assets with remote access, such as workstations, and HMI’s, where safe and technically capable Brute Force (T1110) Remote Services - Remote Desktop Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T08",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E60",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 19895,
+      "end": 19900,
+      "normalized_id": "T1078",
+      "evidence": "e Force (T1110) Remote Services - Remote Desktop Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T0859) External Remote Services (ICS T0822) PR.AC-7 9 1.0 1.5– 1.6– 1.4– Separating User and Privileged Accounts U",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E61",
+      "text": "T0859",
+      "type": "AttackTechnique",
+      "start": 19906,
+      "end": 19911,
+      "normalized_id": "T0859",
+      "evidence": "110) Remote Services - Remote Desktop Protocol (T1021.001) Remote Services - SSH (T1021.004) Valid Accounts (T1078, ICS T0859) External Remote Services (ICS T0822) PR.AC-7 9 1.0 1.5– 1.6– 1.4– Separating User and Privileged Accounts Unique Crede",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E62",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 21136,
+      "end": 21141,
+      "normalized_id": "T1078",
+      "evidence": "IT and OT assets, where safe and technically capable IT and OT assets Valid Accounts (T1078, ICS T0859) Valid Accounts (T1078, ICS T0859) Brute Force - Password Guessing (T1110.001) PR.AC-4 PR.AC-1 Minimum Passw",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E63",
+      "text": "T0859",
+      "type": "AttackTechnique",
+      "start": 21147,
+      "end": 21152,
+      "normalized_id": "T0859",
+      "evidence": "IT and OT assets, where safe and technically capable IT and OT assets Valid Accounts (T1078, ICS T0859) Valid Accounts (T1078, ICS T0859) Brute Force - Password Guessing (T1110.001) PR.AC-4 PR.AC-1 Minimum Password Strengt",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E64",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 21170,
+      "end": 21175,
+      "normalized_id": "T1078",
+      "evidence": "IT and OT assets, where safe and technically capable IT and OT assets Valid Accounts (T1078, ICS T0859) Valid Accounts (T1078, ICS T0859) Brute Force - Password Guessing (T1110.001) PR.AC-4 PR.AC-1 Minimum Password Strength RECOMMENDED ACTION OU",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E65",
+      "text": "T0859",
+      "type": "AttackTechnique",
+      "start": 21181,
+      "end": 21186,
+      "normalized_id": "T0859",
+      "evidence": "ssets, where safe and technically capable IT and OT assets Valid Accounts (T1078, ICS T0859) Valid Accounts (T1078, ICS T0859) Brute Force - Password Guessing (T1110.001) PR.AC-4 PR.AC-1 Minimum Password Strength RECOMMENDED ACTION OUTCOME TTP o",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E66",
+      "text": "T1110.001",
+      "type": "AttackTechnique",
+      "start": 21221,
+      "end": 21230,
+      "normalized_id": "T1110.001",
+      "evidence": "e IT and OT assets Valid Accounts (T1078, ICS T0859) Valid Accounts (T1078, ICS T0859) Brute Force - Password Guessing (T1110.001) PR.AC-4 PR.AC-1 Minimum Password Strength RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOPE Organizational passwo",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E67",
+      "text": "T1110.001",
+      "type": "AttackTechnique",
+      "start": 22921,
+      "end": 22930,
+      "normalized_id": "T1110.001",
+      "evidence": "Password protected IT and Windows-based OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuff",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E68",
+      "text": "T1110.002",
+      "type": "AttackTechnique",
+      "start": 22965,
+      "end": 22974,
+      "normalized_id": "T1110.002",
+      "evidence": "d protected IT and Windows-based OT assets Brute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-1 10 1.0 1.7– Revoking",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E69",
+      "text": "T1110.003",
+      "type": "AttackTechnique",
+      "start": 23009,
+      "end": 23018,
+      "normalized_id": "T1110.003",
+      "evidence": "rute Force - Password Guessing (T1110.001) Brute Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-1 10 1.0 1.7– Revoking Credentials for Departing Employees RECOMME",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E70",
+      "text": "T1110.004",
+      "type": "AttackTechnique",
+      "start": 23055,
+      "end": 23064,
+      "normalized_id": "T1110.004",
+      "evidence": "te Force - Password Cracking (T1110.002) Brute Force - Password Spraying (T1110.003) Brute Force - Credential Stuffing (T1110.004) PR.AC-1 10 1.0 1.7– Revoking Credentials for Departing Employees RECOMMENDED ACTION OUTCOME TTP or RISK ADDRESSED SCOP",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E71",
+      "text": "T1078",
+      "type": "AttackTechnique",
+      "start": 23589,
+      "end": 23594,
+      "normalized_id": "T1078",
+      "evidence": "Departing/Departed Employees Valid Accounts (T1078, ICS T0859) PR.AC-1 11 DEVICE SECURITY 2.0 2.1– 2.3– 2.2– Hardware and Software Approval Process Disable Macros by Defa",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E72",
+      "text": "T0859",
+      "type": "AttackTechnique",
+      "start": 23600,
+      "end": 23605,
+      "normalized_id": "T0859",
+      "evidence": "Departing/Departed Employees Valid Accounts (T1078, ICS T0859) PR.AC-1 11 DEVICE SECURITY 2.0 2.1– 2.3– 2.2– Hardware and Software Approval Process Disable Macros by Default Asset I",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E73",
+      "text": "T1200",
+      "type": "AttackTechnique",
+      "start": 25496,
+      "end": 25501,
+      "normalized_id": "T1200",
+      "evidence": " T0864) Phishing - Spearphishing Attachment (T1566.001) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T0819) Internet Accessible Device (ICS T0883) PR.IP-3 PR.IP-1, PR.IP-3 I",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E74",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 25549,
+      "end": 25554,
+      "normalized_id": "T0819",
+      "evidence": "1) User Execution - Malicious FIle (T1204.002) Hardware Additions (T1200) Exploit Public-Facing Application (T0819, ICS T0819) Internet Accessible Device (ICS T0883) PR.IP-3 PR.IP-1, PR.IP-3 ID.AM-1 12 2.0 2.5– Document Device Configurations REC",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E75",
+      "text": "T1200",
+      "type": "AttackTechnique",
+      "start": 27013,
+      "end": 27018,
+      "normalized_id": "T1200",
+      "evidence": "IT and OT assets Hardware Additions (T1200) Replication Through Removable Media (T1091, ICS T0847) PR.PT-2 13 DATA SECURITY 3.0 3.1– 3.3– 3.2– Log Collection Secu",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E76",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 35556,
+      "end": 35561,
+      "normalized_id": "T0819",
+      "evidence": "Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services ",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E77",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 35638,
+      "end": 35643,
+      "normalized_id": "T1195",
+      "evidence": "Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Pu",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E78",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 35649,
+      "end": 35654,
+      "normalized_id": "T0862",
+      "evidence": "ng Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E79",
+      "text": "T0822",
+      "type": "AttackTechnique",
+      "start": 35693,
+      "end": 35698,
+      "normalized_id": "T0822",
+      "evidence": "on of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E80",
+      "text": "T1595.002",
+      "type": "AttackTechnique",
+      "start": 35742,
+      "end": 35751,
+      "normalized_id": "T1595.002",
+      "evidence": "ain Compromise (T1195, ICS T0862) External Remote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Co",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E81",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 35788,
+      "end": 35793,
+      "normalized_id": "T1190",
+      "evidence": "ote Services (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scannin",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E82",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 35799,
+      "end": 35804,
+      "normalized_id": "T0819",
+      "evidence": "s (T1133, ICS T0822) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnera",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E83",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 35838,
+      "end": 35843,
+      "normalized_id": "T1210",
+      "evidence": "Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Pub",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E84",
+      "text": "T0866",
+      "type": "AttackTechnique",
+      "start": 35849,
+      "end": 35854,
+      "normalized_id": "T0866",
+      "evidence": "ty Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing ",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E85",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 35881,
+      "end": 35886,
+      "normalized_id": "T1195",
+      "evidence": "Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) E",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E86",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 35892,
+      "end": 35897,
+      "normalized_id": "T0862",
+      "evidence": "ng Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E87",
+      "text": "T1595.002",
+      "type": "AttackTechnique",
+      "start": 35941,
+      "end": 35950,
+      "normalized_id": "T1595.002",
+      "evidence": " Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Co",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E88",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 35987,
+      "end": 35992,
+      "normalized_id": "T1190",
+      "evidence": "n Compromise (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.R",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E89",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 35998,
+      "end": 36003,
+      "normalized_id": "T0819",
+      "evidence": "e (T1195, ICS T0862) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.RA-1, DE.CM-",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E90",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 36037,
+      "end": 36042,
+      "normalized_id": "T1210",
+      "evidence": "Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.RA-1, DE.CM-8, RS.MI-3 RS.AN-5 RS.AN-5 18 5.0 5.4– ",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E91",
+      "text": "T0866",
+      "type": "AttackTechnique",
+      "start": 36048,
+      "end": 36053,
+      "normalized_id": "T0866",
+      "evidence": "ty Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.RA-1, DE.CM-8, RS.MI-3 RS.AN-5 RS.AN-5 18 5.0 5.4– 5.6– 5.5– N",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E92",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 36080,
+      "end": 36085,
+      "normalized_id": "T1195",
+      "evidence": "Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.RA-1, DE.CM-8, RS.MI-3 RS.AN-5 RS.AN-5 18 5.0 5.4– 5.6– 5.5– No Exploitable Services on the In",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E93",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 36091,
+      "end": 36096,
+      "normalized_id": "T0862",
+      "evidence": "ng Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) Supply Chain Compromise (T1195, ICS T0862) PR.IP-12, ID.RA-1, DE.CM-8, RS.MI-3 RS.AN-5 RS.AN-5 18 5.0 5.4– 5.6– 5.5– No Exploitable Services on the Internet Limi",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E94",
+      "text": "T1595.002",
+      "type": "AttackTechnique",
+      "start": 38302,
+      "end": 38311,
+      "normalized_id": "T1595.002",
+      "evidence": "ublic internet OT assets on the public internet IT and OT assets and networks Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E95",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 38348,
+      "end": 38353,
+      "normalized_id": "T1190",
+      "evidence": "t IT and OT assets and networks Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Servic",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E96",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 38359,
+      "end": 38364,
+      "normalized_id": "T0819",
+      "evidence": " assets and networks Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E97",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 38398,
+      "end": 38403,
+      "normalized_id": "T1210",
+      "evidence": "Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Sc",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E98",
+      "text": "T0866",
+      "type": "AttackTechnique",
+      "start": 38409,
+      "end": 38414,
+      "normalized_id": "T0866",
+      "evidence": "ty Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Scanning - Vu",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E99",
+      "text": "T1133",
+      "type": "AttackTechnique",
+      "start": 38442,
+      "end": 38447,
+      "normalized_id": "T1133",
+      "evidence": "ublic-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) ",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E100",
+      "text": "T0822",
+      "type": "AttackTechnique",
+      "start": 38453,
+      "end": 38458,
+      "normalized_id": "T0822",
+      "evidence": "g Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Pub",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E101",
+      "text": "T1021.001",
+      "type": "AttackTechnique",
+      "start": 38503,
+      "end": 38512,
+      "normalized_id": "T1021.001",
+      "evidence": "emote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E102",
+      "text": "T1595.002",
+      "type": "AttackTechnique",
+      "start": 38556,
+      "end": 38565,
+      "normalized_id": "T1595.002",
+      "evidence": "ices (T1133, ICS T0822) Remote Services - Remote Desktop Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E103",
+      "text": "T1190",
+      "type": "AttackTechnique",
+      "start": 38602,
+      "end": 38607,
+      "normalized_id": "T1190",
+      "evidence": "te Desktop Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk o",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E104",
+      "text": "T0819",
+      "type": "AttackTechnique",
+      "start": 38613,
+      "end": 38618,
+      "normalized_id": "T0819",
+      "evidence": "Protocol (T1021.001) Active Scanning - Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk of gaps in c",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E105",
+      "text": "T1210",
+      "type": "AttackTechnique",
+      "start": 38652,
+      "end": 38657,
+      "normalized_id": "T1210",
+      "evidence": "Vulnerability Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk of gaps in cyber defenses or a false sense of secur",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E106",
+      "text": "T0866",
+      "type": "AttackTechnique",
+      "start": 38663,
+      "end": 38668,
+      "normalized_id": "T0866",
+      "evidence": "ty Scanning (T1595.002) Exploit Public-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk of gaps in cyber defenses or a false sense of security in exis",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E107",
+      "text": "T1133",
+      "type": "AttackTechnique",
+      "start": 38696,
+      "end": 38701,
+      "normalized_id": "T1133",
+      "evidence": "ublic-Facing Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk of gaps in cyber defenses or a false sense of security in existing protections.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E108",
+      "text": "T0822",
+      "type": "AttackTechnique",
+      "start": 38707,
+      "end": 38712,
+      "normalized_id": "T0822",
+      "evidence": "g Application (T1190, ICS T0819) Exploitation of Remote Service (T1210, ICS T0866) External Remote Services (T1133, ICS T0822) Reduce risk of gaps in cyber defenses or a false sense of security in existing protections.",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E109",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 40419,
+      "end": 40424,
+      "normalized_id": "T1195",
+      "evidence": "d services Suppliers of IT and OT asset and services Suppliers of IT and OT asset and services Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.S",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E110",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 40430,
+      "end": 40435,
+      "normalized_id": "T0862",
+      "evidence": "Suppliers of IT and OT asset and services Suppliers of IT and OT asset and services Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.SC-3 ID.SC-1",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E111",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 40462,
+      "end": 40467,
+      "normalized_id": "T1195",
+      "evidence": " services Suppliers of IT and OT asset and services Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.SC-3 ID.SC-1, ID.SC-3 20 RESPONSE AND RECOVE",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E112",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 40473,
+      "end": 40478,
+      "normalized_id": "T0862",
+      "evidence": "uppliers of IT and OT asset and services Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.SC-3 ID.SC-1, ID.SC-3 20 RESPONSE AND RECOVERY 7.0 7.1–",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E113",
+      "text": "T1195",
+      "type": "AttackTechnique",
+      "start": 40505,
+      "end": 40510,
+      "normalized_id": "T1195",
+      "evidence": "services Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.SC-3 ID.SC-1, ID.SC-3 20 RESPONSE AND RECOVERY 7.0 7.1– 7.3– 7.2– Incident Reporting In",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E114",
+      "text": "T0862",
+      "type": "AttackTechnique",
+      "start": 40516,
+      "end": 40521,
+      "normalized_id": "T0862",
+      "evidence": "pply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) Supply Chain Compromise (T1195, ICS T0862) ID.SC-3 ID.SC-1, ID.SC-3 ID.SC-1, ID.SC-3 20 RESPONSE AND RECOVERY 7.0 7.1– 7.3– 7.2– Incident Reporting Incident Resp",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E115",
+      "text": "T1040",
+      "type": "AttackTechnique",
+      "start": 45586,
+      "end": 45591,
+      "normalized_id": "T1040",
+      "evidence": "ork Service Discovery (T1046) Trusted Relationship (T1199) Network Connection Enumeration (ICS T0840) Network Sniffing (T1040, ICS T0842) Without the knowledge of relevant threats and ability to detect them, organizations risk adversaries existi",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E116",
+      "text": "T0842",
+      "type": "AttackTechnique",
+      "start": 45597,
+      "end": 45602,
+      "normalized_id": "T0842",
+      "evidence": " Discovery (T1046) Trusted Relationship (T1199) Network Connection Enumeration (ICS T0840) Network Sniffing (T1040, ICS T0842) Without the knowledge of relevant threats and ability to detect them, organizations risk adversaries existing in their",
+      "notes": "exhaustive explicit identifier mention"
+    },
+    {
+      "id": "E117",
+      "text": "T1566",
+      "type": "AttackTechnique",
+      "start": 45771,
+      "end": 45776,
+      "normalized_id": "T1566",
+      "evidence": "Phishing (T1566) Business Email Compromise PR.AC-5, PR.PT-4, DE.CM-1 ID.RA-3, DE.CM-1 PR.DS-1, PR.DS-2, PR.DS-5 23 GLOSSARY Access Cont",
+      "notes": "exhaustive explicit identifier mention"
+    }
+  ],
+  "relations": [],
+  "boundary_contract_version": "chapter3-boundary-sync-v2"
+}

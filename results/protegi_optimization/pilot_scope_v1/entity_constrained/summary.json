@@ -1,0 +1,271 @@
+{
+  "stage": "entity",
+  "method": "protegi",
+  "prompt_scope": "constrained",
+  "experiment_pair_id": "protegi-prompt-scope-pilot-v1",
+  "candidate_admission_policy": "frozen_contract_exact_match",
+  "winner_candidate_id": "c_r2_p0_g0_para_0",
+  "winner_round": 2,
+  "winner_metrics": {
+    "prompt_scope_audit": {
+      "configured_scope": "constrained",
+      "runtime_interface_valid": true,
+      "runtime_interface_reasons": [],
+      "frozen_contract_exact_match": true,
+      "frozen_contract_reasons": []
+    },
+    "dev_f1": 0.8445747800586509,
+    "dev_precision": 0.8181818181818182,
+    "dev_recall": 0.8727272727272727,
+    "dev_by_type": {
+      "AttackTechnique": {
+        "tp": 46,
+        "fp": 4,
+        "fn": 0,
+        "precision": 0.92,
+        "recall": 1.0,
+        "f1": 0.958333,
+        "details": {},
+        "gold_support": 46,
+        "predicted_support": 50,
+        "applicable": true
+      },
+      "Configuration": {
+        "tp": 8,
+        "fp": 20,
+        "fn": 18,
+        "precision": 0.285714,
+        "recall": 0.307692,
+        "f1": 0.296296,
+        "details": {},
+        "gold_support": 26,
+        "predicted_support": 28,
+        "applicable": true
+      },
+      "Vulnerability": {
+        "tp": 85,
+        "fp": 7,
+        "fn": 1,
+        "precision": 0.923913,
+        "recall": 0.988372,
+        "f1": 0.955056,
+        "details": {},
+        "gold_support": 86,
+        "predicted_support": 92,
+        "applicable": true
+      },
+      "Weakness": {
+        "tp": 5,
+        "fp": 1,
+        "fn": 2,
+        "precision": 0.833333,
+        "recall": 0.714286,
+        "f1": 0.769231,
+        "details": {},
+        "gold_support": 7,
+        "predicted_support": 6,
+        "applicable": true
+      }
+    },
+    "dev_normalization": {
+      "correct": 139,
+      "total": 144,
+      "accuracy": 0.9652777777777778,
+      "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+    }
+  },
+  "winner_prompt_sha256": "92099f834763e57f33a3e76f34de885df69971ea00bd1ea72de03f2d741f9452",
+  "winner_prompt_sha256_raw_bytes": "92099f834763e57f33a3e76f34de885df69971ea00bd1ea72de03f2d741f9452",
+  "winner_prompt_scope_audit": {
+    "configured_scope": "constrained",
+    "runtime_interface_valid": true,
+    "runtime_interface_reasons": [],
+    "frozen_contract_exact_match": true,
+    "frozen_contract_reasons": []
+  },
+  "initial_p0_metrics": {
+    "train_f1": 0.8405797101449274,
+    "train_precision": 0.8656716417910447,
+    "train_recall": 0.8169014084507042,
+    "train_sample_ids": [
+      "aa25-266a_w6",
+      "aa25-266a_w2",
+      "fortios-sslvpn-rapid7-fortinet-targeting_w2",
+      "aa25-266a_w9",
+      "aa25-266a_w8",
+      "aa23-339a-coldfusion-cve-26360_w1",
+      "aa23-339a-coldfusion-cve-26360_w0",
+      "aa25-266a_w0"
+    ],
+    "prompt_scope_audit": {
+      "configured_scope": "constrained",
+      "runtime_interface_valid": true,
+      "runtime_interface_reasons": [],
+      "frozen_contract_exact_match": true,
+      "frozen_contract_reasons": []
+    },
+    "dev_f1": 0.8372093023255814,
+    "dev_precision": 0.8044692737430168,
+    "dev_recall": 0.8727272727272727,
+    "dev_by_type": {
+      "AttackTechnique": {
+        "tp": 46,
+        "fp": 6,
+        "fn": 0,
+        "precision": 0.884615,
+        "recall": 1.0,
+        "f1": 0.938776,
+        "details": {},
+        "gold_support": 46,
+        "predicted_support": 52,
+        "applicable": true
+      },
+      "Configuration": {
+        "tp": 7,
+        "fp": 18,
+        "fn": 19,
+        "precision": 0.28,
+        "recall": 0.269231,
+        "f1": 0.27451,
+        "details": {},
+        "gold_support": 26,
+        "predicted_support": 25,
+        "applicable": true
+      },
+      "Vulnerability": {
+        "tp": 86,
+        "fp": 10,
+        "fn": 0,
+        "precision": 0.895833,
+        "recall": 1.0,
+        "f1": 0.945055,
+        "details": {},
+        "gold_support": 86,
+        "predicted_support": 96,
+        "applicable": true
+      },
+      "Weakness": {
+        "tp": 5,
+        "fp": 1,
+        "fn": 2,
+        "precision": 0.833333,
+        "recall": 0.714286,
+        "f1": 0.769231,
+        "details": {},
+        "gold_support": 7,
+        "predicted_support": 6,
+        "applicable": true
+      }
+    },
+    "dev_normalization": {
+      "correct": 139,
+      "total": 144,
+      "accuracy": 0.9652777777777778,
+      "scope": "strict_span_matches_with_non_null_gold_normalized_id"
+    }
+  },
+  "total_candidates_registered": 6,
+  "call_stats": {
+    "task_model_calls": 196,
+    "optimizer_model_calls": 8,
+    "task_input_tokens": 326481,
+    "task_output_tokens": 73500,
+    "optimizer_input_tokens": 38174,
+    "optimizer_output_tokens": 1985,
+    "num_generated_candidates": 5,
+    "num_evaluated_candidates": 3,
+    "num_duplicate_candidates": 0,
+    "num_evaluated_samples": 196
+  },
+  "config": {
+    "prompt_scope": "constrained",
+    "experiment_pair_id": "protegi-prompt-scope-pilot-v1",
+    "optimization_steps": 2,
+    "beam_width": 2,
+    "minibatch_size": 8,
+    "errors_per_group": 4,
+    "gradients_per_error_group": 1,
+    "max_error_groups": 1,
+    "edits_per_gradient": 1,
+    "paraphrases_per_edit": 1,
+    "successors_per_parent": 1,
+    "total_pull_budget_per_round": 8,
+    "eval_batch_size": 8,
+    "min_pulls_per_candidate": 2,
+    "ucb_c": 2.0,
+    "seed": 42,
+    "task_model": "hy3",
+    "task_max_workers": 8,
+    "task_temperature": 0.0,
+    "task_thinking": "disabled",
+    "task_reasoning_effort": "none",
+    "task_top_p": 0.95,
+    "task_max_tokens": 4096,
+    "optimizer_model": "muse-spark-1.3-contributor",
+    "optimizer_temperature": 0.1,
+    "optimizer_thinking": "disabled",
+    "optimizer_reasoning_effort": "high",
+    "optimizer_top_p": 1.0,
+    "optimizer_max_tokens": 16384,
+    "_config_file": "D:\\BRON\\experiments\\v6\\protegi\\configs\\protegi_pilot_constrained.yaml",
+    "_config_file_sha256": "3090848b690e93457e0776633b9d759e062c737af1b200e6e09813b8d75b61c8"
+  },
+  "runtime": {
+    "task_client": {
+      "model": "hy3",
+      "temperature": 0.0,
+      "max_tokens": 4096,
+      "max_escalated_tokens": 4096,
+      "top_p": 0.95,
+      "base_url": "https://opencode.ai/zen/go/v1",
+      "endpoint": "/v1/chat/completions",
+      "thinking": "disabled",
+      "reasoning_effort": "none",
+      "timeout": 180.0,
+      "max_retries": 0
+    },
+    "task_max_workers": 8,
+    "optimizer_client": {
+      "model": "muse-spark-1.3-contributor",
+      "temperature": 0.1,
+      "max_tokens": 16384,
+      "max_escalated_tokens": 16384,
+      "top_p": 1.0,
+      "base_url": "https://opencode.ai/zen/go/v1",
+      "endpoint": "/v1/responses",
+      "thinking": "disabled",
+      "reasoning_effort": "high",
+      "timeout": 180.0,
+      "max_retries": 0
+    },
+    "token_counts_are_estimates": true
+  },
+  "input_bindings": {
+    "split_file": "D:\\BRON\\experiments\\v6\\data\\protegi_prompt_scope_pilot_v1.json",
+    "split_file_sha256_raw_bytes": "adc810f122569911c83e50a593f6291c993fe7f845fd3dee83d6d9f6b700a23f",
+    "gold_dir": "D:\\BRON\\experiments\\v6\\data\\annotations\\gold",
+    "entity_cache_dir": "D:\\BRON\\experiments\\v6\\results\\protegi_optimization\\entity_cache_constrained",
+    "entity_cache_train_manifest_sha256_raw_bytes": null,
+    "entity_cache_dev_manifest_sha256_raw_bytes": null,
+    "dataset_freeze_manifest": "D:\\BRON\\experiments\\v6\\data\\dataset_freeze_manifest_v6.json",
+    "dataset_freeze_manifest_sha256_raw_bytes": "139fb0eb07df5d2c8f889108a9db770f21d43440b78aa8d160d5a93ea40ebf08",
+    "prompt_scope_experiment_protocol": "D:\\BRON\\experiments\\v6\\protegi\\PROMPT_SCOPE_EXPERIMENT.md",
+    "prompt_scope_experiment_protocol_sha256_raw_bytes": "40b88b2e09726a8d7cb6996202f9d55680a5daa577afb35f566d11965cc826f9",
+    "config_file": "D:\\BRON\\experiments\\v6\\protegi\\configs\\protegi_pilot_constrained.yaml",
+    "config_file_sha256_raw_bytes": "3090848b690e93457e0776633b9d759e062c737af1b200e6e09813b8d75b61c8",
+    "implementation_sha256_raw_bytes": {
+      "protegi/optimizer.py": "27f4815bc4f5de81b8f40b785a43479944492e459a4a3c49759c8907c89354e5",
+      "protegi/prompts_p0.py": "66aaadf98f75bb6712d48d4f77a673f724326d99138037d5787d62f7680fea91",
+      "protegi/templates.py": "0a884554a9ae82d86905540c6fdf7dbf4a2548d76a399df3146d5aa88ebe42eb",
+      "protegi/mutators.py": "6f61dbb5a06dd5a6769bfa2d2d55cc1d51642972f199dee2f9f547ea9c6a4984",
+      "protegi/contract_validator.py": "97774406c294185defd1ac11d605040c541027fe6c06ae9d031b151288b4366a",
+      "protegi/selectors.py": "5558a5127d396427c7caa73d8ef5ba84f0d847f4cf787291961b192d89fc5fe3",
+      "protegi/evaluator.py": "45e6cfd59a10d6e493cb9754df0560d34fb4f6d7583984a26b6c0bc686a29976",
+      "protegi/entity_cache.py": "d038b83d1213fc5d3bcd793fddda7e9d3730d500d83ab959dd38888fe66c88da",
+      "protegi/logging_utils.py": "322706c43592557c43c0193bed335a3a47e9f09e9be425bc38232b35efbd10d3",
+      "protegi/lineage.py": "cb9161e3be9bfd34d3e493dd7a38000532a7d0b92a3b243b840acf6aecc6551a"
+    }
+  },
+  "start_time_utc": "2026-09-16T12:26:52.972396+00:00",
+  "end_time_utc": "2026-09-16T12:35:22.373735+00:00"
+}
