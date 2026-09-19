@@ -5,13 +5,13 @@
   "boundary_contract_version": "chapter3-boundary-sync-v2",
   "cpe_normalization_contract_version": "cpe-gold-audit-v1",
   "status": "frozen_mcpu_v2_pending_human_iaa_and_new_final_test",
-  "frozen_at_utc": "2026-09-19T08:16:40.376540+00:00",
+  "frozen_at_utc": "2026-09-19T12:30:28.481309+00:00",
   "gate_status": "gate_passed",
   "controlled_test_rerun_ready": false,
   "formal_experiment_ready": false,
   "formal_experiment_blocker": "verifiable human IAA results and a newly reserved unseen final test are not yet available",
   "base_manifest": {
-    "path": "../v5/data/dataset_freeze_manifest_v5.json",
+    "path": "data/dataset_freeze_manifest_v5.json",
     "sha256": "cc7641f653344f711a7b0094ea65ff03d0910eff5aaf4124e4b30b47796814a6",
     "dataset_version": "v5-v4.5-gold-v8-cpe-audit-v1"
   },
@@ -287,5 +287,5 @@
       "sha256": "41d8e19de59e920d3085330dfaaad518795d1d0be44887ac212e10f6f6c3e6ca"
     }
   },
-  "provenance_refreshed_at_utc": "2026-09-19T08:16:40.376540+00:00"
+  "provenance_refreshed_at_utc": "2026-09-19T12:30:28.481309+00:00"
 }

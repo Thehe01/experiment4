@@ -11,9 +11,24 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+from schema import (
+    ANNOTATION_PROTOCOL_VERSION,
+    BOUNDARY_CONTRACT_VERSION,
+    SCHEMA_VERSION,
+)
+
+DEFAULT_FREEZE_MANIFEST = ROOT / "data" / "dataset_freeze_manifest_v6.json"
+DEFAULT_SPLIT_FILE = ROOT / "data" / "train_dev_test_split_v7.json"
 
 
 def compute_prompt_hash(prompt_text: str) -> str:
@@ -49,6 +64,15 @@ class EntityCacheManager:
         samples: List[dict],
         split_name: str,
         prompt_scope: str = "constrained",
+        freeze_manifest_path: Optional[Path] = None,
+        split_file_path: Optional[Path] = None,
+        schema_version: Optional[str] = None,
+        annotation_protocol_version: Optional[str] = None,
+        boundary_contract_version: Optional[str] = None,
+        dataset_version: Optional[str] = None,
+        gold_aggregate_sha256: Optional[str] = None,
+        split_sha256: Optional[str] = None,
+        dataset_freeze_manifest_sha256: Optional[str] = None,
     ) -> Path:
         """使用冻结的 P_E* 离线生成并持久化指定切分的实体预测缓存。"""
         prompt_hash = compute_prompt_hash(final_entity_prompt)
@@ -59,6 +83,40 @@ class EntityCacheManager:
                 f"{split_name} 缓存目标已存在，拒绝覆盖: {self.cache_dir}。"
                 "请指定新的 --entity-cache-dir。"
             )
+
+        freeze_manifest_p = freeze_manifest_path or DEFAULT_FREEZE_MANIFEST
+        split_file_p = split_file_path or DEFAULT_SPLIT_FILE
+        freeze_sha = None
+        gold_agg = None
+        s_hash = None
+        s_version = SCHEMA_VERSION
+        a_proto = ANNOTATION_PROTOCOL_VERSION
+        b_contract = BOUNDARY_CONTRACT_VERSION
+        d_version = "v6-v5-gold-v9-mcpu-v2"
+        if freeze_manifest_p.is_file():
+            fm_data = json.loads(freeze_manifest_p.read_text(encoding="utf-8"))
+            freeze_sha = _sha256_file(freeze_manifest_p)
+            gold_agg = fm_data.get("gold_aggregate_sha256")
+            s_hash = fm_data.get("split_sha256")
+            s_version = fm_data.get("schema_version", s_version)
+            a_proto = fm_data.get("annotation_protocol_version", a_proto)
+            b_contract = fm_data.get("boundary_contract_version", b_contract)
+            d_version = fm_data.get("dataset_version", d_version)
+
+        if split_file_p.is_file():
+            file_s_hash = _sha256_file(split_file_p)
+            s_hash = s_hash or file_s_hash
+            split_file_str = "data/" + split_file_p.name
+        else:
+            split_file_str = "data/train_dev_test_split_v7.json"
+
+        schema_version = schema_version or s_version
+        annotation_protocol_version = annotation_protocol_version or a_proto
+        boundary_contract_version = boundary_contract_version or b_contract
+        dataset_version = dataset_version or d_version
+        split_sha256 = split_sha256 or s_hash
+        gold_aggregate_sha256 = gold_aggregate_sha256 or gold_agg
+        dataset_freeze_manifest_sha256 = dataset_freeze_manifest_sha256 or freeze_sha
 
         texts = [sample["text"] for sample in samples]
         abbreviation_contexts = None
@@ -123,6 +181,14 @@ class EntityCacheManager:
             "created_at_utc": datetime.now(timezone.utc).isoformat(),
             "cache_file": str(cache_file.name),
             "cache_file_sha256": _sha256_file(cache_file),
+            "schema_version": schema_version,
+            "annotation_protocol_version": annotation_protocol_version,
+            "boundary_contract_version": boundary_contract_version,
+            "dataset_version": dataset_version,
+            "split_file": split_file_str,
+            "split_sha256": split_sha256,
+            "gold_aggregate_sha256": gold_aggregate_sha256,
+            "dataset_freeze_manifest_sha256": dataset_freeze_manifest_sha256,
             "task_model_config": {
                 key: value
                 for key, value in getattr(
@@ -142,8 +208,18 @@ class EntityCacheManager:
         expected_task_model: Optional[str] = None,
         expected_prompt_scope: Optional[str] = None,
         expected_task_max_workers: Optional[int] = None,
+        expected_schema_version: Optional[str] = None,
+        expected_annotation_protocol_version: Optional[str] = None,
+        expected_boundary_contract_version: Optional[str] = None,
+        expected_dataset_version: Optional[str] = None,
+        expected_split_sha256: Optional[str] = None,
+        expected_gold_aggregate_sha256: Optional[str] = None,
+        expected_freeze_manifest_sha256: Optional[str] = None,
+        freeze_manifest_path: Optional[Path] = None,
+        split_file_path: Optional[Path] = None,
+        validate_freeze_binding: bool = True,
     ) -> List[dict]:
-        """加载固化的实体预测缓存，并在哈希不匹配时严格阻断。"""
+        """加载固化的实体预测缓存，并在哈希不匹配或冻结绑定失效时严格阻断。"""
         cache_file = self.cache_dir / f"entity_cache_{split_name}.jsonl"
         manifest_file = self.cache_dir / f"entity_cache_{split_name}_manifest.json"
 
@@ -177,6 +253,59 @@ class EntityCacheManager:
                 f"实体缓存任务模型 ({cached_task_model}) 与期望模型 "
                 f"({expected_task_model}) 不一致"
             )
+
+        if validate_freeze_binding:
+            freeze_p = freeze_manifest_path or DEFAULT_FREEZE_MANIFEST
+            split_p = split_file_path or DEFAULT_SPLIT_FILE
+            if not freeze_p.is_file():
+                raise FileNotFoundError(f"冻结清单文件不存在：{freeze_p}")
+            if not split_p.is_file():
+                raise FileNotFoundError(f"划分文件不存在：{split_p}")
+            fm_data = json.loads(freeze_p.read_text(encoding="utf-8"))
+            ref_freeze_sha = _sha256_file(freeze_p)
+            ref_gold_agg = fm_data.get("gold_aggregate_sha256")
+            ref_split_sha = fm_data.get("split_sha256")
+            ref_schema = fm_data.get("schema_version", SCHEMA_VERSION)
+            ref_proto = fm_data.get("annotation_protocol_version", ANNOTATION_PROTOCOL_VERSION)
+            ref_boundary = fm_data.get("boundary_contract_version", BOUNDARY_CONTRACT_VERSION)
+            ref_dataset = fm_data.get("dataset_version", "v6-v5-gold-v9-mcpu-v2")
+
+            req_schema = expected_schema_version or ref_schema
+            req_proto = expected_annotation_protocol_version or ref_proto
+            req_boundary = expected_boundary_contract_version or ref_boundary
+            req_dataset = expected_dataset_version or ref_dataset
+            req_split_sha = expected_split_sha256 or ref_split_sha
+            req_gold_agg = expected_gold_aggregate_sha256 or ref_gold_agg
+            req_freeze_sha = expected_freeze_manifest_sha256 or ref_freeze_sha
+
+            if req_schema and manifest.get("schema_version") != req_schema:
+                raise ValueError(
+                    f"实体缓存 schema_version ({manifest.get('schema_version')}) 与期望值 ({req_schema}) 不一致！"
+                )
+            if req_proto and manifest.get("annotation_protocol_version") != req_proto:
+                raise ValueError(
+                    f"实体缓存 annotation_protocol_version ({manifest.get('annotation_protocol_version')}) 与期望值 ({req_proto}) 不一致！"
+                )
+            if req_boundary and manifest.get("boundary_contract_version") != req_boundary:
+                raise ValueError(
+                    f"实体缓存 boundary_contract_version ({manifest.get('boundary_contract_version')}) 与期望值 ({req_boundary}) 不一致！"
+                )
+            if req_dataset and manifest.get("dataset_version") != req_dataset:
+                raise ValueError(
+                    f"实体缓存 dataset_version ({manifest.get('dataset_version')}) 与期望值 ({req_dataset}) 不一致！"
+                )
+            if req_split_sha and manifest.get("split_sha256") != req_split_sha:
+                raise ValueError(
+                    f"实体缓存 split_sha256 ({manifest.get('split_sha256')}) 与当前划分哈希 ({req_split_sha}) 不一致！划分已变更，缓存自动失效。"
+                )
+            if req_gold_agg and manifest.get("gold_aggregate_sha256") != req_gold_agg:
+                raise ValueError(
+                    f"实体缓存 gold_aggregate_sha256 ({manifest.get('gold_aggregate_sha256')}) 与当前 Gold 聚合哈希 ({req_gold_agg}) 不一致！Gold 已变更，缓存自动失效。"
+                )
+            if req_freeze_sha and manifest.get("dataset_freeze_manifest_sha256") != req_freeze_sha:
+                raise ValueError(
+                    f"实体缓存 dataset_freeze_manifest_sha256 ({manifest.get('dataset_freeze_manifest_sha256')}) 与当前冻结清单哈希 ({req_freeze_sha}) 不一致！"
+                )
 
         actual_cache_hash = _sha256_file(cache_file)
         if manifest.get("cache_file_sha256") != actual_cache_hash:

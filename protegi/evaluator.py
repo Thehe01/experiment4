@@ -458,11 +458,19 @@ class TaskEvaluator:
         type_counts = {t: [0, 0, 0] for t in sorted(EXTRACTION_RELATION_TYPES)}
         prediction_records: List[dict] = []
 
+        for sample in samples:
+            if "fixed_entities" not in sample or sample["fixed_entities"] is None:
+                sample_id = sample.get("sample_id") or sample.get("id") or "unknown"
+                raise ValueError(
+                    f"Stage 2 样本 {sample_id} 缺少 fixed_entities 字段；"
+                    "Stage 2 严禁回退到 Gold entities 或其它未经冻结的实体输入"
+                )
+
         predictions = self.predict_stage2_inputs(
             [
                 (
                     sample["text"],
-                    sample.get("fixed_entities", sample.get("entities", [])),
+                    sample["fixed_entities"],
                 )
                 for sample in samples
             ],
@@ -471,7 +479,7 @@ class TaskEvaluator:
         for sample, pred_relations in zip(samples, predictions):
             sample_id = sample.get("sample_id") or sample.get("id") or "unknown"
             text = sample["text"]
-            fixed_entities = sample.get("fixed_entities", sample.get("entities", []))
+            fixed_entities = sample["fixed_entities"]
             gold_entities = sample.get("gold_entities", sample.get("entities", []))
             gold_relations = sample.get("gold_relations", sample.get("relations", []))
             tp, fp, fn = calc_strict_relation_sample_counts(

@@ -46,10 +46,28 @@ POST_EXPLOIT_ACTIVITY = re.compile(
     re.IGNORECASE,
 )
 CONFIGURATION_RELEASE_SUFFIX = re.compile(
-    r"(?:\s|[-_(])(?:v(?:ersion)?\s*)?\d+(?:\.\d+){1,}(?:\b|\))|"
-    r"\b(?:build|patch|release)\s*[-_:]?\s*\d+",
+    r"(?:\s|[-_(]|^)(?:v(?:ersions?)?\s*)?\d+(?:\.\d+)+(?:\b|\))|"
+    r"\b(?:build|patch|release|update)\s*[-_:]?\s*\d+|"
+    r"\bversions?\s+\d+|"
+    r"\b(?:\d{4})\s+(?:update|patch|release)\s+\d+|"
+    r"\bColdFusion\s+(?:11|2016|2018|2021)\b",
     re.IGNORECASE,
 )
+
+
+def _allowed_non_wildcard_cpe(surface: str) -> bool:
+    if surface.casefold().startswith("cpe:2.3:"):
+        return True
+    s = surface.strip()
+    if re.fullmatch(r"SMB\s+version\s+1", s, re.IGNORECASE):
+        return True
+    if re.search(
+        r"^(?:Windows\s+(?:10|11|7|8|8\.1|2000|XP|Vista)|FortiGate\s+300D|SMA\s*100)(?:\s+.*)?$",
+        s,
+        re.IGNORECASE,
+    ):
+        return True
+    return False
 
 
 def _sha256(path: Path) -> str:
@@ -242,6 +260,7 @@ def _audit_document(
             entity_type == "Configuration"
             and not str(entity.get("text") or "").casefold().startswith("cpe:2.3:")
             and CONFIGURATION_RELEASE_SUFFIX.search(str(entity.get("text") or ""))
+            and not _allowed_non_wildcard_cpe(str(entity.get("text") or ""))
         ):
             entity_reasons.append("configuration_release_bearing_span")
         if entity_reasons:

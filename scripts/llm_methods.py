@@ -12,13 +12,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 EXP_DIR = Path(__file__).resolve().parents[1]
-ROOT = EXP_DIR.parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
+SCRIPT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(EXP_DIR))
 from llm_extractor import (  # noqa: E402
     LLMExtractor,
     ModelOutputBudgetExhaustedError,
 )
 from schema import (  # noqa: E402
+    ANNOTATION_PROTOCOL_VERSION,
     BOUNDARY_CONTRACT_VERSION,
     EXTRACTION_ENTITY_TYPES,
     EXTRACTION_RELATION_ARGUMENT_TYPES,
@@ -65,6 +67,9 @@ LLM_MAX_WORKERS = max(1, int(os.environ.get("V3_LLM_MAX_WORKERS", "8")))
 MAX_EVIDENCE_OFFSET_REPAIR_CHARS = 1200
 APO_ARTIFACT = EXP_DIR / "results" / "apo_optimization_v6" / "final_prompt.json"
 CURRENT_SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
+FREEZE_MANIFEST_FILE = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
+PROTEGI_FINAL_DIR = EXP_DIR / "results" / "protegi_final"
+PROTEGI_FINAL_ARTIFACT = PROTEGI_FINAL_DIR / "protegi_final_artifact.json"
 
 _APO_FORBIDDEN_TERMS = (
     "attackpattern",
@@ -531,6 +536,118 @@ def load_apo_prompt_artifact(path: Path | str = APO_ARTIFACT) -> dict:
             "当前 APO 产物只选中了 P0 基线或未冻结非空 guidance；"
             "不得进入 apo/apo_full 测试"
         )
+    return artifact
+
+
+def load_protegi_final_artifact(path: Path | str | None = None) -> dict:
+    """加载并严格校验冻结的当前版本 ProTeGi 正式产物。
+
+    验证项目（任一不通过必须硬失败抛出 ValueError/RuntimeError，禁止静默 fallback）：
+    1. artifact_version == 'protegi-final-v1'
+    2. schema_version == SCHEMA_VERSION ('chapter3-no-capec-v1')
+    3. annotation_protocol_version == ANNOTATION_PROTOCOL_VERSION ('4.6-mcpu-mention-fact-dual-layer-v1')
+    4. boundary_contract_version == BOUNDARY_CONTRACT_VERSION ('chapter3-boundary-sync-v2')
+    5. prompt_scope in {'constrained', 'unconstrained'}
+    6. split hash matches current train_dev_test_split_v7.json sha256
+    7. freeze manifest hash matches current dataset_freeze_manifest_v6.json sha256
+    8. gold aggregate hash matches freeze manifest gold_aggregate_sha256
+    9. entity prompt hash matches entity_prompt_path content sha256
+    10. relation prompt hash matches relation_prompt_path content sha256
+    11. frozen_for_test is True, test_gold_loaded is False, test_predictions_generated is False
+    """
+    path = Path(path) if path is not None else PROTEGI_FINAL_ARTIFACT
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"缺少冻结的 ProTeGi 正式产物 {path}；"
+            "请先在固定开发集完成 ProTeGi 两阶段优化并执行 scripts/promote_protegi_v6.py"
+        )
+    artifact = json.loads(path.read_text(encoding="utf-8"))
+
+    if artifact.get("artifact_version") != "protegi-final-v1":
+        raise ValueError(
+            f"ProTeGi 产物 artifact_version 无效或不兼容：{artifact.get('artifact_version')!r}；期望 'protegi-final-v1'"
+        )
+    if artifact.get("schema_version") != SCHEMA_VERSION:
+        raise ValueError(
+            f"ProTeGi 产物的 schema_version 与当前抽取模式不一致："
+            f"{artifact.get('schema_version')!r} != {SCHEMA_VERSION!r}"
+        )
+    if artifact.get("annotation_protocol_version") != ANNOTATION_PROTOCOL_VERSION:
+        raise ValueError(
+            f"ProTeGi 产物的 annotation_protocol_version 与当前标注协议不一致："
+            f"{artifact.get('annotation_protocol_version')!r} != {ANNOTATION_PROTOCOL_VERSION!r}"
+        )
+    if artifact.get("boundary_contract_version") != BOUNDARY_CONTRACT_VERSION:
+        raise ValueError(
+            f"ProTeGi 产物的 boundary_contract_version 与当前边界契约不一致："
+            f"{artifact.get('boundary_contract_version')!r} != {BOUNDARY_CONTRACT_VERSION!r}"
+        )
+    prompt_scope = artifact.get("prompt_scope")
+    if prompt_scope not in {"constrained", "unconstrained"}:
+        raise ValueError(
+            f"ProTeGi 产物 prompt_scope 无效：{prompt_scope!r}；必须为 constrained 或 unconstrained"
+        )
+
+    # 校验划分文件哈希绑定
+    if not CURRENT_SPLIT_FILE.is_file():
+        raise FileNotFoundError(f"缺少划分文件：{CURRENT_SPLIT_FILE}")
+    current_split_hash = hashlib.sha256(CURRENT_SPLIT_FILE.read_bytes()).hexdigest()
+    if artifact.get("split_sha256") != current_split_hash:
+        raise ValueError(
+            f"ProTeGi 产物绑定的划分哈希与当前 {CURRENT_SPLIT_FILE.name} 不一致；"
+            f"产物={artifact.get('split_sha256')}, 当前={current_split_hash}"
+        )
+
+    # 校验冻结清单与 Gold 聚合哈希
+    if not FREEZE_MANIFEST_FILE.is_file():
+        raise FileNotFoundError(f"缺少冻结清单文件：{FREEZE_MANIFEST_FILE}")
+    current_freeze_hash = hashlib.sha256(FREEZE_MANIFEST_FILE.read_bytes()).hexdigest()
+    if artifact.get("dataset_freeze_manifest_sha256") != current_freeze_hash:
+        raise ValueError(
+            f"ProTeGi 产物绑定的冻结清单哈希与当前 {FREEZE_MANIFEST_FILE.name} 不一致；"
+            f"产物={artifact.get('dataset_freeze_manifest_sha256')}, 当前={current_freeze_hash}"
+        )
+    freeze_manifest = json.loads(FREEZE_MANIFEST_FILE.read_text(encoding="utf-8"))
+    if artifact.get("gold_aggregate_sha256") != freeze_manifest.get("gold_aggregate_sha256"):
+        raise ValueError(
+            f"ProTeGi 产物绑定的 Gold 聚合哈希与冻结清单不一致；"
+            f"产物={artifact.get('gold_aggregate_sha256')}, 冻结清单={freeze_manifest.get('gold_aggregate_sha256')}"
+        )
+
+    # 校验 P_E* 实体提示词及其哈希
+    entity_path_raw = str(artifact.get("entity_prompt_path", ""))
+    entity_path = Path(entity_path_raw) if Path(entity_path_raw).is_absolute() else EXP_DIR / entity_path_raw
+    if not entity_path.is_file():
+        raise FileNotFoundError(f"ProTeGi 实体提示词文件不存在：{entity_path}")
+    actual_entity_hash = hashlib.sha256(entity_path.read_bytes()).hexdigest()
+    if artifact.get("entity_prompt_sha256") != actual_entity_hash:
+        raise ValueError(
+            f"ProTeGi 实体提示词内容哈希与产物声明不一致："
+            f"产物={artifact.get('entity_prompt_sha256')}, 实际={actual_entity_hash}"
+        )
+
+    # 校验 P_R* 关系提示词及其哈希
+    relation_path_raw = str(artifact.get("relation_prompt_path", ""))
+    relation_path = Path(relation_path_raw) if Path(relation_path_raw).is_absolute() else EXP_DIR / relation_path_raw
+    if not relation_path.is_file():
+        raise FileNotFoundError(f"ProTeGi 关系提示词文件不存在：{relation_path}")
+    actual_relation_hash = hashlib.sha256(relation_path.read_bytes()).hexdigest()
+    if artifact.get("relation_prompt_sha256") != actual_relation_hash:
+        raise ValueError(
+            f"ProTeGi 关系提示词内容哈希与产物声明不一致："
+            f"产物={artifact.get('relation_prompt_sha256')}, 实际={actual_relation_hash}"
+        )
+
+    # 校验防泄漏与冻结状态
+    if artifact.get("formal_eligible") is not True:
+        raise ValueError("ProTeGi 产物未标记为 formal_eligible=true，禁止用于正式运行！")
+    if artifact.get("frozen_for_test") is not True:
+        raise ValueError("ProTeGi 产物尚未标记为 frozen_for_test")
+    if artifact.get("test_gold_loaded") is not False:
+        raise ValueError("ProTeGi 产物显示在晋级前接触了 test gold，违反测试隔离红线！")
+    if artifact.get("test_predictions_generated") is not False:
+        raise ValueError("ProTeGi 产物显示在晋级前已生成 test 预测，违反测试隔离红线！")
+
     return artifact
 
 
@@ -2750,7 +2867,9 @@ def predict_full(text, doc_id):
 
 
 def predict_llm_apo_full(text, doc_id):
-    """APO 扩展完整方法 = APO 多阶段原始预测 + 模式约束确定性后处理，不再次调用 API。"""
+    """(Legacy / historical only - not valid as current ProTeGi formal artifact)
+    APO 扩展完整方法 = APO 多阶段原始预测 + 模式约束确定性后处理，不再次调用 API。
+    """
     raw_p = EXP_DIR / "results" / "raw_predictions" / "v6_apo" / f"{doc_id}.json"
     if not raw_p.exists():
         raise FileNotFoundError(
@@ -2759,9 +2878,11 @@ def predict_llm_apo_full(text, doc_id):
     raw = json.loads(raw_p.read_text(encoding="utf-8"))
     result = apply_postprocess(raw)
     result["_resource"] = {
+        "legacy_method": "apo_full",
         "source_method": "apo",
         "source_prediction": str(raw_p),
         "source_resource": raw.get("resource"),
+        "formal_validity": "historical only; not valid as current ProTeGi formal artifact",
     }
     return result
 from prompts.multipass_prompts import (
@@ -3171,7 +3292,9 @@ def predict_llm_multipass(
 
 
 def predict_llm_apo(text, doc_id):
-    """使用仅由固定开发集选出的冻结提示执行多阶段抽取。"""
+    """(Legacy / historical only - not valid as current ProTeGi formal artifact)
+    使用历史固定开发集选出的冻结提示执行多阶段抽取。
+    """
     artifact = load_apo_prompt_artifact()
     result = predict_llm_multipass(
         text,
@@ -3180,12 +3303,79 @@ def predict_llm_apo(text, doc_id):
         stage2_guidance=artifact["stage2_guidance"],
     )
     result["_resource"] = {
+        "legacy_method": "apo",
         "apo_artifact": str(APO_ARTIFACT),
         "apo_artifact_sha256": hashlib.sha256(APO_ARTIFACT.read_bytes()).hexdigest(),
         "apo_algorithm": artifact.get("algorithm"),
         "apo_score": artifact.get("score"),
         "apo_selected_round": artifact.get("selected_round"),
         "apo_selected_candidate": artifact.get("selected_candidate"),
+        "formal_validity": "historical only; not valid as current ProTeGi formal artifact",
     }
     return result
+
+
+def predict_llm_protegi(
+    text: str,
+    doc_id: str,
+    artifact_path: Path | str | None = None,
+) -> dict:
+    """使用由固定开发集两阶段优化产出的冻结 ProTeGi 提示词 (P_E* 与 P_R*) 执行抽取。
+
+    Stage 1: 直接使用 final_entity_prompt.txt (P_E*) 进行实体预测；
+    Stage 2: 将 Stage 1 预测实体作为输入，使用 final_relation_prompt.txt (P_R*) 进行关系预测。
+    绕开任何 base + guidance 拼接；正式测试阶段不使用开发集实体缓存。
+    """
+    artifact = load_protegi_final_artifact(artifact_path)
+    entity_path_raw = str(artifact["entity_prompt_path"])
+    entity_path = Path(entity_path_raw) if Path(entity_path_raw).is_absolute() else EXP_DIR / entity_path_raw
+    relation_path_raw = str(artifact["relation_prompt_path"])
+    relation_path = Path(relation_path_raw) if Path(relation_path_raw).is_absolute() else EXP_DIR / relation_path_raw
+    entity_prompt = entity_path.read_text(encoding="utf-8")
+    relation_prompt = relation_path.read_text(encoding="utf-8")
+
+    from protegi.evaluator import TaskEvaluator
+
+    task_model = artifact.get("task_model") or API_MODEL
+    evaluator = TaskEvaluator(
+        task_model=task_model,
+        task_temperature=API_TEMPERATURE,
+        task_thinking=API_THINKING,
+        task_reasoning_effort=API_REASONING_EFFORT or "none",
+    )
+
+    windows = build_text_windows(text)
+    window_predictions = []
+    for window in windows:
+        win_text = window["text"]
+        pred_entities = evaluator.predict_stage1_window(win_text, entity_prompt)
+        pred_relations = evaluator.predict_stage2_window(
+            win_text, pred_entities, relation_prompt
+        )
+        local_pred = {
+            "entities": pred_entities,
+            "relations": pred_relations,
+        }
+        window_predictions.append(_offset_prediction(local_pred, window["start"]))
+
+    merged = merge_window_predictions(window_predictions)
+    artifact_file = Path(artifact_path) if artifact_path is not None else PROTEGI_FINAL_ARTIFACT
+    return {
+        "entities": merged["entities"],
+        "relations": merged["relations"],
+        "_trace": {
+            "method": "protegi",
+            "artifact_version": artifact.get("artifact_version"),
+            "prompt_scope": artifact.get("prompt_scope"),
+            "entity_prompt_sha256": artifact.get("entity_prompt_sha256"),
+            "relation_prompt_sha256": artifact.get("relation_prompt_sha256"),
+        },
+        "_resource": {
+            "protegi_artifact": str(artifact_file),
+            "protegi_artifact_sha256": hashlib.sha256(artifact_file.read_bytes()).hexdigest(),
+            "prompt_scope": artifact.get("prompt_scope"),
+            "task_model": task_model,
+            "optimizer_model": artifact.get("optimizer_model"),
+        },
+    }
 

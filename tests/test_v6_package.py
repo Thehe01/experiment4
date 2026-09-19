@@ -14,6 +14,11 @@ import yaml
 
 
 PACKAGE = Path(__file__).resolve().parents[1]
+if str(PACKAGE / "scripts") not in sys.path:
+    sys.path.insert(0, str(PACKAGE / "scripts"))
+if str(PACKAGE) not in sys.path:
+    sys.path.insert(0, str(PACKAGE))
+
 GOLD = PACKAGE / "data" / "annotations" / "gold"
 SPLIT = PACKAGE / "data" / "train_dev_test_split_v7.json"
 MANIFEST = PACKAGE / "data" / "dataset_freeze_manifest_v6.json"
@@ -563,6 +568,123 @@ class V6PackageTest(unittest.TestCase):
                 1,
             )
 
+    def test_test_gate_blocks_before_predictor(self):
+        os.environ.setdefault("V6_API_KEY", "v6-offline-test-key")
+        import run_v6_experiment as runner
+
+        predictor_call_count = 0
+
+        def fake_predictor(text, doc_id):
+            nonlocal predictor_call_count
+            predictor_call_count += 1
+            return {"entities": [], "relations": []}
+
+        original_predictor = runner.PREDICTORS.get("protegi")
+        runner.PREDICTORS["protegi"] = fake_predictor
+        try:
+            with self.assertRaises(RuntimeError) as ctx:
+                runner.run("protegi", split="test")
+            self.assertIn("受控 final test 门禁已阻断运行", str(ctx.exception))
+            self.assertEqual(predictor_call_count, 0)
+        finally:
+            if original_predictor is not None:
+                runner.PREDICTORS["protegi"] = original_predictor
+
+    def test_all_split_requires_test_gate(self):
+        os.environ.setdefault("V6_API_KEY", "v6-offline-test-key")
+        import run_v6_experiment as runner
+
+        predictor_call_count = 0
+
+        def fake_predictor(text, doc_id):
+            nonlocal predictor_call_count
+            predictor_call_count += 1
+            return {"entities": [], "relations": []}
+
+        original_predictor = runner.PREDICTORS.get("protegi")
+        runner.PREDICTORS["protegi"] = fake_predictor
+        try:
+            with self.assertRaises(RuntimeError) as ctx:
+                runner.run("protegi", split="all")
+            self.assertIn("受控 final test 门禁已阻断运行", str(ctx.exception))
+            self.assertEqual(predictor_call_count, 0)
+        finally:
+            if original_predictor is not None:
+                runner.PREDICTORS["protegi"] = original_predictor
+
+    def test_train_and_dev_do_not_require_final_test_gate(self):
+        import run_v6_experiment as runner
+
+        try:
+            runner._assert_run_allowed("train", SPLIT)
+            runner._assert_run_allowed("dev", SPLIT)
+        except RuntimeError as exc:
+            self.fail(f"_assert_run_allowed unexpectedly blocked train/dev split: {exc}")
+
+    def test_independent_repo_freeze_manifest_path_is_valid(self):
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        base_manifest_info = manifest.get("base_manifest", {})
+        base_path_str = base_manifest_info.get("path")
+        self.assertEqual(base_path_str, "data/dataset_freeze_manifest_v5.json")
+        base_path = PACKAGE / base_path_str
+        self.assertTrue(
+            base_path.is_file(),
+            f"Base manifest file does not exist at independent repo path: {base_path}",
+        )
+        self.assertEqual(
+            hashlib.sha256(base_path.read_bytes()).hexdigest(),
+            base_manifest_info.get("sha256"),
+        )
+
+    def test_run_rule_on_dev_allowed_and_not_blocked_by_baseline_freeze(self):
+        import run_v6_experiment as runner
+
+        try:
+            runner._block_frozen_baseline_overwrite("rule", split="dev")
+            runner._block_frozen_baseline_overwrite("rule", split="train")
+            runner._block_frozen_baseline_overwrite("multipass", split="dev")
+        except RuntimeError as exc:
+            self.fail(f"_block_frozen_baseline_overwrite unexpectedly blocked dev/train: {exc}")
+
+    def test_test_gate_blocks_even_if_review_status_tampered_when_freeze_manifest_disallows(self):
+        import run_v6_experiment as runner
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_status = Path(tmpdir) / "review_status.json"
+            status_data = json.loads(STATUS.read_text(encoding="utf-8"))
+            status_data["controlled_test_rerun_ready"] = True
+            tmp_status.write_text(json.dumps(status_data), encoding="utf-8")
+
+            old_status = runner.REVIEW_STATUS_FILE
+            runner.REVIEW_STATUS_FILE = tmp_status
+            try:
+                with self.assertRaises(RuntimeError) as ctx:
+                    runner._assert_run_allowed("test", SPLIT)
+                self.assertIn("未批准受控重跑", str(ctx.exception))
+            finally:
+                runner.REVIEW_STATUS_FILE = old_status
+
+    def test_freeze_dataset_manifest_check_is_read_only(self):
+        manifest_bytes_before = MANIFEST.read_bytes()
+        hash_before = hashlib.sha256(manifest_bytes_before).hexdigest()
+
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, "-X", "utf8", str(PACKAGE / "scripts" / "freeze_dataset_manifest_v6.py"), "--check"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=str(PACKAGE),
+        )
+        self.assertEqual(result.returncode, 0, f"freeze check failed: {result.stderr}")
+        self.assertIn('"check_status": "passed"', result.stdout)
+
+        manifest_bytes_after = MANIFEST.read_bytes()
+        hash_after = hashlib.sha256(manifest_bytes_after).hexdigest()
+        self.assertEqual(hash_before, hash_after, "freeze manifest mutated during read-only --check!")
+
 
 if __name__ == "__main__":
     unittest.main()
+

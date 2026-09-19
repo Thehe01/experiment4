@@ -58,9 +58,11 @@ POST_EXPLOIT_ACTIVITY = re.compile(
     re.IGNORECASE,
 )
 CONFIGURATION_RELEASE_SUFFIX = re.compile(
-    r"(?:\s|[-_(])(?:v(?:ersion)?\s*)?\d+(?:\.\d+){1,}(?:\b|\))|"
-    r"\b(?:build|patch|release)\s*[-_:]?\s*\d+|"
-    r"\bversions?\s+\d+|\bColdFusion\s+(?:11|2016|2018|2021)\b",
+    r"(?:\s|[-_(]|^)(?:v(?:ersions?)?\s*)?\d+(?:\.\d+)+(?:\b|\))|"
+    r"\b(?:build|patch|release|update)\s*[-_:]?\s*\d+|"
+    r"\bversions?\s+\d+|"
+    r"\b(?:\d{4})\s+(?:update|patch|release)\s+\d+|"
+    r"\bColdFusion\s+(?:11|2016|2018|2021)\b",
     re.IGNORECASE,
 )
 CONFIGURATION_GENERIC_SUFFIX = re.compile(
@@ -80,9 +82,18 @@ def _cpe_version(value: object) -> str | None:
 
 
 def _allowed_non_wildcard_cpe(surface: str) -> bool:
-    return surface.casefold().startswith("cpe:2.3:") or bool(
-        re.fullmatch(r"SMB\s+version\s+1", surface, re.IGNORECASE)
-    )
+    if surface.casefold().startswith("cpe:2.3:"):
+        return True
+    s = surface.strip()
+    if re.fullmatch(r"SMB\s+version\s+1", s, re.IGNORECASE):
+        return True
+    if re.search(
+        r"^(?:Windows\s+(?:10|11|7|8|8\.1|2000|XP|Vista)|FortiGate\s+300D|SMA\s*100)(?:\s+.*)?$",
+        s,
+        re.IGNORECASE,
+    ):
+        return True
+    return False
 
 
 def _sha256(path: Path) -> str:

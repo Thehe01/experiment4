@@ -108,17 +108,17 @@ experiments/v6/protegi/
 
 运行环境需配置 OpenCode Go 或兼容的 OpenAI 接口密钥：
 
-### 5.1 联调冒烟测试 (Dry-run)
+#### 5.1 联调冒烟测试 (Dry-run)
 ```bash
 # 有约束 Stage 1 冒烟测试
-python experiments/v6/scripts/run_protegi.py --stage entity --method protegi \
-  --config experiments/v6/protegi/configs/protegi_dryrun_constrained.yaml \
-  --dry-run --output-dir experiments/v6/results/protegi_optimization/pilot_entity_constrained
+python scripts/run_protegi.py --stage entity --method protegi \
+  --config protegi/configs/protegi_dryrun_constrained.yaml \
+  --dry-run --output-dir results/protegi_optimization/pilot_entity_constrained
 
 # 无约束 Stage 1 冒烟测试（等预算；使用另一个空目录）
-python experiments/v6/scripts/run_protegi.py --stage entity --method protegi \
-  --config experiments/v6/protegi/configs/protegi_dryrun_unconstrained.yaml \
-  --dry-run --output-dir experiments/v6/results/protegi_optimization/pilot_entity_unconstrained
+python scripts/run_protegi.py --stage entity --method protegi \
+  --config protegi/configs/protegi_dryrun_unconstrained.yaml \
+  --dry-run --output-dir results/protegi_optimization/pilot_entity_unconstrained
 ```
 
 ### 5.2 小规模等预算对比（Stage 1）
@@ -126,7 +126,7 @@ python experiments/v6/scripts/run_protegi.py --stage entity --method protegi \
 固定 pilot 清单覆盖四类实体且不包含 Test。准备好的入口为：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File experiments/v6/scripts/run_protegi_scope_pilot.ps1
+powershell -ExecutionPolicy Bypass -File scripts/run_protegi_scope_pilot.ps1
 ```
 
 该入口会先执行纯逻辑测试，再顺序运行两个实验臂并离线生成比较报告；不会覆盖已有目录。
@@ -135,40 +135,40 @@ powershell -ExecutionPolicy Bypass -File experiments/v6/scripts/run_protegi_scop
 ### 5.3 阶段一：实体提示词优化 (Stage 1)
 ```bash
 # 运行有约束臂
-python experiments/v6/scripts/run_protegi.py --stage entity --method protegi \
-  --config experiments/v6/protegi/configs/protegi_formal_constrained_muse.yaml \
-  --output-dir experiments/v6/results/protegi_optimization/entity_protegi_constrained
+python scripts/run_protegi.py --stage entity --method protegi \
+  --config protegi/configs/protegi_formal_constrained_muse.yaml \
+  --output-dir results/protegi_optimization/entity_protegi_constrained
 
 # 运行无约束臂（相同预算）
-python experiments/v6/scripts/run_protegi.py --stage entity --method protegi \
-  --config experiments/v6/protegi/configs/protegi_formal_unconstrained_muse.yaml \
-  --output-dir experiments/v6/results/protegi_optimization/entity_protegi_unconstrained
+python scripts/run_protegi.py --stage entity --method protegi \
+  --config protegi/configs/protegi_formal_unconstrained_muse.yaml \
+  --output-dir results/protegi_optimization/entity_protegi_unconstrained
 
 # 运行释义消融
-python experiments/v6/scripts/run_protegi.py --stage entity --method mc
+python scripts/run_protegi.py --stage entity --method mc
 
 # 运行均匀评估消融
-python experiments/v6/scripts/run_protegi.py --stage entity --method protegi_uniform
+python scripts/run_protegi.py --stage entity --method protegi_uniform
 ```
 必须使用新的空输出目录；两个实验臂不得共用输出目录或实体缓存目录。为避免混合不同配置和随机状态，当前实现不自动续跑旧 checkpoint。产物除最终提示词外，还包括所有生成候选、最终 Dev 原始预测、逐类型指标、完整谱系、提示范围审计和 `artifact_manifest.json`。
 
 ### 5.4 阶段过渡：构建冻结实体缓存
 在 Stage 1 产出 $P_E^*$ 后，对 Train 和 Dev 执行离线预测固化：
 ```bash
-python experiments/v6/scripts/run_protegi.py \
+python scripts/run_protegi.py \
   --stage build_entity_cache \
-  --entity-prompt-file experiments/v6/results/protegi_optimization/entity_protegi_repaired/final_entity_prompt.txt \
-  --entity-cache-dir experiments/v6/results/protegi_optimization/entity_cache_repaired
+  --entity-prompt-file results/protegi_optimization/entity_protegi_repaired/final_entity_prompt.txt \
+  --entity-cache-dir results/protegi_optimization/entity_cache_repaired
 ```
 
 ### 5.5 阶段二：关系提示词优化 (Stage 2)
 ```bash
-python experiments/v6/scripts/run_protegi.py \
+python scripts/run_protegi.py \
   --stage relation \
   --method protegi \
-  --entity-prompt-file experiments/v6/results/protegi_optimization/entity_protegi_repaired/final_entity_prompt.txt \
-  --entity-cache-dir experiments/v6/results/protegi_optimization/entity_cache_repaired \
-  --output-dir experiments/v6/results/protegi_optimization/relation_protegi_repaired
+  --entity-prompt-file results/protegi_optimization/entity_protegi_repaired/final_entity_prompt.txt \
+  --entity-cache-dir results/protegi_optimization/entity_cache_repaired \
+  --output-dir results/protegi_optimization/relation_protegi_repaired
 ```
 
 ---

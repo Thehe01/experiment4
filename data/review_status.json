@@ -86,7 +86,7 @@
     "audit_report": "results/gold_strategy_audit_v6_v7.json"
   },
   "freeze_manifest": "data/dataset_freeze_manifest_v6.json",
-  "source_freeze": "experiments/v5/data/dataset_freeze_manifest_v5.json",
+  "source_freeze": "data/dataset_freeze_manifest_v5.json",
   "apo_prompt_status": {
     "compatibility_field_name": "legacy; current method is ProTeGi",
     "method": "protegi",

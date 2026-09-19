@@ -104,6 +104,11 @@ def parse_args():
         default=None,
         help="Stage 1 产出的 final_entity_prompt.txt 路径 (运行 relation 或 build_entity_cache 时需要)",
     )
+    parser.add_argument(
+        "--allow-custom-split",
+        action="store_true",
+        help="允许使用自定义/非正式切分；产物将被标记为 formal_eligible=false 且禁止晋级",
+    )
     return parser.parse_args()
 
 
@@ -203,10 +208,62 @@ def main():
         DEFAULT_OUTPUT_ROOT / f"entity_cache_{prompt_scope}{suffix}"
     )
 
-    # 3. 加载数据集切分
+    # 3. 加载数据集切分并严格校验正式门禁
     split_ids = load_split_doc_ids(args.split_file)
     train_doc_ids = split_ids["train"]
     dev_doc_ids = split_ids["dev"]
+
+    formal_eligible = True
+    if args.dry_run:
+        formal_eligible = False
+    else:
+        freeze_manifest_file = ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        if not freeze_manifest_file.is_file():
+            if not args.allow_custom_split:
+                raise RuntimeError(
+                    f"缺少数据集冻结清单 {freeze_manifest_file}；正式模式禁止使用未冻结数据集。"
+                )
+            formal_eligible = False
+        else:
+            freeze_manifest = json.loads(freeze_manifest_file.read_text(encoding="utf-8"))
+            current_split_hash = hashlib.sha256(Path(args.split_file).read_bytes()).hexdigest()
+            manifest_split_hash = freeze_manifest.get("split_sha256")
+            frozen_gold_dir = (ROOT / freeze_manifest.get("gold_directory", "data/annotations/gold")).resolve()
+            actual_gold_dir = Path(args.gold_dir).resolve()
+
+            split_mismatch = (current_split_hash != manifest_split_hash)
+            gold_mismatch = (actual_gold_dir != frozen_gold_dir)
+
+            canonical_split_data = json.loads(DEFAULT_SPLIT_FILE.read_text(encoding="utf-8"))
+            canonical_test_ids = set(canonical_split_data.get("test", []))
+            custom_split_data = json.loads(Path(args.split_file).read_text(encoding="utf-8"))
+            all_test_ids = canonical_test_ids | set(custom_split_data.get("test", []))
+            train_test_leak = set(train_doc_ids) & all_test_ids
+            dev_test_leak = set(dev_doc_ids) & all_test_ids
+            if train_test_leak or dev_test_leak:
+                raise RuntimeError(
+                    f"数据切分污染：optimizer 数据与 canonical test 存在重叠！"
+                    f"train ∩ test: {train_test_leak}, dev ∩ test: {dev_test_leak}"
+                )
+
+            if split_mismatch or gold_mismatch:
+                if not args.allow_custom_split:
+                    reasons = []
+                    if split_mismatch:
+                        reasons.append(
+                            f"split_file 哈希 ({current_split_hash}) 与冻结清单 ({manifest_split_hash}) 不符"
+                        )
+                    if gold_mismatch:
+                        reasons.append(
+                            f"gold_dir ({actual_gold_dir}) 与冻结目录 ({frozen_gold_dir}) 不符"
+                        )
+                    raise RuntimeError(
+                        f"正式 ProTeGi 优化必须绑定当前冻结划分与 Gold 数据目录: {'; '.join(reasons)}。"
+                        "若需在开发阶段使用非正式自定义切分，必须显式指定 --allow-custom-split。"
+                    )
+                formal_eligible = False
+
+    config["formal_eligible"] = formal_eligible
 
     max_train_docs = config.get("max_docs_train")
     max_dev_docs = config.get("max_docs_dev")

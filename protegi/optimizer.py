@@ -1193,6 +1193,7 @@ class ProTeGiOptimizer:
                     for path in implementation_paths
                 },
             },
+            "formal_eligible": bool(self.config.get("formal_eligible", True)),
             "start_time_utc": start_time_utc,
             "end_time_utc": datetime.now(timezone.utc).isoformat(),
         }

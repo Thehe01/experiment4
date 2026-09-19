@@ -5,6 +5,7 @@ Tests all pure-logic components without external network or LLM calls.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import tempfile
@@ -14,6 +15,8 @@ import unittest
 from pathlib import Path
 
 V6_ROOT = Path(__file__).resolve().parents[1]
+if str(V6_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(V6_ROOT / "scripts"))
 if str(V6_ROOT) not in sys.path:
     sys.path.insert(0, str(V6_ROOT))
 
@@ -118,15 +121,15 @@ class TestProTeGiCore(unittest.TestCase):
 
     def test_metrics_strict_relation_calculation(self):
         gold_ents = [
-            {"id": "E1", "type": "Configuration", "start": 0, "end": 10},
-            {"id": "E2", "type": "Vulnerability", "start": 20, "end": 30},
+            {"id": "E1", "type": "Vulnerability", "start": 0, "end": 10},
+            {"id": "E2", "type": "Configuration", "start": 20, "end": 30},
         ]
         gold_rels = [
             {"id": "R1", "type": "affects", "head": "E1", "tail": "E2"}
         ]
         pred_ents = [
-            {"id": "E1", "type": "Configuration", "start": 0, "end": 10},
-            {"id": "E2", "type": "Vulnerability", "start": 20, "end": 30},
+            {"id": "E1", "type": "Vulnerability", "start": 0, "end": 10},
+            {"id": "E2", "type": "Configuration", "start": 20, "end": 30},
         ]
         pred_rels = [
             {"id": "r1", "type": "affects", "head": "E1", "tail": "E2"}
@@ -982,6 +985,361 @@ class TestProTeGiCore(unittest.TestCase):
         self.assertEqual(updated[1][0]["_source"], "cve_anchored_backfill")
 
 
+class TestProTeGiFormalArtifactValidation(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        cls.freeze_manifest = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        cls.split_sha = hashlib.sha256(cls.split_file.read_bytes()).hexdigest()
+        cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
+        fm_data = json.loads(cls.freeze_manifest.read_text(encoding="utf-8"))
+        cls.gold_agg_sha = fm_data["gold_aggregate_sha256"]
+
+    def _create_valid_artifact_fixture(self, tmp_dir: Path) -> tuple[Path, dict]:
+        ent_prompt = tmp_dir / "valid_entity_prompt.txt"
+        ent_prompt.write_text("Valid entity prompt text", encoding="utf-8")
+        rel_prompt = tmp_dir / "valid_relation_prompt.txt"
+        rel_prompt.write_text("Valid relation prompt text", encoding="utf-8")
+
+        artifact = {
+            "artifact_version": "protegi-final-v1",
+            "schema_version": "chapter3-no-capec-v1",
+            "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+            "boundary_contract_version": "chapter3-boundary-sync-v2",
+            "prompt_scope": "constrained",
+            "split_file": "data/train_dev_test_split_v7.json",
+            "split_sha256": self.split_sha,
+            "dataset_freeze_manifest_path": "data/dataset_freeze_manifest_v6.json",
+            "dataset_freeze_manifest_sha256": self.freeze_sha,
+            "gold_aggregate_sha256": self.gold_agg_sha,
+            "entity_prompt_path": str(ent_prompt),
+            "entity_prompt_sha256": hashlib.sha256(ent_prompt.read_bytes()).hexdigest(),
+            "relation_prompt_path": str(rel_prompt),
+            "relation_prompt_sha256": hashlib.sha256(rel_prompt.read_bytes()).hexdigest(),
+            "frozen_for_test": True,
+            "formal_eligible": True,
+            "test_gold_loaded": False,
+            "test_predictions_generated": False,
+        }
+        art_path = tmp_dir / "protegi_final_artifact.json"
+        art_path.write_text(json.dumps(artifact, ensure_ascii=False, indent=2), encoding="utf-8")
+        return art_path, artifact
+
+    def test_protegi_artifact_requires_current_boundary_contract(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["boundary_contract_version"] = "tampered-boundary-v0"
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("boundary_contract_version", str(ctx.exception))
+
+    def test_protegi_artifact_requires_current_annotation_protocol(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["annotation_protocol_version"] = "tampered-protocol-v0"
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("annotation_protocol_version", str(ctx.exception))
+
+    def test_protegi_artifact_requires_current_split_hash(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["split_sha256"] = "0" * 64
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("划分哈希", str(ctx.exception))
+
+    def test_protegi_artifact_requires_current_gold_hash(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["gold_aggregate_sha256"] = "0" * 64
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("Gold 聚合哈希", str(ctx.exception))
+
+    def test_protegi_artifact_requires_entity_prompt_hash(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["entity_prompt_sha256"] = "0" * 64
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("实体提示词内容哈希", str(ctx.exception))
+
+    def test_protegi_artifact_requires_relation_prompt_hash(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["relation_prompt_sha256"] = "0" * 64
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("关系提示词内容哈希", str(ctx.exception))
+
+    def test_legacy_apo_cannot_be_promoted_as_protegi(self):
+        from promote_protegi_v6 import promote_protegi
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            apo_prompt = tmp / "final_prompt.json"
+            apo_prompt.write_text(
+                json.dumps({
+                    "stage1_guidance": "legacy guidance",
+                    "stage2_guidance": "legacy guidance",
+                    "apo_candidate_selected": True,
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError) as ctx:
+                promote_protegi(
+                    entity_prompt_path=apo_prompt,
+                    relation_prompt_path=tmp / "rel.txt",
+                    entity_summary_path=tmp / "ent_summary.json",
+                    relation_summary_path=tmp / "rel_summary.json",
+                    entity_cache_train_manifest_path=tmp / "train_manifest.json",
+                    entity_cache_dev_manifest_path=tmp / "dev_manifest.json",
+                )
+            self.assertIn("APO", str(ctx.exception))
+
+    def test_old_entity_cache_rejected_after_gold_hash_change(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            cache_mgr = EntityCacheManager(tmp)
+            (tmp / "entity_cache_dev.jsonl").write_text("{}\n", encoding="utf-8")
+            manifest = {
+                "entity_prompt_sha256": "abc",
+                "schema_version": "chapter3-no-capec-v1",
+                "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                "boundary_contract_version": "chapter3-boundary-sync-v2",
+                "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                "split_sha256": "valid_split",
+                "gold_aggregate_sha256": "old_tampered_gold_hash",
+                "dataset_freeze_manifest_sha256": "valid_freeze",
+            }
+            (tmp / "entity_cache_dev_manifest.json").write_text(
+                json.dumps(manifest), encoding="utf-8"
+            )
+            with self.assertRaises(ValueError) as ctx:
+                cache_mgr.load_cache(
+                    "dev",
+                    expected_gold_aggregate_sha256="current_gold_hash",
+                    expected_split_sha256="valid_split",
+                )
+            self.assertIn("gold_aggregate_sha256", str(ctx.exception))
+            self.assertIn("Gold 已变更，缓存自动失效", str(ctx.exception))
+
+    def test_old_entity_cache_rejected_after_split_hash_change(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            cache_mgr = EntityCacheManager(tmp)
+            (tmp / "entity_cache_dev.jsonl").write_text("{}\n", encoding="utf-8")
+            manifest = {
+                "entity_prompt_sha256": "abc",
+                "schema_version": "chapter3-no-capec-v1",
+                "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                "boundary_contract_version": "chapter3-boundary-sync-v2",
+                "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                "split_sha256": "old_tampered_split_hash",
+                "gold_aggregate_sha256": "valid_gold",
+                "dataset_freeze_manifest_sha256": "valid_freeze",
+            }
+            (tmp / "entity_cache_dev_manifest.json").write_text(
+                json.dumps(manifest), encoding="utf-8"
+            )
+            with self.assertRaises(ValueError) as ctx:
+                cache_mgr.load_cache(
+                    "dev",
+                    expected_split_sha256="current_split_hash",
+                    expected_gold_aggregate_sha256="valid_gold",
+                )
+            self.assertIn("split_sha256", str(ctx.exception))
+            self.assertIn("划分已变更，缓存自动失效", str(ctx.exception))
+
+    def test_stage2_cache_never_falls_back_to_gold_entities(self):
+        evaluator = TaskEvaluator(task_model="mock-model", task_client=None)
+        samples_with_gold_only = [
+            {
+                "sample_id": "test_sample_1",
+                "text": "Apache Log4j has CVE-2021-44228.",
+                "entities": [{"id": "E1", "type": "Configuration", "start": 0, "end": 12}],
+                "relations": [],
+            }
+        ]
+        with self.assertRaises(ValueError) as ctx:
+            evaluator.evaluate_stage2_batch(
+                samples=samples_with_gold_only,
+                full_relation_prompt="dummy_prompt",
+            )
+        self.assertIn("缺少 fixed_entities 字段", str(ctx.exception))
+        self.assertIn("严禁回退到 Gold entities", str(ctx.exception))
+
+    def test_custom_split_cannot_be_promoted_as_formal_protegi(self):
+        from promote_protegi_v6 import promote_protegi
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            ent_p = tmp / "entity_prompt.txt"
+            ent_p.write_text("Prompt", encoding="utf-8")
+            rel_p = tmp / "relation_prompt.txt"
+            rel_p.write_text("Prompt", encoding="utf-8")
+            ent_s = tmp / "entity_summary.json"
+            ent_s.write_text(json.dumps({"formal_eligible": False}), encoding="utf-8")
+            rel_s = tmp / "relation_summary.json"
+            rel_s.write_text(json.dumps({"formal_eligible": True}), encoding="utf-8")
+            train_m = tmp / "train_manifest.json"
+            train_m.write_text("{}", encoding="utf-8")
+            dev_m = tmp / "dev_manifest.json"
+            dev_m.write_text("{}", encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                promote_protegi(
+                    entity_prompt_path=ent_p,
+                    relation_prompt_path=rel_p,
+                    entity_summary_path=ent_s,
+                    relation_summary_path=rel_s,
+                    entity_cache_train_manifest_path=train_m,
+                    entity_cache_dev_manifest_path=dev_m,
+                )
+            self.assertIn("formal_eligible", str(ctx.exception))
+
+    def test_protegi_artifact_requires_formal_eligible(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            art_path, artifact = self._create_valid_artifact_fixture(Path(tmpdir))
+            artifact["formal_eligible"] = False
+            art_path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(art_path)
+            self.assertIn("formal_eligible=true", str(ctx.exception))
+
+    def test_cache_fails_closed_when_freeze_manifest_missing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            cache_mgr = EntityCacheManager(tmp)
+            (tmp / "entity_cache_dev.jsonl").write_text("{}\n", encoding="utf-8")
+            manifest = {
+                "entity_prompt_sha256": "abc",
+                "cache_file_sha256": hashlib.sha256(b"{}\n").hexdigest(),
+                "num_samples": 1,
+                "sample_ids_sha256": hashlib.sha256(b"unknown\0").hexdigest(),
+                "gold_relation_count": 0,
+            }
+            (tmp / "entity_cache_dev_manifest.json").write_text(
+                json.dumps(manifest), encoding="utf-8"
+            )
+            with self.assertRaises(FileNotFoundError) as ctx:
+                cache_mgr.load_cache(
+                    "dev",
+                    validate_freeze_binding=True,
+                    freeze_manifest_path=tmp / "nonexistent_freeze_manifest.json",
+                )
+            self.assertIn("冻结清单文件不存在", str(ctx.exception))
+
+    def test_dry_run_summary_cannot_be_promoted_even_if_files_exist(self):
+        from promote_protegi_v6 import promote_protegi
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            ent_p = tmp / "entity_prompt.txt"
+            ent_p.write_text("Valid Prompt", encoding="utf-8")
+            rel_p = tmp / "relation_prompt.txt"
+            rel_p.write_text("Valid Prompt", encoding="utf-8")
+            ent_s = tmp / "entity_summary.json"
+            ent_s.write_text(json.dumps({"formal_eligible": True, "dry_run": True}), encoding="utf-8")
+            rel_s = tmp / "relation_summary.json"
+            rel_s.write_text(json.dumps({"formal_eligible": True, "dry_run": False}), encoding="utf-8")
+            train_m = tmp / "train_manifest.json"
+            train_m.write_text("{}", encoding="utf-8")
+            dev_m = tmp / "dev_manifest.json"
+            dev_m.write_text("{}", encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                promote_protegi(
+                    entity_prompt_path=ent_p,
+                    relation_prompt_path=rel_p,
+                    entity_summary_path=ent_s,
+                    relation_summary_path=rel_s,
+                    entity_cache_train_manifest_path=train_m,
+                    entity_cache_dev_manifest_path=dev_m,
+                )
+            self.assertIn("dry-run", str(ctx.exception))
+
+    def test_canonical_test_leakage_rejected_with_custom_split(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            split_data = json.loads((V6_ROOT / "data" / "train_dev_test_split_v7.json").read_text(encoding="utf-8"))
+            canonical_test_doc = split_data["test"][0]
+            custom_split = {
+                "train": [canonical_test_doc],
+                "dev": [],
+                "test": [],
+            }
+            custom_split_path = tmp / "leaky_split.json"
+            custom_split_path.write_text(json.dumps(custom_split), encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-X",
+                    "utf8",
+                    str(V6_ROOT / "scripts" / "run_protegi.py"),
+                    "--split-file",
+                    str(custom_split_path),
+                    "--stage",
+                    "entity",
+                    "--allow-custom-split",
+                ],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                cwd=str(V6_ROOT),
+            )
+            self.assertNotEqual(result.returncode, 0)
+            combined_output = (result.stderr or "") + (result.stdout or "")
+            self.assertIn("canonical test", combined_output)
+
+    def test_promote_protegi_cli_supports_individual_file_args(self):
+        import subprocess
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                str(V6_ROOT / "scripts" / "promote_protegi_v6.py"),
+                "--help",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=str(V6_ROOT),
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("--entity-prompt", result.stdout or "")
+        self.assertIn("--relation-prompt", result.stdout or "")
+        self.assertIn("--entity-summary", result.stdout or "")
+        self.assertIn("--relation-summary", result.stdout or "")
+        self.assertIn("--entity-cache-train-manifest", result.stdout or "")
+        self.assertIn("--entity-cache-dev-manifest", result.stdout or "")
+
+
 if __name__ == "__main__":
     unittest.main()
+
 

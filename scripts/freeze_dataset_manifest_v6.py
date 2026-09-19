@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 from collections import Counter
@@ -13,7 +14,7 @@ EXP_DIR = Path(__file__).resolve().parents[1]
 GOLD_DIR = EXP_DIR / "data" / "annotations" / "gold"
 SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
 MANIFEST_FILE = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
-BASE_MANIFEST = EXP_DIR.parent / "v5" / "data" / "dataset_freeze_manifest_v5.json"
+BASE_MANIFEST = EXP_DIR / "data" / "dataset_freeze_manifest_v5.json"
 
 
 SUPPORTING_EVIDENCE = {
@@ -52,6 +53,14 @@ def _sha256(path: Path) -> str:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Freeze dataset manifest v6")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="校验现有冻结清单完整性，不重新生成或写入",
+    )
+    args = parser.parse_args()
+
     split = json.loads(SPLIT_FILE.read_text(encoding="utf-8"))
     hashes: dict[str, str] = {}
     partition_stats: dict[str, dict] = {}
@@ -98,6 +107,33 @@ def main() -> None:
             raise FileNotFoundError(f"missing freeze evidence: {path}")
         supporting[name] = {"path": relative, "sha256": _sha256(path)}
 
+    if args.check:
+        if not MANIFEST_FILE.is_file():
+            raise FileNotFoundError(f"缺少冻结清单文件：{MANIFEST_FILE}")
+        manifest = json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
+        if manifest.get("gold_aggregate_sha256") != aggregate.hexdigest():
+            raise ValueError("Gold 聚合哈希与当前标注不一致，冻结校验失败！")
+        if manifest.get("split_sha256") != _sha256(SPLIT_FILE):
+            raise ValueError("划分文件哈希与冻结清单不一致，冻结校验失败！")
+        base_rec = manifest.get("base_manifest", {})
+        if _sha256(BASE_MANIFEST) != base_rec.get("sha256"):
+            raise ValueError("基础清单哈希与冻结清单不一致，冻结校验失败！")
+        for doc_id, digest in hashes.items():
+            if manifest.get("gold_document_sha256", {}).get(doc_id) != digest:
+                raise ValueError(f"Gold 文档哈希不一致 ({doc_id})，冻结校验失败！")
+        for name, expected_rec in manifest.get("supporting_evidence", {}).items():
+            ev_path = EXP_DIR / expected_rec["path"]
+            if not ev_path.is_file() or _sha256(ev_path) != expected_rec["sha256"]:
+                raise ValueError(f"支持证据哈希不一致 ({name})，冻结校验失败！")
+        print(json.dumps({
+            "dataset_version": manifest["dataset_version"],
+            "gold_document_count": manifest["gold_document_count"],
+            "gold_aggregate_sha256": manifest["gold_aggregate_sha256"],
+            "supporting_evidence": sorted(manifest.get("supporting_evidence", {})),
+            "check_status": "passed",
+        }, ensure_ascii=False, indent=2))
+        return
+
     previous = (
         json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
         if MANIFEST_FILE.is_file()
@@ -105,6 +141,15 @@ def main() -> None:
     )
     base = json.loads(BASE_MANIFEST.read_text(encoding="utf-8"))
     now = datetime.now(timezone.utc).isoformat()
+    frozen_at = (
+        previous.get("frozen_at_utc")
+        if (
+            previous.get("gold_aggregate_sha256") == aggregate.hexdigest()
+            and previous.get("split_sha256") == _sha256(SPLIT_FILE)
+            and previous.get("frozen_at_utc")
+        )
+        else now
+    )
     manifest = {
         "schema_version": "chapter3-no-capec-v1",
         "dataset_version": "v6-v5-gold-v9-mcpu-v2",
@@ -112,7 +157,7 @@ def main() -> None:
         "boundary_contract_version": "chapter3-boundary-sync-v2",
         "cpe_normalization_contract_version": "cpe-gold-audit-v1",
         "status": "frozen_mcpu_v2_pending_human_iaa_and_new_final_test",
-        "frozen_at_utc": now,
+        "frozen_at_utc": frozen_at,
         "gate_status": "gate_passed",
         "controlled_test_rerun_ready": False,
         "formal_experiment_ready": False,
@@ -121,7 +166,7 @@ def main() -> None:
             "are not yet available"
         ),
         "base_manifest": {
-            "path": "../v5/data/dataset_freeze_manifest_v5.json",
+            "path": "data/dataset_freeze_manifest_v5.json",
             "sha256": _sha256(BASE_MANIFEST),
             "dataset_version": base["dataset_version"],
         },

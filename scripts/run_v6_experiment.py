@@ -1,16 +1,17 @@
 """v6 威胁情报文本知识图谱端到端实验编排运行器.
 
 基于 chapter3-no-capec-v1 抽取模式与 4.6-mcpu-mention-fact-dual-layer-v1 标注协议。
-默认仅在冻结的固定测试集 (21 篇, 131 条关系) 上评估。抽取层目标为 4 类实体和 3 类文本关系；
+抽取层目标为 4 类实体和 3 类文本关系；
 上层 AttackTechnique -> AttackTactic -> KillChainPhase 的补全由 complete_bron_layer.py 单独评估。
 
 用法：
     python run_v6_experiment.py --method rule
     python run_v6_experiment.py --method llm_manual
     python run_v6_experiment.py --method multipass
-    python run_v6_experiment.py --method apo
     python run_v6_experiment.py --method full
-    python run_v6_experiment.py --method apo_full
+    python run_v6_experiment.py --method protegi
+    python run_v6_experiment.py --method apo       # (legacy / historical only)
+    python run_v6_experiment.py --method apo_full  # (legacy / historical only)
     python run_v6_experiment.py --method full --eval-only
 """
 import argparse
@@ -26,10 +27,9 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 EXP_DIR = Path(__file__).resolve().parents[1]
-ROOT = EXP_DIR.parents[1]
 SCRIPT_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(EXP_DIR))
 
 from provider_config import apply_formal_apo_runtime_defaults
 
@@ -41,12 +41,15 @@ import eval_metrics as EM
 import rule_baseline
 from llm_methods import (
     APO_ARTIFACT,
+    PROTEGI_FINAL_ARTIFACT,
     load_apo_prompt_artifact,
+    load_protegi_final_artifact,
     predict_full,
     predict_llm_apo,
     predict_llm_apo_full,
     predict_llm_manual,
     predict_llm_multipass,
+    predict_llm_protegi,
     runtime_config,
 )
 from schema import (
@@ -72,8 +75,10 @@ EXT_ENT = set(EXTRACTION_ENTITY_TYPES)
 EXT_REL = set(EXTRACTION_RELATION_TYPES)
 
 
-def _block_frozen_baseline_overwrite(method: str) -> None:
+def _block_frozen_baseline_overwrite(method: str, split: str = "test") -> None:
     """Protect completed baseline artifacts even when --force is supplied."""
+    if split not in {"test", "all"}:
+        return
     if method not in frozen_methods():
         return
     ok, message = verify_baseline_freeze()
@@ -86,6 +91,7 @@ def _block_frozen_baseline_overwrite(method: str) -> None:
         f"方法 {method} 的实验与结果已由 {BASELINE_FREEZE_MANIFEST} 冻结；"
         "--force 和 --eval-only 均不能覆盖。若确需重跑，必须先执行显式解冻。"
     )
+
 
 
 def filt(ann):
@@ -110,6 +116,8 @@ PREDICTORS = {
     "llm_manual": predict_llm_manual,
     "multipass": predict_llm_multipass,
     "full": predict_full,
+    "protegi": predict_llm_protegi,
+    # Legacy / historical methods - not valid as current ProTeGi formal artifact:
     "apo": predict_llm_apo,
     "apo_full": predict_llm_apo_full,
 }
@@ -117,7 +125,21 @@ PREDICTORS = {
 
 def _method_runtime_config(method: str) -> dict:
     config = runtime_config()
-    if method in {"apo", "apo_full"}:
+    if method == "protegi":
+        artifact = load_protegi_final_artifact()
+        config["protegi"] = {
+            "artifact": str(PROTEGI_FINAL_ARTIFACT),
+            "artifact_sha256": hashlib.sha256(
+                PROTEGI_FINAL_ARTIFACT.read_bytes()
+            ).hexdigest(),
+            "artifact_version": artifact.get("artifact_version"),
+            "prompt_scope": artifact.get("prompt_scope"),
+            "task_model": artifact.get("task_model"),
+            "optimizer_model": artifact.get("optimizer_model"),
+            "entity_prompt_sha256": artifact.get("entity_prompt_sha256"),
+            "relation_prompt_sha256": artifact.get("relation_prompt_sha256"),
+        }
+    elif method in {"apo", "apo_full"}:
         artifact = load_apo_prompt_artifact()
         config["apo"] = {
             "artifact": str(APO_ARTIFACT),
@@ -131,6 +153,7 @@ def _method_runtime_config(method: str) -> dict:
             "target_f1_gain": (artifact.get("target_performance") or {}).get(
                 "target_f1_gain"
             ),
+            "formal_validity": "historical only; not valid as current ProTeGi formal artifact",
         }
     return config
 
@@ -285,19 +308,60 @@ def _review_ready(requested_split_file=SPLIT_FILE):
     return True, "v6 Gold 已通过 chapter3-boundary-sync-v2 MCPU 门禁，可进行受控重跑（非正式人工 IAA）"
 
 
+def _assert_run_allowed(split: str, split_file: Path) -> None:
+    """受控 final test 强门禁。
+
+    在任何 load_docs、predictor 调用、生成预测或读取 test gold 前执行。
+    对 dev/train split 允许正常开发实验。
+    对 test/all split，当且仅当 _review_ready() 通过且 controlled_test_rerun_ready 为 True 时才允许。
+    若未达到准入条件，必须在此处 hard fail 阻断，保证 predictor 调用次数严格为 0。
+    """
+    if split in {"test", "all"}:
+        status = (
+            json.loads(REVIEW_STATUS_FILE.read_text(encoding="utf-8"))
+            if REVIEW_STATUS_FILE.is_file()
+            else {}
+        )
+        manifest = (
+            json.loads(FREEZE_MANIFEST_FILE.read_text(encoding="utf-8"))
+            if FREEZE_MANIFEST_FILE.is_file()
+            else {}
+        )
+        if (
+            status.get("controlled_test_rerun_ready") is not True
+            or manifest.get("controlled_test_rerun_ready") is not True
+        ):
+            raise RuntimeError(
+                "受控 final test 门禁已阻断运行：未批准受控重跑。"
+                "当前仓库在 controlled_test_rerun_ready 开启且全量门禁就绪前，"
+                "禁止对 test/all split 执行任何加载、预测或评测。"
+            )
+        ready, message = _review_ready(split_file)
+        if not ready:
+            raise RuntimeError(
+                f"受控 final test 门禁已阻断运行：{message}。"
+                "当前仓库在 controlled_test_rerun_ready 开启且全量门禁就绪前，"
+                "禁止对 test/all split 执行任何加载、预测或评测。"
+            )
+
+
 def run(method, split="test", force=False, eval_only=False, split_file=SPLIT_FILE):
-    _block_frozen_baseline_overwrite(method)
-    if method in {"apo", "apo_full"}:
+    split_file = Path(split_file)
+    _assert_run_allowed(split, split_file)
+    _block_frozen_baseline_overwrite(method, split)
+    if method == "protegi":
+        load_protegi_final_artifact()
+    elif method in {"apo", "apo_full"}:
         status = json.loads(REVIEW_STATUS_FILE.read_text(encoding="utf-8"))
         apo_status = status.get("apo_prompt_status", {})
         if apo_status.get("ready") is not True:
             raise RuntimeError(
                 "当前 v6 尚未绑定可运行的非 P0 APO 提示产物；P0 只作为基线，"
-                "请先在 v7 固定 dev 集重新运行 apo_optimizer.py 并执行 promote_apo_v6.py"
+                "请先在 v7 固定 dev 集重新运行 apo_optimizer.py 并执行 promote_apo_v6.py "
+                "(注：APO 为历史遗留方法，正式实验请使用 protegi)"
             )
         load_apo_prompt_artifact()
     predict = PREDICTORS[method]
-    split_file = Path(split_file)
     docs = load_docs(split, split_file=split_file)
     pred_dir = RESULTS / "raw_predictions" / f"v6_{method}"
     pred_dir.mkdir(parents=True, exist_ok=True)
@@ -332,7 +396,7 @@ def run(method, split="test", force=False, eval_only=False, split_file=SPLIT_FIL
         )
 
     work = list(enumerate(docs, 1))
-    if method in {"llm_manual", "multipass", "apo"} and not eval_only:
+    if method in {"llm_manual", "multipass", "apo", "protegi"} and not eval_only:
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             for message in executor.map(process_doc, work):
                 print(message, flush=True)
@@ -426,7 +490,7 @@ def run(method, split="test", force=False, eval_only=False, split_file=SPLIT_FIL
         "run_at_utc": datetime.now(timezone.utc).isoformat(),
         "runtime_config": (
             _method_runtime_config(method)
-            if method in {"llm_manual", "multipass", "apo", "apo_full", "full"}
+            if method in {"llm_manual", "multipass", "apo", "apo_full", "full", "protegi"}
             else {
                 "extractor": "deterministic-rule-baseline",
                 "lexicon_source": "frozen train+dev annotations only (development-fitted rule baseline)",
