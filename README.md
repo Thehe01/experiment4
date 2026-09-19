@@ -67,10 +67,10 @@ python -X utf8 scripts/run_protegi.py --stage entity --method protegi --config p
 python -X utf8 scripts/run_protegi.py --stage entity --method protegi --config protegi/configs/protegi_formal_unconstrained_muse.yaml --output-dir results/protegi_optimization/entity_protegi_unconstrained
 
 # 4. 构建与固化实体预测缓存 (使用胜出的 P_E*，深度绑定冻结清单与当前划分哈希)
-python -X utf8 scripts/run_protegi.py --stage entity_cache --method protegi --config protegi/configs/protegi_formal_constrained_muse.yaml --entity-cache-dir results/protegi_optimization/entity_cache_constrained
+python -X utf8 scripts/run_protegi.py --stage build_entity_cache --method protegi --config protegi/configs/protegi_formal_constrained_muse.yaml --entity-prompt-file results/protegi_optimization/entity_protegi_constrained/final_entity_prompt.txt --entity-cache-dir results/protegi_optimization/entity_cache_constrained
 
 # 5. ProTeGi Stage 2: 关系提示词优化 (在 Dev 集以冻结实体缓存为输入搜索最优 P_R*，严禁 Gold 回退)
-python -X utf8 scripts/run_protegi.py --stage relation --method protegi --config protegi/configs/protegi_formal_constrained_muse.yaml --entity-cache-dir results/protegi_optimization/entity_cache_constrained --output-dir results/protegi_optimization/relation_protegi_constrained
+python -X utf8 scripts/run_protegi.py --stage relation --method protegi --config protegi/configs/protegi_formal_constrained_muse.yaml --entity-prompt-file results/protegi_optimization/entity_protegi_constrained/final_entity_prompt.txt --entity-cache-dir results/protegi_optimization/entity_cache_constrained --output-dir results/protegi_optimization/relation_protegi_constrained
 
 # 6. 正式 ProTeGi 产物晋级 (执行全哈希绑定校验与契约准入，阻断旧 APO 产物与自定义切分)
 python -X utf8 scripts/promote_protegi_v6.py `

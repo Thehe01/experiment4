@@ -33,6 +33,7 @@ if str(ROOT) not in sys.path:
 from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
 from protegi.contract_validator import PromptContractValidator
 from protegi.evaluator import TaskEvaluator
+from protegi.gold_integrity import verify_frozen_gold_integrity
 from protegi.optimizer import (
     ProTeGiOptimizer,
     load_split_doc_ids,
@@ -158,6 +159,21 @@ def main():
     include_document_abbreviations = bool(
         config.get("document_abbreviation_context", False)
     )
+    vulnerability_backfill_flag = bool(
+        config.get("vulnerability_anchored_backfill", False)
+    )
+    # 冻结窗口参数：显式来源为当前 config，未声明时沿用优化器默认值。
+    window_chars = int(
+        config.get("window_chars", config.get("window_max_chars", 3000))
+    )
+    window_overlap = int(config.get("window_overlap", 400))
+    if not window_chars > 0:
+        raise ValueError(f"window_chars 必须为正整数，当前={window_chars!r}")
+    if not 0 <= window_overlap < window_chars:
+        raise ValueError(
+            f"window_overlap 必须满足 0 <= overlap < window_chars，"
+            f"当前 overlap={window_overlap!r}, chars={window_chars!r}"
+        )
 
     def build_task_evaluator() -> TaskEvaluator:
         return TaskEvaluator(
@@ -265,6 +281,27 @@ def main():
 
     config["formal_eligible"] = formal_eligible
 
+    # Formal Gold 完整性门禁：在读取任何 Gold 之前重新计算实际 Gold 内容。
+    # formal mode ↓ verify frozen split（上文） ↓ verify frozen Gold ↓
+    # verify canonical test isolation（上文） ↓ 才允许读取训练/开发 Gold。
+    # Custom (--allow-custom-split) / Diagnostic (--dry-run) 模式跳过冻结校验，
+    # 但 formal_eligible 保持 False，promotion 仍会拒绝。
+    verified_gold_aggregate_sha256: str | None = None
+    _freeze_manifest_for_gold = ROOT / "data" / "dataset_freeze_manifest_v6.json"
+    if formal_eligible and not args.allow_custom_split and not args.dry_run:
+        ok, message = verify_frozen_gold_integrity(
+            Path(args.gold_dir),
+            _freeze_manifest_for_gold,
+        )
+        if not ok:
+            raise RuntimeError(
+                f"正式 ProTeGi Gold 完整性校验失败: {message}；"
+                "已在模型调用前阻断 (optimizer/model call count=0)。"
+            )
+        verified_gold_aggregate_sha256 = json.loads(
+            _freeze_manifest_for_gold.read_text(encoding="utf-8")
+        ).get("gold_aggregate_sha256")
+
     max_train_docs = config.get("max_docs_train")
     max_dev_docs = config.get("max_docs_dev")
 
@@ -297,6 +334,8 @@ def main():
         train_samples = prepare_stage2_window_samples(
             train_doc_ids,
             args.gold_dir,
+            max_chars=window_chars,
+            overlap=window_overlap,
             max_docs=max_train_docs,
             include_document_abbreviations=include_document_abbreviations,
         )
@@ -308,12 +347,31 @@ def main():
             train_samples,
             "train",
             prompt_scope=prompt_scope,
+            freeze_manifest_path=(
+                _freeze_manifest_for_gold
+                if _freeze_manifest_for_gold.is_file()
+                else None
+            ),
+            split_file_path=Path(args.split_file),
+            gold_dir=Path(args.gold_dir),
+            window_chars=window_chars,
+            window_overlap=window_overlap,
+            document_abbreviation_context=include_document_abbreviations,
+            vulnerability_anchored_backfill=vulnerability_backfill_flag,
+            verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
+            validate_formal_gold=bool(
+                formal_eligible
+                and not args.allow_custom_split
+                and not args.dry_run
+            ),
         )
 
         print("正在为 Dev 集生成冻结实体预测缓存...")
         dev_samples = prepare_stage2_window_samples(
             dev_doc_ids,
             args.gold_dir,
+            max_chars=window_chars,
+            overlap=window_overlap,
             max_docs=max_dev_docs,
             include_document_abbreviations=include_document_abbreviations,
         )
@@ -325,6 +383,23 @@ def main():
             dev_samples,
             "dev",
             prompt_scope=prompt_scope,
+            freeze_manifest_path=(
+                _freeze_manifest_for_gold
+                if _freeze_manifest_for_gold.is_file()
+                else None
+            ),
+            split_file_path=Path(args.split_file),
+            gold_dir=Path(args.gold_dir),
+            window_chars=window_chars,
+            window_overlap=window_overlap,
+            document_abbreviation_context=include_document_abbreviations,
+            vulnerability_anchored_backfill=vulnerability_backfill_flag,
+            verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
+            validate_formal_gold=bool(
+                formal_eligible
+                and not args.allow_custom_split
+                and not args.dry_run
+            ),
         )
         print(f"实体缓存构建完成，保存在: {cache_dir}")
         return
@@ -333,12 +408,16 @@ def main():
         train_samples = prepare_stage1_window_samples(
             train_doc_ids,
             args.gold_dir,
+            max_chars=window_chars,
+            overlap=window_overlap,
             max_docs=max_train_docs,
             include_document_abbreviations=include_document_abbreviations,
         )
         dev_samples = prepare_stage1_window_samples(
             dev_doc_ids,
             args.gold_dir,
+            max_chars=window_chars,
+            overlap=window_overlap,
             max_docs=max_dev_docs,
             include_document_abbreviations=include_document_abbreviations,
         )
@@ -379,6 +458,29 @@ def main():
             )
         cache_manager = EntityCacheManager(cache_dir)
         expected_hash = compute_prompt_hash(entity_prompt_text)
+        expected_task_runtime = {
+            "model": config.get("task_model"),
+            "max_workers": int(config.get("task_max_workers", 8)),
+            "temperature": float(config.get("task_temperature", 0.0)),
+            "thinking": str(config.get("task_thinking", "disabled")),
+            "reasoning_effort": str(
+                config.get("task_reasoning_effort", "none")
+            ),
+            "top_p": float(config["task_top_p"])
+            if config.get("task_top_p") is not None
+            else None,
+            "max_tokens": int(config["task_max_tokens"])
+            if config.get("task_max_tokens") is not None
+            else None,
+            "window_chars": int(window_chars),
+            "window_overlap": int(window_overlap),
+            "document_abbreviation_context": bool(
+                include_document_abbreviations
+            ),
+            "vulnerability_anchored_backfill": bool(
+                vulnerability_backfill_flag
+            ),
+        }
         train_samples = cache_manager.load_cache(
             "train",
             expected_prompt_hash=expected_hash,
@@ -386,6 +488,7 @@ def main():
             expected_task_model=config.get("task_model"),
             expected_prompt_scope=prompt_scope,
             expected_task_max_workers=int(config.get("task_max_workers", 8)),
+            expected_task_runtime=expected_task_runtime,
         )
         dev_samples = cache_manager.load_cache(
             "dev",
@@ -394,6 +497,7 @@ def main():
             expected_task_model=config.get("task_model"),
             expected_prompt_scope=prompt_scope,
             expected_task_max_workers=int(config.get("task_max_workers", 8)),
+            expected_task_runtime=expected_task_runtime,
         )
         print(f"成功加载上游冻结实体预测缓存: Train={len(train_samples)}, Dev={len(dev_samples)}")
 

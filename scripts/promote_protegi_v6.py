@@ -37,6 +37,7 @@ from schema import (
     SCHEMA_VERSION,
 )
 from protegi.contract_validator import PromptContractValidator
+from protegi.entity_cache import TASK_RUNTIME_FIELDS, compute_prompt_hash
 
 DEFAULT_FREEZE_MANIFEST = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 DEFAULT_SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
@@ -54,6 +55,105 @@ def _rel_path(path: Path) -> str:
         return str(path.resolve().relative_to(EXP_DIR.resolve())).replace("\\", "/")
     except ValueError:
         return str(path).replace("\\", "/")
+
+
+_MISSING = object()
+
+
+def _extract_task_runtime(summary: dict, label: str) -> dict:
+    """从单个 Stage summary 的 config/runtime 中提取完整 Task Runtime（11 字段）。
+
+    值必须来源于被 promotion 的 summary/config，禁止使用当前机器环境。
+    window/abbreviation/backfill 未显式声明时沿用优化器默认值
+    （3000/400/False/False），但仍需两阶段一致。
+    """
+    config = summary.get("config", {}) or {}
+    runtime = summary.get("runtime", {}) or {}
+    task_client_cfg = runtime.get("task_client", {}) or {}
+    runtime_max_workers = runtime.get("task_max_workers")
+
+    def _from_config_or_client(
+        config_key: str,
+        client_key: str | None = None,
+        *,
+        required: bool = True,
+        default=_MISSING,
+    ):
+        if config_key in config and config[config_key] is not None:
+            return config[config_key]
+        if (
+            client_key
+            and isinstance(task_client_cfg, dict)
+            and client_key in task_client_cfg
+            and task_client_cfg[client_key] is not None
+        ):
+            return task_client_cfg[client_key]
+        if config_key == "task_max_workers" and runtime_max_workers is not None:
+            return runtime_max_workers
+        if default is not _MISSING:
+            return default
+        if required:
+            raise ValueError(
+                f"{label} summary 缺少 Task Runtime 字段: config[{config_key}]"
+                + (f"/runtime.task_client[{client_key}]" if client_key else "")
+            )
+        return None
+
+    raw_model = _from_config_or_client("task_model", "model")
+    raw_workers = _from_config_or_client("task_max_workers", None)
+    raw_temp = _from_config_or_client("task_temperature", "temperature")
+    raw_thinking = _from_config_or_client("task_thinking", "thinking")
+    raw_effort = _from_config_or_client(
+        "task_reasoning_effort", "reasoning_effort"
+    )
+    raw_top_p = _from_config_or_client("task_top_p", "top_p")
+    raw_max_tokens = _from_config_or_client("task_max_tokens", "max_tokens")
+    raw_window_chars = _from_config_or_client(
+        "window_chars", "window_chars", required=False, default=_MISSING
+    )
+    if raw_window_chars is _MISSING:
+        raw_window_chars = config.get(
+            "window_max_chars", config.get("max_chars", 3000)
+        )
+    raw_window_overlap = _from_config_or_client(
+        "window_overlap", "window_overlap", required=False, default=_MISSING
+    )
+    if raw_window_overlap is _MISSING:
+        raw_window_overlap = config.get("overlap", 400)
+    raw_abbrev = _from_config_or_client(
+        "document_abbreviation_context", None, required=False, default=False
+    )
+    raw_backfill = _from_config_or_client(
+        "vulnerability_anchored_backfill", None, required=False, default=False
+    )
+
+    try:
+        task_runtime = {
+            "model": str(raw_model),
+            "max_workers": int(raw_workers),
+            "temperature": float(raw_temp),
+            "thinking": str(raw_thinking).strip().lower(),
+            "reasoning_effort": str(raw_effort).strip().lower(),
+            "top_p": float(raw_top_p),
+            "max_tokens": int(raw_max_tokens),
+            "window_chars": int(raw_window_chars),
+            "window_overlap": int(raw_window_overlap),
+            "document_abbreviation_context": bool(raw_abbrev),
+            "vulnerability_anchored_backfill": bool(raw_backfill),
+        }
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{label} summary Task Runtime 类型非法: {exc}") from exc
+    if task_runtime["max_workers"] <= 0:
+        raise ValueError(f"{label} summary max_workers 必须为正整数")
+    if task_runtime["window_chars"] <= 0:
+        raise ValueError(f"{label} summary window_chars 必须为正整数")
+    if not 0 <= task_runtime["window_overlap"] < task_runtime["window_chars"]:
+        raise ValueError(
+            f"{label} summary 窗口参数非法: "
+            f"window_chars={task_runtime['window_chars']}, "
+            f"window_overlap={task_runtime['window_overlap']}"
+        )
+    return task_runtime
 
 
 def promote_protegi(
@@ -161,6 +261,45 @@ def promote_protegi(
     if entity_summary.get("dry_run") is True or relation_summary.get("dry_run") is True:
         raise ValueError("检测到 dry-run 优化产物，禁止晋级为正式 ProTeGi 产物！")
 
+    # 4a. 校验 summary.stage
+    if entity_summary.get("stage") != "entity":
+        raise ValueError(
+            f"Stage 1 summary stage 必须为 'entity'，当前={entity_summary.get('stage')!r}"
+        )
+    if relation_summary.get("stage") != "relation":
+        raise ValueError(
+            f"Stage 2 summary stage 必须为 'relation'，当前={relation_summary.get('stage')!r}"
+        )
+
+    # 4b. 校验 Prompt Scope（三方一致）
+    ent_scope = entity_summary.get("prompt_scope")
+    rel_scope = relation_summary.get("prompt_scope")
+    if ent_scope != prompt_scope:
+        raise ValueError(
+            f"Stage 1 summary prompt_scope ({ent_scope!r}) 与晋级参数 ({prompt_scope!r}) 不一致"
+        )
+    if rel_scope != prompt_scope:
+        raise ValueError(
+            f"Stage 2 summary prompt_scope ({rel_scope!r}) 与晋级参数 ({prompt_scope!r}) 不一致"
+        )
+    if ent_scope != rel_scope:
+        raise ValueError(
+            f"Stage 1 与 Stage 2 prompt_scope 不一致: {ent_scope!r} != {rel_scope!r}"
+        )
+
+    # 4c. 校验 experiment_pair_id（双方一致并写入 artifact）
+    ent_pair = entity_summary.get("experiment_pair_id")
+    rel_pair = relation_summary.get("experiment_pair_id")
+    if not ent_pair or not rel_pair:
+        raise ValueError(
+            "Stage 1/Stage 2 summary 缺少 experiment_pair_id 字段，禁止晋级！"
+        )
+    if ent_pair != rel_pair:
+        raise ValueError(
+            f"Stage 1 与 Stage 2 experiment_pair_id 不一致: {ent_pair!r} != {rel_pair!r}"
+        )
+    experiment_pair_id = ent_pair
+
     # 5. 校验提示词内容及结构契约
     entity_prompt_text = entity_prompt_path.read_text(encoding="utf-8")
     relation_prompt_text = relation_prompt_path.read_text(encoding="utf-8")
@@ -178,7 +317,77 @@ def promote_protegi(
     entity_prompt_sha = _sha256(entity_prompt_path)
     relation_prompt_sha = _sha256(relation_prompt_path)
 
-    # 6. 校验实体缓存清单深度绑定
+    # 5a. 严格绑定 final prompt == summary winner（raw bytes + canonical 双哈希）
+    ent_winner_raw = entity_summary.get("winner_prompt_sha256_raw_bytes")
+    rel_winner_raw = relation_summary.get("winner_prompt_sha256_raw_bytes")
+    if not ent_winner_raw or entity_prompt_sha != ent_winner_raw:
+        raise ValueError(
+            "final prompt does not match summary winner (entity raw bytes): "
+            f"final={entity_prompt_sha} winner={ent_winner_raw}"
+        )
+    if not rel_winner_raw or relation_prompt_sha != rel_winner_raw:
+        raise ValueError(
+            "final prompt does not match summary winner (relation raw bytes): "
+            f"final={relation_prompt_sha} winner={rel_winner_raw}"
+        )
+    ent_canonical = compute_prompt_hash(entity_prompt_text)
+    rel_canonical = compute_prompt_hash(relation_prompt_text)
+    ent_winner_canonical = entity_summary.get("winner_prompt_sha256")
+    rel_winner_canonical = relation_summary.get("winner_prompt_sha256")
+    if ent_winner_canonical and ent_canonical != ent_winner_canonical:
+        raise ValueError(
+            "final prompt does not match summary winner (entity canonical): "
+            f"final={ent_canonical} winner={ent_winner_canonical}"
+        )
+    if rel_winner_canonical and rel_canonical != rel_winner_canonical:
+        raise ValueError(
+            "final prompt does not match summary winner (relation canonical): "
+            f"final={rel_canonical} winner={rel_winner_canonical}"
+        )
+
+    # 5b. 校验 Summary 的 Split / Freeze / Config Input Binding
+    ent_bind = entity_summary.get("input_bindings", {}) or {}
+    rel_bind = relation_summary.get("input_bindings", {}) or {}
+    for label, bind in (("Stage 1", ent_bind), ("Stage 2", rel_bind)):
+        if bind.get("split_file_sha256_raw_bytes") != split_sha:
+            raise ValueError(
+                f"{label} summary split_file_sha256_raw_bytes "
+                f"({bind.get('split_file_sha256_raw_bytes')}) 与当前切分 ({split_sha}) 不一致"
+            )
+        if bind.get("dataset_freeze_manifest_sha256_raw_bytes") != freeze_sha:
+            raise ValueError(
+                f"{label} summary dataset_freeze_manifest_sha256_raw_bytes "
+                f"({bind.get('dataset_freeze_manifest_sha256_raw_bytes')}) 与当前冻结清单 ({freeze_sha}) 不一致"
+            )
+    if ent_bind.get("split_file_sha256_raw_bytes") != rel_bind.get(
+        "split_file_sha256_raw_bytes"
+    ):
+        raise ValueError("Stage 1 与 Stage 2 split binding 不一致，禁止晋级！")
+    if ent_bind.get("dataset_freeze_manifest_sha256_raw_bytes") != rel_bind.get(
+        "dataset_freeze_manifest_sha256_raw_bytes"
+    ):
+        raise ValueError("Stage 1 与 Stage 2 freeze binding 不一致，禁止晋级！")
+    entity_config_sha256 = ent_bind.get("config_file_sha256_raw_bytes")
+    relation_config_sha256 = rel_bind.get("config_file_sha256_raw_bytes")
+    if not entity_config_sha256 or not relation_config_sha256:
+        raise ValueError(
+            "Stage 1/Stage 2 summary 缺少 config_file_sha256_raw_bytes，"
+            "禁止静默丢失 provenance！"
+        )
+
+    # 5c. Stage 1 与 Stage 2 Task Runtime 必须一致（禁止默认选其中一个）
+    entity_task_runtime = _extract_task_runtime(entity_summary, "Stage 1")
+    relation_task_runtime = _extract_task_runtime(relation_summary, "Stage 2")
+    for field in TASK_RUNTIME_FIELDS:
+        if entity_task_runtime[field] != relation_task_runtime[field]:
+            raise ValueError(
+                f"Stage 1 与 Stage 2 Task Runtime 不一致 (字段 {field}): "
+                f"{entity_task_runtime[field]!r} != {relation_task_runtime[field]!r}；"
+                "正式 P_E* 与 P_R* 必须在同一 Task Runtime 下产生。"
+            )
+    task_runtime = entity_task_runtime
+
+    # 6. 校验实体缓存清单深度绑定（含 chain binding：prompt_scope + frozen runtime）
     for cache_name, cache_manifest_path in (
         ("train", entity_cache_train_manifest_path),
         ("dev", entity_cache_dev_manifest_path),
@@ -213,16 +422,30 @@ def promote_protegi(
                 f"{cache_name} 实体缓存 entity_prompt_sha256 ({cache_manifest.get('entity_prompt_sha256')}) "
                 f"与待晋级实体提示词哈希 ({entity_prompt_sha}) 不一致"
             )
+        if cache_manifest.get("prompt_scope") != prompt_scope:
+            raise ValueError(
+                f"{cache_name} 实体缓存 prompt_scope ({cache_manifest.get('prompt_scope')!r}) "
+                f"与晋级 prompt_scope ({prompt_scope!r}) 不一致"
+            )
+        cached_runtime = cache_manifest.get("task_runtime")
+        if not isinstance(cached_runtime, dict):
+            raise ValueError(
+                f"{cache_name} 实体缓存缺少 task_runtime 字段，"
+                "禁止 fallback 到旧格式；请用新格式重建缓存。"
+            )
+        for field in TASK_RUNTIME_FIELDS:
+            if cached_runtime.get(field) != task_runtime[field]:
+                raise ValueError(
+                    f"{cache_name} 实体缓存 task_runtime[{field}] "
+                    f"({cached_runtime.get(field)!r}) 与最终冻结 Task Runtime "
+                    f"({task_runtime[field]!r}) 不一致"
+                )
 
-    task_model = (
-        entity_summary.get("config", {}).get("task_model")
-        or relation_summary.get("config", {}).get("task_model")
-        or "gpt-4o-mini"
-    )
+    task_model = task_runtime["model"]
     optimizer_model = (
         entity_summary.get("config", {}).get("optimizer_model")
         or relation_summary.get("config", {}).get("optimizer_model")
-        or "gpt-4o"
+        or "muse-spark-1.3-contributor"
     )
 
     artifact = {
@@ -230,6 +453,7 @@ def promote_protegi(
         "schema_version": SCHEMA_VERSION,
         "annotation_protocol_version": ANNOTATION_PROTOCOL_VERSION,
         "boundary_contract_version": BOUNDARY_CONTRACT_VERSION,
+        "experiment_pair_id": experiment_pair_id,
         "prompt_scope": prompt_scope,
         "entity_prompt_path": _rel_path(entity_prompt_path),
         "entity_prompt_sha256": entity_prompt_sha,
@@ -239,6 +463,9 @@ def promote_protegi(
         "entity_optimization_summary_sha256": _sha256(entity_summary_path),
         "relation_optimization_summary_path": _rel_path(relation_summary_path),
         "relation_optimization_summary_sha256": _sha256(relation_summary_path),
+        "task_runtime": task_runtime,
+        "entity_config_sha256": entity_config_sha256,
+        "relation_config_sha256": relation_config_sha256,
         "split_file": _rel_path(split_file_path),
         "split_sha256": split_sha,
         "dataset_version": freeze_manifest.get("dataset_version", "v6-v5-gold-v9-mcpu-v2"),
@@ -256,6 +483,8 @@ def promote_protegi(
         "frozen_for_test": True,
         "formal_eligible": True,
     }
+    if entity_config_sha256 == relation_config_sha256:
+        artifact["task_runtime_config_sha256"] = entity_config_sha256
 
     output_artifact_path.parent.mkdir(parents=True, exist_ok=True)
     output_artifact_path.write_text(

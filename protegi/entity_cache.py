@@ -50,6 +50,64 @@ def _sample_ids_hash(sample_ids: List[str]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+TASK_RUNTIME_FIELDS = (
+    "model",
+    "max_workers",
+    "temperature",
+    "thinking",
+    "reasoning_effort",
+    "top_p",
+    "max_tokens",
+    "window_chars",
+    "window_overlap",
+    "document_abbreviation_context",
+    "vulnerability_anchored_backfill",
+)
+
+
+def _build_task_runtime_from_evaluator(
+    evaluator,
+    *,
+    window_chars: int | None,
+    window_overlap: int | None,
+    document_abbreviation_context: bool | None,
+    vulnerability_anchored_backfill: bool | None,
+    samples: list | None = None,
+) -> dict:
+    """从 evaluator + 显式参数构造完整的 Task Runtime（11 字段）。"""
+    client_config = dict(
+        getattr(getattr(evaluator, "client", None), "config", {}) or {}
+    )
+    if window_chars is None:
+        window_chars = 3000
+    if window_overlap is None:
+        window_overlap = 400
+    if document_abbreviation_context is None:
+        document_abbreviation_context = bool(
+            samples is not None
+            and any("document_abbreviations" in s for s in samples)
+        )
+    if vulnerability_anchored_backfill is None:
+        vulnerability_anchored_backfill = bool(
+            getattr(evaluator, "vulnerability_anchored_backfill", False)
+        )
+    return {
+        "model": client_config.get("model"),
+        "max_workers": getattr(evaluator, "max_workers", None),
+        "temperature": client_config.get("temperature"),
+        "thinking": client_config.get("thinking"),
+        "reasoning_effort": client_config.get("reasoning_effort"),
+        "top_p": client_config.get("top_p"),
+        "max_tokens": client_config.get("max_tokens"),
+        "window_chars": int(window_chars),
+        "window_overlap": int(window_overlap),
+        "document_abbreviation_context": bool(document_abbreviation_context),
+        "vulnerability_anchored_backfill": bool(
+            vulnerability_anchored_backfill
+        ),
+    }
+
+
 class EntityCacheManager:
     """实体预测缓存管理器。"""
 
@@ -73,8 +131,50 @@ class EntityCacheManager:
         gold_aggregate_sha256: Optional[str] = None,
         split_sha256: Optional[str] = None,
         dataset_freeze_manifest_sha256: Optional[str] = None,
+        gold_dir: Optional[Path] = None,
+        window_chars: Optional[int] = None,
+        window_overlap: Optional[int] = None,
+        document_abbreviation_context: Optional[bool] = None,
+        vulnerability_anchored_backfill: Optional[bool] = None,
+        verified_gold_aggregate_sha256: Optional[str] = None,
+        validate_formal_gold: bool = False,
     ) -> Path:
-        """使用冻结的 P_E* 离线生成并持久化指定切分的实体预测缓存。"""
+        """使用冻结的 P_E* 离线生成并持久化指定切分的实体预测缓存。
+
+        Formal 门禁：当 ``validate_formal_gold`` 为 True 或调用方传入
+        ``verified_gold_aggregate_sha256`` 时，必须先对 ``gold_dir``
+        重新计算 Gold 完整性，失败则在任何模型调用前抛 RuntimeError。
+        禁止直接“抄”冻结清单自报值冒充验证结果。
+        """
+        # Formal Gold 门禁必须在任何模型调用之前执行。
+        require_formal_gate = bool(validate_formal_gold) or (
+            verified_gold_aggregate_sha256 is not None
+        )
+        if require_formal_gate:
+            from protegi.gold_integrity import verify_frozen_gold_integrity
+
+            _gold_dir = (
+                Path(gold_dir)
+                if gold_dir is not None
+                else (ROOT / "data" / "annotations" / "gold")
+            )
+            _freeze_p = freeze_manifest_path or DEFAULT_FREEZE_MANIFEST
+            ok, message = verify_frozen_gold_integrity(_gold_dir, _freeze_p)
+            if not ok:
+                raise RuntimeError(
+                    f"实体缓存构建前 Gold 完整性校验失败: {message}；"
+                    "已在模型调用前阻断。"
+                )
+            if verified_gold_aggregate_sha256 is not None:
+                fm_check = json.loads(
+                    Path(_freeze_p).read_text(encoding="utf-8")
+                )
+                manifest_gold = fm_check.get("gold_aggregate_sha256")
+                if verified_gold_aggregate_sha256 != manifest_gold:
+                    raise ValueError(
+                        "传入的 verified_gold_aggregate_sha256 与冻结清单不一致，"
+                        "拒绝写入缓存。"
+                    )
         prompt_hash = compute_prompt_hash(final_entity_prompt)
         cache_file = self.cache_dir / f"entity_cache_{split_name}.jsonl"
         manifest_file = self.cache_dir / f"entity_cache_{split_name}_manifest.json"
@@ -115,8 +215,45 @@ class EntityCacheManager:
         boundary_contract_version = boundary_contract_version or b_contract
         dataset_version = dataset_version or d_version
         split_sha256 = split_sha256 or s_hash
-        gold_aggregate_sha256 = gold_aggregate_sha256 or gold_agg
+        # 正式缓存必须使用已验证的 Gold 聚合值，禁止“抄清单”冒充验证。
+        if verified_gold_aggregate_sha256 is not None:
+            gold_aggregate_sha256 = verified_gold_aggregate_sha256
+        else:
+            gold_aggregate_sha256 = gold_aggregate_sha256 or gold_agg
         dataset_freeze_manifest_sha256 = dataset_freeze_manifest_sha256 or freeze_sha
+
+        # 冻结 Task Runtime：显式记录窗口与上下文开关，供晋级时严格比对。
+        if window_chars is not None:
+            window_chars = int(window_chars)
+        else:
+            window_chars = 3000
+        if window_overlap is not None:
+            window_overlap = int(window_overlap)
+        else:
+            window_overlap = 400
+        if not 0 <= window_overlap < window_chars:
+            raise ValueError(
+                f"实体缓存窗口参数非法: window_chars={window_chars}, "
+                f"window_overlap={window_overlap}"
+            )
+        if document_abbreviation_context is None:
+            document_abbreviation_context = bool(
+                any("document_abbreviations" in s for s in samples)
+            )
+        if vulnerability_anchored_backfill is None:
+            vulnerability_anchored_backfill = bool(
+                getattr(evaluator, "vulnerability_anchored_backfill", False)
+            )
+        task_runtime = _build_task_runtime_from_evaluator(
+            evaluator,
+            window_chars=window_chars,
+            window_overlap=window_overlap,
+            document_abbreviation_context=bool(document_abbreviation_context),
+            vulnerability_anchored_backfill=bool(
+                vulnerability_anchored_backfill
+            ),
+            samples=samples,
+        )
 
         texts = [sample["text"] for sample in samples]
         abbreviation_contexts = None
@@ -175,6 +312,13 @@ class EntityCacheManager:
             "entity_prompt_sha256": prompt_hash,
             "prompt_scope": prompt_scope,
             "task_max_workers": getattr(evaluator, "max_workers", None),
+            "window_chars": int(window_chars),
+            "window_overlap": int(window_overlap),
+            "document_abbreviation_context": bool(document_abbreviation_context),
+            "vulnerability_anchored_backfill": bool(
+                vulnerability_anchored_backfill
+            ),
+            "task_runtime": task_runtime,
             "num_samples": len(cached_samples),
             "sample_ids_sha256": _sample_ids_hash(sample_ids),
             "gold_relation_count": gold_relation_count,
@@ -218,6 +362,7 @@ class EntityCacheManager:
         freeze_manifest_path: Optional[Path] = None,
         split_file_path: Optional[Path] = None,
         validate_freeze_binding: bool = True,
+        expected_task_runtime: Optional[dict] = None,
     ) -> List[dict]:
         """加载固化的实体预测缓存，并在哈希不匹配或冻结绑定失效时严格阻断。"""
         cache_file = self.cache_dir / f"entity_cache_{split_name}.jsonl"
@@ -253,6 +398,20 @@ class EntityCacheManager:
                 f"实体缓存任务模型 ({cached_task_model}) 与期望模型 "
                 f"({expected_task_model}) 不一致"
             )
+        if expected_task_runtime is not None:
+            cached_runtime = manifest.get("task_runtime")
+            if not isinstance(cached_runtime, dict):
+                raise ValueError(
+                    f"{split_name} 实体缓存缺少 task_runtime 字段，"
+                    "禁止 fallback 到旧格式；请用新格式重建缓存。"
+                )
+            for field in TASK_RUNTIME_FIELDS:
+                if cached_runtime.get(field) != expected_task_runtime.get(field):
+                    raise ValueError(
+                        f"{split_name} 实体缓存 task_runtime[{field}] "
+                        f"({cached_runtime.get(field)!r}) 与期望冻结值 "
+                        f"({expected_task_runtime.get(field)!r}) 不一致"
+                    )
 
         if validate_freeze_binding:
             freeze_p = freeze_manifest_path or DEFAULT_FREEZE_MANIFEST

@@ -71,6 +71,90 @@ FREEZE_MANIFEST_FILE = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 PROTEGI_FINAL_DIR = EXP_DIR / "results" / "protegi_final"
 PROTEGI_FINAL_ARTIFACT = PROTEGI_FINAL_DIR / "protegi_final_artifact.json"
 
+PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS = (
+    "model",
+    "max_workers",
+    "temperature",
+    "thinking",
+    "reasoning_effort",
+    "top_p",
+    "max_tokens",
+    "window_chars",
+    "window_overlap",
+    "document_abbreviation_context",
+    "vulnerability_anchored_backfill",
+)
+
+
+def _validate_protegi_task_runtime(runtime: object) -> dict:
+    """校验 artifact task_runtime 完整性，缺字段/类型非法一律 hard fail。
+
+    禁止缺字段时 fallback 到当前 API 环境（API_TEMPERATURE 等）。
+    """
+    if not isinstance(runtime, dict):
+        raise ValueError(
+            "ProTeGi 产物缺少 task_runtime 字段，禁止 fallback 到当前 API 环境！"
+        )
+    for field in PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS:
+        if field not in runtime:
+            raise ValueError(
+                f"ProTeGi 产物 task_runtime 缺少必需字段 {field}，"
+                "禁止 fallback 到当前 API 环境！"
+            )
+    model = runtime["model"]
+    max_workers = runtime["max_workers"]
+    temperature = runtime["temperature"]
+    thinking = runtime["thinking"]
+    reasoning_effort = runtime["reasoning_effort"]
+    top_p = runtime["top_p"]
+    max_tokens = runtime["max_tokens"]
+    window_chars = runtime["window_chars"]
+    window_overlap = runtime["window_overlap"]
+    abbrev = runtime["document_abbreviation_context"]
+    backfill = runtime["vulnerability_anchored_backfill"]
+    if not isinstance(model, str) or not model.strip():
+        raise ValueError("ProTeGi 产物 task_runtime.model 必须为非空字符串")
+    if not isinstance(max_workers, int) or isinstance(max_workers, bool):
+        raise ValueError("ProTeGi 产物 task_runtime.max_workers 必须为 int")
+    if not isinstance(temperature, (int, float)) or isinstance(
+        temperature, bool
+    ):
+        raise ValueError("ProTeGi 产物 task_runtime.temperature 类型非法")
+    if not isinstance(thinking, str):
+        raise ValueError("ProTeGi 产物 task_runtime.thinking 必须为字符串")
+    if not isinstance(reasoning_effort, str):
+        raise ValueError(
+            "ProTeGi 产物 task_runtime.reasoning_effort 必须为字符串"
+        )
+    if not isinstance(top_p, (int, float)) or isinstance(top_p, bool):
+        raise ValueError("ProTeGi 产物 task_runtime.top_p 类型非法")
+    if not isinstance(max_tokens, int) or isinstance(max_tokens, bool):
+        raise ValueError("ProTeGi 产物 task_runtime.max_tokens 必须为 int")
+    if not isinstance(window_chars, int) or isinstance(window_chars, bool):
+        raise ValueError("ProTeGi 产物 task_runtime.window_chars 必须为 int")
+    if not isinstance(window_overlap, int) or isinstance(
+        window_overlap, bool
+    ):
+        raise ValueError("ProTeGi 产物 task_runtime.window_overlap 必须为 int")
+    if not isinstance(abbrev, bool):
+        raise ValueError(
+            "ProTeGi 产物 task_runtime.document_abbreviation_context 必须为 bool"
+        )
+    if not isinstance(backfill, bool):
+        raise ValueError(
+            "ProTeGi 产物 task_runtime.vulnerability_anchored_backfill 必须为 bool"
+        )
+    if not max_workers > 0:
+        raise ValueError("ProTeGi 产物 task_runtime.max_workers 必须 > 0")
+    if not window_chars > 0:
+        raise ValueError("ProTeGi 产物 task_runtime.window_chars 必须 > 0")
+    if not 0 <= window_overlap < window_chars:
+        raise ValueError(
+            "ProTeGi 产物 task_runtime 窗口参数非法: "
+            f"window_chars={window_chars}, window_overlap={window_overlap}"
+        )
+    return runtime
+
 _APO_FORBIDDEN_TERMS = (
     "attackpattern",
     "capec",
@@ -647,6 +731,9 @@ def load_protegi_final_artifact(path: Path | str | None = None) -> dict:
         raise ValueError("ProTeGi 产物显示在晋级前接触了 test gold，违反测试隔离红线！")
     if artifact.get("test_predictions_generated") is not False:
         raise ValueError("ProTeGi 产物显示在晋级前已生成 test 预测，违反测试隔离红线！")
+
+    # 校验完整 Task Runtime（禁止缺字段时 fallback 到当前 API 环境）
+    _validate_protegi_task_runtime(artifact.get("task_runtime"))
 
     return artifact
 
@@ -3325,6 +3412,10 @@ def predict_llm_protegi(
     Stage 1: 直接使用 final_entity_prompt.txt (P_E*) 进行实体预测；
     Stage 2: 将 Stage 1 预测实体作为输入，使用 final_relation_prompt.txt (P_R*) 进行关系预测。
     绕开任何 base + guidance 拼接；正式测试阶段不使用开发集实体缓存。
+
+    Final predictor 只能使用 Artifact Frozen Runtime：全部 Task Model 参数、
+    窗口切分与 abbreviation/backfill 逻辑均来自 ``artifact["task_runtime"]``，
+    禁止读取当前环境 ``API_TEMPERATURE/API_THINKING/API_REASONING_EFFORT`` 等。
     """
     artifact = load_protegi_final_artifact(artifact_path)
     entity_path_raw = str(artifact["entity_prompt_path"])
@@ -3336,19 +3427,75 @@ def predict_llm_protegi(
 
     from protegi.evaluator import TaskEvaluator
 
-    task_model = artifact.get("task_model") or API_MODEL
+    runtime = artifact["task_runtime"]
     evaluator = TaskEvaluator(
-        task_model=task_model,
-        task_temperature=API_TEMPERATURE,
-        task_thinking=API_THINKING,
-        task_reasoning_effort=API_REASONING_EFFORT or "none",
+        task_model=runtime["model"],
+        max_workers=runtime["max_workers"],
+        task_temperature=runtime["temperature"],
+        task_thinking=runtime["thinking"],
+        task_reasoning_effort=runtime["reasoning_effort"],
+        task_top_p=runtime["top_p"],
+        task_max_tokens=runtime["max_tokens"],
+        vulnerability_anchored_backfill=runtime[
+            "vulnerability_anchored_backfill"
+        ],
     )
 
-    windows = build_text_windows(text)
-    window_predictions = []
+    windows = build_text_windows(
+        text,
+        max_chars=runtime["window_chars"],
+        overlap=runtime["window_overlap"],
+    )
+
+    # 与优化阶段完全相同的 abbreviation context 逻辑：整篇文档一次性抽取，
+    # 同一上下文拼接到该文档全部窗口的 Stage 1 输入前。
+    abbreviation_pairs: list = []
+    abbreviation_context: str | None = None
+    if runtime["document_abbreviation_context"]:
+        from protegi.document_context import (
+            extract_explicit_abbreviation_pairs,
+            format_abbreviation_context,
+        )
+
+        abbreviation_pairs = extract_explicit_abbreviation_pairs(text)
+        abbreviation_context = format_abbreviation_context(abbreviation_pairs)
+
+    stage1_window_entities: list[list[dict]] = []
     for window in windows:
         win_text = window["text"]
-        pred_entities = evaluator.predict_stage1_window(win_text, entity_prompt)
+        pred_entities = evaluator.predict_stage1_window(
+            win_text,
+            entity_prompt,
+            document_abbreviations=(
+                abbreviation_context
+                if runtime["document_abbreviation_context"]
+                else None
+            ),
+        )
+        stage1_window_entities.append(pred_entities)
+
+    # 与优化阶段完全相同的 vulnerability 锚定回填：按 doc 内窗口分组执行。
+    if runtime["vulnerability_anchored_backfill"]:
+        from protegi.entity_backfill import vulnerability_anchored_backfill
+
+        backfill_samples = []
+        for index, window in enumerate(windows):
+            sample: dict = {
+                "sample_id": f"{doc_id}_w{index}",
+                "doc_id": doc_id,
+                "text": window["text"],
+            }
+            if runtime["document_abbreviation_context"]:
+                sample["document_abbreviations"] = abbreviation_context
+                sample["document_abbreviation_pairs"] = abbreviation_pairs
+            backfill_samples.append(sample)
+        stage1_window_entities = vulnerability_anchored_backfill(
+            backfill_samples, stage1_window_entities, enabled=True
+        )
+
+    window_predictions = []
+    for window, pred_entities in zip(windows, stage1_window_entities):
+        win_text = window["text"]
         pred_relations = evaluator.predict_stage2_window(
             win_text, pred_entities, relation_prompt
         )
@@ -3369,13 +3516,15 @@ def predict_llm_protegi(
             "prompt_scope": artifact.get("prompt_scope"),
             "entity_prompt_sha256": artifact.get("entity_prompt_sha256"),
             "relation_prompt_sha256": artifact.get("relation_prompt_sha256"),
+            "task_runtime": dict(runtime),
         },
         "_resource": {
             "protegi_artifact": str(artifact_file),
             "protegi_artifact_sha256": hashlib.sha256(artifact_file.read_bytes()).hexdigest(),
             "prompt_scope": artifact.get("prompt_scope"),
-            "task_model": task_model,
+            "task_model": runtime["model"],
             "optimizer_model": artifact.get("optimizer_model"),
+            "task_runtime": dict(runtime),
         },
     }
 

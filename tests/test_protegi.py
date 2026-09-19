@@ -1016,6 +1016,19 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
             "entity_prompt_sha256": hashlib.sha256(ent_prompt.read_bytes()).hexdigest(),
             "relation_prompt_path": str(rel_prompt),
             "relation_prompt_sha256": hashlib.sha256(rel_prompt.read_bytes()).hexdigest(),
+            "task_runtime": {
+                "model": "hy3",
+                "max_workers": 8,
+                "temperature": 0.0,
+                "thinking": "disabled",
+                "reasoning_effort": "none",
+                "top_p": 0.95,
+                "max_tokens": 4096,
+                "window_chars": 3000,
+                "window_overlap": 400,
+                "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+            },
             "frozen_for_test": True,
             "formal_eligible": True,
             "test_gold_loaded": False,
@@ -1337,6 +1350,589 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
         self.assertIn("--relation-summary", result.stdout or "")
         self.assertIn("--entity-cache-train-manifest", result.stdout or "")
         self.assertIn("--entity-cache-dev-manifest", result.stdout or "")
+
+
+class TestFormalGoldIntegrity(unittest.TestCase):
+    """Formal 模式必须验证实际 Gold 内容（重算 SHA），修改后在模型调用前 fail。"""
+
+    def _make_mini_freeze(self, tmp: Path, docs: dict[str, str]) -> tuple[Path, Path]:
+        gold_dir = tmp / "gold"
+        gold_dir.mkdir(parents=True, exist_ok=True)
+        doc_hashes: dict[str, str] = {}
+        for doc_id, content in docs.items():
+            payload = json.dumps(
+                {"doc_id": doc_id, "text": content, "entities": [], "relations": []},
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+            path = gold_dir / f"{doc_id}.json"
+            path.write_text(payload, encoding="utf-8")
+            doc_hashes[doc_id] = hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+        aggregate = hashlib.sha256()
+        for doc_id in sorted(doc_hashes):
+            aggregate.update(
+                f"{doc_id}\0{doc_hashes[doc_id]}\n".encode("utf-8")
+            )
+        manifest = {
+            "gold_document_count": len(doc_hashes),
+            "gold_aggregate_sha256": aggregate.hexdigest(),
+            "gold_document_sha256": dict(sorted(doc_hashes.items())),
+        }
+        manifest_path = tmp / "freeze.json"
+        manifest_path.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        return gold_dir, manifest_path
+
+    def test_formal_protegi_rejects_modified_gold_file(self):
+        from protegi.gold_integrity import verify_frozen_gold_integrity
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            gold_dir, manifest = self._make_mini_freeze(
+                tmp, {"docA": "hello world", "docB": "second doc"}
+            )
+            # 篡改其中一篇 Gold 内容（不修改文件名与数量）
+            target = gold_dir / "docA.json"
+            target.write_text(
+                json.dumps(
+                    {"doc_id": "docA", "text": "TAMPERED", "entities": [], "relations": []}
+                ),
+                encoding="utf-8",
+            )
+            ok, msg = verify_frozen_gold_integrity(gold_dir, manifest)
+            self.assertFalse(ok)
+            self.assertIn("docA", msg)
+
+    def test_formal_protegi_rejects_missing_gold_file(self):
+        from protegi.gold_integrity import verify_frozen_gold_integrity
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            gold_dir, manifest = self._make_mini_freeze(
+                tmp, {"docA": "hello", "docB": "world"}
+            )
+            (gold_dir / "docB.json").unlink()
+            ok, msg = verify_frozen_gold_integrity(gold_dir, manifest)
+            self.assertFalse(ok)
+            self.assertIn("缺失", msg)
+
+    def test_formal_protegi_rejects_extra_gold_file(self):
+        from protegi.gold_integrity import verify_frozen_gold_integrity
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            gold_dir, manifest = self._make_mini_freeze(
+                tmp, {"docA": "hello", "docB": "world"}
+            )
+            (gold_dir / "docEXTRA.json").write_text(
+                json.dumps({"doc_id": "docEXTRA"}), encoding="utf-8"
+            )
+            ok, msg = verify_frozen_gold_integrity(gold_dir, manifest)
+            self.assertFalse(ok)
+            self.assertIn("额外", msg)
+
+    def test_formal_protegi_rejects_gold_aggregate_mismatch(self):
+        from protegi.gold_integrity import verify_frozen_gold_integrity
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            gold_dir, manifest = self._make_mini_freeze(
+                tmp, {"docA": "hello", "docB": "world"}
+            )
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            data["gold_aggregate_sha256"] = "0" * 64
+            manifest.write_text(json.dumps(data), encoding="utf-8")
+            ok, msg = verify_frozen_gold_integrity(gold_dir, manifest)
+            self.assertFalse(ok)
+            self.assertIn("聚合哈希", msg)
+
+    def test_formal_cache_build_fails_before_model_call_on_tampered_gold(self):
+        from protegi.entity_cache import EntityCacheManager
+        from protegi.gold_integrity import verify_frozen_gold_integrity
+
+        class CountingEvaluator:
+            max_workers = 8
+            client = type("C", (), {"config": {"model": "hy3"}})()
+            call_count = 0
+
+            def predict_stage1_texts(self, texts, prompt, document_abbreviations=None):
+                type(self).call_count += len(texts)
+                return [[] for _ in texts]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            gold_dir, manifest = self._make_mini_freeze(
+                tmp, {"docA": "hello world", "docB": "second"}
+            )
+            split_file = tmp / "split.json"
+            split_file.write_text(json.dumps({"train": [], "dev": []}), encoding="utf-8")
+            # 篡改 Gold 后，preflight 应先失败，模型调用次数保持 0
+            (gold_dir / "docA.json").write_text(
+                json.dumps({"doc_id": "docA", "text": "TAMPERED"}), encoding="utf-8"
+            )
+            ok, _ = verify_frozen_gold_integrity(gold_dir, manifest)
+            self.assertFalse(ok)
+            evaluator = CountingEvaluator()
+            CountingEvaluator.call_count = 0
+            cache_mgr = EntityCacheManager(tmp / "cache")
+            samples = [
+                {
+                    "sample_id": "docA_w0",
+                    "text": "hello",
+                    "gold_entities": [],
+                    "gold_relations": [],
+                }
+            ]
+            with self.assertRaises(RuntimeError):
+                cache_mgr.build_and_save_cache(
+                    evaluator,
+                    "prompt",
+                    samples,
+                    "train",
+                    gold_dir=gold_dir,
+                    freeze_manifest_path=manifest,
+                    split_file_path=split_file,
+                    validate_formal_gold=True,
+                )
+            self.assertEqual(CountingEvaluator.call_count, 0)
+
+
+class TestProtegiFinalRuntime(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        cls.freeze_manifest = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        cls.split_sha = hashlib.sha256(cls.split_file.read_bytes()).hexdigest()
+        cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
+        fm_data = json.loads(cls.freeze_manifest.read_text(encoding="utf-8"))
+        cls.gold_agg_sha = fm_data["gold_aggregate_sha256"]
+
+    def _valid_artifact(self, tmp: Path) -> tuple[Path, dict]:
+        ent = tmp / "e.txt"
+        ent.write_text("e", encoding="utf-8")
+        rel = tmp / "r.txt"
+        rel.write_text("r", encoding="utf-8")
+        artifact = {
+            "artifact_version": "protegi-final-v1",
+            "schema_version": "chapter3-no-capec-v1",
+            "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+            "boundary_contract_version": "chapter3-boundary-sync-v2",
+            "prompt_scope": "constrained",
+            "split_sha256": self.split_sha,
+            "dataset_freeze_manifest_sha256": self.freeze_sha,
+            "gold_aggregate_sha256": self.gold_agg_sha,
+            "entity_prompt_path": str(ent),
+            "entity_prompt_sha256": hashlib.sha256(ent.read_bytes()).hexdigest(),
+            "relation_prompt_path": str(rel),
+            "relation_prompt_sha256": hashlib.sha256(rel.read_bytes()).hexdigest(),
+            "task_runtime": {
+                "model": "hy3",
+                "max_workers": 8,
+                "temperature": 0.0,
+                "thinking": "disabled",
+                "reasoning_effort": "none",
+                "top_p": 0.95,
+                "max_tokens": 4096,
+                "window_chars": 3000,
+                "window_overlap": 400,
+                "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+            },
+            "frozen_for_test": True,
+            "formal_eligible": True,
+            "test_gold_loaded": False,
+            "test_predictions_generated": False,
+        }
+        path = tmp / "art.json"
+        path.write_text(json.dumps(artifact), encoding="utf-8")
+        return path, artifact
+
+    def test_protegi_artifact_requires_task_runtime(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path, artifact = self._valid_artifact(Path(tmpdir))
+            del artifact["task_runtime"]
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(path)
+            self.assertIn("task_runtime", str(ctx.exception))
+
+    def test_protegi_artifact_rejects_incomplete_task_runtime(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path, artifact = self._valid_artifact(Path(tmpdir))
+            del artifact["task_runtime"]["top_p"]
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(path)
+            self.assertIn("top_p", str(ctx.exception))
+
+    def test_protegi_artifact_rejects_invalid_window_runtime(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path, artifact = self._valid_artifact(Path(tmpdir))
+            artifact["task_runtime"]["window_overlap"] = 3000
+            artifact["task_runtime"]["window_chars"] = 3000
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(path)
+            self.assertIn("window", str(ctx.exception).lower())
+
+    def test_predict_llm_protegi_uses_frozen_task_runtime(self):
+        import llm_methods
+        from protegi import evaluator as evaluator_module
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            path, artifact = self._valid_artifact(tmp)
+            artifact["task_runtime"].update({
+                "temperature": 0.0,
+                "thinking": "disabled",
+                "reasoning_effort": "none",
+                "top_p": 0.95,
+                "max_tokens": 4096,
+                "window_chars": 100,
+                "window_overlap": 10,
+            })
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+
+            captured: dict = {}
+            orig_windows = llm_methods.build_text_windows
+
+            def spy_windows(text, max_chars=3000, overlap=400, **kwargs):
+                captured["window_chars"] = max_chars
+                captured["window_overlap"] = overlap
+                return orig_windows(text, max_chars=max_chars, overlap=overlap, **kwargs)
+
+            class SpyEvaluator:
+                def __init__(self, **kwargs):
+                    captured.update(kwargs)
+                    self.max_workers = kwargs.get("max_workers", 8)
+                    self.vulnerability_anchored_backfill = kwargs.get(
+                        "vulnerability_anchored_backfill", False
+                    )
+
+                def predict_stage1_window(self, text, prompt, document_abbreviations=None):
+                    return []
+
+                def predict_stage2_window(self, text, entities, prompt):
+                    return []
+
+            orig_evaluator = evaluator_module.TaskEvaluator
+            orig_windows_fn = llm_methods.build_text_windows
+            llm_methods.build_text_windows = spy_windows
+            evaluator_module.TaskEvaluator = SpyEvaluator
+            try:
+                llm_methods.predict_llm_protegi("short text", "docX", artifact_path=path)
+            finally:
+                llm_methods.build_text_windows = orig_windows_fn
+                evaluator_module.TaskEvaluator = orig_evaluator
+            self.assertEqual(captured.get("task_model"), "hy3")
+            self.assertEqual(captured.get("task_temperature"), 0.0)
+            self.assertEqual(captured.get("task_thinking"), "disabled")
+            self.assertEqual(captured.get("task_reasoning_effort"), "none")
+            self.assertEqual(captured.get("window_chars"), 100)
+            self.assertEqual(captured.get("window_overlap"), 10)
+
+    def test_predict_llm_protegi_does_not_use_environment_runtime(self):
+        import llm_methods
+        from protegi import evaluator as evaluator_module
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            path, artifact = self._valid_artifact(tmp)
+            artifact["task_runtime"].update({
+                "temperature": 0.0,
+                "thinking": "disabled",
+                "reasoning_effort": "none",
+            })
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+
+            captured: dict = {}
+            orig_temp = llm_methods.API_TEMPERATURE
+            orig_thinking = llm_methods.API_THINKING
+            orig_effort = llm_methods.API_REASONING_EFFORT
+            llm_methods.API_TEMPERATURE = 0.99
+            llm_methods.API_THINKING = "enabled"
+            llm_methods.API_REASONING_EFFORT = "high"
+
+            class SpyEvaluator:
+                def __init__(self, **kwargs):
+                    captured.update(kwargs)
+                    self.max_workers = kwargs.get("max_workers", 8)
+                    self.vulnerability_anchored_backfill = kwargs.get(
+                        "vulnerability_anchored_backfill", False
+                    )
+
+                def predict_stage1_window(self, text, prompt, document_abbreviations=None):
+                    return []
+
+                def predict_stage2_window(self, text, entities, prompt):
+                    return []
+
+            orig_evaluator = evaluator_module.TaskEvaluator
+            evaluator_module.TaskEvaluator = SpyEvaluator
+            try:
+                llm_methods.predict_llm_protegi("text", "docY", artifact_path=path)
+            finally:
+                evaluator_module.TaskEvaluator = orig_evaluator
+                llm_methods.API_TEMPERATURE = orig_temp
+                llm_methods.API_THINKING = orig_thinking
+                llm_methods.API_REASONING_EFFORT = orig_effort
+            self.assertEqual(captured.get("task_temperature"), 0.0)
+            self.assertEqual(captured.get("task_thinking"), "disabled")
+            self.assertEqual(captured.get("task_reasoning_effort"), "none")
+            self.assertNotEqual(captured.get("task_temperature"), 0.99)
+
+
+class TestPromoteProvenance(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        cls.freeze_manifest = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        cls.split_sha = hashlib.sha256(cls.split_file.read_bytes()).hexdigest()
+        cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
+        fm_data = json.loads(cls.freeze_manifest.read_text(encoding="utf-8"))
+        cls.gold_agg_sha = fm_data["gold_aggregate_sha256"]
+
+    def _write_prompts(self, tmp: Path):
+        from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
+
+        ent = tmp / "final_entity_prompt.txt"
+        rel = tmp / "final_relation_prompt.txt"
+        ent.write_text(ENTITY_PROMPT_P0, encoding="utf-8")
+        rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
+        return ent, rel
+
+    def _task_config(self, **overrides):
+        cfg = {
+            "task_model": "hy3",
+            "task_max_workers": 8,
+            "task_temperature": 0.0,
+            "task_thinking": "disabled",
+            "task_reasoning_effort": "none",
+            "task_top_p": 0.95,
+            "task_max_tokens": 4096,
+            "optimizer_model": "muse-spark-1.3-contributor",
+            "window_chars": 3000,
+            "window_overlap": 400,
+            "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+        }
+        cfg.update(overrides)
+        return cfg
+
+    def _make_valid_promote_fixture(self, tmp: Path):
+        from protegi.entity_cache import compute_prompt_hash
+
+        ent_path, rel_path = self._write_prompts(tmp)
+        ent_text = ent_path.read_text(encoding="utf-8")
+        rel_text = rel_path.read_text(encoding="utf-8")
+        ent_raw = hashlib.sha256(ent_path.read_bytes()).hexdigest()
+        rel_raw = hashlib.sha256(rel_path.read_bytes()).hexdigest()
+        config_hash = hashlib.sha256(b"formal-config").hexdigest()
+        base_bind = {
+            "split_file_sha256_raw_bytes": self.split_sha,
+            "dataset_freeze_manifest_sha256_raw_bytes": self.freeze_sha,
+            "config_file_sha256_raw_bytes": config_hash,
+        }
+        ent_summary = {
+            "stage": "entity",
+            "method": "protegi",
+            "prompt_scope": "constrained",
+            "experiment_pair_id": "protegi-prompt-scope-v1",
+            "formal_eligible": True,
+            "dry_run": False,
+            "winner_prompt_sha256": compute_prompt_hash(ent_text),
+            "winner_prompt_sha256_raw_bytes": ent_raw,
+            "config": self._task_config(),
+            "input_bindings": dict(base_bind),
+        }
+        rel_summary = {
+            "stage": "relation",
+            "method": "protegi",
+            "prompt_scope": "constrained",
+            "experiment_pair_id": "protegi-prompt-scope-v1",
+            "formal_eligible": True,
+            "dry_run": False,
+            "winner_prompt_sha256": compute_prompt_hash(rel_text),
+            "winner_prompt_sha256_raw_bytes": rel_raw,
+            "config": self._task_config(),
+            "input_bindings": dict(base_bind),
+        }
+        ent_summary_path = tmp / "entity_summary.json"
+        rel_summary_path = tmp / "relation_summary.json"
+        ent_summary_path.write_text(
+            json.dumps(ent_summary, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        rel_summary_path.write_text(
+            json.dumps(rel_summary, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        task_runtime = {
+            "model": "hy3",
+            "max_workers": 8,
+            "temperature": 0.0,
+            "thinking": "disabled",
+            "reasoning_effort": "none",
+            "top_p": 0.95,
+            "max_tokens": 4096,
+            "window_chars": 3000,
+            "window_overlap": 400,
+            "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+        }
+        for name in ("train", "dev"):
+            manifest = {
+                "split_name": name,
+                "entity_prompt_sha256": ent_raw,
+                "prompt_scope": "constrained",
+                "task_max_workers": 8,
+                "window_chars": 3000,
+                "window_overlap": 400,
+                "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+                "task_runtime": dict(task_runtime),
+                "schema_version": "chapter3-no-capec-v1",
+                "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                "boundary_contract_version": "chapter3-boundary-sync-v2",
+                "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                "split_sha256": self.split_sha,
+                "gold_aggregate_sha256": self.gold_agg_sha,
+                "dataset_freeze_manifest_sha256": self.freeze_sha,
+            }
+            (tmp / f"{name}_manifest.json").write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+        return {
+            "entity_prompt": ent_path,
+            "relation_prompt": rel_path,
+            "entity_summary": ent_summary_path,
+            "relation_summary": rel_summary_path,
+            "train_manifest": tmp / "train_manifest.json",
+            "dev_manifest": tmp / "dev_manifest.json",
+            "output": tmp / "artifact.json",
+        }
+
+    def _promote(self, paths: dict):
+        from promote_protegi_v6 import promote_protegi
+
+        return promote_protegi(
+            entity_prompt_path=paths["entity_prompt"],
+            relation_prompt_path=paths["relation_prompt"],
+            entity_summary_path=paths["entity_summary"],
+            relation_summary_path=paths["relation_summary"],
+            entity_cache_train_manifest_path=paths["train_manifest"],
+            entity_cache_dev_manifest_path=paths["dev_manifest"],
+            prompt_scope="constrained",
+            output_artifact_path=paths["output"],
+        )
+
+    def _tweak_guidance_valid(self, prompt_text: str) -> str:
+        from protegi.prompts_p0 import replace_optimizable_guidance
+
+        current = prompt_text
+        # 追加一句合法的执行策略，不触碰冻结契约与禁用模式。
+        from protegi.prompts_p0 import extract_optimizable_guidance
+
+        guidance = extract_optimizable_guidance(prompt_text) or ""
+        return replace_optimizable_guidance(
+            current, guidance + " Verify each span against the source text."
+        )
+
+    def test_promote_rejects_entity_prompt_not_matching_summary_winner(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            tampered = self._tweak_guidance_valid(
+                paths["entity_prompt"].read_text(encoding="utf-8")
+            )
+            paths["entity_prompt"].write_text(tampered, encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn(
+                "final prompt does not match summary winner", str(ctx.exception)
+            )
+
+    def test_promote_rejects_relation_prompt_not_matching_summary_winner(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            tampered = self._tweak_guidance_valid(
+                paths["relation_prompt"].read_text(encoding="utf-8")
+            )
+            # relation guidance 同样追加合法策略，保持契约通过但哈希失配。
+            paths["relation_prompt"].write_text(tampered, encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn(
+                "final prompt does not match summary winner", str(ctx.exception)
+            )
+
+    def test_promote_rejects_stage_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["entity_summary"].read_text(encoding="utf-8"))
+            data["stage"] = "relation"
+            paths["entity_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("stage", str(ctx.exception).lower())
+
+    def test_promote_rejects_prompt_scope_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            data["prompt_scope"] = "unconstrained"
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("prompt_scope", str(ctx.exception))
+
+    def test_promote_rejects_experiment_pair_id_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            data["experiment_pair_id"] = "different-pair"
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("experiment_pair_id", str(ctx.exception))
+
+    def test_promote_rejects_summary_split_hash_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["entity_summary"].read_text(encoding="utf-8"))
+            data["input_bindings"]["split_file_sha256_raw_bytes"] = "0" * 64
+            paths["entity_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("split_file_sha256", str(ctx.exception))
+
+    def test_promote_rejects_summary_freeze_hash_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            data["input_bindings"][
+                "dataset_freeze_manifest_sha256_raw_bytes"
+            ] = "0" * 64
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("dataset_freeze_manifest_sha256", str(ctx.exception))
+
+    def test_promote_rejects_task_runtime_mismatch_between_stages(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            data["config"]["task_temperature"] = 0.7
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("Task Runtime", str(ctx.exception))
 
 
 if __name__ == "__main__":
