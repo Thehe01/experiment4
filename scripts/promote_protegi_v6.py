@@ -37,7 +37,8 @@ from schema import (
     SCHEMA_VERSION,
 )
 from protegi.contract_validator import PromptContractValidator
-from protegi.entity_cache import TASK_RUNTIME_FIELDS, compute_prompt_hash
+from protegi.entity_cache import compute_prompt_hash
+from protegi.runtime_contract import TASK_RUNTIME_FIELDS, validate_task_runtime
 
 DEFAULT_FREEZE_MANIFEST = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 DEFAULT_SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
@@ -61,13 +62,41 @@ _MISSING = object()
 
 
 def _extract_task_runtime(summary: dict, label: str) -> dict:
-    """从单个 Stage summary 的 config/runtime 中提取完整 Task Runtime（11 字段）。
+    """从单个 Stage summary 的 recorded effective runtime 提取完整 Task Runtime。
 
-    值必须来源于被 promotion 的 summary/config，禁止使用当前机器环境。
-    window/abbreviation/backfill 未显式声明时沿用优化器默认值
-    （3000/400/False/False），但仍需两阶段一致。
+    正式 artifact 只能冻结“运行时实际记录下来的 runtime”，而不是 promotion
+    第二次推导出来的 runtime。因此优先读取
+    ``summary["config"]["effective_task_runtime"]`` 并要求 11 字段齐全。
+    formal_eligible=true 的新 ProTeGi summary 缺失该字段即 hard fail；
+    仅非 formal 历史产物才允许走旧推导路径（测试 fixture 按需更新）。
     """
     config = summary.get("config", {}) or {}
+    effective = config.get("effective_task_runtime")
+    if effective is not None:
+        validate_task_runtime(effective, label=f"{label} effective_task_runtime")
+        return {
+            "model": str(effective["model"]),
+            "max_workers": int(effective["max_workers"]),
+            "temperature": float(effective["temperature"]),
+            "thinking": str(effective["thinking"]).strip().lower(),
+            "reasoning_effort": str(effective["reasoning_effort"]).strip().lower(),
+            "top_p": float(effective["top_p"]),
+            "max_tokens": int(effective["max_tokens"]),
+            "window_chars": int(effective["window_chars"]),
+            "window_overlap": int(effective["window_overlap"]),
+            "document_abbreviation_context": bool(
+                effective["document_abbreviation_context"]
+            ),
+            "vulnerability_anchored_backfill": bool(
+                effective["vulnerability_anchored_backfill"]
+            ),
+        }
+    if summary.get("formal_eligible") is True:
+        raise ValueError(
+            f"{label} summary 缺少 config.effective_task_runtime 字段；"
+            "正式 artifact 只能使用运行时记录的 effective runtime，"
+            "禁止 promotion 重新推导默认值！"
+        )
     runtime = summary.get("runtime", {}) or {}
     task_client_cfg = runtime.get("task_client", {}) or {}
     runtime_max_workers = runtime.get("task_max_workers")
@@ -334,12 +363,20 @@ def promote_protegi(
     rel_canonical = compute_prompt_hash(relation_prompt_text)
     ent_winner_canonical = entity_summary.get("winner_prompt_sha256")
     rel_winner_canonical = relation_summary.get("winner_prompt_sha256")
-    if ent_winner_canonical and ent_canonical != ent_winner_canonical:
+    if not ent_winner_canonical:
+        raise ValueError(
+            "Stage 1 summary 缺少 winner_prompt_sha256（canonical hash 为强制字段）"
+        )
+    if ent_canonical != ent_winner_canonical:
         raise ValueError(
             "final prompt does not match summary winner (entity canonical): "
             f"final={ent_canonical} winner={ent_winner_canonical}"
         )
-    if rel_winner_canonical and rel_canonical != rel_winner_canonical:
+    if not rel_winner_canonical:
+        raise ValueError(
+            "Stage 2 summary 缺少 winner_prompt_sha256（canonical hash 为强制字段）"
+        )
+    if rel_canonical != rel_winner_canonical:
         raise ValueError(
             "final prompt does not match summary winner (relation canonical): "
             f"final={rel_canonical} winner={rel_winner_canonical}"

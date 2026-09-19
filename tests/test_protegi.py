@@ -1726,6 +1726,19 @@ class TestPromoteProvenance(unittest.TestCase):
             "vulnerability_anchored_backfill": False,
         }
         cfg.update(overrides)
+        cfg["effective_task_runtime"] = {
+            "model": cfg["task_model"],
+            "max_workers": cfg["task_max_workers"],
+            "temperature": cfg["task_temperature"],
+            "thinking": cfg["task_thinking"],
+            "reasoning_effort": cfg["task_reasoning_effort"],
+            "top_p": cfg["task_top_p"],
+            "max_tokens": cfg["task_max_tokens"],
+            "window_chars": cfg["window_chars"],
+            "window_overlap": cfg["window_overlap"],
+            "document_abbreviation_context": cfg["document_abbreviation_context"],
+            "vulnerability_anchored_backfill": cfg["vulnerability_anchored_backfill"],
+        }
         return cfg
 
     def _make_valid_promote_fixture(self, tmp: Path):
@@ -1929,10 +1942,685 @@ class TestPromoteProvenance(unittest.TestCase):
             paths = self._make_valid_promote_fixture(Path(tmpdir))
             data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
             data["config"]["task_temperature"] = 0.7
+            data["config"]["effective_task_runtime"]["temperature"] = 0.7
             paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaises(ValueError) as ctx:
                 self._promote(paths)
             self.assertIn("Task Runtime", str(ctx.exception))
+
+
+    def test_promote_rejects_task_runtime_mismatch_between_stages(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            data["config"]["task_temperature"] = 0.7
+            data["config"]["effective_task_runtime"]["temperature"] = 0.7
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("Task Runtime", str(ctx.exception))
+
+
+class TestAllowCustomSplitNeverFormal(unittest.TestCase):
+    def test_allow_custom_split_is_never_formal_eligible(self):
+        from run_protegi import compute_formal_eligibility
+
+        # canonical 路径 + flag：仍必须 non-formal（无模型调用的纯函数断言）
+        self.assertFalse(
+            compute_formal_eligibility(dry_run=False, allow_custom_split=True)
+        )
+        self.assertFalse(
+            compute_formal_eligibility(dry_run=True, allow_custom_split=False)
+        )
+        self.assertFalse(
+            compute_formal_eligibility(dry_run=True, allow_custom_split=True)
+        )
+        self.assertTrue(
+            compute_formal_eligibility(dry_run=False, allow_custom_split=False)
+        )
+
+    def test_allow_custom_split_skips_formal_promotion_eligibility_even_when_paths_match(self):
+        from promote_protegi_v6 import promote_protegi
+        from protegi.entity_cache import compute_prompt_hash
+        from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
+
+        split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        freeze_file = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        split_sha = hashlib.sha256(split_file.read_bytes()).hexdigest()
+        freeze_sha = hashlib.sha256(freeze_file.read_bytes()).hexdigest()
+        fm = json.loads(freeze_file.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            ent = tmp / "final_entity_prompt.txt"
+            rel = tmp / "final_relation_prompt.txt"
+            ent.write_text(ENTITY_PROMPT_P0, encoding="utf-8")
+            rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
+            ent_text = ent.read_text(encoding="utf-8")
+            rel_text = rel.read_text(encoding="utf-8")
+            bind = {
+                "split_file_sha256_raw_bytes": split_sha,
+                "dataset_freeze_manifest_sha256_raw_bytes": freeze_sha,
+                "config_file_sha256_raw_bytes": hashlib.sha256(b"c").hexdigest(),
+            }
+            eff = {
+                "model": "hy3", "max_workers": 8, "temperature": 0.0,
+                "thinking": "disabled", "reasoning_effort": "none",
+                "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
+                "window_overlap": 400, "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+            }
+            # 即使路径全是 canonical，custom run 的 summary 仍 formal_eligible=false
+            ent_sum = {
+                "stage": "entity", "prompt_scope": "constrained",
+                "experiment_pair_id": "protegi-prompt-scope-v1",
+                "formal_eligible": False, "dry_run": False,
+                "winner_prompt_sha256": compute_prompt_hash(ent_text),
+                "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                    ent.read_bytes()
+                ).hexdigest(),
+                "config": {
+                    "task_model": "hy3", "task_max_workers": 8,
+                    "task_temperature": 0.0, "task_thinking": "disabled",
+                    "task_reasoning_effort": "none", "task_top_p": 0.95,
+                    "task_max_tokens": 4096, "effective_task_runtime": dict(eff),
+                },
+                "input_bindings": dict(bind),
+            }
+            rel_sum = {
+                "stage": "relation", "prompt_scope": "constrained",
+                "experiment_pair_id": "protegi-prompt-scope-v1",
+                "formal_eligible": False, "dry_run": False,
+                "winner_prompt_sha256": compute_prompt_hash(rel_text),
+                "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                    rel.read_bytes()
+                ).hexdigest(),
+                "config": {
+                    "task_model": "hy3", "task_max_workers": 8,
+                    "task_temperature": 0.0, "task_thinking": "disabled",
+                    "task_reasoning_effort": "none", "task_top_p": 0.95,
+                    "task_max_tokens": 4096, "effective_task_runtime": dict(eff),
+                },
+                "input_bindings": dict(bind),
+            }
+            ent_sum_p = tmp / "ent_sum.json"
+            rel_sum_p = tmp / "rel_sum.json"
+            ent_sum_p.write_text(json.dumps(ent_sum), encoding="utf-8")
+            rel_sum_p.write_text(json.dumps(rel_sum), encoding="utf-8")
+            cache_rt = dict(eff)
+            for name in ("train", "dev"):
+                (tmp / f"{name}_m.json").write_text(
+                    json.dumps({
+                        "split_name": name,
+                        "entity_prompt_sha256": hashlib.sha256(
+                            ent.read_bytes()
+                        ).hexdigest(),
+                        "prompt_scope": "constrained", "task_max_workers": 8,
+                        "window_chars": 3000, "window_overlap": 400,
+                        "document_abbreviation_context": False,
+                        "vulnerability_anchored_backfill": False,
+                        "task_runtime": cache_rt,
+                        "schema_version": "chapter3-no-capec-v1",
+                        "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                        "boundary_contract_version": "chapter3-boundary-sync-v2",
+                        "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                        "split_sha256": split_sha,
+                        "gold_aggregate_sha256": fm["gold_aggregate_sha256"],
+                        "dataset_freeze_manifest_sha256": freeze_sha,
+                    }),
+                    encoding="utf-8",
+                )
+            with self.assertRaises(ValueError) as ctx:
+                promote_protegi(
+                    entity_prompt_path=ent, relation_prompt_path=rel,
+                    entity_summary_path=ent_sum_p,
+                    relation_summary_path=rel_sum_p,
+                    entity_cache_train_manifest_path=tmp / "train_m.json",
+                    entity_cache_dev_manifest_path=tmp / "dev_m.json",
+                    prompt_scope="constrained",
+                    output_artifact_path=tmp / "art.json",
+                )
+            self.assertIn("formal_eligible", str(ctx.exception))
+
+
+class TestEntityCacheBackfillExecution(unittest.TestCase):
+    def _samples(self):
+        return [
+            {
+                "sample_id": "docA_w0", "doc_id": "docA",
+                "text": "CVE-2021-1234 affects Exchange today.",
+                "gold_entities": [], "gold_relations": [],
+            },
+            {
+                "sample_id": "docA_w1", "doc_id": "docA",
+                "text": "CVE-2021-1234 affects Exchange again.",
+                "gold_entities": [], "gold_relations": [],
+            },
+        ]
+
+    def _evaluator(self):
+        class FakeEvaluator:
+            max_workers = 8
+            vulnerability_anchored_backfill = False
+            client = type("C", (), {"config": {
+                "model": "hy3", "temperature": 0.0, "thinking": "disabled",
+                "reasoning_effort": "none", "top_p": 0.95, "max_tokens": 4096,
+            }})()
+
+            def predict_stage1_texts(self, texts, prompt, document_abbreviations=None):
+                return [[] for _ in texts]
+
+        return FakeEvaluator()
+
+    def test_entity_cache_executes_backfill_when_runtime_true(self):
+        import protegi.entity_backfill as bf_module
+        from protegi.entity_cache import EntityCacheManager
+
+        calls = {"n": 0}
+        orig = bf_module.vulnerability_anchored_backfill
+
+        def spy(samples, predictions, enabled=True):
+            calls["n"] += 1
+            return orig(samples, predictions, enabled=enabled)
+
+        bf_module.vulnerability_anchored_backfill = spy
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                mgr = EntityCacheManager(Path(tmpdir) / "c1")
+                mgr.build_and_save_cache(
+                    self._evaluator(), "p", self._samples(), "train",
+                    prompt_scope="constrained",
+                    freeze_manifest_path=Path(tmpdir) / "no_freeze.json",
+                    split_file_path=Path(tmpdir) / "no_split.json",
+                    schema_version="chapter3-no-capec-v1",
+                    annotation_protocol_version="4.6-mcpu-mention-fact-dual-layer-v1",
+                    boundary_contract_version="chapter3-boundary-sync-v2",
+                    dataset_version="v6-v5-gold-v9-mcpu-v2",
+                    gold_aggregate_sha256="x", split_sha256="y",
+                    dataset_freeze_manifest_sha256="z",
+                    window_chars=3000, window_overlap=400,
+                    document_abbreviation_context=False,
+                    vulnerability_anchored_backfill=True,
+                )
+        finally:
+            bf_module.vulnerability_anchored_backfill = orig
+        self.assertEqual(calls["n"], 1)
+
+    def test_entity_cache_does_not_execute_backfill_when_runtime_false(self):
+        import protegi.entity_backfill as bf_module
+        from protegi.entity_cache import EntityCacheManager
+
+        calls = {"n": 0}
+        orig = bf_module.vulnerability_anchored_backfill
+
+        def spy(samples, predictions, enabled=True):
+            calls["n"] += 1
+            return orig(samples, predictions, enabled=enabled)
+
+        bf_module.vulnerability_anchored_backfill = spy
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                mgr = EntityCacheManager(Path(tmpdir) / "c2")
+                mgr.build_and_save_cache(
+                    self._evaluator(), "p", self._samples(), "train",
+                    prompt_scope="constrained",
+                    freeze_manifest_path=Path(tmpdir) / "no_freeze.json",
+                    split_file_path=Path(tmpdir) / "no_split.json",
+                    schema_version="chapter3-no-capec-v1",
+                    annotation_protocol_version="4.6-mcpu-mention-fact-dual-layer-v1",
+                    boundary_contract_version="chapter3-boundary-sync-v2",
+                    dataset_version="v6-v5-gold-v9-mcpu-v2",
+                    gold_aggregate_sha256="x", split_sha256="y",
+                    dataset_freeze_manifest_sha256="z",
+                    window_chars=3000, window_overlap=400,
+                    document_abbreviation_context=False,
+                    vulnerability_anchored_backfill=False,
+                )
+        finally:
+            bf_module.vulnerability_anchored_backfill = orig
+        self.assertEqual(calls["n"], 0)
+
+    def test_entity_cache_manifest_backfill_matches_actual_execution(self):
+        import protegi.entity_backfill as bf_module
+        from protegi.entity_cache import EntityCacheManager
+
+        for flag, expect_calls in ((True, 1), (False, 0)):
+            calls = {"n": 0}
+            orig = bf_module.vulnerability_anchored_backfill
+
+            def spy(samples, predictions, enabled=True):
+                calls["n"] += 1
+                return orig(samples, predictions, enabled=enabled)
+
+            bf_module.vulnerability_anchored_backfill = spy
+            try:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    tmp = Path(tmpdir)
+                    mgr = EntityCacheManager(tmp / "c")
+                    mgr.build_and_save_cache(
+                        self._evaluator(), "p", self._samples(), "train",
+                        prompt_scope="constrained",
+                        freeze_manifest_path=tmp / "no_freeze.json",
+                        split_file_path=tmp / "no_split.json",
+                        schema_version="chapter3-no-capec-v1",
+                        annotation_protocol_version="4.6-mcpu-mention-fact-dual-layer-v1",
+                        boundary_contract_version="chapter3-boundary-sync-v2",
+                        dataset_version="v6-v5-gold-v9-mcpu-v2",
+                        gold_aggregate_sha256="x", split_sha256="y",
+                        dataset_freeze_manifest_sha256="z",
+                        window_chars=3000, window_overlap=400,
+                        document_abbreviation_context=False,
+                        vulnerability_anchored_backfill=flag,
+                    )
+                    manifest = json.loads(
+                        (tmp / "c" / "entity_cache_train_manifest.json").read_text(
+                            encoding="utf-8"
+                        )
+                    )
+            finally:
+                bf_module.vulnerability_anchored_backfill = orig
+            self.assertEqual(calls["n"], expect_calls)
+            self.assertEqual(
+                manifest["vulnerability_anchored_backfill"], flag
+            )
+            self.assertEqual(
+                manifest["task_runtime"]["vulnerability_anchored_backfill"], flag
+            )
+
+
+class TestPromoteCanonicalHashRequired(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        cls.freeze_manifest = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        cls.split_sha = hashlib.sha256(cls.split_file.read_bytes()).hexdigest()
+        cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
+        cls.gold_agg = json.loads(
+            cls.freeze_manifest.read_text(encoding="utf-8")
+        )["gold_aggregate_sha256"]
+
+    def _fixture(self, tmp: Path):
+        from protegi.entity_cache import compute_prompt_hash
+        from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
+
+        ent = tmp / "final_entity_prompt.txt"
+        rel = tmp / "final_relation_prompt.txt"
+        ent.write_text(ENTITY_PROMPT_P0, encoding="utf-8")
+        rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
+        eff = {
+            "model": "hy3", "max_workers": 8, "temperature": 0.0,
+            "thinking": "disabled", "reasoning_effort": "none",
+            "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
+            "window_overlap": 400, "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+        }
+        bind = {
+            "split_file_sha256_raw_bytes": self.split_sha,
+            "dataset_freeze_manifest_sha256_raw_bytes": self.freeze_sha,
+            "config_file_sha256_raw_bytes": hashlib.sha256(b"c").hexdigest(),
+        }
+        base_cfg = {
+            "task_model": "hy3", "task_max_workers": 8, "task_temperature": 0.0,
+            "task_thinking": "disabled", "task_reasoning_effort": "none",
+            "task_top_p": 0.95, "task_max_tokens": 4096,
+            "window_chars": 3000, "window_overlap": 400,
+            "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+            "effective_task_runtime": dict(eff),
+        }
+        ent_sum = {
+            "stage": "entity", "prompt_scope": "constrained",
+            "experiment_pair_id": "protegi-prompt-scope-v1",
+            "formal_eligible": True, "dry_run": False,
+            "winner_prompt_sha256": compute_prompt_hash(
+                ent.read_text(encoding="utf-8")
+            ),
+            "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                ent.read_bytes()
+            ).hexdigest(),
+            "config": dict(base_cfg), "input_bindings": dict(bind),
+        }
+        rel_sum = {
+            "stage": "relation", "prompt_scope": "constrained",
+            "experiment_pair_id": "protegi-prompt-scope-v1",
+            "formal_eligible": True, "dry_run": False,
+            "winner_prompt_sha256": compute_prompt_hash(
+                rel.read_text(encoding="utf-8")
+            ),
+            "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                rel.read_bytes()
+            ).hexdigest(),
+            "config": dict(base_cfg), "input_bindings": dict(bind),
+        }
+        ent_p = tmp / "ent_sum.json"
+        rel_p = tmp / "rel_sum.json"
+        ent_p.write_text(json.dumps(ent_sum), encoding="utf-8")
+        rel_p.write_text(json.dumps(rel_sum), encoding="utf-8")
+        for name in ("train", "dev"):
+            (tmp / f"{name}_m.json").write_text(
+                json.dumps({
+                    "split_name": name,
+                    "entity_prompt_sha256": hashlib.sha256(
+                        ent.read_bytes()
+                    ).hexdigest(),
+                    "prompt_scope": "constrained", "task_max_workers": 8,
+                    "window_chars": 3000, "window_overlap": 400,
+                    "document_abbreviation_context": False,
+                    "vulnerability_anchored_backfill": False,
+                    "task_runtime": dict(eff),
+                    "schema_version": "chapter3-no-capec-v1",
+                    "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                    "boundary_contract_version": "chapter3-boundary-sync-v2",
+                    "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                    "split_sha256": self.split_sha,
+                    "gold_aggregate_sha256": self.gold_agg,
+                    "dataset_freeze_manifest_sha256": self.freeze_sha,
+                }),
+                encoding="utf-8",
+            )
+        return {
+            "entity_prompt": ent, "relation_prompt": rel,
+            "entity_summary": ent_p, "relation_summary": rel_p,
+            "train_manifest": tmp / "train_m.json",
+            "dev_manifest": tmp / "dev_m.json",
+            "output": tmp / "art.json",
+        }
+
+    def _promote(self, paths: dict):
+        from promote_protegi_v6 import promote_protegi
+
+        return promote_protegi(
+            entity_prompt_path=paths["entity_prompt"],
+            relation_prompt_path=paths["relation_prompt"],
+            entity_summary_path=paths["entity_summary"],
+            relation_summary_path=paths["relation_summary"],
+            entity_cache_train_manifest_path=paths["train_manifest"],
+            entity_cache_dev_manifest_path=paths["dev_manifest"],
+            prompt_scope="constrained",
+            output_artifact_path=paths["output"],
+        )
+
+    def test_promote_rejects_missing_entity_winner_canonical_hash(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._fixture(Path(tmpdir))
+            data = json.loads(paths["entity_summary"].read_text(encoding="utf-8"))
+            del data["winner_prompt_sha256"]
+            paths["entity_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("winner_prompt_sha256", str(ctx.exception))
+
+    def test_promote_rejects_missing_relation_winner_canonical_hash(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            del data["winner_prompt_sha256"]
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("winner_prompt_sha256", str(ctx.exception))
+
+
+class TestEffectiveRuntime(unittest.TestCase):
+    def test_run_protegi_records_effective_task_runtime(self):
+        import yaml
+        from run_protegi import normalize_config_with_effective_runtime
+
+        cfg_path = (
+            V6_ROOT / "protegi" / "configs"
+            / "protegi_formal_constrained_muse.yaml"
+        )
+        config = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
+        out = normalize_config_with_effective_runtime(dict(config))
+        self.assertIn("effective_task_runtime", out)
+        eff = out["effective_task_runtime"]
+        self.assertEqual(eff["model"], "hy3")
+        self.assertEqual(eff["max_workers"], 8)
+        self.assertEqual(eff["window_chars"], 3000)
+        self.assertEqual(eff["window_overlap"], 400)
+
+    def test_effective_runtime_contains_all_required_fields(self):
+        import yaml
+        from protegi.runtime_contract import TASK_RUNTIME_FIELDS
+        from run_protegi import normalize_config_with_effective_runtime
+
+        cfg_path = (
+            V6_ROOT / "protegi" / "configs"
+            / "protegi_formal_constrained_muse.yaml"
+        )
+        config = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
+        out = normalize_config_with_effective_runtime(dict(config))
+        self.assertEqual(
+            set(out["effective_task_runtime"].keys()), set(TASK_RUNTIME_FIELDS)
+        )
+
+    def test_promote_uses_recorded_effective_runtime(self):
+        from protegi.entity_cache import compute_prompt_hash
+        from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
+        from promote_protegi_v6 import promote_protegi
+
+        split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        freeze_file = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        split_sha = hashlib.sha256(split_file.read_bytes()).hexdigest()
+        freeze_sha = hashlib.sha256(freeze_file.read_bytes()).hexdigest()
+        gold_agg = json.loads(freeze_file.read_text(encoding="utf-8"))[
+            "gold_aggregate_sha256"
+        ]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            ent = tmp / "final_entity_prompt.txt"
+            rel = tmp / "final_relation_prompt.txt"
+            ent.write_text(ENTITY_PROMPT_P0, encoding="utf-8")
+            rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
+            # recorded effective 一致（0.0），顶层 task_temperature 故意分歧：
+            # 若 promotion 用重推导会误判，用 recorded 则应通过。
+            eff = {
+                "model": "hy3", "max_workers": 8, "temperature": 0.0,
+                "thinking": "disabled", "reasoning_effort": "none",
+                "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
+                "window_overlap": 400, "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+            }
+            bind = {
+                "split_file_sha256_raw_bytes": split_sha,
+                "dataset_freeze_manifest_sha256_raw_bytes": freeze_sha,
+                "config_file_sha256_raw_bytes": hashlib.sha256(b"c").hexdigest(),
+            }
+            ent_cfg = {
+                "task_model": "hy3", "task_max_workers": 8,
+                "task_temperature": 0.99, "task_thinking": "disabled",
+                "task_reasoning_effort": "none", "task_top_p": 0.95,
+                "task_max_tokens": 4096, "window_chars": 3000,
+                "window_overlap": 400, "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+                "effective_task_runtime": dict(eff),
+            }
+            rel_cfg = {
+                "task_model": "hy3", "task_max_workers": 8,
+                "task_temperature": 0.0, "task_thinking": "disabled",
+                "task_reasoning_effort": "none", "task_top_p": 0.95,
+                "task_max_tokens": 4096, "window_chars": 3000,
+                "window_overlap": 400, "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+                "effective_task_runtime": dict(eff),
+            }
+            ent_sum = {
+                "stage": "entity", "prompt_scope": "constrained",
+                "experiment_pair_id": "protegi-prompt-scope-v1",
+                "formal_eligible": True, "dry_run": False,
+                "winner_prompt_sha256": compute_prompt_hash(
+                    ent.read_text(encoding="utf-8")
+                ),
+                "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                    ent.read_bytes()
+                ).hexdigest(),
+                "config": ent_cfg, "input_bindings": dict(bind),
+            }
+            rel_sum = {
+                "stage": "relation", "prompt_scope": "constrained",
+                "experiment_pair_id": "protegi-prompt-scope-v1",
+                "formal_eligible": True, "dry_run": False,
+                "winner_prompt_sha256": compute_prompt_hash(
+                    rel.read_text(encoding="utf-8")
+                ),
+                "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                    rel.read_bytes()
+                ).hexdigest(),
+                "config": rel_cfg, "input_bindings": dict(bind),
+            }
+            ent_p = tmp / "ent_sum.json"
+            rel_p = tmp / "rel_sum.json"
+            ent_p.write_text(json.dumps(ent_sum), encoding="utf-8")
+            rel_p.write_text(json.dumps(rel_sum), encoding="utf-8")
+            for name in ("train", "dev"):
+                (tmp / f"{name}_m.json").write_text(
+                    json.dumps({
+                        "split_name": name,
+                        "entity_prompt_sha256": hashlib.sha256(
+                            ent.read_bytes()
+                        ).hexdigest(),
+                        "prompt_scope": "constrained", "task_max_workers": 8,
+                        "window_chars": 3000, "window_overlap": 400,
+                        "document_abbreviation_context": False,
+                        "vulnerability_anchored_backfill": False,
+                        "task_runtime": dict(eff),
+                        "schema_version": "chapter3-no-capec-v1",
+                        "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                        "boundary_contract_version": "chapter3-boundary-sync-v2",
+                        "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                        "split_sha256": split_sha,
+                        "gold_aggregate_sha256": gold_agg,
+                        "dataset_freeze_manifest_sha256": freeze_sha,
+                    }),
+                    encoding="utf-8",
+                )
+            artifact = promote_protegi(
+                entity_prompt_path=ent, relation_prompt_path=rel,
+                entity_summary_path=ent_p, relation_summary_path=rel_p,
+                entity_cache_train_manifest_path=tmp / "train_m.json",
+                entity_cache_dev_manifest_path=tmp / "dev_m.json",
+                prompt_scope="constrained",
+                output_artifact_path=tmp / "art.json",
+            )
+            self.assertEqual(artifact["task_runtime"]["temperature"], 0.0)
+
+    def test_promote_rejects_missing_effective_runtime_for_formal_summary(self):
+        from protegi.entity_cache import compute_prompt_hash
+        from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
+        from promote_protegi_v6 import promote_protegi
+
+        split_file = V6_ROOT / "data" / "train_dev_test_split_v7.json"
+        freeze_file = V6_ROOT / "data" / "dataset_freeze_manifest_v6.json"
+        split_sha = hashlib.sha256(split_file.read_bytes()).hexdigest()
+        freeze_sha = hashlib.sha256(freeze_file.read_bytes()).hexdigest()
+        gold_agg = json.loads(freeze_file.read_text(encoding="utf-8"))[
+            "gold_aggregate_sha256"
+        ]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            ent = tmp / "final_entity_prompt.txt"
+            rel = tmp / "final_relation_prompt.txt"
+            ent.write_text(ENTITY_PROMPT_P0, encoding="utf-8")
+            rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
+            bind = {
+                "split_file_sha256_raw_bytes": split_sha,
+                "dataset_freeze_manifest_sha256_raw_bytes": freeze_sha,
+                "config_file_sha256_raw_bytes": hashlib.sha256(b"c").hexdigest(),
+            }
+            base_cfg = {
+                "task_model": "hy3", "task_max_workers": 8,
+                "task_temperature": 0.0, "task_thinking": "disabled",
+                "task_reasoning_effort": "none", "task_top_p": 0.95,
+                "task_max_tokens": 4096, "window_chars": 3000,
+                "window_overlap": 400, "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+            }
+            ent_sum = {
+                "stage": "entity", "prompt_scope": "constrained",
+                "experiment_pair_id": "protegi-prompt-scope-v1",
+                "formal_eligible": True, "dry_run": False,
+                "winner_prompt_sha256": compute_prompt_hash(
+                    ent.read_text(encoding="utf-8")
+                ),
+                "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                    ent.read_bytes()
+                ).hexdigest(),
+                "config": dict(base_cfg), "input_bindings": dict(bind),
+            }
+            rel_sum = {
+                "stage": "relation", "prompt_scope": "constrained",
+                "experiment_pair_id": "protegi-prompt-scope-v1",
+                "formal_eligible": True, "dry_run": False,
+                "winner_prompt_sha256": compute_prompt_hash(
+                    rel.read_text(encoding="utf-8")
+                ),
+                "winner_prompt_sha256_raw_bytes": hashlib.sha256(
+                    rel.read_bytes()
+                ).hexdigest(),
+                "config": dict(base_cfg), "input_bindings": dict(bind),
+            }
+            ent_p = tmp / "ent_sum.json"
+            rel_p = tmp / "rel_sum.json"
+            ent_p.write_text(json.dumps(ent_sum), encoding="utf-8")
+            rel_p.write_text(json.dumps(rel_sum), encoding="utf-8")
+            eff = {
+                "model": "hy3", "max_workers": 8, "temperature": 0.0,
+                "thinking": "disabled", "reasoning_effort": "none",
+                "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
+                "window_overlap": 400, "document_abbreviation_context": False,
+                "vulnerability_anchored_backfill": False,
+            }
+            for name in ("train", "dev"):
+                (tmp / f"{name}_m.json").write_text(
+                    json.dumps({
+                        "split_name": name,
+                        "entity_prompt_sha256": hashlib.sha256(
+                            ent.read_bytes()
+                        ).hexdigest(),
+                        "prompt_scope": "constrained", "task_max_workers": 8,
+                        "window_chars": 3000, "window_overlap": 400,
+                        "document_abbreviation_context": False,
+                        "vulnerability_anchored_backfill": False,
+                        "task_runtime": dict(eff),
+                        "schema_version": "chapter3-no-capec-v1",
+                        "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                        "boundary_contract_version": "chapter3-boundary-sync-v2",
+                        "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                        "split_sha256": split_sha,
+                        "gold_aggregate_sha256": gold_agg,
+                        "dataset_freeze_manifest_sha256": freeze_sha,
+                    }),
+                    encoding="utf-8",
+                )
+            with self.assertRaises(ValueError) as ctx:
+                promote_protegi(
+                    entity_prompt_path=ent, relation_prompt_path=rel,
+                    entity_summary_path=ent_p, relation_summary_path=rel_p,
+                    entity_cache_train_manifest_path=tmp / "train_m.json",
+                    entity_cache_dev_manifest_path=tmp / "dev_m.json",
+                    prompt_scope="constrained",
+                    output_artifact_path=tmp / "art.json",
+                )
+            self.assertIn("effective_task_runtime", str(ctx.exception))
+
+    def test_stage1_stage2_effective_runtime_must_match(self):
+        from promote_protegi_v6 import _extract_task_runtime
+
+        eff_a = {
+            "model": "hy3", "max_workers": 8, "temperature": 0.0,
+            "thinking": "disabled", "reasoning_effort": "none",
+            "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
+            "window_overlap": 400, "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+        }
+        eff_b = dict(eff_a)
+        eff_b["temperature"] = 0.7
+        ra = _extract_task_runtime(
+            {"config": {"effective_task_runtime": eff_a}}, "Stage 1"
+        )
+        rb = _extract_task_runtime(
+            {"config": {"effective_task_runtime": eff_b}}, "Stage 2"
+        )
+        self.assertNotEqual(ra["temperature"], rb["temperature"])
 
 
 if __name__ == "__main__":

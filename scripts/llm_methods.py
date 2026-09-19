@@ -71,26 +71,46 @@ FREEZE_MANIFEST_FILE = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 PROTEGI_FINAL_DIR = EXP_DIR / "results" / "protegi_final"
 PROTEGI_FINAL_ARTIFACT = PROTEGI_FINAL_DIR / "protegi_final_artifact.json"
 
-PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS = (
-    "model",
-    "max_workers",
-    "temperature",
-    "thinking",
-    "reasoning_effort",
-    "top_p",
-    "max_tokens",
-    "window_chars",
-    "window_overlap",
-    "document_abbreviation_context",
-    "vulnerability_anchored_backfill",
-)
+try:
+    from protegi.runtime_contract import (
+        TASK_RUNTIME_FIELDS as PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS,
+    )
+    from protegi.runtime_contract import validate_task_runtime as _shared_validate
+except ImportError:  # 回退：保持字段集合一致
+    PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS = (
+        "model",
+        "max_workers",
+        "temperature",
+        "thinking",
+        "reasoning_effort",
+        "top_p",
+        "max_tokens",
+        "window_chars",
+        "window_overlap",
+        "document_abbreviation_context",
+        "vulnerability_anchored_backfill",
+    )
+    _shared_validate = None
 
 
 def _validate_protegi_task_runtime(runtime: object) -> dict:
     """校验 artifact task_runtime 完整性，缺字段/类型非法一律 hard fail。
 
     禁止缺字段时 fallback 到当前 API 环境（API_TEMPERATURE 等）。
+    字段集合唯一来源为 protegi.runtime_contract.TASK_RUNTIME_FIELDS。
     """
+    if _shared_validate is not None:
+        try:
+            return _shared_validate(runtime, label="ProTeGi 产物 task_runtime")
+        except ValueError as exc:
+            # 统一为 artifact 语境的错误前缀，禁止 fallback 语义不变。
+            msg = str(exc)
+            if "ProTeGi 产物 task_runtime" not in msg:
+                raise ValueError(
+                    f"ProTeGi 产物 task_runtime 校验失败: {msg}，"
+                    "禁止 fallback 到当前 API 环境！"
+                ) from exc
+            raise
     if not isinstance(runtime, dict):
         raise ValueError(
             "ProTeGi 产物缺少 task_runtime 字段，禁止 fallback 到当前 API 环境！"

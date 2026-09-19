@@ -34,6 +34,7 @@ from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
 from protegi.contract_validator import PromptContractValidator
 from protegi.evaluator import TaskEvaluator
 from protegi.gold_integrity import verify_frozen_gold_integrity
+from protegi.runtime_contract import build_effective_task_runtime
 from protegi.optimizer import (
     ProTeGiOptimizer,
     load_split_doc_ids,
@@ -46,6 +47,73 @@ DEFAULT_GOLD_DIR = ROOT / "data" / "annotations" / "gold"
 DEFAULT_CONFIG_FORMAL = ROOT / "protegi" / "configs" / "protegi_formal_muse.yaml"
 DEFAULT_CONFIG_DRYRUN = ROOT / "protegi" / "configs" / "protegi_dryrun.yaml"
 DEFAULT_OUTPUT_ROOT = ROOT / "results" / "protegi_optimization"
+
+
+def compute_formal_eligibility(*, dry_run: bool, allow_custom_split: bool) -> bool:
+    """纯函数：--dry-run 或 --allow-custom-split 任一出现即 non-formal。
+
+    注意：路径是否恰好等于 canonical 不影响结果；flag 本身决定语义。
+    抽出为纯函数以便无模型回归测试直接断言。
+    """
+    return (not dry_run) and (not allow_custom_split)
+
+
+def normalize_config_with_effective_runtime(config: dict) -> dict:
+    """规范化 Task 字段并写回 effective runtime（单一记录来源）。
+
+    输入为 YAML 解析后的 config dict；返回同一 dict（就地更新），新增：
+    window_chars / window_overlap / document_abbreviation_context /
+    vulnerability_anchored_backfill（规范化后）与
+    effective_task_runtime（11 字段，见 protegi.runtime_contract）。
+    optimizer summary 的 "config" 即实际执行 runtime。
+    不调用任何模型，可被离线测试直接断言。
+    """
+    include_document_abbreviations = bool(
+        config.get("document_abbreviation_context", False)
+    )
+    vulnerability_backfill_flag = bool(
+        config.get("vulnerability_anchored_backfill", False)
+    )
+    window_chars = int(
+        config.get("window_chars", config.get("window_max_chars", 3000))
+    )
+    window_overlap = int(config.get("window_overlap", 400))
+    if not window_chars > 0:
+        raise ValueError(f"window_chars 必须为正整数，当前={window_chars!r}")
+    if not 0 <= window_overlap < window_chars:
+        raise ValueError(
+            f"window_overlap 必须满足 0 <= overlap < window_chars，"
+            f"当前 overlap={window_overlap!r}, chars={window_chars!r}"
+        )
+    config["task_model"] = str(config["task_model"])
+    config["task_max_workers"] = int(config["task_max_workers"])
+    config["task_temperature"] = float(config["task_temperature"])
+    config["task_thinking"] = str(config["task_thinking"]).strip().lower()
+    config["task_reasoning_effort"] = (
+        str(config["task_reasoning_effort"]).strip().lower()
+    )
+    config["task_top_p"] = float(config["task_top_p"])
+    config["task_max_tokens"] = int(config["task_max_tokens"])
+    config["window_chars"] = int(window_chars)
+    config["window_overlap"] = int(window_overlap)
+    config["document_abbreviation_context"] = bool(include_document_abbreviations)
+    config["vulnerability_anchored_backfill"] = bool(vulnerability_backfill_flag)
+    config["effective_task_runtime"] = build_effective_task_runtime(
+        model=config["task_model"],
+        max_workers=config["task_max_workers"],
+        temperature=config["task_temperature"],
+        thinking=config["task_thinking"],
+        reasoning_effort=config["task_reasoning_effort"],
+        top_p=config["task_top_p"],
+        max_tokens=config["task_max_tokens"],
+        window_chars=config["window_chars"],
+        window_overlap=config["window_overlap"],
+        document_abbreviation_context=config["document_abbreviation_context"],
+        vulnerability_anchored_backfill=config[
+            "vulnerability_anchored_backfill"
+        ],
+    )
+    return config
 
 
 def parse_args():
@@ -156,24 +224,15 @@ def main():
         )
     config["_config_file"] = str(config_path.resolve())
     config["_config_file_sha256"] = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    config = normalize_config_with_effective_runtime(config)
     include_document_abbreviations = bool(
-        config.get("document_abbreviation_context", False)
+        config["document_abbreviation_context"]
     )
     vulnerability_backfill_flag = bool(
-        config.get("vulnerability_anchored_backfill", False)
+        config["vulnerability_anchored_backfill"]
     )
-    # 冻结窗口参数：显式来源为当前 config，未声明时沿用优化器默认值。
-    window_chars = int(
-        config.get("window_chars", config.get("window_max_chars", 3000))
-    )
-    window_overlap = int(config.get("window_overlap", 400))
-    if not window_chars > 0:
-        raise ValueError(f"window_chars 必须为正整数，当前={window_chars!r}")
-    if not 0 <= window_overlap < window_chars:
-        raise ValueError(
-            f"window_overlap 必须满足 0 <= overlap < window_chars，"
-            f"当前 overlap={window_overlap!r}, chars={window_chars!r}"
-        )
+    window_chars = int(config["window_chars"])
+    window_overlap = int(config["window_overlap"])
 
     def build_task_evaluator() -> TaskEvaluator:
         return TaskEvaluator(
@@ -224,71 +283,62 @@ def main():
         DEFAULT_OUTPUT_ROOT / f"entity_cache_{prompt_scope}{suffix}"
     )
 
-    # 3. 加载数据集切分并严格校验正式门禁
+    # 3. 加载数据集切分并严格校验正式门禁。
+    # --allow-custom-split / --dry-run 任一出现即无条件 non-formal，
+    # 与传入路径是否恰好等于 canonical 无关。
     split_ids = load_split_doc_ids(args.split_file)
     train_doc_ids = split_ids["train"]
     dev_doc_ids = split_ids["dev"]
 
-    formal_eligible = True
-    if args.dry_run:
-        formal_eligible = False
-    else:
-        freeze_manifest_file = ROOT / "data" / "dataset_freeze_manifest_v6.json"
+    formal_eligible = compute_formal_eligibility(
+        dry_run=bool(args.dry_run),
+        allow_custom_split=bool(args.allow_custom_split),
+    )
+    freeze_manifest_file = ROOT / "data" / "dataset_freeze_manifest_v6.json"
+
+    # canonical test 隔离：formal 与 diagnostic/custom 路径都要检查，
+    # 但 diagnostic/custom 产物永远 formal_eligible=false。
+    canonical_split_data = json.loads(DEFAULT_SPLIT_FILE.read_text(encoding="utf-8"))
+    canonical_test_ids = set(canonical_split_data.get("test", []))
+    custom_split_data = json.loads(Path(args.split_file).read_text(encoding="utf-8"))
+    all_test_ids = canonical_test_ids | set(custom_split_data.get("test", []))
+    train_test_leak = set(train_doc_ids) & all_test_ids
+    dev_test_leak = set(dev_doc_ids) & all_test_ids
+    if train_test_leak or dev_test_leak:
+        raise RuntimeError(
+            f"数据切分污染：optimizer 数据与 canonical test 存在重叠！"
+            f"train ∩ test: {train_test_leak}, dev ∩ test: {dev_test_leak}"
+        )
+
+    if formal_eligible:
         if not freeze_manifest_file.is_file():
-            if not args.allow_custom_split:
-                raise RuntimeError(
-                    f"缺少数据集冻结清单 {freeze_manifest_file}；正式模式禁止使用未冻结数据集。"
-                )
-            formal_eligible = False
-        else:
-            freeze_manifest = json.loads(freeze_manifest_file.read_text(encoding="utf-8"))
-            current_split_hash = hashlib.sha256(Path(args.split_file).read_bytes()).hexdigest()
-            manifest_split_hash = freeze_manifest.get("split_sha256")
-            frozen_gold_dir = (ROOT / freeze_manifest.get("gold_directory", "data/annotations/gold")).resolve()
-            actual_gold_dir = Path(args.gold_dir).resolve()
+            raise RuntimeError(
+                f"缺少数据集冻结清单 {freeze_manifest_file}；正式模式禁止使用未冻结数据集。"
+            )
+        freeze_manifest = json.loads(freeze_manifest_file.read_text(encoding="utf-8"))
+        current_split_hash = hashlib.sha256(Path(args.split_file).read_bytes()).hexdigest()
+        manifest_split_hash = freeze_manifest.get("split_sha256")
+        frozen_gold_dir = (ROOT / freeze_manifest.get("gold_directory", "data/annotations/gold")).resolve()
+        actual_gold_dir = Path(args.gold_dir).resolve()
 
-            split_mismatch = (current_split_hash != manifest_split_hash)
-            gold_mismatch = (actual_gold_dir != frozen_gold_dir)
-
-            canonical_split_data = json.loads(DEFAULT_SPLIT_FILE.read_text(encoding="utf-8"))
-            canonical_test_ids = set(canonical_split_data.get("test", []))
-            custom_split_data = json.loads(Path(args.split_file).read_text(encoding="utf-8"))
-            all_test_ids = canonical_test_ids | set(custom_split_data.get("test", []))
-            train_test_leak = set(train_doc_ids) & all_test_ids
-            dev_test_leak = set(dev_doc_ids) & all_test_ids
-            if train_test_leak or dev_test_leak:
-                raise RuntimeError(
-                    f"数据切分污染：optimizer 数据与 canonical test 存在重叠！"
-                    f"train ∩ test: {train_test_leak}, dev ∩ test: {dev_test_leak}"
-                )
-
-            if split_mismatch or gold_mismatch:
-                if not args.allow_custom_split:
-                    reasons = []
-                    if split_mismatch:
-                        reasons.append(
-                            f"split_file 哈希 ({current_split_hash}) 与冻结清单 ({manifest_split_hash}) 不符"
-                        )
-                    if gold_mismatch:
-                        reasons.append(
-                            f"gold_dir ({actual_gold_dir}) 与冻结目录 ({frozen_gold_dir}) 不符"
-                        )
-                    raise RuntimeError(
-                        f"正式 ProTeGi 优化必须绑定当前冻结划分与 Gold 数据目录: {'; '.join(reasons)}。"
-                        "若需在开发阶段使用非正式自定义切分，必须显式指定 --allow-custom-split。"
-                    )
-                formal_eligible = False
+        if current_split_hash != manifest_split_hash:
+            raise RuntimeError(
+                f"正式 ProTeGi 优化必须绑定当前冻结划分："
+                f"split_file 哈希 ({current_split_hash}) 与冻结清单 ({manifest_split_hash}) 不符。"
+            )
+        if actual_gold_dir != frozen_gold_dir:
+            raise RuntimeError(
+                f"正式 ProTeGi 优化必须绑定当前冻结 Gold 数据目录："
+                f"gold_dir ({actual_gold_dir}) 与冻结目录 ({frozen_gold_dir}) 不符。"
+            )
 
     config["formal_eligible"] = formal_eligible
 
-    # Formal Gold 完整性门禁：在读取任何 Gold 之前重新计算实际 Gold 内容。
-    # formal mode ↓ verify frozen split（上文） ↓ verify frozen Gold ↓
-    # verify canonical test isolation（上文） ↓ 才允许读取训练/开发 Gold。
-    # Custom (--allow-custom-split) / Diagnostic (--dry-run) 模式跳过冻结校验，
-    # 但 formal_eligible 保持 False，promotion 仍会拒绝。
+    # Formal Gold 完整性门禁：唯一触发条件就是 formal_eligible。
+    # 在读取任何 Gold 之前重新计算实际 Gold 内容。
     verified_gold_aggregate_sha256: str | None = None
     _freeze_manifest_for_gold = ROOT / "data" / "dataset_freeze_manifest_v6.json"
-    if formal_eligible and not args.allow_custom_split and not args.dry_run:
+    if formal_eligible:
         ok, message = verify_frozen_gold_integrity(
             Path(args.gold_dir),
             _freeze_manifest_for_gold,
@@ -359,11 +409,7 @@ def main():
             document_abbreviation_context=include_document_abbreviations,
             vulnerability_anchored_backfill=vulnerability_backfill_flag,
             verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
-            validate_formal_gold=bool(
-                formal_eligible
-                and not args.allow_custom_split
-                and not args.dry_run
-            ),
+            validate_formal_gold=bool(formal_eligible),
         )
 
         print("正在为 Dev 集生成冻结实体预测缓存...")
@@ -395,11 +441,7 @@ def main():
             document_abbreviation_context=include_document_abbreviations,
             vulnerability_anchored_backfill=vulnerability_backfill_flag,
             verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
-            validate_formal_gold=bool(
-                formal_eligible
-                and not args.allow_custom_split
-                and not args.dry_run
-            ),
+            validate_formal_gold=bool(formal_eligible),
         )
         print(f"实体缓存构建完成，保存在: {cache_dir}")
         return
@@ -458,29 +500,8 @@ def main():
             )
         cache_manager = EntityCacheManager(cache_dir)
         expected_hash = compute_prompt_hash(entity_prompt_text)
-        expected_task_runtime = {
-            "model": config.get("task_model"),
-            "max_workers": int(config.get("task_max_workers", 8)),
-            "temperature": float(config.get("task_temperature", 0.0)),
-            "thinking": str(config.get("task_thinking", "disabled")),
-            "reasoning_effort": str(
-                config.get("task_reasoning_effort", "none")
-            ),
-            "top_p": float(config["task_top_p"])
-            if config.get("task_top_p") is not None
-            else None,
-            "max_tokens": int(config["task_max_tokens"])
-            if config.get("task_max_tokens") is not None
-            else None,
-            "window_chars": int(window_chars),
-            "window_overlap": int(window_overlap),
-            "document_abbreviation_context": bool(
-                include_document_abbreviations
-            ),
-            "vulnerability_anchored_backfill": bool(
-                vulnerability_backfill_flag
-            ),
-        }
+        # Stage 2 必须使用 run 阶段已记录的 effective runtime，不再现场拼装。
+        expected_task_runtime = dict(config["effective_task_runtime"])
         train_samples = cache_manager.load_cache(
             "train",
             expected_prompt_hash=expected_hash,

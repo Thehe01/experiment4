@@ -26,6 +26,7 @@ from schema import (
     BOUNDARY_CONTRACT_VERSION,
     SCHEMA_VERSION,
 )
+from protegi.runtime_contract import TASK_RUNTIME_FIELDS
 
 DEFAULT_FREEZE_MANIFEST = ROOT / "data" / "dataset_freeze_manifest_v6.json"
 DEFAULT_SPLIT_FILE = ROOT / "data" / "train_dev_test_split_v7.json"
@@ -50,19 +51,7 @@ def _sample_ids_hash(sample_ids: List[str]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-TASK_RUNTIME_FIELDS = (
-    "model",
-    "max_workers",
-    "temperature",
-    "thinking",
-    "reasoning_effort",
-    "top_p",
-    "max_tokens",
-    "window_chars",
-    "window_overlap",
-    "document_abbreviation_context",
-    "vulnerability_anchored_backfill",
-)
+TASK_RUNTIME_FIELDS = TASK_RUNTIME_FIELDS  # 单一来源：protegi.runtime_contract
 
 
 def _build_task_runtime_from_evaluator(
@@ -222,7 +211,8 @@ class EntityCacheManager:
             gold_aggregate_sha256 = gold_aggregate_sha256 or gold_agg
         dataset_freeze_manifest_sha256 = dataset_freeze_manifest_sha256 or freeze_sha
 
-        # 冻结 Task Runtime：显式记录窗口与上下文开关，供晋级时严格比对。
+        # 冻结 Task Runtime：先算单一 effective 变量，三处同源。
+        # effective_backfill = 显式传入参数，否则 evaluator 自身开关。
         if window_chars is not None:
             window_chars = int(window_chars)
         else:
@@ -237,21 +227,23 @@ class EntityCacheManager:
                 f"window_overlap={window_overlap}"
             )
         if document_abbreviation_context is None:
-            document_abbreviation_context = bool(
+            effective_abbreviation_context = bool(
                 any("document_abbreviations" in s for s in samples)
             )
+        else:
+            effective_abbreviation_context = bool(document_abbreviation_context)
         if vulnerability_anchored_backfill is None:
-            vulnerability_anchored_backfill = bool(
+            effective_backfill = bool(
                 getattr(evaluator, "vulnerability_anchored_backfill", False)
             )
+        else:
+            effective_backfill = bool(vulnerability_anchored_backfill)
         task_runtime = _build_task_runtime_from_evaluator(
             evaluator,
             window_chars=window_chars,
             window_overlap=window_overlap,
-            document_abbreviation_context=bool(document_abbreviation_context),
-            vulnerability_anchored_backfill=bool(
-                vulnerability_anchored_backfill
-            ),
+            document_abbreviation_context=effective_abbreviation_context,
+            vulnerability_anchored_backfill=effective_backfill,
             samples=samples,
         )
 
@@ -280,6 +272,17 @@ class EntityCacheManager:
                 else evaluator.predict_stage1_window(text, final_entity_prompt)
                 for index, text in enumerate(texts)
             ]
+        # 与优化阶段语义一致：backfill=true 时必须真正执行，
+        # 与 TaskEvaluator.evaluate_stage1_batch() 的后处理相同。
+        # effective_backfill 同时决定执行、task_runtime 与 manifest 顶层字段。
+        if effective_backfill:
+            from protegi import entity_backfill as _backfill_module
+
+            predictions = _backfill_module.vulnerability_anchored_backfill(
+                samples,
+                predictions,
+                enabled=True,
+            )
         if len(predictions) != len(samples):
             raise RuntimeError(
                 "实体批量预测数量与输入样本数不一致，拒绝写入不完整缓存"
@@ -314,10 +317,8 @@ class EntityCacheManager:
             "task_max_workers": getattr(evaluator, "max_workers", None),
             "window_chars": int(window_chars),
             "window_overlap": int(window_overlap),
-            "document_abbreviation_context": bool(document_abbreviation_context),
-            "vulnerability_anchored_backfill": bool(
-                vulnerability_anchored_backfill
-            ),
+            "document_abbreviation_context": bool(effective_abbreviation_context),
+            "vulnerability_anchored_backfill": bool(effective_backfill),
             "task_runtime": task_runtime,
             "num_samples": len(cached_samples),
             "sample_ids_sha256": _sample_ids_hash(sample_ids),
