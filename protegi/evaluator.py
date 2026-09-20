@@ -34,7 +34,21 @@ from protegi.metrics import (
 )
 from protegi.document_context import render_document_context
 from protegi.entity_backfill import vulnerability_anchored_backfill
+from protegi.entity_cache import compute_prompt_hash
 from protegi.retry_utils import retry_api_call
+from protegi.search_stability import WindowBudgetExhaustedError
+
+
+def _is_budget_exhausted(exc: Exception) -> bool:
+    """判定是否为输出预算耗尽（类型或名称双重判定，避免 import  fragile）。"""
+    if type(exc).__name__ == "ModelOutputBudgetExhaustedError":
+        return True
+    try:
+        from llm_extractor import ModelOutputBudgetExhaustedError
+
+        return isinstance(exc, ModelOutputBudgetExhaustedError)
+    except Exception:
+        return False
 
 
 def focus_entity_error_examples(
@@ -135,7 +149,64 @@ class TaskEvaluator:
         self.call_count = 0
         self.input_tokens_est = 0
         self.output_tokens_est = 0
+        # 运行稳定性计数（锁保护，供 optimizer 同步）。
+        self.budget_exhaustion_retries = 0
+        self.transient_api_retries = 0
         self._stats_lock = threading.Lock()
+
+    def _note_transient_retry(self, exc: Exception, attempt: int) -> None:
+        with self._stats_lock:
+            self.transient_api_retries += 1
+
+    def _call_task_model_once(
+        self,
+        *,
+        stage: str,
+        prompt_content: str,
+        system_content: str,
+        sample_id: str,
+        full_prompt_for_hash: str,
+    ) -> str:
+        """单次任务模型调用；预算耗尽时在完全相同 runtime 下最多再试 1 次。
+
+        仍超限则抛 WindowBudgetExhaustedError（不伪造空预测）。
+        Transient 错误沿用现有 retry_api_call 策略（参数未动）。
+        """
+        with self._stats_lock:
+            self.call_count += 1
+            self.input_tokens_est += (len(system_content) + len(prompt_content)) // 4
+
+        def _invoke() -> str:
+            return retry_api_call(
+                self.client.call_fn,
+                prompt=prompt_content,
+                system_prompt=system_content,
+                config=self.client.config,
+                on_retry=self._note_transient_retry,
+            )
+
+        try:
+            raw_output = _invoke()
+        except Exception as exc:
+            if not _is_budget_exhausted(exc):
+                raise
+            with self._stats_lock:
+                self.budget_exhaustion_retries += 1
+            try:
+                raw_output = _invoke()
+            except Exception as exc2:
+                if not _is_budget_exhausted(exc2):
+                    raise
+                raise WindowBudgetExhaustedError(
+                    stage=stage,
+                    prompt_hash=compute_prompt_hash(full_prompt_for_hash),
+                    sample_id=sample_id,
+                    max_tokens=(self.client.config or {}).get("max_tokens"),
+                    retries_used=1,
+                ) from exc2
+        with self._stats_lock:
+            self.output_tokens_est += len(raw_output) // 4
+        return raw_output
 
     def _parallel_map(self, fn, items: List[Any]) -> List[Any]:
         """按输入顺序返回结果；所有任务模型批量路径统一受 max_workers 控制。"""
@@ -152,6 +223,7 @@ class TaskEvaluator:
         text: str,
         full_entity_prompt: str,
         document_abbreviations: Optional[str] = None,
+        sample_id: Optional[str] = None,
     ) -> List[dict]:
         """使用完整的 Entity Prompt 在单窗口文本上抽取实体。
 
@@ -171,18 +243,13 @@ class TaskEvaluator:
                 + prompt_content
             )
 
-        with self._stats_lock:
-            self.call_count += 1
-            self.input_tokens_est += (len(system_content) + len(prompt_content)) // 4
-
-        raw_output = retry_api_call(
-            self.client.call_fn,
-            prompt=prompt_content,
-            system_prompt=system_content,
-            config=self.client.config,
+        raw_output = self._call_task_model_once(
+            stage="entity",
+            prompt_content=prompt_content,
+            system_content=system_content,
+            sample_id=sample_id or "window_unknown",
+            full_prompt_for_hash=full_entity_prompt,
         )
-        with self._stats_lock:
-            self.output_tokens_est += len(raw_output) // 4
 
         parsed = _loose_json(raw_output)
         raw_entities = parsed.get("entities", [])
@@ -200,21 +267,37 @@ class TaskEvaluator:
         texts: List[str],
         full_entity_prompt: str,
         document_abbreviations: Optional[List[str]] = None,
+        sample_ids: Optional[List[str]] = None,
     ) -> List[List[dict]]:
         """使用统一并发上限批量执行 Stage 1 窗口预测并保持输入顺序。"""
+        texts = list(texts)
+        if sample_ids is not None and len(sample_ids) != len(texts):
+            raise ValueError("sample_ids 与 texts 数量不一致")
         if document_abbreviations is not None:
             if len(document_abbreviations) != len(texts):
                 raise ValueError("document_abbreviations 与 texts 数量不一致")
-            inputs = list(zip(texts, document_abbreviations))
+            indexed = list(enumerate(zip(texts, document_abbreviations)))
             return self._parallel_map(
                 lambda item: self.predict_stage1_window(
-                    item[0], full_entity_prompt, item[1]
+                    item[1][0],
+                    full_entity_prompt,
+                    item[1][1],
+                    sample_id=(
+                        sample_ids[item[0]] if sample_ids is not None else None
+                    ),
                 ),
-                inputs,
+                indexed,
             )
+        indexed = list(enumerate(texts))
         return self._parallel_map(
-            lambda text: self.predict_stage1_window(text, full_entity_prompt),
-            list(texts),
+            lambda item: self.predict_stage1_window(
+                item[1],
+                full_entity_prompt,
+                sample_id=(
+                    sample_ids[item[0]] if sample_ids is not None else None
+                ),
+            ),
+            indexed,
         )
 
     def predict_stage2_window(
@@ -222,6 +305,7 @@ class TaskEvaluator:
         text: str,
         entities: List[dict],
         full_relation_prompt: str,
+        sample_id: Optional[str] = None,
     ) -> List[dict]:
         """使用完整的 Relation Prompt 和固定的实体列表在单窗口文本上抽取关系。
 
@@ -243,18 +327,13 @@ class TaskEvaluator:
             prompt_content = f"<text>\n{text}\n</text>\n<entities>\n{entities_str}\n</entities>\nReturn JSON only."
             system_content = full_relation_prompt
 
-        with self._stats_lock:
-            self.call_count += 1
-            self.input_tokens_est += (len(system_content) + len(prompt_content)) // 4
-
-        raw_output = retry_api_call(
-            self.client.call_fn,
-            prompt=prompt_content,
-            system_prompt=system_content,
-            config=self.client.config,
+        raw_output = self._call_task_model_once(
+            stage="relation",
+            prompt_content=prompt_content,
+            system_content=system_content,
+            sample_id=sample_id or "window_unknown",
+            full_prompt_for_hash=full_relation_prompt,
         )
-        with self._stats_lock:
-            self.output_tokens_est += len(raw_output) // 4
 
         parsed = _loose_json(raw_output)
         raw_relations = parsed.get("relations", [])
@@ -274,13 +353,22 @@ class TaskEvaluator:
         self,
         inputs: List[Tuple[str, List[dict]]],
         full_relation_prompt: str,
+        sample_ids: Optional[List[str]] = None,
     ) -> List[List[dict]]:
         """使用统一并发上限批量执行 Stage 2 窗口预测并保持输入顺序。"""
+        if sample_ids is not None and len(sample_ids) != len(inputs):
+            raise ValueError("sample_ids 与 inputs 数量不一致")
+        indexed = list(enumerate(list(inputs)))
         return self._parallel_map(
             lambda item: self.predict_stage2_window(
-                item[0], item[1], full_relation_prompt
+                item[1][0],
+                item[1][1],
+                full_relation_prompt,
+                sample_id=(
+                    sample_ids[item[0]] if sample_ids is not None else None
+                ),
             ),
-            list(inputs),
+            indexed,
         )
 
     def evaluate_stage1_batch(
@@ -310,6 +398,10 @@ class TaskEvaluator:
             [sample["text"] for sample in samples],
             full_entity_prompt,
             document_abbreviations=abbreviation_contexts,
+            sample_ids=[
+                sample.get("sample_id") or sample.get("id") or "unknown"
+                for sample in samples
+            ],
         )
         if self.vulnerability_anchored_backfill:
             predictions = vulnerability_anchored_backfill(
@@ -475,6 +567,10 @@ class TaskEvaluator:
                 for sample in samples
             ],
             full_relation_prompt,
+            sample_ids=[
+                sample.get("sample_id") or sample.get("id") or "unknown"
+                for sample in samples
+            ],
         )
         for sample, pred_relations in zip(samples, predictions):
             sample_id = sample.get("sample_id") or sample.get("id") or "unknown"

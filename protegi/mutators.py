@@ -109,6 +109,10 @@ class GradientGenerator:
         self.stats = call_stats
         self.prompt_scope = _validate_prompt_scope(prompt_scope)
 
+    def _note_transient_retry(self, exc: Exception, attempt: int) -> None:
+        if self.stats is not None:
+            self.stats.transient_api_retries += 1
+
     def generate_gradients(
         self,
         parent_candidate: PromptCandidate,
@@ -152,6 +156,7 @@ class GradientGenerator:
                 prompt=prompt_content,
                 system_prompt="You are an expert cybersecurity prompt critic. Identify specific, actionable directions to fix prompt deficiencies.",
                 config=self.client.config,
+                on_retry=self._note_transient_retry,
             )
 
             if self.stats:
@@ -186,6 +191,10 @@ class PromptEditor:
         self.client = optimizer_client
         self.stats = call_stats
         self.prompt_scope = _validate_prompt_scope(prompt_scope)
+
+    def _note_transient_retry(self, exc: Exception, attempt: int) -> None:
+        if self.stats is not None:
+            self.stats.transient_api_retries += 1
 
     def edit_prompt(
         self,
@@ -290,6 +299,10 @@ class MonteCarloParaphraser:
         self.stats = call_stats
         self.prompt_scope = _validate_prompt_scope(prompt_scope)
 
+    def _note_transient_retry(self, exc: Exception, attempt: int) -> None:
+        if self.stats is not None:
+            self.stats.transient_api_retries += 1
+
     def paraphrase_prompt(
         self,
         base_candidate: PromptCandidate,
@@ -334,6 +347,7 @@ class MonteCarloParaphraser:
                 prompt=prompt_content,
                 system_prompt=system_prompt,
                 config=self.client.config,
+                on_retry=self._note_transient_retry,
             )
 
             if self.stats:

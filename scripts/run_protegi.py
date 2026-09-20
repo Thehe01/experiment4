@@ -58,6 +58,56 @@ def compute_formal_eligibility(*, dry_run: bool, allow_custom_split: bool) -> bo
     return (not dry_run) and (not allow_custom_split)
 
 
+def build_freeze_bindings(*, split_file: Path, freeze_manifest_file: Path, config: dict) -> dict:
+    """构造评估缓存/检查点用的实时绑定（文件哈希；缺失记 None）。"""
+    split_file = Path(split_file)
+    freeze_manifest_file = Path(freeze_manifest_file)
+    split_sha = (
+        hashlib.sha256(split_file.read_bytes()).hexdigest()
+        if split_file.is_file()
+        else None
+    )
+    freeze_data: dict = {}
+    freeze_sha = None
+    if freeze_manifest_file.is_file():
+        freeze_data = json.loads(freeze_manifest_file.read_text(encoding="utf-8"))
+        freeze_sha = hashlib.sha256(freeze_manifest_file.read_bytes()).hexdigest()
+    return {
+        "split_sha256": split_sha,
+        "gold_aggregate_sha256": freeze_data.get("gold_aggregate_sha256"),
+        "freeze_manifest_sha256": freeze_sha,
+        "config_file_sha256": config.get("_config_file_sha256"),
+    }
+
+
+def build_resume_bindings(
+    *,
+    stage: str,
+    method: str,
+    prompt_scope: str,
+    config: dict,
+    freeze_bindings: dict,
+    train_samples: list,
+    dev_samples: list,
+) -> dict:
+    """构造 --resume 严格校验用的期望绑定。"""
+    from protegi.search_stability import implementation_hashes, sample_ids_hash
+
+    train_ids = [s.get("sample_id") or s.get("id") or "unknown" for s in train_samples]
+    dev_ids = [s.get("sample_id") or s.get("id") or "unknown" for s in dev_samples]
+    return {
+        **dict(freeze_bindings),
+        "stage": stage,
+        "method": method,
+        "prompt_scope": prompt_scope,
+        "experiment_pair_id": config.get("experiment_pair_id"),
+        "effective_task_runtime": config.get("effective_task_runtime"),
+        "implementation": implementation_hashes(ROOT),
+        "train_sample_ids_sha256": sample_ids_hash(train_ids),
+        "dev_sample_ids_sha256": sample_ids_hash(dev_ids),
+    }
+
+
 def normalize_config_with_effective_runtime(config: dict) -> dict:
     """规范化 Task 字段并写回 effective runtime（单一记录来源）。
 
@@ -177,6 +227,13 @@ def parse_args():
         "--allow-custom-split",
         action="store_true",
         help="允许使用自定义/非正式切分；产物将被标记为 formal_eligible=false 且禁止晋级",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="从 --output-dir 中的 search_checkpoint.json 恢复中断的搜索，"
+        "严格校验 config/split/freeze/Gold/runtime/实现哈希后从中断轮次继续，"
+        "禁止从 Round 0 重跑",
     )
     return parser.parse_args()
 
@@ -352,6 +409,13 @@ def main():
             _freeze_manifest_for_gold.read_text(encoding="utf-8")
         ).get("gold_aggregate_sha256")
 
+    # 评估缓存 / 检查点绑定：实时文件哈希（不改变任何超参数与语义）。
+    freeze_bindings = build_freeze_bindings(
+        split_file=Path(args.split_file),
+        freeze_manifest_file=_freeze_manifest_for_gold,
+        config=config,
+    )
+
     max_train_docs = config.get("max_docs_train")
     max_dev_docs = config.get("max_docs_dev")
 
@@ -476,6 +540,21 @@ def main():
             gold_dir=args.gold_dir,
             split_file=args.split_file,
             entity_cache_dir=cache_dir,
+            freeze_bindings=freeze_bindings,
+            resume=bool(args.resume),
+            resume_bindings=(
+                build_resume_bindings(
+                    stage="entity",
+                    method=args.method,
+                    prompt_scope=prompt_scope,
+                    config=config,
+                    freeze_bindings=freeze_bindings,
+                    train_samples=train_samples,
+                    dev_samples=dev_samples,
+                )
+                if args.resume
+                else None
+            ),
         )
         winner = optimizer.run_optimization(train_samples, dev_samples)
         print(f"\n[Stage 1 优化完成]")
@@ -536,6 +615,21 @@ def main():
             gold_dir=args.gold_dir,
             split_file=args.split_file,
             entity_cache_dir=cache_dir,
+            freeze_bindings=freeze_bindings,
+            resume=bool(args.resume),
+            resume_bindings=(
+                build_resume_bindings(
+                    stage="relation",
+                    method=args.method,
+                    prompt_scope=prompt_scope,
+                    config=config,
+                    freeze_bindings=freeze_bindings,
+                    train_samples=train_samples,
+                    dev_samples=dev_samples,
+                )
+                if args.resume
+                else None
+            ),
         )
         winner = optimizer.run_optimization(train_samples, dev_samples)
         print(f"\n[Stage 2 优化完成]")

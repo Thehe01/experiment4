@@ -51,9 +51,6 @@ def _sample_ids_hash(sample_ids: List[str]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-TASK_RUNTIME_FIELDS = TASK_RUNTIME_FIELDS  # 单一来源：protegi.runtime_contract
-
-
 def _build_task_runtime_from_evaluator(
     evaluator,
     *,

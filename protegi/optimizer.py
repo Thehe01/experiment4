@@ -36,6 +36,25 @@ from protegi.document_context import (
 )
 from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
 from protegi.evaluator import TaskEvaluator, focus_entity_error_examples
+from protegi.runtime_contract import validate_task_runtime
+from protegi.search_stability import (
+    INVALID_BUDGET_EXHAUSTED,
+    EVALUATION_STATUS_VALID,
+    CandidateBudgetExhaustedError,
+    CandidateEvalCache,
+    RoundSelectionAborted,
+    WindowBudgetExhaustedError,
+    classify_search_error,
+    eval_cache_key,
+    implementation_hashes,
+    load_search_checkpoint,
+    new_stability_counters,
+    rng_state_from_json,
+    rng_state_to_json,
+    sample_ids_hash,
+    save_search_checkpoint,
+    validate_checkpoint_bindings,
+)
 from protegi.lineage import PromptLineageTracker
 from protegi.logging_utils import ProTeGiLogger
 from protegi.metrics import (
@@ -371,6 +390,9 @@ class ProTeGiOptimizer:
         entity_cache_dir: Optional[Path] = None,
         task_client=None,
         optimizer_client=None,
+        freeze_bindings: Optional[dict] = None,
+        resume: bool = False,
+        resume_bindings: Optional[dict] = None,
     ):
         self.stage = stage.lower()
         self.method = method.lower()
@@ -389,16 +411,27 @@ class ProTeGiOptimizer:
         self.gold_dir = Path(gold_dir)
         self.split_file = Path(split_file)
         self.entity_cache_dir = Path(entity_cache_dir) if entity_cache_dir else output_dir / "entity_cache"
-        self._preexisting_output_entries = (
-            sorted(path.name for path in self.output_dir.iterdir())
-            if self.output_dir.exists()
-            else []
-        )
-        if self._preexisting_output_entries:
-            raise RuntimeError(
-                "输出目录在本次启动前非空。为保证可审计性，请指定新的空 "
-                f"--output-dir；检测到: {self._preexisting_output_entries[:8]}"
+        self.freeze_bindings = dict(freeze_bindings or {})
+        # 运行稳定性状态（计数器随检查点持久化，随 resume 恢复）。
+        self.stability = new_stability_counters()
+        self._last_synced_eval_transient = 0
+        self._last_synced_eval_budget = 0
+        self._invalid_candidate_ids: set[str] = set()
+        self._resumed_checkpoint: Optional[dict] = None
+        self._restored_rng_state = None
+        if resume:
+            self._init_from_checkpoint(resume_bindings)
+        else:
+            self._preexisting_output_entries = (
+                sorted(path.name for path in self.output_dir.iterdir())
+                if self.output_dir.exists()
+                else []
             )
+            if self._preexisting_output_entries:
+                raise RuntimeError(
+                    "输出目录在本次启动前非空。为保证可审计性，请指定新的空 "
+                    f"--output-dir；检测到: {self._preexisting_output_entries[:8]}"
+                )
 
         # 校验合法性
         valid_methods = {"initial", "mc", "greedy_protegi", "protegi", "protegi_uniform"}
@@ -559,6 +592,271 @@ class ProTeGiOptimizer:
             )
 
         self.cache_manager = EntityCacheManager(self.entity_cache_dir)
+        self.eval_cache = CandidateEvalCache(self.output_dir)
+        if self._resumed_checkpoint is not None:
+            # 应用检查点恢复：call_stats/lineage/曲线修剪（logger 与
+            # lineage_tracker 在上文已按 fresh 创建，此处覆盖为恢复值）。
+            for field, value in self._restored_call_stats.items():
+                setattr(self.call_stats, field, int(value))
+            self.lineage_tracker.nodes = dict(
+                self._restored_lineage.get("nodes") or {}
+            )
+            self.lineage_tracker.edges = list(
+                self._restored_lineage.get("edges") or []
+            )
+            self.logger.prune_rounds_from(self._resume_next_round)
+
+    # ---------- 运行稳定性：检查点 / 恢复 / 评估缓存 ----------
+
+    def _task_runtime_for_key(self) -> dict:
+        """评估缓存 key 用的 task runtime：优先 recorded effective 值。"""
+        eff = self.config.get("effective_task_runtime")
+        if isinstance(eff, dict):
+            return eff
+        return {
+            "_config_snapshot": hashlib.sha256(
+                json.dumps(
+                    {k: v for k, v in self.config.items() if not str(k).startswith("_")},
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    default=str,
+                ).encode("utf-8")
+            ).hexdigest(),
+        }
+
+    def _eval_cache_key_for(
+        self,
+        candidate: PromptCandidate,
+        batch_samples: List[dict],
+        collect_errors: bool,
+        capture_predictions: bool,
+    ) -> str:
+        sample_ids = [
+            sample.get("sample_id") or sample.get("id") or "unknown"
+            for sample in batch_samples
+        ]
+        return eval_cache_key(
+            stage=self.stage,
+            prompt_hash=compute_prompt_hash(candidate.prompt_text),
+            sample_ids=sample_ids,
+            task_runtime=self._task_runtime_for_key(),
+            split_sha256=self.freeze_bindings.get("split_sha256"),
+            gold_aggregate_sha256=self.freeze_bindings.get("gold_aggregate_sha256"),
+            freeze_manifest_sha256=self.freeze_bindings.get(
+                "freeze_manifest_sha256"
+            ),
+            collect_errors=collect_errors,
+            capture_predictions=capture_predictions,
+        )
+
+    def _sync_evaluator_counters(self) -> None:
+        """同步 evaluator 累计计数到稳定性计数器与 call_stats（增量）。"""
+        transient_delta = (
+            self.evaluator.transient_api_retries - self._last_synced_eval_transient
+        )
+        budget_delta = (
+            self.evaluator.budget_exhaustion_retries - self._last_synced_eval_budget
+        )
+        if transient_delta:
+            self._last_synced_eval_transient = self.evaluator.transient_api_retries
+            self.stability["transient_api_retries"] += transient_delta
+            self.call_stats.transient_api_retries += transient_delta
+        if budget_delta:
+            self._last_synced_eval_budget = self.evaluator.budget_exhaustion_retries
+            self.stability["budget_exhaustion_retries"] += budget_delta
+            self.call_stats.budget_exhaustion_retries += budget_delta
+
+    def _record_failure(self, *, where: str, reason: str, round_idx: Any = None) -> None:
+        entry = {"where": where, "reason": str(reason)[:300]}
+        if round_idx is not None:
+            entry["round_idx"] = round_idx
+        self.stability["failure_log"].append(entry)
+
+    def _mark_candidate_invalid(
+        self,
+        candidate: PromptCandidate,
+        error: CandidateBudgetExhaustedError,
+        *,
+        round_idx: Any = None,
+    ) -> None:
+        """将预算耗尽候选隔离：记 INVALID，不写任何 F1，不进 UCB/beam/winner。"""
+        candidate.selection_status = INVALID_BUDGET_EXHAUSTED
+        candidate.estimated_reward = -1.0
+        candidate.ucb_score = -1.0
+        candidate.metrics["evaluation_status"] = INVALID_BUDGET_EXHAUSTED
+        candidate.metrics["failure_reason"] = error.failure_reason
+        for sample_id in error.sample_ids:
+            if sample_id not in self.stability["budget_exhausted_samples"]:
+                self.stability["budget_exhausted_samples"].append(sample_id)
+        if candidate.candidate_id not in self._invalid_candidate_ids:
+            self._invalid_candidate_ids.add(candidate.candidate_id)
+            self.stability["candidates_invalid_budget_exhausted"] += 1
+        self._record_failure(
+            where="candidate_invalid_budget_exhausted",
+            reason=f"{candidate.candidate_id}: {error.failure_reason}",
+            round_idx=round_idx,
+        )
+        self.lineage_tracker.register_candidate(candidate)
+
+    def _checkpoint_bindings(self) -> dict:
+        """当前运行的恢复绑定（由 run_protegi 的实时文件/配置构造）。"""
+        return {
+            "stage": self.stage,
+            "method": self.method,
+            "prompt_scope": self.prompt_scope,
+            "experiment_pair_id": self.experiment_pair_id,
+            "config_file_sha256": self.config.get("_config_file_sha256"),
+            "split_sha256": self.freeze_bindings.get("split_sha256"),
+            "gold_aggregate_sha256": self.freeze_bindings.get(
+                "gold_aggregate_sha256"
+            ),
+            "freeze_manifest_sha256": self.freeze_bindings.get(
+                "freeze_manifest_sha256"
+            ),
+            "effective_task_runtime": self.config.get("effective_task_runtime"),
+            "implementation": implementation_hashes(ROOT),
+        }
+
+    def _save_checkpoint(
+        self,
+        *,
+        phase: str,
+        next_round: int,
+        beam: List[PromptCandidate],
+        p0_candidate: Optional[PromptCandidate],
+        train_samples: List[dict],
+        dev_samples: List[dict],
+        rng_state: Any = None,
+        reason: str = "",
+    ) -> Path:
+        """保存可恢复检查点（transient 耗尽或每轮结束调用）。"""
+        payload = {
+            **self._checkpoint_bindings(),
+            "phase": phase,
+            "next_round": int(next_round),
+            "beam": [c.to_dict() for c in beam],
+            "p0_candidate": p0_candidate.to_dict() if p0_candidate else None,
+            "p0_done": p0_candidate is not None
+            and p0_candidate.metrics.get("evaluation_status", EVALUATION_STATUS_VALID)
+            == EVALUATION_STATUS_VALID
+            and bool(p0_candidate.metrics.get("train_f1") is not None),
+            "lineage": {
+                "nodes": self.lineage_tracker.nodes,
+                "edges": self.lineage_tracker.edges,
+            },
+            "call_stats": self.call_stats.to_dict(),
+            "evaluated_candidate_ids": sorted(self._evaluated_candidate_ids),
+            "rng_state": rng_state_to_json(rng_state) if rng_state is not None else None,
+            "stability": self.stability,
+            "train_sample_ids": [
+                s.get("sample_id") or s.get("id") or "unknown" for s in train_samples
+            ],
+            "dev_sample_ids": [
+                s.get("sample_id") or s.get("id") or "unknown" for s in dev_samples
+            ],
+            "train_sample_ids_sha256": sample_ids_hash([
+                s.get("sample_id") or s.get("id") or "unknown" for s in train_samples
+            ]),
+            "dev_sample_ids_sha256": sample_ids_hash([
+                s.get("sample_id") or s.get("id") or "unknown" for s in dev_samples
+            ]),
+            "reason": reason,
+        }
+        path = save_search_checkpoint(self.output_dir, payload)
+        print(f"[ProTeGi Checkpoint] 已保存检查点: {path} (phase={phase}, next_round={next_round})")
+        return path
+
+    def _init_from_checkpoint(self, resume_bindings: Optional[dict]) -> None:
+        """从检查点恢复搜索状态；绑定不一致则拒绝恢复。"""
+        if resume_bindings is None:
+            raise ValueError("--resume 需要调用方提供 resume_bindings，拒绝盲恢复")
+        checkpoint = load_search_checkpoint(self.output_dir)
+        expected = dict(resume_bindings)
+        validate_checkpoint_bindings(checkpoint, expected)
+        self._resumed_checkpoint = checkpoint
+        self.stability = checkpoint.get("stability") or new_stability_counters()
+        self.stability["resume_count"] = int(self.stability.get("resume_count", 0)) + 1
+        stats = checkpoint.get("call_stats") or {}
+        self._restored_call_stats = {
+            field: int(stats.get(field, 0))
+            for field in (
+                "task_model_calls", "optimizer_model_calls", "task_input_tokens",
+                "task_output_tokens", "optimizer_input_tokens", "optimizer_output_tokens",
+                "num_generated_candidates", "num_evaluated_candidates",
+                "num_duplicate_candidates", "num_evaluated_samples",
+                "transient_api_retries", "budget_exhaustion_retries",
+                "evaluation_cache_hits",
+            )
+        }
+        self._last_synced_eval_transient = int(
+            stats.get("transient_api_retries", 0)
+        )
+        self._last_synced_eval_budget = int(stats.get("budget_exhaustion_retries", 0))
+        self._evaluated_candidate_ids = set(
+            checkpoint.get("evaluated_candidate_ids") or []
+        )
+        self._invalid_candidate_ids = {
+            c["candidate_id"]
+            for c in checkpoint.get("beam", [])
+            if c.get("selection_status") == INVALID_BUDGET_EXHAUSTED
+        }
+        lineage = checkpoint.get("lineage") or {}
+        self._restored_lineage = {
+            "nodes": lineage.get("nodes") or {},
+            "edges": lineage.get("edges") or [],
+        }
+        rng_state = checkpoint.get("rng_state")
+        self._restored_rng_state = (
+            rng_state_from_json(rng_state) if rng_state is not None else None
+        )
+        self._resume_next_round = int(checkpoint.get("next_round", 1))
+        self._resume_phase = str(checkpoint.get("phase", "search"))
+        print(
+            f"[ProTeGi Resume] 已从检查点恢复 "
+            f"(phase={checkpoint.get('phase')}, next_round={checkpoint.get('next_round')}, "
+            f"resume_count={self.stability['resume_count']})"
+        )
+
+    def _guarded_optimizer_call(
+        self,
+        fn,
+        *,
+        phase: str,
+        next_round: int,
+        beam: List[PromptCandidate],
+        p0_candidate: Optional[PromptCandidate],
+        round_idx: Any,
+        train_samples: List[dict],
+        dev_samples: List[dict],
+        rng: Any,
+    ):
+        """Optimizer 侧模型调用守卫：transient 落检查点后退出，budget 硬失败。
+
+        ValueError/assert/程序 bug 直接 hard fail，不写检查点。
+        """
+        try:
+            return fn()
+        except Exception as exc:
+            self._sync_evaluator_counters()
+            kind = classify_search_error(exc)
+            if kind == "transient":
+                self._record_failure(
+                    where=f"transient_api_exhausted_{phase}",
+                    reason=f"{type(exc).__name__}: {exc}",
+                    round_idx=round_idx,
+                )
+                self._save_checkpoint(
+                    phase=phase, next_round=next_round, beam=beam,
+                    p0_candidate=p0_candidate, train_samples=train_samples,
+                    dev_samples=dev_samples, rng_state=rng.getstate(),
+                    reason=f"{type(exc).__name__}: {exc}",
+                )
+                raise exc
+            if kind == "budget":
+                raise RuntimeError(
+                    f"optimizer 模型输出预算耗尽，无法生成候选，run hard fail：{exc}"
+                ) from exc
+            raise
 
     def _validate_candidate_for_arm(self, prompt_text: str):
         """按当前实验臂执行准入校验。"""
@@ -604,24 +902,95 @@ class ProTeGiOptimizer:
         collect_errors: bool = True,
         capture_predictions: bool = False,
     ) -> Tuple[EvaluationResult, List[ErrorExample]]:
-        """在样本批次上评估单个候选。"""
+        """在样本批次上评估单个候选。
+
+        稳定性语义：
+        - 成功评估先查 eval cache，命中则零 task 调用复用；
+        - WindowBudgetExhausted → 转为 CandidateBudgetExhausted（调用方隔离）；
+        - transient 错误直接向上传播（调用方保存检查点后退出）；
+        - 其余错误直接 hard fail，禁止伪造 F1。
+        """
+        from protegi.models import ErrorExample as _ErrorExample
+
+        cache_key = self._eval_cache_key_for(
+            candidate, batch_samples, collect_errors, capture_predictions
+        )
+        cached = self.eval_cache.lookup(cache_key)
+        if cached is not None:
+            self.stability["evaluation_cache_hits"] += 1
+            self.call_stats.evaluation_cache_hits += 1
+            self.call_stats.num_evaluated_samples += len(batch_samples)
+            stored_eval = cached["evaluation"]
+            result = EvaluationResult(
+                tp=int(stored_eval["tp"]),
+                fp=int(stored_eval["fp"]),
+                fn=int(stored_eval["fn"]),
+                precision=float(stored_eval["precision"]),
+                recall=float(stored_eval["recall"]),
+                f1=float(stored_eval["f1"]),
+                details=dict(stored_eval.get("details", {})),
+            )
+            errors = [
+                _ErrorExample(
+                    sample_id=item["sample_id"],
+                    input_text=item["input_text"],
+                    gold_output=item["gold_output"],
+                    predicted_output=item["predicted_output"],
+                    error_details=item.get("error_details", {}),
+                )
+                for item in cached.get("errors", [])
+            ]
+            return result, errors
+
         before_calls = self.evaluator.call_count
         before_input_tokens = self.evaluator.input_tokens_est
         before_output_tokens = self.evaluator.output_tokens_est
-        if self.stage == "entity":
-            res, errs = self.evaluator.evaluate_stage1_batch(
-                samples=batch_samples,
-                full_entity_prompt=candidate.prompt_text,
-                collect_errors=collect_errors,
-                capture_predictions=capture_predictions,
-            )
-        else:
-            res, errs = self.evaluator.evaluate_stage2_batch(
-                samples=batch_samples,
-                full_relation_prompt=candidate.prompt_text,
-                collect_errors=collect_errors,
-                capture_predictions=capture_predictions,
-            )
+        try:
+            if self.stage == "entity":
+                res, errs = self.evaluator.evaluate_stage1_batch(
+                    samples=batch_samples,
+                    full_entity_prompt=candidate.prompt_text,
+                    collect_errors=collect_errors,
+                    capture_predictions=capture_predictions,
+                )
+            else:
+                res, errs = self.evaluator.evaluate_stage2_batch(
+                    samples=batch_samples,
+                    full_relation_prompt=candidate.prompt_text,
+                    collect_errors=collect_errors,
+                    capture_predictions=capture_predictions,
+                )
+        except WindowBudgetExhaustedError as exc:
+            self._sync_evaluator_counters()
+            raise CandidateBudgetExhaustedError(
+                candidate_id=candidate.candidate_id,
+                stage=self.stage,
+                prompt_hash=compute_prompt_hash(candidate.prompt_text),
+                sample_ids=[
+                    s.get("sample_id") or s.get("id") or "unknown"
+                    for s in batch_samples
+                ],
+                failure_reason=(
+                    f"budget exhausted on sample {exc.sample_id} "
+                    f"(max_tokens={exc.max_tokens}, retries_used={exc.retries_used})"
+                ),
+            ) from exc
+        except Exception as exc:
+            self._sync_evaluator_counters()
+            kind = classify_search_error(exc)
+            if kind == "budget":
+                raise CandidateBudgetExhaustedError(
+                    candidate_id=candidate.candidate_id,
+                    stage=self.stage,
+                    prompt_hash=compute_prompt_hash(candidate.prompt_text),
+                    sample_ids=[
+                        s.get("sample_id") or s.get("id") or "unknown"
+                        for s in batch_samples
+                    ],
+                    failure_reason=f"budget exhausted: {type(exc).__name__}: {exc}",
+                ) from exc
+            raise
+        self._sync_evaluator_counters()
 
         self.call_stats.task_model_calls += self.evaluator.call_count - before_calls
         self.call_stats.task_input_tokens += self.evaluator.input_tokens_est - before_input_tokens
@@ -631,6 +1000,9 @@ class ProTeGiOptimizer:
             sample.get("sample_id") or sample.get("id") or "unknown"
             for sample in batch_samples
         ]
+        self.eval_cache.store(
+            cache_key, res.to_dict(), [e.to_dict() for e in errs]
+        )
         return res, errs
 
     def _evaluate_candidate_on_dev(
@@ -671,52 +1043,151 @@ class ProTeGiOptimizer:
                     f"{missing_context[:5]}"
                 )
 
-        # 1. 种子初始化与结构契约检查
-        p0_text = self._get_p0_text()
-        p0_frozen_val = PromptContractValidator.validate_candidate(
-            self.stage,
-            p0_text,
-            prompt_scope="constrained",
-        )
-        if not p0_frozen_val:
-            raise ValueError(
-                f"{self.stage} 种子提示词 P0 未通过冻结契约校验: "
-                f"{p0_frozen_val.error_message}"
+        def _save_transient_checkpoint(
+            exc: Exception,
+            *,
+            phase: str,
+            next_round: int,
+            beam: List[PromptCandidate],
+            p0_candidate: Optional[PromptCandidate],
+            round_idx: Any = None,
+        ) -> None:
+            """Transient 重试耗尽：落检查点后由调用方退出（禁止静默继续）。"""
+            self._sync_evaluator_counters()
+            self._record_failure(
+                where=f"transient_api_exhausted_{phase}",
+                reason=f"{type(exc).__name__}: {exc}",
+                round_idx=round_idx,
+            )
+            self._save_checkpoint(
+                phase=phase,
+                next_round=next_round,
+                beam=beam,
+                p0_candidate=p0_candidate,
+                train_samples=train_samples,
+                dev_samples=dev_samples,
+                rng_state=rng.getstate(),
+                reason=f"{type(exc).__name__}: {exc}",
             )
 
-        p0_candidate = PromptCandidate(
-            candidate_id=f"P_{self.stage[0].upper()}0",
-            prompt_text=p0_text,
-            parent_id=None,
-            generation_type="initial",
-            round_idx=0,
-        )
+        def _fail_transient(
+            exc: Exception,
+            *,
+            phase: str,
+            next_round: int,
+            beam: List[PromptCandidate],
+            p0_candidate: Optional[PromptCandidate],
+            round_idx: Any = None,
+        ) -> "NoReturn":
+            _save_transient_checkpoint(
+                exc, phase=phase, next_round=next_round, beam=beam,
+                p0_candidate=p0_candidate, round_idx=round_idx,
+            )
+            raise exc
 
-        self.lineage_tracker.register_candidate(p0_candidate)
+        # Resume 样本一致性校验（与检查点记录的样本集合比对）。
+        resumed = self._resumed_checkpoint is not None
+        if resumed:
+            ckpt = self._resumed_checkpoint
+            live_train_ids = [
+                s.get("sample_id") or s.get("id") or "unknown" for s in train_samples
+            ]
+            live_dev_ids = [
+                s.get("sample_id") or s.get("id") or "unknown" for s in dev_samples
+            ]
+            if sample_ids_hash(live_train_ids) != ckpt.get("train_sample_ids_sha256"):
+                raise ValueError("恢复的 train 样本集合与检查点不一致，拒绝恢复")
+            if sample_ids_hash(live_dev_ids) != ckpt.get("dev_sample_ids_sha256"):
+                raise ValueError("恢复的 dev 样本集合与检查点不一致，拒绝恢复")
+            if self._restored_rng_state is not None:
+                rng.setstate(self._restored_rng_state)
+            beam = [PromptCandidate.from_dict(c) for c in ckpt.get("beam", [])]
+            self._invalid_candidate_ids = {
+                c["candidate_id"]
+                for c in ckpt.get("beam", [])
+                if c.get("selection_status") == INVALID_BUDGET_EXHAUSTED
+            }
+            p0_restored = ckpt.get("p0_candidate")
+            p0_candidate = (
+                PromptCandidate.from_dict(p0_restored) if p0_restored else None
+            )
+            for candidate in beam:
+                self.lineage_tracker.register_candidate(candidate)
+            if p0_candidate is not None:
+                self.lineage_tracker.register_candidate(p0_candidate)
+            resume_phase = self._resume_phase
+            start_round = int(self._resume_next_round)
+            p0_done = start_round >= 1 or resume_phase == "dev"
+        else:
+            beam = []
+            p0_candidate = None
+            resume_phase = "search"
+            start_round = 1
+            p0_done = False
 
-        # 未实现输入/配置/随机状态完整绑定前，禁止静默续跑并混合两次实验。
-        # 初始训练集评估使用固定种子的随机共享批次，不采用文件顺序前缀。
-        p0_init_pool = list(train_samples)
-        random.Random(self.seed).shuffle(p0_init_pool)
-        p0_init_batch = p0_init_pool[: self.eval_batch_size]
-        p0_train_eval, _ = self._evaluate_candidate_batch(
-            p0_candidate,
-            p0_init_batch,
-            collect_errors=False,
-        )
-        self._evaluated_candidate_ids.add(p0_candidate.candidate_id)
-        self.call_stats.num_evaluated_candidates = len(self._evaluated_candidate_ids)
-        p0_selection_counts = selection_counts_from_result(
-            p0_train_eval, self.selection_entity_type
-        )
-        p0_selection_eval = aggregate_micro_f1(*p0_selection_counts)
-        p0_candidate.tp, p0_candidate.fp, p0_candidate.fn = p0_selection_counts
-        p0_candidate.estimated_reward = p0_selection_eval.f1
-        p0_candidate.selection_status = "selected"
-        p0_candidate.metrics = {
-            "train_f1": p0_train_eval.f1,
-            "train_precision": p0_train_eval.precision,
-            "train_recall": p0_train_eval.recall,
+        if not p0_done:
+            # 1. 种子初始化与结构契约检查
+            p0_text = self._get_p0_text()
+            p0_frozen_val = PromptContractValidator.validate_candidate(
+                self.stage,
+                p0_text,
+                prompt_scope="constrained",
+            )
+            if not p0_frozen_val:
+                raise ValueError(
+                    f"{self.stage} 种子提示词 P0 未通过冻结契约校验: "
+                    f"{p0_frozen_val.error_message}"
+                )
+
+            p0_candidate = PromptCandidate(
+                candidate_id=f"P_{self.stage[0].upper()}0",
+                prompt_text=p0_text,
+                parent_id=None,
+                generation_type="initial",
+                round_idx=0,
+            )
+
+            self.lineage_tracker.register_candidate(p0_candidate)
+
+            # 未实现输入/配置/随机状态完整绑定前，禁止静默续跑并混合两次实验。
+            # 初始训练集评估使用固定种子的随机共享批次，不采用文件顺序前缀。
+            p0_init_pool = list(train_samples)
+            random.Random(self.seed).shuffle(p0_init_pool)
+            p0_init_batch = p0_init_pool[: self.eval_batch_size]
+            try:
+                p0_train_eval, _ = self._evaluate_candidate_batch(
+                    p0_candidate,
+                    p0_init_batch,
+                    collect_errors=False,
+                )
+            except CandidateBudgetExhaustedError as exc:
+                self._sync_evaluator_counters()
+                self._mark_candidate_invalid(p0_candidate, exc, round_idx=0)
+                raise RuntimeError(
+                    f"P0 种子候选持续输出预算耗尽，整个 run hard fail：{exc.failure_reason}"
+                ) from exc
+            except Exception as exc:
+                self._sync_evaluator_counters()
+                if classify_search_error(exc) == "transient":
+                    _fail_transient(
+                        exc, phase="search", next_round=0, beam=[],
+                        p0_candidate=p0_candidate, round_idx=0,
+                    )
+                raise
+            self._evaluated_candidate_ids.add(p0_candidate.candidate_id)
+            self.call_stats.num_evaluated_candidates = len(self._evaluated_candidate_ids)
+            p0_selection_counts = selection_counts_from_result(
+                p0_train_eval, self.selection_entity_type
+            )
+            p0_selection_eval = aggregate_micro_f1(*p0_selection_counts)
+            p0_candidate.tp, p0_candidate.fp, p0_candidate.fn = p0_selection_counts
+            p0_candidate.estimated_reward = p0_selection_eval.f1
+            p0_candidate.selection_status = "selected"
+            p0_candidate.metrics = {
+                "evaluation_status": EVALUATION_STATUS_VALID,
+                "train_f1": p0_train_eval.f1,
+                "train_precision": p0_train_eval.precision,
+                "train_recall": p0_train_eval.recall,
             "train_selection_objective": (
                 f"strict_{self.selection_entity_type}_f1"
                 if self.selection_entity_type
@@ -725,23 +1196,39 @@ class ProTeGiOptimizer:
             "train_selection_f1": p0_selection_eval.f1,
             "train_sample_ids": p0_train_eval.details.get("sample_ids", []),
         }
-        self._attach_prompt_scope_audit(p0_candidate)
+            self._attach_prompt_scope_audit(p0_candidate)
 
-        beam = [p0_candidate]
-        self.lineage_tracker.register_candidate(p0_candidate)
-        self.logger.log_round(
-            round_idx=0,
-            beam=beam,
-            candidates=[p0_candidate],
-            generated_candidates=[p0_candidate],
-            gradients=[],
-            call_stats=self.call_stats,
-        )
-        start_round = 1
+            beam = [p0_candidate]
+            self.lineage_tracker.register_candidate(p0_candidate)
+            self.logger.log_round(
+                round_idx=0,
+                beam=beam,
+                candidates=[p0_candidate],
+                generated_candidates=[p0_candidate],
+                gradients=[],
+                call_stats=self.call_stats,
+                stability=dict(self.stability),
+            )
+            start_round = 1
 
         # 若方法为 initial，则对 P0 进行 Dev 评估并输出
         if self.method == "initial" or self.optimization_steps <= 0:
-            dev_eval_p0 = self._evaluate_candidate_on_dev(p0_candidate, dev_samples)
+            try:
+                dev_eval_p0 = self._evaluate_candidate_on_dev(p0_candidate, dev_samples)
+            except CandidateBudgetExhaustedError as exc:
+                self._sync_evaluator_counters()
+                self._mark_candidate_invalid(p0_candidate, exc, round_idx="dev")
+                raise RuntimeError(
+                    f"P0 在 Dev 评估中持续输出预算耗尽，整个 run hard fail：{exc.failure_reason}"
+                ) from exc
+            except Exception as exc:
+                self._sync_evaluator_counters()
+                if classify_search_error(exc) == "transient":
+                    _fail_transient(
+                        exc, phase="dev", next_round=self.optimization_steps + 1,
+                        beam=beam, p0_candidate=p0_candidate, round_idx="dev",
+                    )
+                raise
             p0_candidate.metrics["dev_f1"] = dev_eval_p0.f1
             p0_candidate.metrics["dev_precision"] = dev_eval_p0.precision
             p0_candidate.metrics["dev_recall"] = dev_eval_p0.recall
@@ -790,13 +1277,42 @@ class ProTeGiOptimizer:
             round_error_examples: List[dict] = []
             round_gradient_minibatches: List[dict] = []
             selector_history: List[dict] = []
+            round_rng_state = rng.getstate()
+
+            def _guarded(fn):
+                return self._guarded_optimizer_call(
+                    fn, phase="search", next_round=r_idx, beam=beam,
+                    p0_candidate=p0_candidate, round_idx=r_idx,
+                    train_samples=train_samples, dev_samples=dev_samples, rng=rng,
+                )
 
             # (1) 候选扩展生成阶段 (Expansion)
             for parent_idx, parent in enumerate(beam):
                 generated_before_parent = len(round_generated)
                 # 抽取错误样本 minibatch (严格来自 train_samples)
                 minibatch = rng.sample(train_samples, min(self.minibatch_size, len(train_samples)))
-                _, errors = self._evaluate_candidate_batch(parent, minibatch, collect_errors=True)
+                try:
+                    _, errors = self._evaluate_candidate_batch(parent, minibatch, collect_errors=True)
+                except CandidateBudgetExhaustedError as exc:
+                    self._sync_evaluator_counters()
+                    self._mark_candidate_invalid(parent, exc, round_idx=r_idx)
+                    continue
+                except Exception as exc:
+                    self._sync_evaluator_counters()
+                    if classify_search_error(exc) == "transient":
+                        self._record_failure(
+                            where="transient_api_exhausted_search",
+                            reason=f"{type(exc).__name__}: {exc}",
+                            round_idx=r_idx,
+                        )
+                        self._save_checkpoint(
+                            phase="search", next_round=r_idx, beam=beam,
+                            p0_candidate=p0_candidate,
+                            train_samples=train_samples, dev_samples=dev_samples,
+                            rng_state=round_rng_state,
+                            reason=f"{type(exc).__name__}: {exc}",
+                        )
+                    raise
                 if self.error_focus_entity_type:
                     errors = focus_entity_error_examples(
                         errors, self.error_focus_entity_type
@@ -819,10 +1335,12 @@ class ProTeGiOptimizer:
 
                 if self.method == "mc":
                     # MC 基线：无梯度生成，仅做释义扩展
-                    paras = self.paraphraser.paraphrase_prompt(
-                        base_candidate=parent,
-                        num_paraphrases=self.successors_per_parent,
-                        id_prefix=f"c_r{r_idx}_p{parent_idx}_mc",
+                    paras = _guarded(
+                        lambda: self.paraphraser.paraphrase_prompt(
+                            base_candidate=parent,
+                            num_paraphrases=self.successors_per_parent,
+                            id_prefix=f"c_r{r_idx}_p{parent_idx}_mc",
+                        )
                     )
                     for para in paras:
                         round_generated.append(para)
@@ -837,23 +1355,27 @@ class ProTeGiOptimizer:
                 else:
                     # ProTeGi 模式：梯度批评 -> 针对性重写 -> 释义扩展
                     # 生成文本梯度 (max_error_groups=1 确保单父代调用严格受控)
-                    grads = self.gradient_generator.generate_gradients(
-                        parent_candidate=parent,
-                        errors=errors,
-                        errors_per_group=self.errors_per_group,
-                        gradients_per_error_group=self.gradients_per_error_group,
-                        max_error_groups=self.max_error_groups,
+                    grads = _guarded(
+                        lambda: self.gradient_generator.generate_gradients(
+                            parent_candidate=parent,
+                            errors=errors,
+                            errors_per_group=self.errors_per_group,
+                            gradients_per_error_group=self.gradients_per_error_group,
+                            max_error_groups=self.max_error_groups,
+                        )
                     )
                     round_gradients.extend(grads)
 
                     for g_idx, grad in enumerate(grads):
                         # 编辑重写
-                        edit_cand = self.prompt_editor.edit_prompt(
-                            parent_candidate=parent,
-                            gradient=grad,
-                            errors=errors,
-                            errors_per_group=self.errors_per_group,
-                            next_candidate_id=f"c_r{r_idx}_p{parent_idx}_g{g_idx}_edit",
+                        edit_cand = _guarded(
+                            lambda: self.prompt_editor.edit_prompt(
+                                parent_candidate=parent,
+                                gradient=grad,
+                                errors=errors,
+                                errors_per_group=self.errors_per_group,
+                                next_candidate_id=f"c_r{r_idx}_p{parent_idx}_g{g_idx}_edit",
+                            )
                         )
                         if edit_cand:
                             round_generated.append(edit_cand)
@@ -871,10 +1393,12 @@ class ProTeGiOptimizer:
 
                             parent_successors.append(edit_cand)
                             # 对合规的编辑版本进行释义扩充
-                            paras = self.paraphraser.paraphrase_prompt(
-                                base_candidate=edit_cand,
-                                num_paraphrases=self.paraphrases_per_edit,
-                                id_prefix=f"c_r{r_idx}_p{parent_idx}_g{g_idx}_para",
+                            paras = _guarded(
+                                lambda: self.paraphraser.paraphrase_prompt(
+                                    base_candidate=edit_cand,
+                                    num_paraphrases=self.paraphrases_per_edit,
+                                    id_prefix=f"c_r{r_idx}_p{parent_idx}_g{g_idx}_para",
+                                )
                             )
                             for para in paras:
                                 round_generated.append(para)
@@ -933,7 +1457,16 @@ class ProTeGiOptimizer:
                     )
 
             # 将上一轮 Beam 也作为候选之一参与本轮竞争 (允许保留优质父代)
-            all_pool = list(round_candidates) + list(beam)
+            # INVALID 候选（预算耗尽）永不进入 UCB/beam：先过滤。
+            all_pool = [
+                c for c in list(round_candidates) + list(beam)
+                if c.selection_status != INVALID_BUDGET_EXHAUSTED
+            ]
+            if not all_pool and (round_candidates or beam):
+                raise RuntimeError(
+                    f"Round {r_idx} 无有效候选可评估（新候选与 incumbent "
+                    "全部因预算耗尽 INVALID），明确失败，禁止从无效候选中选择。"
+                )
 
             # (2) 候选评估与选择阶段 (Selection / Bandits - 严格在 train_samples 上进行)
             if not all_pool:
@@ -964,12 +1497,58 @@ class ProTeGiOptimizer:
 
                 def eval_batch_fn(cand: PromptCandidate, candidate_pull_idx: int) -> EvaluationResult:
                     eval_b = eval_batches[candidate_pull_idx % len(eval_batches)]
-                    res, _ = self._evaluate_candidate_batch(cand, eval_b, collect_errors=False)
+                    try:
+                        res, _ = self._evaluate_candidate_batch(cand, eval_b, collect_errors=False)
+                    except CandidateBudgetExhaustedError as exc:
+                        self._sync_evaluator_counters()
+                        self._mark_candidate_invalid(cand, exc, round_idx=r_idx)
+                        raise RoundSelectionAborted(
+                            invalid_candidate_id=cand.candidate_id,
+                            round_idx=r_idx,
+                        ) from exc
                     return res
 
-                selector_history = self.selector.execute_evaluation_budget(all_pool, eval_batch_fn)
+                try:
+                    selector_history = self.selector.execute_evaluation_budget(all_pool, eval_batch_fn)
+                except RoundSelectionAborted as exc:
+                    # 中止本轮选择，保留 incumbent beam；归档后继续下一轮。
+                    self._record_failure(
+                        where="round_selection_aborted",
+                        reason=str(exc),
+                        round_idx=r_idx,
+                    )
+                    self.logger.log_round(
+                        round_idx=r_idx,
+                        beam=beam,
+                        candidates=all_pool,
+                        generated_candidates=round_generated,
+                        gradients=round_gradients,
+                        selector_history=[],
+                        call_stats=self.call_stats,
+                        error_examples=round_error_examples,
+                        gradient_minibatches=round_gradient_minibatches,
+                        stability=dict(self.stability),
+                    )
+                    continue
+                except Exception as exc:
+                    self._sync_evaluator_counters()
+                    if classify_search_error(exc) == "transient":
+                        self._record_failure(
+                            where="transient_api_exhausted_search",
+                            reason=f"{type(exc).__name__}: {exc}",
+                            round_idx=r_idx,
+                        )
+                        self._save_checkpoint(
+                            phase="search", next_round=r_idx, beam=beam,
+                            p0_candidate=p0_candidate,
+                            train_samples=train_samples, dev_samples=dev_samples,
+                            rng_state=round_rng_state,
+                            reason=f"{type(exc).__name__}: {exc}",
+                        )
+                    raise
                 self._evaluated_candidate_ids.update(
                     candidate.candidate_id for candidate in all_pool
+                    if candidate.selection_status != INVALID_BUDGET_EXHAUSTED
                 )
                 self.call_stats.num_evaluated_candidates = len(
                     self._evaluated_candidate_ids
@@ -989,14 +1568,52 @@ class ProTeGiOptimizer:
                 call_stats=self.call_stats,
                 error_examples=round_error_examples,
                 gradient_minibatches=round_gradient_minibatches,
+                stability=dict(self.stability),
+            )
+            # 每轮结束落检查点：任何中断都可从下一轮恢复，无需 Round 0 重跑。
+            self._save_checkpoint(
+                phase="search",
+                next_round=r_idx + 1,
+                beam=beam,
+                p0_candidate=p0_candidate,
+                train_samples=train_samples,
+                dev_samples=dev_samples,
+                rng_state=rng.getstate(),
+                reason=f"round {r_idx} completed",
             )
 
         # 3. 搜索结束，对最终 Beam (B_T) 执行全流程唯一一次 Dev 验证集统一评估决选
         # Dev is used only in the final selection phase after all optimization rounds are completed.
+        # Budget 耗尽的候选直接剔除（不评分）；若无有效候选则明确失败。
+        # Transient 耗尽则落检查点 (phase=dev) 后退出，可恢复。
         print(f"\n[ProTeGi 搜索结束] 共完成 {self.optimization_steps} 轮 Train 搜索。Dev is used only in the final selection phase after all optimization rounds are completed. 开始对最终 Beam ({len(beam)} 个候选) 执行统一 Dev 评估选优...")
         dev_results_by_id: Dict[str, EvaluationResult] = {}
         for cand in beam:
-            dev_eval = self._evaluate_candidate_on_dev(cand, dev_samples)
+            if cand.selection_status == INVALID_BUDGET_EXHAUSTED:
+                continue
+            try:
+                dev_eval = self._evaluate_candidate_on_dev(cand, dev_samples)
+            except CandidateBudgetExhaustedError as exc:
+                self._sync_evaluator_counters()
+                self._mark_candidate_invalid(cand, exc, round_idx="dev")
+                continue
+            except Exception as exc:
+                self._sync_evaluator_counters()
+                if classify_search_error(exc) == "transient":
+                    self._record_failure(
+                        where="transient_api_exhausted_dev",
+                        reason=f"{type(exc).__name__}: {exc}",
+                        round_idx="dev",
+                    )
+                    self._save_checkpoint(
+                        phase="dev", next_round=self.optimization_steps + 1,
+                        beam=beam, p0_candidate=p0_candidate,
+                        train_samples=train_samples, dev_samples=dev_samples,
+                        rng_state=rng.getstate(),
+                        reason=f"{type(exc).__name__}: {exc}",
+                    )
+                raise
+            dev_results_by_id[cand.candidate_id] = dev_eval
             dev_results_by_id[cand.candidate_id] = dev_eval
             cand.metrics["dev_f1"] = dev_eval.f1
             cand.metrics["dev_precision"] = dev_eval.precision
@@ -1008,7 +1625,30 @@ class ProTeGiOptimizer:
         # 单独跑 P0 的 Dev baseline 用于记录初始对比，绝不参与 Full ProTeGi 候选决赛
         dev_eval_p0 = dev_results_by_id.get(p0_candidate.candidate_id)
         if dev_eval_p0 is None:
-            dev_eval_p0 = self._evaluate_candidate_on_dev(p0_candidate, dev_samples)
+            try:
+                dev_eval_p0 = self._evaluate_candidate_on_dev(p0_candidate, dev_samples)
+            except CandidateBudgetExhaustedError as exc:
+                self._sync_evaluator_counters()
+                self._mark_candidate_invalid(p0_candidate, exc, round_idx="dev")
+                raise RuntimeError(
+                    f"P0 在 Dev 评估中持续输出预算耗尽，整个 run hard fail：{exc.failure_reason}"
+                ) from exc
+            except Exception as exc:
+                self._sync_evaluator_counters()
+                if classify_search_error(exc) == "transient":
+                    self._record_failure(
+                        where="transient_api_exhausted_dev",
+                        reason=f"{type(exc).__name__}: {exc}",
+                        round_idx="dev",
+                    )
+                    self._save_checkpoint(
+                        phase="dev", next_round=self.optimization_steps + 1,
+                        beam=beam, p0_candidate=p0_candidate,
+                        train_samples=train_samples, dev_samples=dev_samples,
+                        rng_state=rng.getstate(),
+                        reason=f"{type(exc).__name__}: {exc}",
+                    )
+                raise
             dev_results_by_id[p0_candidate.candidate_id] = dev_eval_p0
         p0_candidate.metrics["dev_f1"] = dev_eval_p0.f1
         p0_candidate.metrics["dev_precision"] = dev_eval_p0.precision
@@ -1019,13 +1659,27 @@ class ProTeGiOptimizer:
 
         # 默认保留旧实验“P0 仅作 baseline”的行为；定向分支显式允许 P0
         # 参与自动决选，使“没有合格改进”能够成为可审计结果。
-        finalists = list(beam)
+        # INVALID 候选永不进入决赛；若无有效候选则明确失败。
+        finalists = [
+            c for c in beam
+            if c.selection_status != INVALID_BUDGET_EXHAUSTED
+            and c.candidate_id in dev_results_by_id
+        ]
         if self.include_p0_in_final_selection:
             if all(c.candidate_id != p0_candidate.candidate_id for c in finalists):
-                finalists.append(p0_candidate)
+                if (
+                    p0_candidate.selection_status != INVALID_BUDGET_EXHAUSTED
+                    and p0_candidate.candidate_id in dev_results_by_id
+                ):
+                    finalists.append(p0_candidate)
         else:
             non_initial = [c for c in finalists if c.generation_type != "initial"]
             finalists = non_initial or finalists
+        if not finalists:
+            raise RuntimeError(
+                "Dev 决选中无有效候选（全部因预算耗尽 INVALID），"
+                "明确失败，禁止从无效候选中选择 winner。"
+            )
 
         winner, final_selection_audits = select_final_candidate(
             finalists,
@@ -1151,6 +1805,28 @@ class ProTeGiOptimizer:
                 if self.prompt_scope == "constrained"
                 else "runtime_interface_only"
             ),
+            "search_stability": {
+                "evaluation_status": "completed",
+                "failure_reason": None,
+                "budget_exhausted_samples": list(
+                    self.stability["budget_exhausted_samples"]
+                ),
+                "budget_exhaustion_retries": int(
+                    self.stability["budget_exhaustion_retries"]
+                ),
+                "candidates_valid": len(self._evaluated_candidate_ids),
+                "candidates_invalid_budget_exhausted": int(
+                    self.stability["candidates_invalid_budget_exhausted"]
+                ),
+                "transient_api_retries": int(
+                    self.stability["transient_api_retries"]
+                ),
+                "evaluation_cache_hits": int(
+                    self.stability.get("evaluation_cache_hits", 0)
+                ),
+                "resume_count": int(self.stability.get("resume_count", 0)),
+                "failure_log": list(self.stability.get("failure_log", [])),
+            },
             "winner_candidate_id": winner.candidate_id,
             "winner_round": winner.round_idx,
             "winner_metrics": winner.metrics,
@@ -1202,3 +1878,10 @@ class ProTeGiOptimizer:
             final_prompt_filename=final_prompt_filename,
             canonical_prompt_sha256=compute_prompt_hash(winner.prompt_text),
         )
+        # 成功完成：删除检查点（恢复仅用于未完成的 run；eval 缓存保留复用）。
+        try:
+            checkpoint_file = self.output_dir / "search_checkpoint.json"
+            if checkpoint_file.is_file():
+                checkpoint_file.unlink()
+        except OSError:
+            pass

@@ -139,6 +139,10 @@ class CallStats:
     num_evaluated_candidates: int = 0
     num_duplicate_candidates: int = 0
     num_evaluated_samples: int = 0
+    # 运行稳定性计数（加性字段，不影响历史语义）。
+    transient_api_retries: int = 0
+    budget_exhaustion_retries: int = 0
+    evaluation_cache_hits: int = 0
 
     def to_dict(self) -> dict:
         return {
@@ -152,4 +156,7 @@ class CallStats:
             "num_evaluated_candidates": self.num_evaluated_candidates,
             "num_duplicate_candidates": self.num_duplicate_candidates,
             "num_evaluated_samples": self.num_evaluated_samples,
+            "transient_api_retries": self.transient_api_retries,
+            "budget_exhaustion_retries": self.budget_exhaustion_retries,
+            "evaluation_cache_hits": self.evaluation_cache_hits,
         }

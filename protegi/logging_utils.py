@@ -65,6 +65,7 @@ class ProTeGiLogger:
         generated_candidates: Optional[List[PromptCandidate]] = None,
         error_examples: Optional[List[dict]] = None,
         gradient_minibatches: Optional[List[dict]] = None,
+        stability: Optional[dict] = None,
     ) -> Path:
         """持久化保存单轮所有搜索与评估产物。"""
         round_dir = self.output_dir / f"round_{round_idx}"
@@ -110,6 +111,12 @@ class ProTeGiLogger:
                 json.dumps(selector_history, ensure_ascii=False, indent=2), encoding="utf-8"
             )
 
+        # 4b. stability.json（运行稳定性快照，加性文件）。
+        if stability is not None:
+            (round_dir / "stability.json").write_text(
+                json.dumps(stability, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+
         # 5. optimization_curve.csv 追加记录
         best_score = max((c.estimated_reward for c in beam), default=0.0)
         mean_beam_score = (
@@ -133,6 +140,39 @@ class ProTeGiLogger:
             ])
 
         return round_dir
+
+    def prune_rounds_from(self, round_idx: int) -> None:
+        """Resume 支持：删除 >= round_idx 的轮次目录与曲线行，避免 redo 重复。
+
+        检查点本身与 eval_cache.json 不受影响。
+        """
+        for child in sorted(self.output_dir.iterdir()):
+            if not child.is_dir():
+                continue
+            name = child.name
+            if not name.startswith("round_"):
+                continue
+            try:
+                number = int(name.split("_", 1)[1])
+            except (ValueError, IndexError):
+                continue
+            if number >= round_idx:
+                for path in sorted(child.rglob("*"), reverse=True):
+                    if path.is_file():
+                        path.unlink()
+                child.rmdir()
+        if not self.curve_csv_path.is_file():
+            return
+        with open(self.curve_csv_path, "r", newline="", encoding="utf-8") as f:
+            rows = list(csv.reader(f))
+        if not rows:
+            return
+        header, data = rows[0], rows[1:]
+        kept = [row for row in data if not (len(row) > 2 and row[2].isdigit() and int(row[2]) >= round_idx)]
+        with open(self.curve_csv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            writer.writerows(kept)
 
     def save_final_prompt(self, prompt_text: str, filename: str = "final_prompt.txt") -> Path:
         """保存最终选定的最优提示词文本。"""

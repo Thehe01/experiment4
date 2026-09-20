@@ -33,9 +33,17 @@ RETRYABLE_MESSAGES = (
     "connection reset",
     "timeout",
     "rate limit",
+    "too many requests",
+    "internal server error",
+    "service unavailable",
+    "bad gateway",
+    "gateway timeout",
+    "overloaded",
+    "500",
     "502",
     "503",
     "504",
+    "429",
     "broken pipe",
 )
 
@@ -64,9 +72,15 @@ def retry_api_call(
     initial_delay: float = 2.0,
     backoff_factor: float = 2.0,
     max_delay: float = 60.0,
+    on_retry: Optional[Callable[[Exception, int], None]] = None,
     **kwargs: Any,
 ) -> Any:
-    """使用指数退避重试执行 API 调用。"""
+    """使用指数退避重试执行 API 调用。
+
+    on_retry(exc, attempt) 在每次退避等待前调用一次，供调用方统计
+    transient 重试次数；回调必须轻量，异常会直接向上传播。
+    默认行为与历史完全一致（重试策略参数未动）。
+    """
     delay = initial_delay
     last_exc: Optional[Exception] = None
 
@@ -78,6 +92,8 @@ def retry_api_call(
             if not is_retryable_error(e) or attempt == max_retries:
                 raise
             err_desc = f"{type(e).__name__}: {str(e)[:120]}"
+            if on_retry is not None:
+                on_retry(e, attempt)
             print(
                 f"[ProTeGi Retry] 捕获网络抖动异常 ({err_desc})，第 {attempt}/{max_retries} 次重试，等待 {delay:.1f}s...",
                 file=sys.stderr,

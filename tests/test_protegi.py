@@ -415,7 +415,7 @@ class TestProTeGiCore(unittest.TestCase):
             config = {}
 
         evaluator = TaskEvaluator(task_client=FakeClient())
-        evaluator.predict_stage2_window = lambda text, entities, prompt: [
+        evaluator.predict_stage2_window = lambda text, entities, prompt, sample_id=None: [
             {"type": "affects", "head": "P1", "tail": "P2"}
         ]
         sample = {
@@ -828,7 +828,7 @@ class TestProTeGiCore(unittest.TestCase):
             task_client=FakeClient(),
             vulnerability_anchored_backfill=True,
         )
-        evaluator.predict_stage1_texts = lambda texts, prompt, document_abbreviations=None: [
+        evaluator.predict_stage1_texts = lambda texts, prompt, document_abbreviations=None, sample_ids=None: [
             [{"id": "E1", "text": "Microsoft Exchange application", "type": "Configuration", "start": 0, "end": 30}],
             [],
         ]
@@ -1949,18 +1949,6 @@ class TestPromoteProvenance(unittest.TestCase):
             self.assertIn("Task Runtime", str(ctx.exception))
 
 
-    def test_promote_rejects_task_runtime_mismatch_between_stages(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            paths = self._make_valid_promote_fixture(Path(tmpdir))
-            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
-            data["config"]["task_temperature"] = 0.7
-            data["config"]["effective_task_runtime"]["temperature"] = 0.7
-            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
-            with self.assertRaises(ValueError) as ctx:
-                self._promote(paths)
-            self.assertIn("Task Runtime", str(ctx.exception))
-
-
 class TestAllowCustomSplitNeverFormal(unittest.TestCase):
     def test_allow_custom_split_is_never_formal_eligible(self):
         from run_protegi import compute_formal_eligibility
@@ -2621,6 +2609,378 @@ class TestEffectiveRuntime(unittest.TestCase):
             {"config": {"effective_task_runtime": eff_b}}, "Stage 2"
         )
         self.assertNotEqual(ra["temperature"], rb["temperature"])
+
+
+    def test_stage1_stage2_effective_runtime_must_match(self):
+        from promote_protegi_v6 import _extract_task_runtime
+
+        eff_a = {
+            "model": "hy3", "max_workers": 8, "temperature": 0.0,
+            "thinking": "disabled", "reasoning_effort": "none",
+            "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
+            "window_overlap": 400, "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+        }
+        eff_b = dict(eff_a)
+        eff_b["temperature"] = 0.7
+        ra = _extract_task_runtime(
+            {"config": {"effective_task_runtime": eff_a}}, "Stage 1"
+        )
+        rb = _extract_task_runtime(
+            {"config": {"effective_task_runtime": eff_b}}, "Stage 2"
+        )
+        self.assertNotEqual(ra["temperature"], rb["temperature"])
+
+
+class TestSearchStabilityOffline(unittest.TestCase):
+    """Stage 1 运行稳定性：纯离线测试，不调用真实模型。"""
+
+    def _runtime(self, **overrides):
+        rt = {
+            "model": "mock-task", "max_workers": 1, "temperature": 0.0,
+            "thinking": "disabled", "reasoning_effort": "none",
+            "top_p": 0.95, "max_tokens": 16, "window_chars": 3000,
+            "window_overlap": 400, "document_abbreviation_context": False,
+            "vulnerability_anchored_backfill": False,
+        }
+        rt.update(overrides)
+        return rt
+
+    def _config(self, **overrides):
+        cfg = {
+            "prompt_scope": "constrained",
+            "experiment_pair_id": "test-stability-v1",
+            "_config_file_sha256": "test-config-sha",
+            "seed": 42, "beam_width": 1, "optimization_steps": 1,
+            "minibatch_size": 1, "eval_batch_size": 1,
+            "total_pull_budget_per_round": 4, "min_pulls_per_candidate": 1,
+            "errors_per_group": 1, "gradients_per_error_group": 1,
+            "max_error_groups": 1, "edits_per_gradient": 1,
+            "paraphrases_per_edit": 0, "successors_per_parent": 1,
+            "ucb_c": 2.0,
+            "task_model": "mock-task", "task_max_workers": 1,
+            "task_temperature": 0.0, "task_thinking": "disabled",
+            "task_reasoning_effort": "none", "task_top_p": 0.95,
+            "task_max_tokens": 16,
+            "optimizer_model": "mock-opt",
+            "effective_task_runtime": self._runtime(),
+        }
+        cfg.update(overrides)
+        return cfg
+
+    def _bindings(self):
+        return {
+            "split_sha256": "test-split-sha",
+            "gold_aggregate_sha256": "test-gold-agg",
+            "freeze_manifest_sha256": "test-freeze-sha",
+            "config_file_sha256": "test-config-sha",
+        }
+
+    def _samples(self, n=3):
+        return [
+            {
+                "sample_id": f"d{i}_w0", "doc_id": f"d{i}",
+                "text": f"CVE-2021-100{i} affects Acme Widget {i}.",
+                "gold_entities": [
+                    {"id": "E1", "type": "Vulnerability",
+                     "start": 0, "end": 14}
+                ],
+                "gold_relations": [],
+            }
+            for i in range(n)
+        ]
+
+    class _TaskClient:
+        """可编程 task client：ok / budget / transient 三种行为。"""
+
+        def __init__(self, mode="ok", fail_on=0):
+            self.config = {
+                "model": "mock-task", "temperature": 0.0,
+                "thinking": "disabled", "reasoning_effort": "none",
+                "top_p": 0.95, "max_tokens": 16,
+            }
+            self.mode = mode
+            self.fail_on = fail_on
+            self.calls = 0
+
+        def call_fn(self, prompt="", system_prompt="", config=None):
+            from llm_extractor import ModelOutputBudgetExhaustedError
+
+            self.calls += 1
+            if self.mode == "budget_always":
+                raise ModelOutputBudgetExhaustedError(16, 16)
+            if self.mode == "budget_on_bad" and "BAD" in prompt:
+                raise ModelOutputBudgetExhaustedError(16, 16)
+            if self.mode == "transient_once" and self.calls >= self.fail_on:
+                raise RuntimeError("simulated 500 internal error")
+            if self.mode == "transient_always":
+                raise RuntimeError("simulated 500 internal error")
+            return '{"entities": []}'
+
+    class _OptClient:
+        config = {}
+
+        def __init__(self, bad_edit=False):
+            self.bad_edit = bad_edit
+
+        def call_fn(self, prompt="", system_prompt="", config=None):
+            if "critic" in system_prompt:
+                return "<START>The guidance lacks explicit span verification.<END>"
+            if "engineer" in system_prompt:
+                if self.bad_edit:
+                    return "<START>BAD marker guidance, verify spans carefully.<END>"
+                return "<START>Verify each emitted span against the source text.<END>"
+            return "<START>Verify each emitted span against the source text.<END>"
+
+    def _optimizer(self, tmp: Path, task_client, opt_client=None, **cfg_over):
+        from protegi.optimizer import ProTeGiOptimizer
+
+        return ProTeGiOptimizer(
+            stage="entity", method="protegi",
+            config=self._config(**cfg_over),
+            output_dir=tmp / "out",
+            gold_dir=tmp / "gold",
+            split_file=tmp / "split.json",
+            entity_cache_dir=tmp / "ec",
+            task_client=task_client,
+            optimizer_client=opt_client or self._OptClient(),
+            freeze_bindings=self._bindings(),
+        )
+
+    def test_budget_exhaustion_retry_once_then_candidate_invalid(self):
+        from protegi.evaluator import TaskEvaluator
+        from protegi.search_stability import WindowBudgetExhaustedError
+
+        client = self._TaskClient(mode="budget_always")
+        evaluator = TaskEvaluator(task_client=client, max_workers=1)
+        samples = self._samples(n=2)
+        with self.assertRaises(WindowBudgetExhaustedError):
+            evaluator.evaluate_stage1_batch(samples, "prompt text")
+        # 同一窗口在完全相同 runtime 下最多重试 1 次（首调 + 1 次重试）。
+        self.assertEqual(client.calls, 2)
+
+    def test_invalid_candidate_does_not_receive_fake_f1(self):
+        from protegi.models import PromptCandidate
+        from protegi.search_stability import (
+            CandidateBudgetExhaustedError,
+            INVALID_BUDGET_EXHAUSTED,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            optimizer = self._optimizer(
+                Path(tmpdir), self._TaskClient(), self._OptClient()
+            )
+            cand = PromptCandidate(candidate_id="c_bad", prompt_text="BAD prompt")
+            err = CandidateBudgetExhaustedError(
+                candidate_id="c_bad", stage="entity",
+                prompt_hash="abc", sample_ids=["s1"],
+                failure_reason="budget exhausted",
+            )
+            optimizer._mark_candidate_invalid(cand, err, round_idx=1)
+            self.assertEqual(cand.selection_status, INVALID_BUDGET_EXHAUSTED)
+            self.assertEqual(cand.estimated_reward, -1.0)
+            self.assertNotIn("train_f1", cand.metrics)
+            self.assertNotIn("dev_f1", cand.metrics)
+            self.assertEqual(
+                cand.metrics["evaluation_status"], INVALID_BUDGET_EXHAUSTED
+            )
+
+    def test_invalid_candidate_never_enters_beam_winner(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer = self._optimizer(
+                tmp, self._TaskClient(mode="budget_on_bad"),
+                self._OptClient(bad_edit=True),
+            )
+            winner = optimizer.run_optimization(self._samples(3), self._samples(1))
+            self.assertEqual(winner.candidate_id, "P_E0")
+            bad_id = "c_r1_p0_g0_edit"
+            node = optimizer.lineage_tracker.nodes.get(bad_id)
+            self.assertIsNotNone(node)
+            self.assertEqual(
+                node["selection_status"], "invalid_budget_exhausted"
+            )
+            self.assertNotIn("train_f1", node["metrics"])
+            summary = json.loads(
+                (tmp / "out" / "summary.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                summary["search_stability"]["candidates_invalid_budget_exhausted"], 1
+            )
+            self.assertEqual(summary["winner_candidate_id"], "P_E0")
+
+    def test_p0_budget_exhaustion_hard_fail(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            optimizer = self._optimizer(
+                Path(tmpdir), self._TaskClient(mode="budget_always"),
+                self._OptClient(),
+            )
+            with self.assertRaises(RuntimeError) as ctx:
+                optimizer.run_optimization(self._samples(2), self._samples(1))
+            self.assertIn("P0", str(ctx.exception))
+
+    def test_http_retry_exhausted_writes_checkpoint(self):
+        import protegi.evaluator as evaluator_module
+        import protegi.retry_utils as retry_utils
+
+        orig = retry_utils.retry_api_call
+
+        def fast_retry(fn, *args, **kwargs):
+            kwargs = dict(kwargs)
+            kwargs["max_retries"] = 2
+            kwargs["initial_delay"] = 0
+            kwargs["max_delay"] = 0
+            return orig(fn, *args, **kwargs)
+
+        evaluator_module.retry_api_call = fast_retry
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp = Path(tmpdir)
+                optimizer = self._optimizer(
+                    tmp, self._TaskClient(mode="transient_always"),
+                    self._OptClient(),
+                )
+                with self.assertRaises(RuntimeError) as ctx:
+                    optimizer.run_optimization(self._samples(2), self._samples(1))
+                self.assertIn("500", str(ctx.exception))
+                ckpt_path = tmp / "out" / "search_checkpoint.json"
+                self.assertTrue(ckpt_path.is_file())
+                ckpt = json.loads(ckpt_path.read_text(encoding="utf-8"))
+                self.assertEqual(ckpt["phase"], "search")
+                self.assertEqual(ckpt["next_round"], 0)
+                self.assertEqual(ckpt["stage"], "entity")
+                self.assertIn("effective_task_runtime", ckpt)
+        finally:
+            evaluator_module.retry_api_call = orig
+
+    def test_resume_restores_exact_search_state(self):
+        import random
+        import protegi.evaluator as evaluator_module
+        import protegi.retry_utils as retry_utils
+        from protegi.optimizer import ProTeGiOptimizer
+
+        orig = retry_utils.retry_api_call
+
+        def fast_retry(fn, *args, **kwargs):
+            kwargs = dict(kwargs)
+            kwargs["max_retries"] = 2
+            kwargs["initial_delay"] = 0
+            kwargs["max_delay"] = 0
+            return orig(fn, *args, **kwargs)
+
+        evaluator_module.retry_api_call = fast_retry
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp = Path(tmpdir)
+                train = self._samples(3)
+                dev = self._samples(1)
+                fail_client = self._TaskClient(mode="transient_once", fail_on=4)
+                opt1 = self._optimizer(tmp, fail_client, self._OptClient())
+                with self.assertRaises(RuntimeError):
+                    opt1.run_optimization(train, dev)
+                self.assertTrue((tmp / "out" / "search_checkpoint.json").is_file())
+
+                ok_client = self._TaskClient(mode="ok")
+                bindings = self._bindings()
+                from protegi.search_stability import (
+                    implementation_hashes, sample_ids_hash,
+                )
+
+                resume_bindings = {
+                    **bindings, "stage": "entity", "method": "protegi",
+                    "prompt_scope": "constrained",
+                    "experiment_pair_id": "test-stability-v1",
+                    "effective_task_runtime": self._runtime(),
+                    "implementation": implementation_hashes(Path.cwd()),
+                    "train_sample_ids_sha256": sample_ids_hash(
+                        [s["sample_id"] for s in train]
+                    ),
+                    "dev_sample_ids_sha256": sample_ids_hash(
+                        [s["sample_id"] for s in dev]
+                    ),
+                }
+                opt2 = ProTeGiOptimizer(
+                    stage="entity", method="protegi",
+                    config=self._config(), output_dir=tmp / "out",
+                    gold_dir=tmp / "gold", split_file=tmp / "split.json",
+                    entity_cache_dir=tmp / "ec", task_client=ok_client,
+                    optimizer_client=self._OptClient(),
+                    freeze_bindings=bindings, resume=True,
+                    resume_bindings=resume_bindings,
+                )
+                winner = opt2.run_optimization(train, dev)
+                self.assertIsNotNone(winner.candidate_id)
+                summary = json.loads(
+                    (tmp / "out" / "summary.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(summary["search_stability"]["resume_count"], 1)
+                self.assertGreaterEqual(
+                    summary["search_stability"]["evaluation_cache_hits"], 2
+                )
+                # RNG 精确恢复：redo 的 round-1 minibatch 与首轮首次抽取一致。
+                expected_batch = random.Random(42).sample(train, 1)
+                expected_ids = [s["sample_id"] for s in expected_batch]
+                grad_batches = json.loads(
+                    (tmp / "out" / "round_1" / "gradient_minibatches.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                self.assertEqual(grad_batches[0]["sample_ids"], expected_ids)
+        finally:
+            evaluator_module.retry_api_call = orig
+
+    def test_resume_rejects_hash_mismatch(self):
+        from protegi.search_stability import (
+            save_search_checkpoint, validate_checkpoint_bindings,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            bindings = {
+                "stage": "entity", "method": "protegi",
+                "prompt_scope": "constrained",
+                "experiment_pair_id": "test-stability-v1",
+                "config_file_sha256": "test-config-sha",
+                "split_sha256": "test-split-sha",
+                "gold_aggregate_sha256": "test-gold-agg",
+                "freeze_manifest_sha256": "test-freeze-sha",
+                "effective_task_runtime": self._runtime(),
+                "implementation": {"a.py": "abc"},
+                "train_sample_ids_sha256": "t", "dev_sample_ids_sha256": "d",
+            }
+            save_search_checkpoint(tmp, {**bindings, "phase": "search", "next_round": 1})
+            ckpt = json.loads(
+                (tmp / "search_checkpoint.json").read_text(encoding="utf-8")
+            )
+            bad_split = dict(bindings, split_sha256="tampered")
+            with self.assertRaises(ValueError) as ctx:
+                validate_checkpoint_bindings(ckpt, bad_split)
+            self.assertIn("split_sha256", str(ctx.exception))
+            bad_runtime = dict(
+                bindings, effective_task_runtime=self._runtime(temperature=0.7)
+            )
+            with self.assertRaises(ValueError) as ctx:
+                validate_checkpoint_bindings(ckpt, bad_runtime)
+            self.assertIn("effective_task_runtime", str(ctx.exception))
+
+    def test_evaluation_cache_avoids_duplicate_task_calls(self):
+        from protegi.models import PromptCandidate
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            client = self._TaskClient(mode="ok")
+            optimizer = self._optimizer(tmp, client, self._OptClient())
+            samples = self._samples(2)
+            cand = PromptCandidate(candidate_id="c1", prompt_text="prompt one")
+            res1, _ = optimizer._evaluate_candidate_batch(cand, samples)
+            calls_after_first = client.calls
+            self.assertGreater(calls_after_first, 0)
+            res2, _ = optimizer._evaluate_candidate_batch(cand, samples)
+            self.assertEqual(client.calls, calls_after_first)
+            self.assertEqual((res2.tp, res2.fp, res2.fn), (res1.tp, res1.fp, res1.fn))
+            other = PromptCandidate(candidate_id="c2", prompt_text="prompt two")
+            optimizer._evaluate_candidate_batch(other, samples)
+            self.assertGreater(client.calls, calls_after_first)
 
 
 if __name__ == "__main__":
