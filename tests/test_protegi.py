@@ -2786,28 +2786,43 @@ class TestSearchStabilityOffline(unittest.TestCase):
             )
 
     def test_invalid_candidate_never_enters_beam_winner(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp = Path(tmpdir)
-            optimizer = self._optimizer(
-                tmp, self._TaskClient(mode="budget_on_bad"),
-                self._OptClient(bad_edit=True),
-            )
-            winner = optimizer.run_optimization(self._samples(3), self._samples(1))
-            self.assertEqual(winner.candidate_id, "P_E0")
-            bad_id = "c_r1_p0_g0_edit"
-            node = optimizer.lineage_tracker.nodes.get(bad_id)
-            self.assertIsNotNone(node)
-            self.assertEqual(
-                node["selection_status"], "invalid_budget_exhausted"
-            )
-            self.assertNotIn("train_f1", node["metrics"])
-            summary = json.loads(
-                (tmp / "out" / "summary.json").read_text(encoding="utf-8")
-            )
-            self.assertEqual(
-                summary["search_stability"]["candidates_invalid_budget_exhausted"], 1
-            )
-            self.assertEqual(summary["winner_candidate_id"], "P_E0")
+        from protegi.optimizer import ProTeGiOptimizer
+
+        saved = []
+        orig_save = ProTeGiOptimizer._save_checkpoint
+
+        def spy(self, **kwargs):
+            saved.append((kwargs.get("phase"), kwargs.get("next_round")))
+            return orig_save(self, **kwargs)
+
+        ProTeGiOptimizer._save_checkpoint = spy
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp = Path(tmpdir)
+                optimizer = self._optimizer(
+                    tmp, self._TaskClient(mode="budget_on_bad"),
+                    self._OptClient(bad_edit=True),
+                )
+                winner = optimizer.run_optimization(self._samples(3), self._samples(1))
+                self.assertEqual(winner.candidate_id, "P_E0")
+                bad_id = "c_r1_p0_g0_edit"
+                node = optimizer.lineage_tracker.nodes.get(bad_id)
+                self.assertIsNotNone(node)
+                self.assertEqual(
+                    node["selection_status"], "invalid_budget_exhausted"
+                )
+                self.assertNotIn("train_f1", node["metrics"])
+                summary = json.loads(
+                    (tmp / "out" / "summary.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(
+                    summary["search_stability"]["candidates_invalid_budget_exhausted"], 1
+                )
+                self.assertEqual(summary["winner_candidate_id"], "P_E0")
+                # 中止分支同样落检查点（含 round-0 与 abort 轮）。
+                self.assertIn(("search", 1), saved)
+        finally:
+            ProTeGiOptimizer._save_checkpoint = orig_save
 
     def test_p0_budget_exhaustion_hard_fail(self):
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -1209,6 +1209,13 @@ class ProTeGiOptimizer:
                 call_stats=self.call_stats,
                 stability=dict(self.stability),
             )
+            self._save_checkpoint(
+                phase="search", next_round=1, beam=beam,
+                p0_candidate=p0_candidate,
+                train_samples=train_samples, dev_samples=dev_samples,
+                rng_state=rng.getstate(),
+                reason="round 0 (P0 init) completed",
+            )
             start_round = 1
 
         # 若方法为 initial，则对 P0 进行 Dev 评估并输出
@@ -1511,11 +1518,18 @@ class ProTeGiOptimizer:
                 try:
                     selector_history = self.selector.execute_evaluation_budget(all_pool, eval_batch_fn)
                 except RoundSelectionAborted as exc:
-                    # 中止本轮选择，保留 incumbent beam；归档后继续下一轮。
+                    # 中止本轮选择，保留 incumbent beam；落检查点后归档继续下一轮。
                     self._record_failure(
                         where="round_selection_aborted",
                         reason=str(exc),
                         round_idx=r_idx,
+                    )
+                    self._save_checkpoint(
+                        phase="search", next_round=r_idx, beam=beam,
+                        p0_candidate=p0_candidate,
+                        train_samples=train_samples, dev_samples=dev_samples,
+                        rng_state=round_rng_state,
+                        reason=str(exc),
                     )
                     self.logger.log_round(
                         round_idx=r_idx,
