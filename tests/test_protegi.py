@@ -982,8 +982,58 @@ class TestProTeGiCore(unittest.TestCase):
         self.assertEqual(window_split_version(False), "window-split-v1")
         self.assertEqual(
             window_split_version(True, 25, 1000, 120, 20, 100),
-            "window-split-v2:dense25-1000-120-20-s100",
+            "window-split-v3:dense25-1000-120-20-s100",
         )
+
+    def test_flat_dense_run_gap_is_end_to_start(self):
+        """残余病理回归：317a_w4 是 35-ID/2070-span 单 run，而非 19+16。
+
+        起点间距把标识符自身长度计入间隔，曾将其误判为两个小 run
+        从而逃过 >=25 门限；END-to-START 度量记录间实际文本。
+        """
+        import json as _json
+        from llm_methods import (
+            build_text_windows,
+            find_flat_dense_runs,
+        )
+
+        doc = _json.loads(
+            (V6_ROOT / "data" / "annotations" / "gold" / "aa24-317a.json")
+            .read_text(encoding="utf-8")
+        )
+        legacy = build_text_windows(doc["text"], max_chars=3000, overlap=400)
+        base = legacy[4]
+        self.assertEqual((base["start"], base["end"]), (9020, 11898))
+        runs = find_flat_dense_runs(
+            base["text"], min_ids=25, min_span=1000, gap=120
+        )
+        self.assertEqual(len(runs), 1)
+        self.assertEqual(len(runs[0]["hits"]), 35)
+        self.assertGreaterEqual(
+            runs[0]["seg_end"] - runs[0]["seg_start"], 2000
+        )
+        # 同参数下新子窗无残留 qualifying run（不动点）。
+        params = dict(
+            dense_run_split=True, dense_min_ids=25, dense_min_span=1000,
+            dense_gap=120, dense_max_ids=20, dense_seam=100,
+        )
+        subs = build_text_windows(
+            doc["text"], max_chars=3000, overlap=400, **params
+        )
+        killers = [w for w in subs if w["start"] >= 9020 and w["end"] <= 11898]
+        self.assertGreaterEqual(len(killers), 2)
+        for sub in killers:
+            self.assertEqual(
+                find_flat_dense_runs(
+                    sub["text"], min_ids=25, min_span=1000, gap=120
+                ),
+                [],
+            )
+        covered = bytearray(len(base["text"]))
+        for sub in killers:
+            for pos in range(sub["start"] - 9020, sub["end"] - 9020):
+                covered[pos] = 1
+        self.assertTrue(all(covered))
 
     def test_backfill_3char_acronym_and_abbreviation_pairing(self):
         from protegi.entity_backfill import (
@@ -1285,7 +1335,7 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
                     "dev",
                     validate_freeze_binding=False,
                     expected_window_construction=(
-                        "window-split-v2:dense25-1000-120-20-s100"
+                        "window-split-v3:dense25-1000-120-20-s100"
                     ),
                 )
             self.assertIn("window_construction", str(ctx.exception))
@@ -2603,7 +2653,7 @@ class TestEffectiveRuntime(unittest.TestCase):
         self.assertTrue(out["dense_run_split"])
         self.assertEqual(
             out["window_construction"],
-            "window-split-v2:dense25-1000-120-20-s100",
+            "window-split-v3:dense25-1000-120-20-s100",
         )
         self.assertEqual(out["window_chars"], 3000)
         self.assertEqual(out["window_overlap"], 400)
@@ -2640,7 +2690,7 @@ class TestEffectiveRuntime(unittest.TestCase):
         provisional["window_construction"]["params_provisional"] = True
         with self.assertRaises(RuntimeError) as ctx:
             validate_formal_window_construction(
-                {"window_construction": "window-split-v2:dense25-1000-120-20-s100"},
+                {"window_construction": "window-split-v3:dense25-1000-120-20-s100"},
                 provisional,
             )
         self.assertIn("params_provisional", str(ctx.exception))

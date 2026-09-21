@@ -1639,13 +1639,16 @@ def window_split_version(
     """返回窗口构造版本的规范描述符（None 即 env 默认）。
 
     关闭时为 ``window-split-v1``（历史行为）；开启时为
-    ``window-split-v2:dense<min_ids>-<min_span>-<gap>-<max_ids>-s<seam>``。
+    ``window-split-v3:dense<min_ids>-<min_span>-<gap>-<max_ids>-s<seam>``。
+    v3 与 v2 阈值相同，唯一差异是 run 间隔按记录间实际文本
+    （END-to-START）度量，而非标识符起点间距；v2 标签退役
+    （v2 从未产生正式产物，无兼容负担）。
     """
     split = DENSE_RUN_SPLIT if dense_run_split is None else bool(dense_run_split)
     if not split:
         return WINDOW_SPLIT_VERSION_BASE
     return (
-        "window-split-v2:dense"
+        "window-split-v3:dense"
         f"{DENSE_MIN_IDS if dense_min_ids is None else int(dense_min_ids)}-"
         f"{DENSE_MIN_SPAN if dense_min_span is None else int(dense_min_span)}-"
         f"{DENSE_GAP if dense_gap is None else int(dense_gap)}-"
@@ -1663,9 +1666,12 @@ def find_flat_dense_runs(
 ) -> list[dict]:
     """探测无换行高密标识符 run（纯 raw-text 规则，不读 Gold）。
 
-    run 定义：同一无换行片段内，表面标识符（CVE/CWE/T-code）相邻
-    间隔均不超过 ``gap`` 字符的最长序列；当 run 内标识符个数达到
-    ``min_ids`` 且首末跨度达到 ``min_span`` 字符时 qualifying。
+    run 定义：同一无换行片段内，相邻记录间实际文本（前一条 terminus
+    到后一条起点，即 END-to-START）均不超过 ``gap`` 字符的最长
+    标识符序列；当 run 内标识符个数达到 ``min_ids`` 且首末跨度达到
+    ``min_span`` 字符时 qualifying。END-to-START 度量的是模型实际
+    看到的记录间隔；起点间距会把标识符自身长度计入间隔，曾导致
+    35-ID 拍扁 run 被误判为 19+16（aa24-317a_w4 残余病理）。
     返回 [{seg_start, seg_end, hits: [(pos, length)]}]（全局偏移）。
     """
     if min_ids <= 0 or min_span <= 0 or gap < 0:
@@ -1681,7 +1687,7 @@ def find_flat_dense_runs(
         if len(hits) >= 1:
             run_start = 0
             for i in range(1, len(hits)):
-                if hits[i][0] - hits[i - 1][0] > gap:
+                if hits[i][0] - (hits[i - 1][0] + hits[i - 1][1]) > gap:
                     chunk = hits[run_start:i]
                     span = chunk[-1][0] + chunk[-1][1] - chunk[0][0]
                     if len(chunk) >= min_ids and span >= min_span:
