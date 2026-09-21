@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,6 +16,12 @@ GOLD_DIR = EXP_DIR / "data" / "annotations" / "gold"
 SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
 MANIFEST_FILE = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 BASE_MANIFEST = EXP_DIR / "data" / "dataset_freeze_manifest_v5.json"
+
+sys.path.insert(0, str(EXP_DIR / "scripts"))
+from llm_methods import (  # noqa: E402
+    build_text_windows,
+    window_split_version,
+)
 
 
 SUPPORTING_EVIDENCE = {
@@ -50,6 +57,70 @@ SUPPORTING_EVIDENCE = {
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def compute_window_inventory(
+    split: dict,
+    *,
+    dense_run_split: bool = False,
+    dense_min_ids: int | None = None,
+    dense_min_span: int | None = None,
+    dense_gap: int | None = None,
+    dense_max_ids: int | None = None,
+    dense_seam: int | None = None,
+) -> dict:
+    """计算窗口构造清单（确定性，只依赖 Gold 文本与构造参数）。
+
+    默认记录 window-split-v1（dense 关闭）基线清单；构造参数批准后，
+    用批准的参数重算并刷新冻结，清单哈希变化即证明窗 inventory 已变。
+    """
+    version = window_split_version(
+        dense_run_split, dense_min_ids, dense_min_span,
+        dense_gap, dense_max_ids, dense_seam,
+    )
+    window_counts: dict[str, int] = {}
+    digest = hashlib.sha256()
+    for split_name in ("train", "dev", "test"):
+        count = 0
+        for doc_id in split[split_name]:
+            document = json.loads(
+                (GOLD_DIR / f"{doc_id}.json").read_text(encoding="utf-8")
+            )
+            windows = build_text_windows(
+                document.get("text", ""),
+                max_chars=3000,
+                overlap=400,
+                dense_run_split=dense_run_split,
+                dense_min_ids=dense_min_ids,
+                dense_min_span=dense_min_span,
+                dense_gap=dense_gap,
+                dense_max_ids=dense_max_ids,
+                dense_seam=dense_seam,
+            )
+            count += len(windows)
+            for win in windows:
+                digest.update(
+                    f"{doc_id}\0{win['start']}\0{win['end']}\0".encode("utf-8")
+                )
+                digest.update(
+                    hashlib.sha256(win["text"].encode("utf-8")).digest()
+                )
+        window_counts[split_name] = count
+    return {
+        "version": version,
+        "dense_run_split": bool(dense_run_split),
+        "dense_params": {
+            "dense_min_ids": dense_min_ids,
+            "dense_min_span": dense_min_span,
+            "dense_gap": dense_gap,
+            "dense_max_ids": dense_max_ids,
+            "dense_seam": dense_seam,
+        },
+        "max_chars": 3000,
+        "overlap": 400,
+        "inventory_sha256": digest.hexdigest(),
+        "window_counts": window_counts,
+    }
 
 
 def main() -> None:
@@ -125,11 +196,31 @@ def main() -> None:
             ev_path = EXP_DIR / expected_rec["path"]
             if not ev_path.is_file() or _sha256(ev_path) != expected_rec["sha256"]:
                 raise ValueError(f"支持证据哈希不一致 ({name})，冻结校验失败！")
+        recorded_construction = manifest.get("window_construction")
+        if not isinstance(recorded_construction, dict):
+            raise ValueError("冻结清单缺少 window_construction 记录，冻结校验失败！")
+        recorded_params = recorded_construction.get("dense_params") or {}
+        live_inventory = compute_window_inventory(
+            split,
+            dense_run_split=bool(recorded_construction.get("dense_run_split")),
+            dense_min_ids=recorded_params.get("dense_min_ids"),
+            dense_min_span=recorded_params.get("dense_min_span"),
+            dense_gap=recorded_params.get("dense_gap"),
+            dense_max_ids=recorded_params.get("dense_max_ids"),
+            dense_seam=recorded_params.get("dense_seam"),
+        )
+        for field in ("inventory_sha256", "window_counts", "version"):
+            if live_inventory[field] != recorded_construction.get(field):
+                raise ValueError(
+                    f"窗口清单 {field} 与冻结记录不一致，冻结校验失败！"
+                )
         print(json.dumps({
             "dataset_version": manifest["dataset_version"],
             "gold_document_count": manifest["gold_document_count"],
             "gold_aggregate_sha256": manifest["gold_aggregate_sha256"],
             "supporting_evidence": sorted(manifest.get("supporting_evidence", {})),
+            "window_construction": recorded_construction.get("version"),
+            "window_counts": recorded_construction.get("window_counts"),
             "check_status": "passed",
         }, ensure_ascii=False, indent=2))
         return
@@ -165,6 +256,11 @@ def main() -> None:
             "verifiable human IAA results and a newly reserved unseen final test "
             "are not yet available"
         ),
+        "window_construction": {
+            **compute_window_inventory(split),
+            "computed_at_utc": now,
+            "params_provisional": True,
+        },
         "base_manifest": {
             "path": "data/dataset_freeze_manifest_v5.json",
             "sha256": _sha256(BASE_MANIFEST),

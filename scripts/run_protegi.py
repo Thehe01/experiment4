@@ -114,10 +114,14 @@ def normalize_config_with_effective_runtime(config: dict) -> dict:
     输入为 YAML 解析后的 config dict；返回同一 dict（就地更新），新增：
     window_chars / window_overlap / document_abbreviation_context /
     vulnerability_anchored_backfill（规范化后）与
-    effective_task_runtime（11 字段，见 protegi.runtime_contract）。
+    effective_task_runtime（11 字段，见 protegi.runtime_contract），
+    以及 window_construction（窗口构造版本描述符，只做记录，不进
+    11 字段契约）。
     optimizer summary 的 "config" 即实际执行 runtime。
     不调用任何模型，可被离线测试直接断言。
     """
+    from llm_methods import window_split_version
+
     include_document_abbreviations = bool(
         config.get("document_abbreviation_context", False)
     )
@@ -135,6 +139,42 @@ def normalize_config_with_effective_runtime(config: dict) -> dict:
             f"window_overlap 必须满足 0 <= overlap < window_chars，"
             f"当前 overlap={window_overlap!r}, chars={window_chars!r}"
         )
+    dense_run_split = bool(config.get("dense_run_split", False))
+    dense_min_ids = config.get("dense_min_ids")
+    dense_min_span = config.get("dense_min_span")
+    dense_gap = config.get("dense_gap")
+    dense_max_ids = config.get("dense_max_ids")
+    dense_seam = config.get("dense_seam")
+    if dense_min_ids is not None and int(dense_min_ids) <= 0:
+        raise ValueError(f"dense_min_ids 必须为正整数，当前={dense_min_ids!r}")
+    if dense_min_span is not None and int(dense_min_span) <= 0:
+        raise ValueError(f"dense_min_span 必须为正整数，当前={dense_min_span!r}")
+    if dense_gap is not None and int(dense_gap) < 0:
+        raise ValueError(f"dense_gap 必须非负，当前={dense_gap!r}")
+    if dense_max_ids is not None and int(dense_max_ids) <= 0:
+        raise ValueError(f"dense_max_ids 必须为正整数，当前={dense_max_ids!r}")
+    if dense_seam is not None and int(dense_seam) < 0:
+        raise ValueError(f"dense_seam 必须非负，当前={dense_seam!r}")
+    config["dense_run_split"] = dense_run_split
+    config["dense_min_ids"] = (
+        None if dense_min_ids is None else int(dense_min_ids)
+    )
+    config["dense_min_span"] = (
+        None if dense_min_span is None else int(dense_min_span)
+    )
+    config["dense_gap"] = None if dense_gap is None else int(dense_gap)
+    config["dense_max_ids"] = (
+        None if dense_max_ids is None else int(dense_max_ids)
+    )
+    config["dense_seam"] = None if dense_seam is None else int(dense_seam)
+    config["window_construction"] = window_split_version(
+        dense_run_split,
+        config["dense_min_ids"],
+        config["dense_min_span"],
+        config["dense_gap"],
+        config["dense_max_ids"],
+        config["dense_seam"],
+    )
     config["task_model"] = str(config["task_model"])
     config["task_max_workers"] = int(config["task_max_workers"])
     config["task_temperature"] = float(config["task_temperature"])
@@ -452,6 +492,12 @@ def main():
             overlap=window_overlap,
             max_docs=max_train_docs,
             include_document_abbreviations=include_document_abbreviations,
+            dense_run_split=config.get('dense_run_split', False),
+            dense_min_ids=config.get('dense_min_ids'),
+            dense_min_span=config.get('dense_min_span'),
+            dense_gap=config.get('dense_gap'),
+            dense_max_ids=config.get('dense_max_ids'),
+            dense_seam=config.get('dense_seam'),
         )
         if args.dry_run:
             train_samples = relation_aware_dryrun_subset(train_samples)
@@ -484,6 +530,12 @@ def main():
             overlap=window_overlap,
             max_docs=max_dev_docs,
             include_document_abbreviations=include_document_abbreviations,
+            dense_run_split=config.get('dense_run_split', False),
+            dense_min_ids=config.get('dense_min_ids'),
+            dense_min_span=config.get('dense_min_span'),
+            dense_gap=config.get('dense_gap'),
+            dense_max_ids=config.get('dense_max_ids'),
+            dense_seam=config.get('dense_seam'),
         )
         if args.dry_run:
             dev_samples = relation_aware_dryrun_subset(dev_samples)
@@ -518,6 +570,12 @@ def main():
             overlap=window_overlap,
             max_docs=max_train_docs,
             include_document_abbreviations=include_document_abbreviations,
+            dense_run_split=config.get('dense_run_split', False),
+            dense_min_ids=config.get('dense_min_ids'),
+            dense_min_span=config.get('dense_min_span'),
+            dense_gap=config.get('dense_gap'),
+            dense_max_ids=config.get('dense_max_ids'),
+            dense_seam=config.get('dense_seam'),
         )
         dev_samples = prepare_stage1_window_samples(
             dev_doc_ids,
@@ -526,6 +584,12 @@ def main():
             overlap=window_overlap,
             max_docs=max_dev_docs,
             include_document_abbreviations=include_document_abbreviations,
+            dense_run_split=config.get('dense_run_split', False),
+            dense_min_ids=config.get('dense_min_ids'),
+            dense_min_span=config.get('dense_min_span'),
+            dense_gap=config.get('dense_gap'),
+            dense_max_ids=config.get('dense_max_ids'),
+            dense_seam=config.get('dense_seam'),
         )
         if args.dry_run:
             train_samples = train_samples[:2]

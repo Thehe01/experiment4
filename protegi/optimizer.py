@@ -104,8 +104,17 @@ def prepare_stage1_window_samples(
     max_docs: Optional[int] = None,
     include_document_abbreviations: bool = False,
     snap_sentence_boundary: bool = False,
+    dense_run_split: Optional[bool] = None,
+    dense_min_ids: Optional[int] = None,
+    dense_min_span: Optional[int] = None,
+    dense_gap: Optional[int] = None,
+    dense_max_ids: Optional[int] = None,
+    dense_seam: Optional[int] = None,
 ) -> List[dict]:
-    """将 Gold 文档按字符窗口切分，并映射局部实体真值标注。"""
+    """将 Gold 文档按字符窗口切分，并映射局部实体真值标注。
+
+    dense_* 为 None 时沿用环境默认（默认关闭，window-split-v1 行为）。
+    """
     samples: List[dict] = []
     target_doc_ids = doc_ids[:max_docs] if max_docs else doc_ids
 
@@ -137,6 +146,12 @@ def prepare_stage1_window_samples(
             max_chars=max_chars,
             overlap=overlap,
             snap_sentence_boundary=snap_sentence_boundary,
+            dense_run_split=dense_run_split,
+            dense_min_ids=dense_min_ids,
+            dense_min_span=dense_min_span,
+            dense_gap=dense_gap,
+            dense_max_ids=dense_max_ids,
+            dense_seam=dense_seam,
         )
         for w_idx, win in enumerate(windows):
             w_start, w_end = win["start"], win["end"]
@@ -180,10 +195,17 @@ def prepare_stage2_window_samples(
     max_docs: Optional[int] = None,
     include_document_abbreviations: bool = False,
     snap_sentence_boundary: bool = False,
+    dense_run_split: Optional[bool] = None,
+    dense_min_ids: Optional[int] = None,
+    dense_min_span: Optional[int] = None,
+    dense_gap: Optional[int] = None,
+    dense_max_ids: Optional[int] = None,
 ) -> List[dict]:
     """为 Stage 2 准备带有固定实体输入的窗口样本。
 
     fixed_entity_predictions: {sample_id: pred_entities} 或 {doc_id: pred_entities}
+
+    dense_* 为 None 时沿用环境默认（默认关闭，window-split-v1 行为）。
     """
     samples: List[dict] = []
     target_doc_ids = doc_ids[:max_docs] if max_docs else doc_ids
@@ -221,6 +243,12 @@ def prepare_stage2_window_samples(
             max_chars=max_chars,
             overlap=overlap,
             snap_sentence_boundary=snap_sentence_boundary,
+            dense_run_split=dense_run_split,
+            dense_min_ids=dense_min_ids,
+            dense_min_span=dense_min_span,
+            dense_gap=dense_gap,
+            dense_max_ids=dense_max_ids,
+            dense_seam=dense_seam,
         )
         for w_idx, win in enumerate(windows):
             w_start, w_end = win["start"], win["end"]

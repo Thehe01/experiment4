@@ -64,6 +64,20 @@ POSTPROCESS_VERSION = "chapter3-no-capec-v1-mcpu-postprocess-v2"
 WINDOW_CHARS = int(os.environ.get("V3_LLM_WINDOW_CHARS", "3000"))
 WINDOW_OVERLAP = int(os.environ.get("V3_LLM_WINDOW_OVERLAP", "400"))
 LLM_MAX_WORKERS = max(1, int(os.environ.get("V3_LLM_MAX_WORKERS", "8")))
+# 拍扁高密 run 切分（WINDOW_SPLIT_V2）：默认关闭，关闭时构造行为与
+# window-split-v1 逐字节一致。 raw-text 正则只看 CVE/CWE/T-code 表面
+# 模式，永不读取 Gold 标签，构造侧无泄漏。
+DENSE_RUN_SPLIT = os.environ.get("V3_LLM_DENSE_RUN_SPLIT", "0").strip().lower() in {
+    "1", "true", "yes", "on",
+}
+DENSE_MIN_IDS = int(os.environ.get("V3_LLM_DENSE_MIN_IDS", "25"))
+DENSE_MIN_SPAN = int(os.environ.get("V3_LLM_DENSE_MIN_SPAN", "1000"))
+DENSE_GAP = int(os.environ.get("V3_LLM_DENSE_GAP", "120"))
+DENSE_MAX_IDS = int(os.environ.get("V3_LLM_DENSE_MAX_IDS", "20"))
+DENSE_SEAM = int(os.environ.get("V3_LLM_DENSE_SEAM", "100"))
+WINDOW_SPLIT_VERSION_BASE = "window-split-v1"
+# 拍扁 run 探测用的表面标识符模式（构造侧，不含任何 Gold 语义）。
+DENSE_ID_RE = re.compile(r"CVE-\d{4}-\d+|CWE-\d+|\bT\d{4}(?:\.\d{3})?\b")
 MAX_EVIDENCE_OFFSET_REPAIR_CHARS = 1200
 APO_ARTIFACT = EXP_DIR / "results" / "apo_optimization_v6" / "final_prompt.json"
 CURRENT_SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
@@ -446,6 +460,7 @@ def runtime_config() -> dict:
         "boundary_contract_version": BOUNDARY_CONTRACT_VERSION,
         "window_chars": WINDOW_CHARS,
         "window_overlap": WINDOW_OVERLAP,
+        "window_split": window_split_version(),
         "max_workers": LLM_MAX_WORKERS,
     }
 
@@ -1598,12 +1613,246 @@ def snap_to_sentence_boundary(
     return raw_start
 
 
+def window_split_version(
+    dense_run_split: bool | None = None,
+    dense_min_ids: int | None = None,
+    dense_min_span: int | None = None,
+    dense_gap: int | None = None,
+    dense_max_ids: int | None = None,
+    dense_seam: int | None = None,
+) -> str:
+    """返回窗口构造版本的规范描述符（None 即 env 默认）。
+
+    关闭时为 ``window-split-v1``（历史行为）；开启时为
+    ``window-split-v2:dense<min_ids>-<min_span>-<gap>-<max_ids>-s<seam>``。
+    """
+    split = DENSE_RUN_SPLIT if dense_run_split is None else bool(dense_run_split)
+    if not split:
+        return WINDOW_SPLIT_VERSION_BASE
+    return (
+        "window-split-v2:dense"
+        f"{DENSE_MIN_IDS if dense_min_ids is None else int(dense_min_ids)}-"
+        f"{DENSE_MIN_SPAN if dense_min_span is None else int(dense_min_span)}-"
+        f"{DENSE_GAP if dense_gap is None else int(dense_gap)}-"
+        f"{DENSE_MAX_IDS if dense_max_ids is None else int(dense_max_ids)}-"
+        f"s{DENSE_SEAM if dense_seam is None else int(dense_seam)}"
+    )
+
+
+def find_flat_dense_runs(
+    text: str,
+    *,
+    min_ids: int = DENSE_MIN_IDS,
+    min_span: int = DENSE_MIN_SPAN,
+    gap: int = DENSE_GAP,
+) -> list[dict]:
+    """探测无换行高密标识符 run（纯 raw-text 规则，不读 Gold）。
+
+    run 定义：同一无换行片段内，表面标识符（CVE/CWE/T-code）相邻
+    间隔均不超过 ``gap`` 字符的最长序列；当 run 内标识符个数达到
+    ``min_ids`` 且首末跨度达到 ``min_span`` 字符时 qualifying。
+    返回 [{seg_start, seg_end, hits: [(pos, length)]}]（全局偏移）。
+    """
+    if min_ids <= 0 or min_span <= 0 or gap < 0:
+        raise ValueError(
+            "dense run 参数非法: "
+            f"min_ids={min_ids}, min_span={min_span}, gap={gap}"
+        )
+    runs = []
+    seg_offset = 0
+    for segment in text.split("\n"):
+        hits = [(seg_offset + m.start(), m.end() - m.start())
+                for m in DENSE_ID_RE.finditer(segment)]
+        if len(hits) >= 1:
+            run_start = 0
+            for i in range(1, len(hits)):
+                if hits[i][0] - hits[i - 1][0] > gap:
+                    chunk = hits[run_start:i]
+                    span = chunk[-1][0] + chunk[-1][1] - chunk[0][0]
+                    if len(chunk) >= min_ids and span >= min_span:
+                        runs.append({
+                            "seg_start": chunk[0][0],
+                            "seg_end": chunk[-1][0] + chunk[-1][1],
+                            "hits": chunk,
+                        })
+                    run_start = i
+            chunk = hits[run_start:]
+            span = chunk[-1][0] + chunk[-1][1] - chunk[0][0]
+            if len(chunk) >= min_ids and span >= min_span:
+                runs.append({
+                    "seg_start": chunk[0][0],
+                    "seg_end": chunk[-1][0] + chunk[-1][1],
+                    "hits": chunk,
+                })
+        seg_offset += len(segment) + 1
+    return runs
+
+
+def split_flat_dense_window(
+    window: dict,
+    runs: list[dict],
+    *,
+    max_ids: int = DENSE_MAX_IDS,
+    seam: int = DENSE_SEAM,
+    max_chars: int | None = None,
+) -> list[dict]:
+    """把含 qualifying run 的基窗按记录边界切成子窗（全覆盖、无丢失）。
+
+    - run 内 hits 按 ``max_ids`` 均衡分块（ceil 块数、连续划分）；
+    - 切分点取在后一块首个标识符 token 起点（记录边界），记录正文
+      永不从中间切断；首子窗起于基窗起点、末子窗止于基窗终点；
+    - 内部切分点两侧各扩展 ``seam`` 字符接缝（钳制到基窗边界内），
+      抢救粘连边界处的长 mention；外边缘不扩展（已是全量上下文）。
+      接缝远小于 ``overlap``：枚举内部不需要散文式重叠，而大重叠会
+      把 run 碎片重新拼成 qualifying run（已实证），故不用 overlap；
+    - 每个子窗长度不得超过基窗的 ``max_chars``（默认取基窗长度）；
+    - 确定性：只依赖文本与参数，无随机。
+    """
+    if max_ids <= 0:
+        raise ValueError(f"dense max_ids 必须为正整数，当前={max_ids}")
+    if seam < 0:
+        raise ValueError(f"dense seam 必须非负，当前={seam}")
+    w_start, w_end, w_text = window["start"], window["end"], window["text"]
+    if max_chars is None:
+        max_chars = len(w_text)
+    cut_points: list[int] = []
+    for run in runs:
+        hits = [(pos - w_start, length) for pos, length in run["hits"]]
+        hits = [(pos, length) for pos, length in hits
+                if 0 <= pos < len(w_text)]
+        if len(hits) < 2:
+            continue
+        import math as _math
+
+        n_chunks = max(1, _math.ceil(len(hits) / max_ids))
+        chunk_size = _math.ceil(len(hits) / n_chunks)
+        for c in range(1, n_chunks):
+            # 后一块首个 ID token 起点：记录边界，不切记录正文。
+            cut_points.append(w_start + hits[c * chunk_size][0])
+    cut_points = sorted(set(
+        point for point in cut_points if w_start < point < w_end
+    ))
+    if not cut_points:
+        return [window]
+    bounds = [w_start] + cut_points + [w_end]
+    subs = []
+    for i, (left, right) in enumerate(zip(bounds, bounds[1:])):
+        sub_start = left if i == 0 else max(w_start, left - seam)
+        sub_end = right if i + 1 == len(bounds) - 1 else min(w_end, right + seam)
+        if sub_end <= sub_start:
+            raise ValueError(
+                "dense 子窗构造退化 "
+                f"(sub_start={sub_start}, sub_end={sub_end})，拒绝静默"
+            )
+        if sub_end - sub_start > max_chars:
+            raise ValueError(
+                "dense 子窗超过 max_chars "
+                f"({sub_end - sub_start} > {max_chars})，拒绝静默"
+            )
+        subs.append({
+            "start": sub_start,
+            "end": sub_end,
+            "text": w_text[sub_start - w_start:sub_end - w_start],
+        })
+    # 全覆盖断言：首起于基窗起点、末止于基窗终点。
+    if subs[0]["start"] != w_start or subs[-1]["end"] != w_end:
+        raise ValueError("dense 子窗未全覆盖基窗区间，拒绝静默")
+    return subs
+
+
 def build_text_windows(
     text: str,
     max_chars: int = WINDOW_CHARS,
     overlap: int = WINDOW_OVERLAP,
     snap_sentence_boundary: bool = False,
+    dense_run_split: bool | None = None,
+    dense_min_ids: int | None = None,
+    dense_min_span: int | None = None,
+    dense_gap: int | None = None,
+    dense_max_ids: int | None = None,
+    dense_seam: int | None = None,
 ) -> list[dict]:
+    """按段落/句子边界构造重叠窗口，并保留全局字符偏移。
+
+    Args:
+        text: 待切分长文本。
+        max_chars: 窗口最大字符数。
+        overlap: 窗口间重叠目标字符数。
+        snap_sentence_boundary: 若为 True，窗口左边界向最近的 CVE 标题、段落首或句首吸附，
+            彻底消除无主语的断头句。默认 False 保留历史预注册审计兼容性。
+        dense_run_split: 若为 True，对含拍扁高密标识符 run 的基窗按记录边界
+            切分子窗（WINDOW_SPLIT_V2）。None 时取环境默认值，默认关闭；
+            关闭时返回与 window-split-v1 逐字节一致的窗口。
+        dense_min_ids / dense_min_span / dense_gap / dense_max_ids /
+        dense_seam: 拍扁 run 判定、分块与接缝参数，None 时取环境默认值。
+    """
+    if max_chars <= 0 or len(text) <= max_chars:
+        return [{"start": 0, "end": len(text), "text": text}]
+    if not 0 <= overlap < max_chars:
+        raise ValueError("window overlap 必须满足 0 <= overlap < max_chars")
+
+    windows = []
+    start = 0
+    while start < len(text):
+        hard_end = min(len(text), start + max_chars)
+        end = hard_end
+        if hard_end < len(text):
+            floor = start + max_chars // 2
+            candidates = []
+            for delimiter in ("\n\n", "\n", "。", ". "):
+                position = text.rfind(delimiter, floor, hard_end)
+                if position >= 0:
+                    candidates.append(position + len(delimiter))
+            if candidates:
+                end = max(candidates)
+        if end <= start:
+            end = hard_end
+        windows.append({"start": start, "end": end, "text": text[start:end]})
+        if end >= len(text):
+            break
+        raw_start = max(start + 1, end - overlap)
+        if snap_sentence_boundary and raw_start < end:
+            raw_start = snap_to_sentence_boundary(
+                text,
+                raw_start,
+                min_start=start + 1,
+                max_start=min(end - 50, raw_start + 150),
+                radius=250,
+            )
+        start = raw_start
+
+    split = DENSE_RUN_SPLIT if dense_run_split is None else bool(dense_run_split)
+    if not split:
+        return windows
+    min_ids = DENSE_MIN_IDS if dense_min_ids is None else int(dense_min_ids)
+    min_span = DENSE_MIN_SPAN if dense_min_span is None else int(dense_min_span)
+    gap = DENSE_GAP if dense_gap is None else int(dense_gap)
+    max_ids = DENSE_MAX_IDS if dense_max_ids is None else int(dense_max_ids)
+    seam = DENSE_SEAM if dense_seam is None else int(dense_seam)
+    widened: list[dict] = []
+    for window in windows:
+        runs = find_flat_dense_runs(
+            window["text"], min_ids=min_ids, min_span=min_span, gap=gap
+        )
+        if not runs:
+            widened.append(window)
+            continue
+        global_runs = [
+            {
+                "seg_start": run["seg_start"] + window["start"],
+                "seg_end": run["seg_end"] + window["start"],
+                "hits": [
+                    (pos + window["start"], length)
+                    for pos, length in run["hits"]
+                ],
+            }
+            for run in runs
+        ]
+        widened.extend(split_flat_dense_window(
+            window, global_runs, max_ids=max_ids, seam=seam,
+            max_chars=max_chars,
+        ))
+    return widened
     """按段落/句子边界构造重叠窗口，并保留全局字符偏移。
 
     Args:

@@ -886,6 +886,105 @@ class TestProTeGiCore(unittest.TestCase):
         win1_text = snapped_windows[1]["text"]
         self.assertTrue(win1_text.startswith("CVE-2023-1234") or win1_text.startswith("P") or win1_text.startswith("S"))
 
+    def test_dense_split_off_is_byte_identical_to_legacy(self):
+        from llm_methods import build_text_windows
+
+        doc = (
+            V6_ROOT / "data" / "annotations" / "gold" / "aa24-207a.json"
+        ).read_text(encoding="utf-8")
+        import json as _json
+
+        text = _json.loads(doc)["text"]
+        legacy = build_text_windows(text, max_chars=3000, overlap=400)
+        off = build_text_windows(
+            text, max_chars=3000, overlap=400, dense_run_split=False,
+            dense_min_ids=25, dense_min_span=1000, dense_gap=120,
+            dense_max_ids=20,
+        )
+        self.assertEqual(off, legacy)
+        # None（环境默认关闭）同样一致。
+        none = build_text_windows(text, max_chars=3000, overlap=400)
+        self.assertEqual(none, legacy)
+
+    def test_find_flat_dense_runs_needs_no_gold(self):
+        from llm_methods import find_flat_dense_runs
+
+        flat = " ".join(f"CVE-2023-{10000 + i:05d} Product{i}" for i in range(45))
+        self.assertGreater(len(flat), 1000)
+        runs = find_flat_dense_runs(
+            flat, min_ids=25, min_span=1000, gap=120
+        )
+        self.assertEqual(len(runs), 1)
+        self.assertEqual(len(runs[0]["hits"]), 45)
+        # 同样内容一旦保留换行（表格形态），即不定为拍扁 run。
+        tabled = "\n".join(
+            f"CVE-2023-{10000 + i:05d} Product{i}" for i in range(45)
+        )
+        self.assertEqual(
+            find_flat_dense_runs(
+                tabled, min_ids=25, min_span=1000, gap=120
+            ),
+            [],
+        )
+
+    def test_dense_split_killer_window_into_bounded_chunks(self):
+        import json as _json
+        import re as _re
+        from llm_methods import (
+            build_text_windows,
+            find_flat_dense_runs,
+        )
+
+        doc = _json.loads(
+            (V6_ROOT / "data" / "annotations" / "gold" / "aa24-207a.json")
+            .read_text(encoding="utf-8")
+        )
+        legacy = build_text_windows(doc["text"], max_chars=3000, overlap=400)
+        base = legacy[5]
+        self.assertEqual((base["start"], base["end"]), (11830, 14711))
+        params = dict(
+            dense_run_split=True, dense_min_ids=25, dense_min_span=1000,
+            dense_gap=120, dense_max_ids=20, dense_seam=100,
+        )
+        subs = build_text_windows(
+            doc["text"], max_chars=3000, overlap=400, **params
+        )
+        # 基窗 w5 被替换为覆盖它的子窗；其余窗逐字节不变。
+        self.assertGreater(len(subs), len(legacy))
+        killers = [w for w in subs if w["start"] >= 11830 and w["end"] <= 14711]
+        self.assertGreaterEqual(len(killers), 2)
+        id_re = _re.compile(r"CVE-\d{4}-\d+|CWE-\d+|\bT\d{4}(?:\.\d{3})?\b")
+        for sub in killers:
+            self.assertLessEqual(len(sub["text"]), 3000)
+            # 不动点性质：子窗内不再含 qualifying run（同参数复测）。
+            self.assertEqual(
+                find_flat_dense_runs(
+                    sub["text"], min_ids=25, min_span=1000, gap=120
+                ),
+                [],
+            )
+            # 经验安全界内（可正常窗 317a_w4 含 36 个 ID）。
+            self.assertLessEqual(len(id_re.findall(sub["text"])), 32)
+        # 全覆盖：基窗字符每点至少被一子窗覆盖。
+        covered = bytearray(len(base["text"]))
+        for sub in killers:
+            for pos in range(sub["start"] - 11830, sub["end"] - 11830):
+                covered[pos] = 1
+        self.assertTrue(all(covered))
+        # 非 killer 窗不受影响。
+        untouched_legacy = [w for w in legacy if w["end"] <= 11830]
+        untouched_new = [w for w in subs if w["end"] <= 11830]
+        self.assertEqual(untouched_new, untouched_legacy)
+
+    def test_window_split_version_descriptors(self):
+        from llm_methods import window_split_version
+
+        self.assertEqual(window_split_version(False), "window-split-v1")
+        self.assertEqual(
+            window_split_version(True, 25, 1000, 120, 20, 100),
+            "window-split-v2:dense25-1000-120-20-s100",
+        )
+
     def test_backfill_3char_acronym_and_abbreviation_pairing(self):
         from protegi.entity_backfill import (
             harvest_document_configuration_seeds,
