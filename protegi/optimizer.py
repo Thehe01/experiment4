@@ -653,13 +653,42 @@ class ProTeGiOptimizer:
         )
 
     def _sync_evaluator_counters(self) -> None:
-        """同步 evaluator 累计计数到稳定性计数器与 call_stats（增量）。"""
+        """同步 evaluator 累计计数到稳定性计数器与 call_stats（增量）。
+
+        防御性语义：evaluator 计数器永不回退；若观测到负增量（例如
+        resume 后水位陈旧或 evaluator 被复用/重置），只把水位重置到
+        当前值并记 failure_log，绝不把负数累加进 stability/call_stats。
+        """
         transient_delta = (
             self.evaluator.transient_api_retries - self._last_synced_eval_transient
         )
         budget_delta = (
             self.evaluator.budget_exhaustion_retries - self._last_synced_eval_budget
         )
+        if transient_delta < 0:
+            self._record_failure(
+                where="counter_sync_negative_transient",
+                reason=(
+                    f"evaluator transient went backwards "
+                    f"(current={self.evaluator.transient_api_retries}, "
+                    f"watermark={self._last_synced_eval_transient}); "
+                    "watermark reset, delta dropped"
+                ),
+            )
+            self._last_synced_eval_transient = self.evaluator.transient_api_retries
+            transient_delta = 0
+        if budget_delta < 0:
+            self._record_failure(
+                where="counter_sync_negative_budget",
+                reason=(
+                    f"evaluator budget went backwards "
+                    f"(current={self.evaluator.budget_exhaustion_retries}, "
+                    f"watermark={self._last_synced_eval_budget}); "
+                    "watermark reset, delta dropped"
+                ),
+            )
+            self._last_synced_eval_budget = self.evaluator.budget_exhaustion_retries
+            budget_delta = 0
         if transient_delta:
             self._last_synced_eval_transient = self.evaluator.transient_api_retries
             self.stability["transient_api_retries"] += transient_delta
@@ -806,6 +835,7 @@ class ProTeGiOptimizer:
             },
             "call_stats": self.call_stats.to_dict(),
             "evaluated_candidate_ids": sorted(self._evaluated_candidate_ids),
+            "invalid_candidate_ids": sorted(self._invalid_candidate_ids),
             "rng_state": rng_state_to_json(rng_state) if rng_state is not None else None,
             "stability": self.stability,
             "train_sample_ids": [
@@ -860,12 +890,17 @@ class ProTeGiOptimizer:
         self._evaluated_candidate_ids = set(
             checkpoint.get("evaluated_candidate_ids") or []
         )
-        self._invalid_candidate_ids = {
+        # INVALID 身份随检查点持久化：已从 beam 清掉的 INVALID 候选不在
+        # beam 里，必须靠 stored 列表保留，否则恢复后集合丢失、重复计数。
+        # 旧检查点无该键时回退到 beam 派生（兼容 run8 之前产物）。
+        stored_invalid = set(checkpoint.get("invalid_candidate_ids") or [])
+        beam_invalid = {
             c["candidate_id"]
             for c in checkpoint.get("beam", [])
             if c.get("selection_status")
             in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
         }
+        self._invalid_candidate_ids = stored_invalid | beam_invalid
         lineage = checkpoint.get("lineage") or {}
         self._restored_lineage = {
             "nodes": lineage.get("nodes") or {},
@@ -1170,12 +1205,15 @@ class ProTeGiOptimizer:
             if self._restored_rng_state is not None:
                 rng.setstate(self._restored_rng_state)
             beam = [PromptCandidate.from_dict(c) for c in ckpt.get("beam", [])]
-            self._invalid_candidate_ids = {
+            # 纵深清理：旧检查点可能残留 INVALID active member，加载时清掉；
+            # INVALID 身份取 stored 并集（_init 已恢复），不因 beam 已清而丢失。
+            beam = self._drop_invalid_from_beam(beam)
+            self._invalid_candidate_ids = set(self._invalid_candidate_ids) | {
                 c["candidate_id"]
                 for c in ckpt.get("beam", [])
                 if c.get("selection_status")
                 in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
-            }
+            } | set(ckpt.get("invalid_candidate_ids") or [])
             p0_restored = ckpt.get("p0_candidate")
             p0_candidate = (
                 PromptCandidate.from_dict(p0_restored) if p0_restored else None

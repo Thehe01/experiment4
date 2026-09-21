@@ -2999,6 +2999,171 @@ class TestSearchStabilityOffline(unittest.TestCase):
             optimizer._evaluate_candidate_batch(other, samples)
             self.assertGreater(client.calls, calls_after_first)
 
+    def test_counter_sync_never_goes_negative_on_stale_watermark(self):
+        """resume 旧水位 + 新 evaluator(0)：同步不得产生负增量。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer = self._optimizer(tmp, self._TaskClient(mode="ok"))
+            optimizer.stability["transient_api_retries"] = 5
+            optimizer.stability["budget_exhaustion_retries"] = 3
+            optimizer.call_stats.transient_api_retries = 5
+            optimizer.call_stats.budget_exhaustion_retries = 3
+            # 模拟陈旧水位（旧进程累计值）+ 全新 evaluator（0）。
+            optimizer._last_synced_eval_transient = 7
+            optimizer._last_synced_eval_budget = 4
+            optimizer.evaluator.transient_api_retries = 0
+            optimizer.evaluator.budget_exhaustion_retries = 0
+            optimizer._sync_evaluator_counters()
+            self.assertEqual(optimizer.stability["transient_api_retries"], 5)
+            self.assertEqual(optimizer.stability["budget_exhaustion_retries"], 3)
+            self.assertEqual(optimizer.call_stats.transient_api_retries, 5)
+            self.assertEqual(optimizer.call_stats.budget_exhaustion_retries, 3)
+            self.assertEqual(optimizer._last_synced_eval_transient, 0)
+            self.assertEqual(optimizer._last_synced_eval_budget, 0)
+            where = [e["where"] for e in optimizer.stability["failure_log"]]
+            self.assertIn("counter_sync_negative_transient", where)
+            self.assertIn("counter_sync_negative_budget", where)
+            # 水位重置后，新增量仍可正常同步。
+            optimizer.evaluator.transient_api_retries = 2
+            optimizer.evaluator.budget_exhaustion_retries = 1
+            optimizer._sync_evaluator_counters()
+            self.assertEqual(optimizer.stability["transient_api_retries"], 7)
+            self.assertEqual(optimizer.stability["budget_exhaustion_retries"], 4)
+
+    def test_checkpoint_never_persists_invalid_beam_members(self):
+        """_save_checkpoint 必须清掉 INVALID beam 并持久化其身份。"""
+        import json as _json
+        from protegi.models import PromptCandidate
+        from protegi.search_stability import (
+            INVALID_BUDGET_EXHAUSTED,
+            INVALID_OUTPUT_AMPLIFICATION,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer = self._optimizer(tmp, self._TaskClient(mode="ok"))
+            valid = PromptCandidate(
+                candidate_id="c_valid", prompt_text="prompt valid",
+            )
+            valid.selection_status = "selected"
+            bad_budget = PromptCandidate(
+                candidate_id="c_bad_budget", prompt_text="prompt bad",
+            )
+            bad_budget.selection_status = INVALID_BUDGET_EXHAUSTED
+            bad_amp = PromptCandidate(
+                candidate_id="c_bad_amp", prompt_text="prompt amp",
+            )
+            bad_amp.selection_status = INVALID_OUTPUT_AMPLIFICATION
+            optimizer._invalid_candidate_ids = {"c_bad_budget", "c_bad_amp"}
+            samples = self._samples(2)
+            optimizer._save_checkpoint(
+                phase="search", next_round=2,
+                beam=[valid, bad_budget, bad_amp],
+                p0_candidate=valid,
+                train_samples=samples, dev_samples=samples[:1],
+                reason="unit test",
+            )
+            ckpt = _json.loads(
+                (tmp / "out" / "search_checkpoint.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            beam_ids = [c["candidate_id"] for c in ckpt["beam"]]
+            self.assertEqual(beam_ids, ["c_valid"])
+            self.assertEqual(
+                sorted(ckpt["invalid_candidate_ids"]),
+                ["c_bad_amp", "c_bad_budget"],
+            )
+
+    def test_resume_restores_invalid_ids_and_cleans_legacy_dirty_beam(self):
+        """旧检查点（beam 残留 INVALID、无 stored 键）恢复时身份不丢、beam 清掉。"""
+        from protegi.models import PromptCandidate
+        from protegi.optimizer import ProTeGiOptimizer
+        from protegi.search_stability import (
+            INVALID_BUDGET_EXHAUSTED,
+            implementation_hashes,
+            sample_ids_hash,
+            save_search_checkpoint,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            train = self._samples(3)
+            dev = self._samples(1)
+            valid = PromptCandidate(
+                candidate_id="c_valid", prompt_text="prompt valid",
+            )
+            valid.selection_status = "selected"
+            legacy_bad = PromptCandidate(
+                candidate_id="c_legacy_bad", prompt_text="prompt bad",
+            )
+            legacy_bad.selection_status = INVALID_BUDGET_EXHAUSTED
+            bindings = self._bindings()
+            payload = {
+                **bindings,
+                "stage": "entity", "method": "protegi",
+                "prompt_scope": "constrained",
+                "experiment_pair_id": "test-stability-v1",
+                "config_file_sha256": "test-config-sha",
+                "effective_task_runtime": self._runtime(),
+                "implementation": implementation_hashes(Path.cwd()),
+                "phase": "search", "next_round": 2,
+                "beam": [valid.to_dict(), legacy_bad.to_dict()],
+                "p0_candidate": valid.to_dict(),
+                "lineage": {"nodes": {}, "edges": []},
+                "call_stats": {},
+                "evaluated_candidate_ids": [],
+                # 故意不写 invalid_candidate_ids：模拟旧检查点。
+                "stability": None,
+                "train_sample_ids": [s["sample_id"] for s in train],
+                "dev_sample_ids": [s["sample_id"] for s in dev],
+                "train_sample_ids_sha256": sample_ids_hash(
+                    [s["sample_id"] for s in train]
+                ),
+                "dev_sample_ids_sha256": sample_ids_hash(
+                    [s["sample_id"] for s in dev]
+                ),
+                "reason": "legacy dirty beam",
+            }
+            (tmp / "out").mkdir(parents=True, exist_ok=True)
+            save_search_checkpoint(tmp / "out", payload)
+            resume_bindings = {
+                **bindings, "stage": "entity", "method": "protegi",
+                "prompt_scope": "constrained",
+                "experiment_pair_id": "test-stability-v1",
+                "config_file_sha256": "test-config-sha",
+                "effective_task_runtime": self._runtime(),
+                "implementation": implementation_hashes(Path.cwd()),
+                "train_sample_ids_sha256": sample_ids_hash(
+                    [s["sample_id"] for s in train]
+                ),
+                "dev_sample_ids_sha256": sample_ids_hash(
+                    [s["sample_id"] for s in dev]
+                ),
+            }
+            optimizer = ProTeGiOptimizer(
+                stage="entity", method="protegi",
+                config=self._config(), output_dir=tmp / "out",
+                gold_dir=tmp / "gold", split_file=tmp / "split.json",
+                entity_cache_dir=tmp / "ec",
+                task_client=self._TaskClient(mode="ok"),
+                optimizer_client=self._OptClient(),
+                freeze_bindings=bindings, resume=True,
+                resume_bindings=resume_bindings,
+            )
+            # _init 恢复阶段：INVALID 身份从 beam 派生，不丢。
+            self.assertIn(
+                "c_legacy_bad", optimizer._invalid_candidate_ids
+            )
+            # 加载侧清理：遗留脏 beam 成员不得进入 active beam。
+            cleaned = optimizer._drop_invalid_from_beam(
+                [PromptCandidate.from_dict(c) for c in
+                 optimizer._resumed_checkpoint.get("beam", [])]
+            )
+            self.assertEqual(
+                [c.candidate_id for c in cleaned], ["c_valid"]
+            )
+
 
 class TestOutputExpansionGuard(unittest.TestCase):
     """Output Expansion Guard：纯离线，不调用真实模型。"""
