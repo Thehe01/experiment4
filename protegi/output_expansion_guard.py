@@ -56,10 +56,6 @@ _CONDITIONAL_RE = re.compile(
 )
 
 
-def _negated(text: str, match_start: int, window: int = 25) -> bool:
-    return bool(_NEGATION_RE.search(text[max(0, match_start - window):match_start]))
-
-
 def _sentences(text: str) -> List[str]:
     return [s for s in re.split(r"[.!?\n]+", text) if s.strip()]
 
@@ -123,19 +119,19 @@ _SEPARATELY_RE = re.compile(
 
 
 def _rule_repeated_identical(text: str) -> Optional[str]:
-    """count/emit/... repeated identical strings（要求放大动词或分立副词）。"""
+    """count/emit/... repeated identical strings（同句否定豁免）。"""
     for rep in _REPEATED_IDENTICAL_RE.finditer(text):
         before = text[max(0, rep.start() - 80):rep.start()]
         verb = None
         for candidate in _AMPLIFY_VERB_RE.finditer(before):
             verb = candidate
-        if verb is not None and not _negated(
+        if verb is not None and not _negated_in_sentence(
             text, max(0, rep.start() - 80) + verb.start()
         ):
             return text[verb.start() + max(0, rep.start() - 80):rep.end()]
         after = text[rep.end():rep.end() + 80]
         sep = _SEPARATELY_RE.search(after)
-        if sep:
+        if sep and not _negated_in_sentence(text, rep.end() + sep.start()):
             return rep.group(0) + " ... " + sep.group(0)
     return None
 
@@ -216,9 +212,9 @@ _ENUMERATE_OBJECT_RE = re.compile(
 
 
 def _rule_enumerate_combo(text: str) -> Optional[str]:
-    """enumerate + span/token/substring/match/occurrence/entity（否定豁免）。"""
+    """enumerate + span/token/substring/match/occurrence/entity（同句否定豁免）。"""
     for match in _ENUMERATE_RE.finditer(text):
-        if _negated(text, match.start()):
+        if _negated_in_sentence(text, match.start()):
             continue
         after = text[match.end():match.end() + 40]
         obj = _ENUMERATE_OBJECT_RE.search(after)

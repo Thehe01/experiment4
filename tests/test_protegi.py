@@ -3258,6 +3258,68 @@ class TestOutputExpansionGuard(unittest.TestCase):
                 optimizer_module.ENTITY_PROMPT_P0 = original
             self.assertIn("hard fail", str(ctx.exception))
 
+    def test_checkpoint_records_startup_snapshot_not_save_time(self):
+        import protegi.optimizer as optimizer_module
+
+        base = TestSearchStabilityOffline()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer = base._optimizer(
+                tmp, base._TaskClient(mode="ok"), base._OptClient()
+            )
+            sentinel = {"protegi/optimizer.py": "startup-sentinel"}
+            optimizer._startup_implementation = dict(sentinel)
+            original = optimizer_module.implementation_hashes
+            optimizer_module.implementation_hashes = lambda root: {
+                "protegi/optimizer.py": "save-time-drifted"
+            }
+            try:
+                path = optimizer._save_checkpoint(
+                    phase="search", next_round=1, beam=[],
+                    p0_candidate=None, train_samples=[], dev_samples=[],
+                    reason="probe",
+                )
+            finally:
+                optimizer_module.implementation_hashes = original
+            stored = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(stored["implementation"], sentinel)
+
+    def test_repeated_identical_sentence_negation(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard as G
+
+        self.assertFalse(
+            G.validate_guidance("Count repeated identical strings in each window.")
+        )
+        self.assertTrue(
+            G.validate_guidance(
+                "Do not count repeated identical strings; "
+                "emit each verified entity once."
+            )
+        )
+        # 否定域止于句界：第二句无否定仍拒绝。
+        self.assertFalse(
+            G.validate_guidance(
+                "Emit verified entities. "
+                "Count repeated identical strings in each window."
+            )
+        )
+
+    def test_enumerate_combo_sentence_negation(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard as G
+
+        self.assertFalse(
+            G.validate_guidance("Enumerate all spans in the window.")
+        )
+        self.assertTrue(
+            G.validate_guidance("Never enumerate tokens; verify each span instead.")
+        )
+        # 否定域止于句界：第二句无否定仍拒绝。
+        self.assertFalse(
+            G.validate_guidance(
+                "Verify spans first. Enumerate tokens and spans exhaustively."
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

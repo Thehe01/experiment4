@@ -735,7 +735,12 @@ class ProTeGiOptimizer:
         return False
 
     def _checkpoint_bindings(self) -> dict:
-        """当前运行的恢复绑定（由 run_protegi 的实时文件/配置构造）。"""
+        """当前运行的恢复绑定（由 run_protegi 的实时文件/配置构造）。
+
+        implementation 取启动快照（非保存时重算）：运行中代码变更
+        不得污染检查点，否则 resume 校验会被漂移后的值蒙混过关。
+        """
+        startup = getattr(self, "_startup_implementation", None)
         return {
             "stage": self.stage,
             "method": self.method,
@@ -750,7 +755,10 @@ class ProTeGiOptimizer:
                 "freeze_manifest_sha256"
             ),
             "effective_task_runtime": self.config.get("effective_task_runtime"),
-            "implementation": implementation_hashes(ROOT),
+            "implementation": (
+                dict(startup) if startup is not None
+                else implementation_hashes(ROOT)
+            ),
         }
 
     def _save_checkpoint(
