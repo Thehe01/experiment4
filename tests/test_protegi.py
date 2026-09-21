@@ -2702,11 +2702,13 @@ class TestSearchStabilityOffline(unittest.TestCase):
             self.mode = mode
             self.fail_on = fail_on
             self.calls = 0
+            self.call_prompts = []
 
         def call_fn(self, prompt="", system_prompt="", config=None):
             from llm_extractor import ModelOutputBudgetExhaustedError
 
             self.calls += 1
+            self.call_prompts.append(prompt)
             if self.mode == "budget_always":
                 raise ModelOutputBudgetExhaustedError(16, 16)
             if self.mode == "budget_on_bad" and "BAD" in prompt:
@@ -2996,6 +2998,229 @@ class TestSearchStabilityOffline(unittest.TestCase):
             other = PromptCandidate(candidate_id="c2", prompt_text="prompt two")
             optimizer._evaluate_candidate_batch(other, samples)
             self.assertGreater(client.calls, calls_after_first)
+
+
+class TestOutputExpansionGuard(unittest.TestCase):
+    """Output Expansion Guard：纯离线，不调用真实模型。"""
+
+    SMOKING_GUN_GUIDANCE = (
+        "Proceed linearly across the full content covering all areas such as "
+        "prose, tables, lists, and captions, inspecting every token position "
+        "for a directly stated match.\n"
+        "Create an individual entry for each offset-distinct occurrence, "
+        "counting repeated identical strings as well as nested or overlapping "
+        "matches at the same location separately; do not collapse duplicates "
+        "or merge several occurrences into a single excerpt."
+    )
+
+    # run7 中预算耗尽、但属于精确判断语义、必须放行的两条 guidance。
+    RUN7_PRECISE_EDIT_GUIDANCE = (
+        "Scan the entire input, including prose, tables, lists, captions, and "
+        "line-broken identifiers.\n"
+        "Apply a strict local-block gate to any affected-product candidate:\n"
+        "1. Bound its local block to one sentence, one table row, one list item, "
+        "or one caption line; do not cross boundaries to find support.\n"
+        "2. Require that the same block contains an explicit vulnerability identifier.\n"
+        "3. Require that the same block explicitly links that identifier to that "
+        "candidate as affected.\n"
+        "4. If either requirement fails, suppress the candidate and do not infer "
+        "support from elsewhere in the document.\n"
+        "Verify each retained span against the source before returning."
+    )
+    RUN7_PRECISE_PARA_GUIDANCE = (
+        "Examine the full input across prose, tables, lists, captions, and "
+        "identifiers broken over lines, and enforce the fixed definitions with "
+        "conservative strictness. For any code token appearing alongside name "
+        "wording, confine the span exclusively to the code characters: begin at "
+        "the initial code character and terminate directly after the terminal "
+        "code character. Omit all adjacent name wording, parentheses, commas, "
+        "punctuation, and whitespace from the span. When a single grouping holds "
+        "several codes, decompose it and create one distinct minimal "
+        "code-characters-only span for each code, then confirm each span through "
+        "exact character-by-character matching to the source before emitting."
+    )
+
+    def test_output_expansion_guard_rejects_run7_smoking_gun(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        result = OutputExpansionGuard.validate_guidance(self.SMOKING_GUN_GUIDANCE)
+        self.assertFalse(result)
+        self.assertTrue(
+            any(
+                r.startswith("output_amplification_contract_violation")
+                for r in result.reasons
+            )
+        )
+
+    def test_output_expansion_guard_rejects_every_token_position(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            "Inspect every token position for matches.",
+            "Check each token position carefully.",
+            "Cover all token positions in document order.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(OutputExpansionGuard.validate_guidance(text))
+
+    def test_output_expansion_guard_rejects_duplicate_preservation(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            "Do not collapse duplicates across windows.",
+            "Preserve duplicates for recall.",
+            "Keep duplicates emitted.",
+            "Retain duplicates in the output.",
+            "Do not deduplicate spans.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(OutputExpansionGuard.validate_guidance(text))
+
+    def test_output_expansion_guard_rejects_unconditional_nested_overlap_enumeration(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            "Emit all nested spans found in the window.",
+            "Output every overlapping span without filtering.",
+            "List nested or overlapping matches separately.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(OutputExpansionGuard.validate_guidance(text))
+
+    def test_output_expansion_guard_rejects_all_possible_spans(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            "Enumerate all possible spans in the text.",
+            "Check every possible span for entity evidence.",
+            "List all candidate spans before deciding.",
+            "Extract every substring as a candidate.",
+            "Enumerate tokens and spans exhaustively.",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(OutputExpansionGuard.validate_guidance(text))
+
+    def test_output_expansion_guard_allows_normal_span_verification(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            "Check every predicted span against the source text.",
+            "Deduplicate exact repeated (type, start, end) entities.",
+            "Inspect each candidate entity for compliance with the MCPU boundary rule.",
+            "Do not enumerate every token; emit each verified entity once.",
+        ):
+            with self.subTest(text=text):
+                result = OutputExpansionGuard.validate_guidance(text)
+                self.assertTrue(result, result.reasons)
+
+    def test_output_expansion_guard_allows_conditional_legitimate_overlap(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        result = OutputExpansionGuard.validate_guidance(
+            "Overlapping mentions may be emitted only when each independently "
+            "satisfies the frozen entity boundary contract."
+        )
+        self.assertTrue(result, result.reasons)
+
+    def test_output_expansion_guard_allows_run7_precision_guidance(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            self.RUN7_PRECISE_EDIT_GUIDANCE,
+            self.RUN7_PRECISE_PARA_GUIDANCE,
+        ):
+            result = OutputExpansionGuard.validate_guidance(text)
+            self.assertTrue(result, result.reasons)
+
+    def _expansion_mini_optimizer(self, tmp: Path):
+        base = TestSearchStabilityOffline()
+        task_client = base._TaskClient(mode="ok")
+
+        class GuardTripOptClient(base._OptClient):
+            def call_fn(self, prompt="", system_prompt="", config=None):
+                if "engineer" in system_prompt:
+                    return (
+                        "<START>Inspect every token position and emit "
+                        "each occurrence separately.<END>"
+                    )
+                return super().call_fn(
+                    prompt=prompt, system_prompt=system_prompt, config=config
+                )
+
+        optimizer = base._optimizer(tmp, task_client, GuardTripOptClient())
+        return optimizer, task_client
+
+    def test_output_expansion_candidate_never_calls_task_model(self):
+        base = TestSearchStabilityOffline()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer, task_client = self._expansion_mini_optimizer(tmp)
+            winner = optimizer.run_optimization(base._samples(3), base._samples(1))
+            self.assertEqual(winner.candidate_id, "P_E0")
+            # 被 guard 拒绝的 edit 其 guidance marker 从未进入任何 task 调用。
+            for prompt in task_client.call_prompts:
+                self.assertNotIn("every token position", prompt)
+
+    def test_output_expansion_candidate_never_enters_beam_or_winner(self):
+        from protegi.search_stability import INVALID_OUTPUT_AMPLIFICATION
+
+        base = TestSearchStabilityOffline()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer, _ = self._expansion_mini_optimizer(tmp)
+            winner = optimizer.run_optimization(base._samples(3), base._samples(1))
+            self.assertEqual(winner.candidate_id, "P_E0")
+            bad_id = "c_r1_p0_g0_edit"
+            node = optimizer.lineage_tracker.nodes.get(bad_id)
+            self.assertIsNotNone(node)
+            self.assertEqual(node["selection_status"], INVALID_OUTPUT_AMPLIFICATION)
+            self.assertEqual(
+                node["metrics"].get("failure_reason"),
+                "output_amplification_contract_violation",
+            )
+            self.assertNotIn("train_f1", node["metrics"])
+            beam_ids = [
+                c["candidate_id"]
+                for c in json.loads(
+                    (tmp / "out" / "round_1" / "beam.json").read_text(encoding="utf-8")
+                )
+            ]
+            self.assertNotIn(bad_id, beam_ids)
+            summary = json.loads(
+                (tmp / "out" / "summary.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                summary["search_stability"]["candidates_invalid_output_amplification"],
+                1,
+            )
+            self.assertEqual(
+                summary["search_stability"]["candidates_invalid_budget_exhausted"], 0
+            )
+
+    def test_frozen_p0_output_expansion_violation_hard_fails(self):
+        import protegi.optimizer as optimizer_module
+        from protegi.prompts_p0 import (
+            ENTITY_PROMPT_P0,
+            replace_optimizable_guidance,
+        )
+
+        base = TestSearchStabilityOffline()
+        bad_p0 = replace_optimizable_guidance(
+            ENTITY_PROMPT_P0, self.SMOKING_GUN_GUIDANCE
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            optimizer = base._optimizer(
+                tmp, base._TaskClient(mode="ok"), base._OptClient()
+            )
+            original = optimizer_module.ENTITY_PROMPT_P0
+            optimizer_module.ENTITY_PROMPT_P0 = bad_p0
+            try:
+                with self.assertRaises(RuntimeError) as ctx:
+                    optimizer.run_optimization(base._samples(2), base._samples(1))
+            finally:
+                optimizer_module.ENTITY_PROMPT_P0 = original
+            self.assertIn("hard fail", str(ctx.exception))
 
 
 if __name__ == "__main__":

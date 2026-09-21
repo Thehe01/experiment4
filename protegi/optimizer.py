@@ -37,8 +37,11 @@ from protegi.document_context import (
 from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
 from protegi.evaluator import TaskEvaluator, focus_entity_error_examples
 from protegi.runtime_contract import validate_task_runtime
+from protegi.output_expansion_guard import OutputExpansionGuard
+from protegi.output_expansion_guard import REASON as EXPANSION_REASON
 from protegi.search_stability import (
     INVALID_BUDGET_EXHAUSTED,
+    INVALID_OUTPUT_AMPLIFICATION,
     EVALUATION_STATUS_VALID,
     CandidateBudgetExhaustedError,
     CandidateEvalCache,
@@ -698,6 +701,39 @@ class ProTeGiOptimizer:
         )
         self.lineage_tracker.register_candidate(candidate)
 
+    def _admit_or_reject_output_amplification(
+        self,
+        candidate: PromptCandidate,
+        *,
+        round_idx: Any = None,
+    ) -> bool:
+        """Output Expansion Guard 准入：拒绝则记 INVALID，不调用 Task Model。
+
+        调用方必须在现有 PromptContractValidator 通过之后调用；返回 False
+        时该候选已隔离（不进 UCB/beam/winner），调用方直接 continue。
+        """
+        result = OutputExpansionGuard.validate(
+            candidate.prompt_text, stage=self.stage
+        )
+        if result:
+            return True
+        candidate.selection_status = INVALID_OUTPUT_AMPLIFICATION
+        candidate.estimated_reward = -1.0
+        candidate.ucb_score = -1.0
+        candidate.metrics["evaluation_status"] = INVALID_OUTPUT_AMPLIFICATION
+        candidate.metrics["failure_reason"] = EXPANSION_REASON
+        candidate.metrics["expansion_guard_reasons"] = list(result.reasons)
+        if candidate.candidate_id not in self._invalid_candidate_ids:
+            self._invalid_candidate_ids.add(candidate.candidate_id)
+            self.stability["candidates_invalid_output_amplification"] += 1
+        self._record_failure(
+            where="candidate_invalid_output_amplification",
+            reason=f"{candidate.candidate_id}: {result.error_message[:200]}",
+            round_idx=round_idx,
+        )
+        self.lineage_tracker.register_candidate(candidate)
+        return False
+
     def _checkpoint_bindings(self) -> dict:
         """当前运行的恢复绑定（由 run_protegi 的实时文件/配置构造）。"""
         return {
@@ -774,7 +810,11 @@ class ProTeGiOptimizer:
         expected = dict(resume_bindings)
         validate_checkpoint_bindings(checkpoint, expected)
         self._resumed_checkpoint = checkpoint
-        self.stability = checkpoint.get("stability") or new_stability_counters()
+        # 向后兼容：旧检查点缺新计数键时用默认值补齐。
+        self.stability = {
+            **new_stability_counters(),
+            **(checkpoint.get("stability") or {}),
+        }
         self.stability["resume_count"] = int(self.stability.get("resume_count", 0)) + 1
         stats = checkpoint.get("call_stats") or {}
         self._restored_call_stats = {
@@ -1105,7 +1145,8 @@ class ProTeGiOptimizer:
             self._invalid_candidate_ids = {
                 c["candidate_id"]
                 for c in ckpt.get("beam", [])
-                if c.get("selection_status") == INVALID_BUDGET_EXHAUSTED
+                if c.get("selection_status")
+                in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
             }
             p0_restored = ckpt.get("p0_candidate")
             p0_candidate = (
@@ -1137,6 +1178,24 @@ class ProTeGiOptimizer:
                 raise ValueError(
                     f"{self.stage} 种子提示词 P0 未通过冻结契约校验: "
                     f"{p0_frozen_val.error_message}"
+                )
+            # P0 身份按 frozen hash 认定（非 round/类型）；冻结 P0 自带
+            # 输出膨胀语义属于代码/契约错误，直接 HARD FAIL，不得标 invalid。
+            frozen_p0 = (
+                ENTITY_PROMPT_P0 if self.stage == "entity" else RELATION_PROMPT_P0
+            )
+            if compute_prompt_hash(p0_text) != compute_prompt_hash(frozen_p0):
+                raise ValueError(
+                    f"{self.stage} 种子提示词 P0 与 frozen P0 hash 不一致，"
+                    "拒绝启动（P0 身份按 hash 认定）"
+                )
+            p0_expansion = OutputExpansionGuard.validate(
+                p0_text, stage=self.stage
+            )
+            if not p0_expansion:
+                raise RuntimeError(
+                    f"冻结 P0 自身触发输出膨胀守卫，属代码/契约错误，run hard fail："
+                    f"{p0_expansion.error_message}"
                 )
 
             p0_candidate = PromptCandidate(
@@ -1358,6 +1417,10 @@ class ProTeGiOptimizer:
                             para.metrics["rejection_reason"] = para_val.error_message
                             self.lineage_tracker.register_candidate(para)
                             continue
+                        if not self._admit_or_reject_output_amplification(
+                            para, round_idx=r_idx
+                        ):
+                            continue
                         parent_successors.append(para)
                 else:
                     # ProTeGi 模式：梯度批评 -> 针对性重写 -> 释义扩展
@@ -1398,6 +1461,11 @@ class ProTeGiOptimizer:
                                 # 不合规候选直接淘汰，不得调用任务模型，也不对其进行释义
                                 continue
 
+                            if not self._admit_or_reject_output_amplification(
+                                edit_cand, round_idx=r_idx
+                            ):
+                                # 膨胀候选直接淘汰，不得调用任务模型，也不对其进行释义
+                                continue
                             parent_successors.append(edit_cand)
                             # 对合规的编辑版本进行释义扩充
                             paras = _guarded(
@@ -1420,6 +1488,10 @@ class ProTeGiOptimizer:
                                         para,
                                         gradient_text=grad.gradient_text,
                                     )
+                                    continue
+                                if not self._admit_or_reject_output_amplification(
+                                    para, round_idx=r_idx
+                                ):
                                     continue
                                 parent_successors.append(para)
 
@@ -1464,15 +1536,16 @@ class ProTeGiOptimizer:
                     )
 
             # 将上一轮 Beam 也作为候选之一参与本轮竞争 (允许保留优质父代)
-            # INVALID 候选（预算耗尽）永不进入 UCB/beam：先过滤。
+            # INVALID 候选（预算耗尽 / 输出膨胀）永不进入 UCB/beam：先过滤。
             all_pool = [
                 c for c in list(round_candidates) + list(beam)
-                if c.selection_status != INVALID_BUDGET_EXHAUSTED
+                if c.selection_status
+                not in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
             ]
             if not all_pool and (round_candidates or beam):
                 raise RuntimeError(
                     f"Round {r_idx} 无有效候选可评估（新候选与 incumbent "
-                    "全部因预算耗尽 INVALID），明确失败，禁止从无效候选中选择。"
+                    "全部 INVALID），明确失败，禁止从无效候选中选择。"
                 )
 
             # (2) 候选评估与选择阶段 (Selection / Bandits - 严格在 train_samples 上进行)
@@ -1603,7 +1676,10 @@ class ProTeGiOptimizer:
         print(f"\n[ProTeGi 搜索结束] 共完成 {self.optimization_steps} 轮 Train 搜索。Dev is used only in the final selection phase after all optimization rounds are completed. 开始对最终 Beam ({len(beam)} 个候选) 执行统一 Dev 评估选优...")
         dev_results_by_id: Dict[str, EvaluationResult] = {}
         for cand in beam:
-            if cand.selection_status == INVALID_BUDGET_EXHAUSTED:
+            if cand.selection_status in (
+                INVALID_BUDGET_EXHAUSTED,
+                INVALID_OUTPUT_AMPLIFICATION,
+            ):
                 continue
             try:
                 dev_eval = self._evaluate_candidate_on_dev(cand, dev_samples)
@@ -1676,13 +1752,18 @@ class ProTeGiOptimizer:
         # INVALID 候选永不进入决赛；若无有效候选则明确失败。
         finalists = [
             c for c in beam
-            if c.selection_status != INVALID_BUDGET_EXHAUSTED
+            if c.selection_status
+            not in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
             and c.candidate_id in dev_results_by_id
         ]
         if self.include_p0_in_final_selection:
             if all(c.candidate_id != p0_candidate.candidate_id for c in finalists):
                 if (
-                    p0_candidate.selection_status != INVALID_BUDGET_EXHAUSTED
+                    p0_candidate.selection_status
+                    not in (
+                        INVALID_BUDGET_EXHAUSTED,
+                        INVALID_OUTPUT_AMPLIFICATION,
+                    )
                     and p0_candidate.candidate_id in dev_results_by_id
                 ):
                     finalists.append(p0_candidate)
@@ -1831,6 +1912,11 @@ class ProTeGiOptimizer:
                 "candidates_valid": len(self._evaluated_candidate_ids),
                 "candidates_invalid_budget_exhausted": int(
                     self.stability["candidates_invalid_budget_exhausted"]
+                ),
+                "candidates_invalid_output_amplification": int(
+                    self.stability.get(
+                        "candidates_invalid_output_amplification", 0
+                    )
                 ),
                 "transient_api_retries": int(
                     self.stability["transient_api_retries"]

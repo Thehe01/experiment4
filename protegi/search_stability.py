@@ -23,6 +23,7 @@ from protegi.entity_cache import compute_prompt_hash
 from protegi.runtime_contract import TASK_RUNTIME_FIELDS
 
 INVALID_BUDGET_EXHAUSTED = "invalid_budget_exhausted"
+INVALID_OUTPUT_AMPLIFICATION = "invalid_output_amplification"
 EVALUATION_STATUS_VALID = "valid"
 
 CHECKPOINT_VERSION = "protegi-search-checkpoint-v1"
@@ -41,6 +42,7 @@ IMPLEMENTATION_FILES = (
     "protegi/mutators.py",
     "protegi/retry_utils.py",
     "protegi/search_stability.py",
+    "protegi/output_expansion_guard.py",
     "protegi/lineage.py",
     "protegi/logging_utils.py",
     "protegi/entity_cache.py",
@@ -343,6 +345,7 @@ def new_stability_counters() -> Dict[str, Any]:
         "budget_exhaustion_retries": 0,
         "candidates_valid": 0,
         "candidates_invalid_budget_exhausted": 0,
+        "candidates_invalid_output_amplification": 0,
         "transient_api_retries": 0,
         "evaluation_cache_hits": 0,
         "resume_count": 0,
@@ -352,6 +355,7 @@ def new_stability_counters() -> Dict[str, Any]:
 
 __all__ = [
     "INVALID_BUDGET_EXHAUSTED",
+    "INVALID_OUTPUT_AMPLIFICATION",
     "EVALUATION_STATUS_VALID",
     "CHECKPOINT_VERSION",
     "CHECKPOINT_FILENAME",
