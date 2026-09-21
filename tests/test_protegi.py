@@ -2617,9 +2617,14 @@ class TestEffectiveRuntime(unittest.TestCase):
             )
         )
         version = manifest["window_construction"]["version"]
-        # 一致即通过（无返回值）。
+        # 一致即通过（无返回值；正式路径经 normalize 后恒带尺寸字段）。
         validate_formal_window_construction(
-            {"window_construction": version}, manifest
+            {
+                "window_construction": version,
+                "window_chars": 3000,
+                "window_overlap": 400,
+            },
+            manifest,
         )
 
     def test_formal_preflight_rejects_provisional_construction(self):
@@ -2653,6 +2658,112 @@ class TestEffectiveRuntime(unittest.TestCase):
                 {"window_construction": "window-split-v1"}, manifest
             )
         self.assertIn("window_construction", str(ctx.exception).lower())
+
+    def test_formal_preflight_accepts_matching_window_size(self):
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        version = manifest["window_construction"]["version"]
+        validate_formal_window_construction(
+            {
+                "window_construction": version,
+                "window_chars": 3000,
+                "window_overlap": 400,
+            },
+            manifest,
+        )
+
+    def test_formal_preflight_rejects_window_chars_mismatch(self):
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        version = manifest["window_construction"]["version"]
+        with self.assertRaises(RuntimeError) as ctx:
+            validate_formal_window_construction(
+                {
+                    "window_construction": version,
+                    "window_chars": 2500,
+                    "window_overlap": 400,
+                },
+                manifest,
+            )
+        self.assertIn("formal window_chars mismatch", str(ctx.exception))
+
+    def test_formal_preflight_rejects_window_overlap_mismatch(self):
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        version = manifest["window_construction"]["version"]
+        with self.assertRaises(RuntimeError) as ctx:
+            validate_formal_window_construction(
+                {
+                    "window_construction": version,
+                    "window_chars": 3000,
+                    "window_overlap": 300,
+                },
+                manifest,
+            )
+        self.assertIn("formal window_overlap mismatch", str(ctx.exception))
+
+    def test_formal_preflight_rejects_manifest_missing_max_chars(self):
+        import copy
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        tampered = copy.deepcopy(manifest)
+        del tampered["window_construction"]["max_chars"]
+        with self.assertRaises(RuntimeError) as ctx:
+            validate_formal_window_construction(
+                {
+                    "window_construction": manifest["window_construction"][
+                        "version"
+                    ],
+                    "window_chars": 3000,
+                    "window_overlap": 400,
+                },
+                tampered,
+            )
+        self.assertIn("formal window_chars mismatch", str(ctx.exception))
+
+    def test_formal_preflight_rejects_manifest_missing_overlap(self):
+        import copy
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        tampered = copy.deepcopy(manifest)
+        del tampered["window_construction"]["overlap"]
+        with self.assertRaises(RuntimeError) as ctx:
+            validate_formal_window_construction(
+                {
+                    "window_construction": manifest["window_construction"][
+                        "version"
+                    ],
+                    "window_chars": 3000,
+                    "window_overlap": 400,
+                },
+                tampered,
+            )
+        self.assertIn("formal window_overlap mismatch", str(ctx.exception))
 
     def test_promote_uses_recorded_effective_runtime(self):
         from protegi.entity_cache import compute_prompt_hash

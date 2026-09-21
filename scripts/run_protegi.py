@@ -132,6 +132,30 @@ def validate_formal_window_construction(config: dict, freeze_manifest: dict) -> 
             f"与冻结清单 ({manifest_construction.get('version')}) 不一致，"
             "拒绝运行。"
         )
+    # 窗口尺寸必须显式一致：版本字符串不编码 window_chars/overlap，
+    # 缺字段或类型非法一律拒绝，禁止用 3000/400 默认值兜底。
+    for config_key, manifest_key, label in (
+        ("window_chars", "max_chars", "formal window_chars mismatch"),
+        ("window_overlap", "overlap", "formal window_overlap mismatch"),
+    ):
+        if manifest_key not in manifest_construction:
+            raise RuntimeError(
+                f"冻结清单 window_construction 缺少 {manifest_key}，"
+                f"{label}，拒绝运行。"
+            )
+        try:
+            config_value = int(config[config_key])
+            manifest_value = int(manifest_construction[manifest_key])
+        except (TypeError, ValueError, KeyError) as exc:
+            raise RuntimeError(
+                f"{label}：config[{config_key}] 与冻结清单[{manifest_key}] "
+                "不可比（缺失或类型非法），拒绝运行。"
+            ) from exc
+        if config_value != manifest_value:
+            raise RuntimeError(
+                f"{label}：config {config_value} != "
+                f"冻结清单 {manifest_value}，拒绝运行。"
+            )
 
 
 def normalize_config_with_effective_runtime(config: dict) -> dict:
