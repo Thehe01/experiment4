@@ -1071,6 +1071,8 @@ class ProTeGiOptimizer:
             raise ValueError("Train 样本为空，禁止启动 ProTeGi")
         if not dev_samples:
             raise ValueError("Dev 样本为空，禁止启动最终候选决选")
+        # 启动时实现快照：结束时比对，运行中代码变更即 provenance 受损。
+        self._startup_implementation = implementation_hashes(ROOT)
         if self.document_abbreviation_context:
             missing_context = [
                 sample.get("sample_id") or sample.get("id") or "unknown"
@@ -1800,6 +1802,8 @@ class ProTeGiOptimizer:
         if all(candidate.candidate_id != p0_candidate.candidate_id for candidate in dev_candidates):
             dev_candidates.append(p0_candidate)
         for candidate in dev_candidates:
+            # INVALID 候选在 Dev 评估中被跳过，无评估结果：记状态，不 KeyError。
+            dev_eval_result = dev_results_by_id.get(candidate.candidate_id)
             dev_records.append({
                 "candidate_id": candidate.candidate_id,
                 "generation_type": candidate.generation_type,
@@ -1807,8 +1811,14 @@ class ProTeGiOptimizer:
                 "prompt_scope_audit": candidate.metrics.get("prompt_scope_audit", {}),
                 "selected": candidate.candidate_id == winner.candidate_id,
                 "is_p0_baseline": candidate.candidate_id == p0_candidate.candidate_id,
+                "evaluation_status": candidate.metrics.get(
+                    "evaluation_status", EVALUATION_STATUS_VALID
+                ),
+                "failure_reason": candidate.metrics.get("failure_reason"),
                 "selection_audit": final_selection_audits.get(candidate.candidate_id),
-                "evaluation": dev_results_by_id[candidate.candidate_id].to_dict(),
+                "evaluation": (
+                    dev_eval_result.to_dict() if dev_eval_result is not None else None
+                ),
             })
         self.logger.save_json(
             {
@@ -1876,6 +1886,21 @@ class ProTeGiOptimizer:
 
         freeze_manifest_path = ROOT / "data" / "dataset_freeze_manifest_v6.json"
         scope_protocol_path = ROOT / "protegi" / "PROMPT_SCOPE_EXPERIMENT.md"
+
+        # 结束漂移检查：运行中实现文件变更即 provenance 受损，直接 hard fail。
+        startup_implementation = getattr(self, "_startup_implementation", None)
+        end_implementation = implementation_hashes(ROOT)
+        drifted_files = sorted(
+            rel
+            for rel, digest in end_implementation.items()
+            if startup_implementation is not None
+            and startup_implementation.get(rel) != digest
+        )
+        if drifted_files:
+            raise RuntimeError(
+                "检测到运行中实现漂移，provenance 已受损，拒绝封存产物："
+                f"{drifted_files}"
+            )
         implementation_paths = [
             Path(__file__),
             ROOT / "protegi" / "prompts_p0.py",
@@ -1970,6 +1995,8 @@ class ProTeGiOptimizer:
                 },
             },
             "formal_eligible": bool(self.config.get("formal_eligible", True)),
+            "implementation_snapshot_at_start": startup_implementation,
+            "implementation_drift_detected": False,
             "start_time_utc": start_time_utc,
             "end_time_utc": datetime.now(timezone.utc).isoformat(),
         }

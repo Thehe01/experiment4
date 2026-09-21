@@ -3122,6 +3122,42 @@ class TestOutputExpansionGuard(unittest.TestCase):
         )
         self.assertTrue(result, result.reasons)
 
+    def test_output_expansion_guard_negation_exempts_affirmative_rules(self):
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        for text in (
+            "Never inspect every token position; emit only verified entities.",
+            "Do not create an individual entry for each occurrence separately.",
+            "Never keep duplicates; deduplicate strictly before returning.",
+            "Do not output all nested spans unconditionally.",
+            "Do not list all candidate spans; decide each verified entity once.",
+            "Avoid emitting every substring as a candidate.",
+        ):
+            with self.subTest(text=text):
+                result = OutputExpansionGuard.validate_guidance(text)
+                self.assertTrue(result, result.reasons)
+
+    def test_output_expansion_guard_rule_error_fails_closed(self):
+        import protegi.output_expansion_guard as guard_module
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        original_rules = guard_module._RULES
+
+        def _boom(text):
+            raise RuntimeError("simulated rule bug")
+
+        guard_module._RULES = (("token_position_enumeration", _boom),)
+        try:
+            result = OutputExpansionGuard.validate_guidance(
+                "Inspect every token position for matches."
+            )
+        finally:
+            guard_module._RULES = original_rules
+        self.assertFalse(result)
+        self.assertTrue(
+            any(r.startswith("guard_rule_error:") for r in result.reasons)
+        )
+
     def test_output_expansion_guard_allows_run7_precision_guidance(self):
         from protegi.output_expansion_guard import OutputExpansionGuard
 

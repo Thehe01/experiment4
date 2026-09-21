@@ -64,17 +64,39 @@ def _sentences(text: str) -> List[str]:
     return [s for s in re.split(r"[.!?\n]+", text) if s.strip()]
 
 
+def _negated_in_sentence(text: str, match_start: int) -> bool:
+    """同句内、匹配点之前出现否定词则视为禁枚举声明，予以豁免。"""
+    left = text[:match_start]
+    boundary = max(
+        left.rfind("."), left.rfind("!"), left.rfind("?"), left.rfind("\n")
+    )
+    return bool(_NEGATION_RE.search(left[boundary + 1:]))
+
+
+def _first_affirmative_match(pattern: re.Pattern, text: str) -> Optional[re.Match]:
+    """返回首个非否定语义的匹配；全被否定时返回 None。
+
+    正向放大规则（如 every token position）被 do not/never/avoid 等
+    否定时视为禁枚举声明，必须放行。禁止去重类规则本身即是否定式，
+    不适用本豁免（见 _rule_anti_dedup）。
+    """
+    for match in pattern.finditer(text):
+        if not _negated_in_sentence(text, match.start()):
+            return match
+    return None
+
+
 def _rule_token_position(text: str) -> Optional[str]:
-    """every/each/all + token position(s)：逐 token 穷举。"""
+    """every/each/all + token position(s)：逐 token 穷举（否定豁免）。"""
     pattern = re.compile(
         r"\b(every|each|all)\s+token\s+positions?\b", re.IGNORECASE
     )
-    match = pattern.search(text)
+    match = _first_affirmative_match(pattern, text)
     return match.group(0) if match else None
 
 
 def _rule_occurrence_separate(text: str) -> Optional[str]:
-    """逐 occurrence 分立输出 / offset-distinct / individual entry。"""
+    """逐 occurrence 分立输出 / offset-distinct / individual entry（否定豁免）。"""
     patterns = (
         re.compile(r"\b(each|every)\s+occurrences?\s+separately\b", re.IGNORECASE),
         re.compile(r"\boffset-distinct\s+occurrences?\b", re.IGNORECASE),
@@ -82,7 +104,7 @@ def _rule_occurrence_separate(text: str) -> Optional[str]:
         re.compile(r"\bindividual\s+entr\w*\s+for\s+each\b", re.IGNORECASE),
     )
     for pattern in patterns:
-        match = pattern.search(text)
+        match = _first_affirmative_match(pattern, text)
         if match:
             return match.group(0)
     return None
@@ -127,12 +149,18 @@ _DEDUP_OBJECT_RE = re.compile(
 
 
 def _rule_anti_dedup(text: str) -> Optional[str]:
-    """do not collapse/deduplicate/...（禁止去重）与 preserve/keep/retain duplicates。"""
+    """do not collapse/deduplicate/...（禁止去重）与 preserve/keep/retain duplicates。
+
+    本规则本身即检测否定式（禁止去重），不做否定豁免；但 keep/retain/
+    preserve 分支若被 never/avoid 等否定（"never keep duplicates" 是
+    促去重声明），则豁免。
+    """
     if re.search(r"\bdo\s+not\s+deduplicate\b", text, re.IGNORECASE):
         return "do not deduplicate"
-    keep = re.search(
-        r"\b(preserve|keep|retain)\s+duplicates?\b", text, re.IGNORECASE
+    keep_pattern = re.compile(
+        r"\b(preserve|keep|retain)\s+duplicates?\b", re.IGNORECASE
     )
+    keep = _first_affirmative_match(keep_pattern, text)
     if keep:
         return keep.group(0)
     for match in _ANTI_DEDUP_RE.finditer(text):
@@ -153,22 +181,20 @@ _NESTED_OVERLAP_SEP_RE = re.compile(
 
 
 def _rule_nested_overlap(text: str) -> Optional[str]:
-    """无条件输出全部 nested/overlapping（附条件独立成立则放行）。"""
+    """无条件输出全部 nested/overlapping（附条件独立成立则放行，否定豁免）。"""
     for sentence in _sentences(text):
         if _CONDITIONAL_RE.search(sentence):
             continue
-        match = _UNCONDITIONAL_SPAN_RE.search(sentence)
-        if match:
-            return match.group(0)
-        match = _NESTED_OVERLAP_SEP_RE.search(sentence)
-        if match:
-            snippet = _normalize(match.group(0))
-            return snippet[:80]
+        for pattern in (_UNCONDITIONAL_SPAN_RE, _NESTED_OVERLAP_SEP_RE):
+            match = _first_affirmative_match(pattern, sentence)
+            if match:
+                snippet = _normalize(match.group(0))
+                return snippet[:80]
     return None
 
 
 def _rule_possible_candidate_spans(text: str) -> Optional[str]:
-    """all/every + possible/candidate + spans；all/every + substrings。"""
+    """all/every + possible/candidate + spans；all/every + substrings（否定豁免）。"""
     patterns = (
         re.compile(
             r"\b(all|every)\s+(possible|candidate)\s+spans?\b", re.IGNORECASE
@@ -176,7 +202,7 @@ def _rule_possible_candidate_spans(text: str) -> Optional[str]:
         re.compile(r"\b(all|every)\s+substr\w*\b", re.IGNORECASE),
     )
     for pattern in patterns:
-        match = pattern.search(text)
+        match = _first_affirmative_match(pattern, text)
         if match:
             return match.group(0)
     return None
@@ -223,8 +249,13 @@ class OutputExpansionGuard:
         for rule_id, rule_fn in _RULES:
             try:
                 hit = rule_fn(text)
-            except Exception:
-                continue
+            except Exception as exc:
+                # 规则自身异常即 fail-closed：拒绝候选并标明内部错误，
+                # 禁止跳过规则后放行（与 violation 原因区分）。
+                return ExpansionGuardResult(
+                    False,
+                    [f"guard_rule_error:{rule_id}:{type(exc).__name__}"],
+                )
             if hit:
                 snippet = _normalize(str(hit))[:80]
                 return ExpansionGuardResult(
