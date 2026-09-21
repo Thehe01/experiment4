@@ -734,6 +734,21 @@ class ProTeGiOptimizer:
         self.lineage_tracker.register_candidate(candidate)
         return False
 
+    def _drop_invalid_from_beam(
+        self, beam: List[PromptCandidate]
+    ) -> List[PromptCandidate]:
+        """candidate 一旦变 INVALID，立即从 active beam 清掉，不靠后过滤兜底。
+
+        checkpoint 里的 beam 是搜索状态的一部分，绝不允许残留已 INVALID
+        的 active member；清理后若无有效 incumbent，调用方按既定语义
+        明确 hard fail。
+        """
+        return [
+            c for c in beam
+            if c.selection_status
+            not in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
+        ]
+
     def _checkpoint_bindings(self) -> dict:
         """当前运行的恢复绑定（由 run_protegi 的实时文件/配置构造）。
 
@@ -774,6 +789,7 @@ class ProTeGiOptimizer:
         reason: str = "",
     ) -> Path:
         """保存可恢复检查点（transient 耗尽或每轮结束调用）。"""
+        beam = self._drop_invalid_from_beam(beam)
         payload = {
             **self._checkpoint_bindings(),
             "phase": phase,
@@ -836,17 +852,19 @@ class ProTeGiOptimizer:
                 "evaluation_cache_hits",
             )
         }
-        self._last_synced_eval_transient = int(
-            stats.get("transient_api_retries", 0)
-        )
-        self._last_synced_eval_budget = int(stats.get("budget_exhaustion_retries", 0))
+        self._last_synced_eval_transient = 0
+        self._last_synced_eval_budget = 0
+        # 注意：累计总数保留在 stability/call_stats 恢复值里；同步水位必须
+        # 以新 evaluator 当前计数（通常 0）为准，之后只累加本进程增量，
+        # 否则恢复后首次同步即产生负增量，污染正式 summary/provenance。
         self._evaluated_candidate_ids = set(
             checkpoint.get("evaluated_candidate_ids") or []
         )
         self._invalid_candidate_ids = {
             c["candidate_id"]
             for c in checkpoint.get("beam", [])
-            if c.get("selection_status") == INVALID_BUDGET_EXHAUSTED
+            if c.get("selection_status")
+            in (INVALID_BUDGET_EXHAUSTED, INVALID_OUTPUT_AMPLIFICATION)
         }
         lineage = checkpoint.get("lineage") or {}
         self._restored_lineage = {
@@ -1372,6 +1390,7 @@ class ProTeGiOptimizer:
                 except CandidateBudgetExhaustedError as exc:
                     self._sync_evaluator_counters()
                     self._mark_candidate_invalid(parent, exc, round_idx=r_idx)
+                    beam = self._drop_invalid_from_beam(beam)
                     continue
                 except Exception as exc:
                     self._sync_evaluator_counters()
@@ -1601,7 +1620,8 @@ class ProTeGiOptimizer:
                 try:
                     selector_history = self.selector.execute_evaluation_budget(all_pool, eval_batch_fn)
                 except RoundSelectionAborted as exc:
-                    # 中止本轮选择，保留 incumbent beam；落检查点后归档继续下一轮。
+                    # 中止本轮选择：先清 INVALID，再落检查点归档，保留有效 incumbent。
+                    beam = self._drop_invalid_from_beam(beam)
                     self._record_failure(
                         where="round_selection_aborted",
                         reason=str(exc),
