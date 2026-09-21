@@ -3486,6 +3486,171 @@ class TestOutputExpansionGuard(unittest.TestCase):
         )
 
 
+class TestOutputContractV2Diagnostic(unittest.TestCase):
+    """输出范式 v2：纯离线诊断测试，不调用真实模型，不碰冻结契约。"""
+
+    def test_v2_contract_keeps_frozen_definitions_byte_identical(self):
+        from protegi.output_contract_v2 import build_v2_immutable_contract
+        from protegi.prompts_p0 import ENTITY_IMMUTABLE_CONTRACT
+
+        v2 = build_v2_immutable_contract()
+        # 定义段落逐字节保留：四类型标题行必须原样存在。
+        for anchor in (
+            "- Vulnerability: every explicit CVE identifier mention.",
+            "- Weakness: an explicit CWE identifier,",
+            "- Configuration: the Minimum Canonical Product Unit (MCPU)",
+            "- AttackTechnique: an explicit ATT&CK T-code",
+        ):
+            self.assertIn(anchor, v2)
+            self.assertEqual(
+                v2.count(anchor),
+                ENTITY_IMMUTABLE_CONTRACT.count(anchor),
+            )
+        # 规则与示例已替换为最小字段版本。
+        self.assertNotIn('"id": "E1"', v2)
+        self.assertNotIn('"text": "exact substring"', v2)
+        self.assertIn("OUTPUT_PARADIGM_VERSION: output-contract-v2-diagnostic-v1", v2)
+        self.assertIn(
+            "Return exactly these entity fields: type, start, end, normalized_id.",
+            v2,
+        )
+        # 7 条 few-shot 记录全部转为最小字段。
+        self.assertEqual(v2.count('{"type": "'), 7 + 1)  # 7 示例 + 1 返回示例
+
+    def test_frozen_contract_untouched_by_v2(self):
+        from protegi.prompts_p0 import ENTITY_IMMUTABLE_CONTRACT
+
+        self.assertIn(
+            "6. Return exactly these entity fields: "
+            "id, text, type, start, end, normalized_id.",
+            ENTITY_IMMUTABLE_CONTRACT,
+        )
+        self.assertNotIn("output-contract-v2", ENTITY_IMMUTABLE_CONTRACT)
+
+    def test_v2_prompt_passes_output_expansion_guard(self):
+        from protegi.output_contract_v2 import build_v2_entity_prompt
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        result = OutputExpansionGuard.validate(
+            build_v2_entity_prompt(), stage="entity"
+        )
+        self.assertTrue(result, result.reasons)
+
+    def test_v2_parser_recovers_id_text_and_collapses_duplicates(self):
+        from protegi.output_contract_v2 import parse_minimal_entity_mentions
+
+        text = "CVE-2021-44228 in Log4j, CVE-2021-44228 again."
+        first = text.find("CVE-2021-44228")
+        second = text.find("CVE-2021-44228", first + 1)
+        raw = [
+            {"type": "Vulnerability", "start": first, "end": first + 14,
+             "normalized_id": "CVE-2021-44228"},
+            # 同一 span 重复：必须坍缩。
+            {"type": "Vulnerability", "start": first, "end": first + 14,
+             "normalized_id": "CVE-2021-44228"},
+            # 同一表面不同 mention：合法，保留。
+            {"type": "Vulnerability", "start": second, "end": second + 14,
+             "normalized_id": "CVE-2021-44228"},
+            # 无偏移记录：v2 不做表面扩展，直接丢弃。
+            {"type": "Vulnerability", "normalized_id": "CVE-2021-44228"},
+            # 非法类型与越界偏移：丢弃。
+            {"type": "CAPEC", "start": 0, "end": 3},
+            {"type": "Vulnerability", "start": -1, "end": 99999},
+        ]
+        entities, diag = parse_minimal_entity_mentions(text, raw)
+        self.assertEqual(diag["raw_count"], 6)
+        self.assertEqual(diag["duplicates_collapsed"], 1)
+        self.assertEqual(diag["invalid_dropped"], 3)
+        self.assertEqual(diag["kept_count"], 2)
+        self.assertEqual(diag["nested_overlap_pairs"], 0)
+        self.assertEqual([e["id"] for e in entities], ["E1", "E2"])
+        self.assertEqual(entities[0]["text"], "CVE-2021-44228")
+        self.assertEqual(
+            (entities[0]["start"], entities[0]["end"]), (first, first + 14)
+        )
+
+    def test_v2_parser_counts_nested_overlap_without_dropping(self):
+        from protegi.output_contract_v2 import parse_minimal_entity_mentions
+
+        text = "Microsoft Exchange Server is affected."
+        raw = [
+            {"type": "Configuration", "start": 0, "end": 25},
+            {"type": "Configuration", "start": 10, "end": 25},
+        ]
+        entities, diag = parse_minimal_entity_mentions(text, raw)
+        self.assertEqual(diag["kept_count"], 2)
+        self.assertEqual(diag["nested_overlap_pairs"], 1)
+
+    def test_v2_parser_empty_list_roundtrip(self):
+        from protegi.output_contract_v2 import parse_minimal_entity_mentions
+
+        entities, diag = parse_minimal_entity_mentions("plain text", [])
+        self.assertEqual(entities, [])
+        self.assertEqual(diag["kept_count"], 0)
+        self.assertEqual(diag["duplicates_collapsed"], 0)
+
+    def test_v2_metric_parity_with_v1_spans(self):
+        from protegi.output_contract_v2 import parse_minimal_entity_mentions
+
+        text = "CVE-2021-44228 in Log4j (T1190)."
+        v1_style = [
+            {"id": "E9", "text": "CVE-2021-44228", "type": "Vulnerability",
+             "start": 0, "end": 14, "normalized_id": "CVE-2021-44228"},
+            {"id": "E3", "text": "Log4j", "type": "Configuration",
+             "start": 18, "end": 23, "normalized_id": None},
+        ]
+        v2_style = [
+            {"type": "Vulnerability", "start": 0, "end": 14,
+             "normalized_id": "CVE-2021-44228"},
+            {"type": "Configuration", "start": 18, "end": 23},
+        ]
+        gold = [
+            {"id": "E1", "text": "CVE-2021-44228", "type": "Vulnerability",
+             "start": 0, "end": 14, "normalized_id": "CVE-2021-44228"},
+            {"id": "E2", "text": "Log4j", "type": "Configuration",
+             "start": 18, "end": 23, "normalized_id": None},
+        ]
+        v2_entities, _ = parse_minimal_entity_mentions(text, v2_style)
+        self.assertEqual(
+            calc_strict_entity_sample_counts(v1_style, gold),
+            calc_strict_entity_sample_counts(v2_entities, gold),
+        )
+
+    def test_v2_canonical_output_smaller_than_v1(self):
+        import sys as _sys
+
+        from protegi.output_contract_v2 import estimate_canonical_output_chars
+
+        gold_dir = V6_ROOT / "data" / "annotations" / "gold"
+        _sys.path.insert(0, str(V6_ROOT / "scripts"))
+        from llm_methods import build_text_windows
+
+        doc = json.loads((gold_dir / "aa24-207a.json").read_text(encoding="utf-8"))
+        wins = build_text_windows(doc["text"], max_chars=3000, overlap=400)
+        win = wins[5]
+        local = [
+            e for e in doc["entities"]
+            if e.get("start") is not None and e.get("end") is not None
+            and e["start"] >= win["start"] and e["end"] <= win["end"]
+        ]
+        local = [
+            {**e, "start": e["start"] - win["start"],
+             "end": e["end"] - win["start"]}
+            for e in local
+        ]
+        self.assertGreaterEqual(len(local), 40)
+        v1 = estimate_canonical_output_chars(
+            win["text"], local, paradigm="v1"
+        )
+        v2 = estimate_canonical_output_chars(
+            win["text"], local, paradigm="v2"
+        )
+        self.assertLess(v2, v1)
+        # CVE 枚举窗上，normalized_id（CPE 长串）占主导，去掉 id/text
+        # 约省 25-30%；阈值取 0.75 留余量。
+        self.assertLess(v2, v1 * 0.75)
+
+
 if __name__ == "__main__":
     unittest.main()
 
