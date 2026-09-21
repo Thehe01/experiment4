@@ -85,6 +85,66 @@ _V2_RETURN_EXAMPLE = (
     '"normalized_id": "CVE-..."}]}'
 )
 
+# ---- v2'（诊断第二轮）：保留 text 作为接地证据，只省掉 id ----
+# 动因（offset_case 实证）：模型能找对 mention（normalized_id 正确），
+# 但裸字符偏移系统性漂移数十字符、tp≈0；text 是唯一可靠的接地通道，
+# 程序端可据此 verify-or-search。v2' 与 v1 共用冻结解析器
+# （parse_entity_mentions：忽略模型 id、校验偏移、表面搜索、精确去重），
+# 因此范式差异被隔离在 prompt 措辞内，可做干净 A/B。
+
+_V2P_RULE6 = (
+    "6. Return exactly these entity fields: "
+    "text, type, start, end, normalized_id. "
+    "Do NOT output id; record identifiers are assigned programmatically. "
+    "Quote text as an exact substring of the input; start/end must be "
+    "consistent with your quoted text and are verified against it."
+)
+
+_V1_ID_PREFIX_RE = re.compile(r'\{"id": "[^"]+", ')
+
+_V2P_RETURN_EXAMPLE = (
+    '{"entities": [{"text": "exact substring", "type": "Vulnerability", '
+    '"start": 0, "end": 14, "normalized_id": "CVE-..."}]}'
+)
+
+V2P_GUIDANCE_APPENDIX = (
+    "Emit at most one record per distinct mention. Do not output id. "
+    "Always quote the exact mention text; start/end must be consistent "
+    "with your quoted text and are verified programmatically. "
+    "Do not duplicate records, do not emit nested or overlapping variants "
+    "of the same mention, and do not enumerate substrings or tokens. "
+    "When nothing satisfies the frozen definitions, return "
+    '{"entities": []} immediately.'
+)
+
+
+def build_v2p_immutable_contract() -> str:
+    """v2' 诊断契约：定义段落逐字节保留，只换规则 3/6 与示例 id 前缀。"""
+    contract = ENTITY_IMMUTABLE_CONTRACT
+    contract = _replace_once(contract, _V1_RULE3, _V2_RULE3, label="rule3")
+    contract = _replace_once(contract, _V1_RULE6, _V2P_RULE6, label="rule6")
+    contract = _replace_once(
+        contract, _V1_RETURN_EXAMPLE, _V2P_RETURN_EXAMPLE,
+        label="return_example",
+    )
+    transformed, n = _V1_ID_PREFIX_RE.subn('{"', contract)
+    if n != _EXPECTED_FEWSHOT_RECORDS:
+        raise ValueError(
+            "v2' 诊断契约构造失败：few-shot id 前缀期望移除 "
+            f"{_EXPECTED_FEWSHOT_RECORDS} 处，实际 {n} 处；拒绝静默生成"
+        )
+    marker = f"OUTPUT_PARADIGM_VERSION: {OUTPUT_PARADIGM_VERSION}-text-grounded-v1\n"
+    lines = transformed.splitlines(keepends=True)
+    if not lines or not lines[0].startswith("BOUNDARY_CONTRACT_VERSION:"):
+        raise ValueError("v2' 诊断契约构造失败：首行版本标识缺失")
+    return lines[0] + marker + "".join(lines[1:])
+
+
+def build_v2p_entity_prompt() -> str:
+    """组装完整 v2' 诊断 prompt（contract + guidance），结构与 P0 同构。"""
+    guidance = ENTITY_GUIDANCE_P0.strip() + "\n" + V2P_GUIDANCE_APPENDIX
+    return build_prompt(build_v2p_immutable_contract(), guidance)
+
 # 冻结 few-shot 记录形状：{"id": ..., "text": ..., "type": ..., ...}。
 # 程序端把 7 条（3+4）逐字转成最小字段，条数不对即 fail-closed。
 _FEWSHOT_RECORD_RE = re.compile(
@@ -286,8 +346,11 @@ __all__ = [
     "V2_REQUIRED_FIELDS",
     "V2_OPTIONAL_FIELDS",
     "V2_GUIDANCE_APPENDIX",
+    "V2P_GUIDANCE_APPENDIX",
     "build_v2_immutable_contract",
     "build_v2_entity_prompt",
+    "build_v2p_immutable_contract",
+    "build_v2p_entity_prompt",
     "parse_minimal_entity_mentions",
     "estimate_canonical_output_chars",
 ]

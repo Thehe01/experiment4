@@ -3650,6 +3650,60 @@ class TestOutputContractV2Diagnostic(unittest.TestCase):
         # 约省 25-30%；阈值取 0.75 留余量。
         self.assertLess(v2, v1 * 0.75)
 
+    def test_v2p_contract_keeps_text_drops_id_only(self):
+        from protegi.output_contract_v2 import build_v2p_immutable_contract
+        from protegi.prompts_p0 import ENTITY_IMMUTABLE_CONTRACT
+
+        v2p = build_v2p_immutable_contract()
+        self.assertIn("text-grounded-v1", v2p)
+        # text 字段保留（接地证据），id 移除。
+        self.assertNotIn('"id": "E1"', v2p)
+        self.assertIn('"text": "CVE-2021-44228"', v2p)
+        self.assertIn(
+            "Return exactly these entity fields: "
+            "text, type, start, end, normalized_id.",
+            v2p,
+        )
+        # 定义段落逐字节保留。
+        for anchor in (
+            "- Vulnerability: every explicit CVE identifier mention.",
+            "- Configuration: the Minimum Canonical Product Unit (MCPU)",
+        ):
+            self.assertIn(anchor, v2p)
+
+    def test_v2p_prompt_passes_output_expansion_guard(self):
+        from protegi.output_contract_v2 import build_v2p_entity_prompt
+        from protegi.output_expansion_guard import OutputExpansionGuard
+
+        result = OutputExpansionGuard.validate(
+            build_v2p_entity_prompt(), stage="entity"
+        )
+        self.assertTrue(result, result.reasons)
+
+    def test_v2p_records_parse_through_frozen_parser(self):
+        import sys as _sys
+
+        _sys.path.insert(0, str(V6_ROOT / "scripts"))
+        from llm_methods import parse_entity_mentions
+
+        text = "CVE-2021-44228 in Log4j (T1190)."
+        # v2' 形状：无 id、有 text；偏移故意给错一条，验证程序端修复。
+        raw = [
+            {"text": "CVE-2021-44228", "type": "Vulnerability",
+             "start": 0, "end": 14, "normalized_id": "CVE-2021-44228"},
+            {"text": "Log4j", "type": "Configuration",
+             "start": 99, "end": 104},
+            {"text": "Log4j", "type": "Configuration",
+             "start": 99, "end": 104},
+        ]
+        entities, _ = parse_entity_mentions(text, raw)
+        spans = {(e["type"], e["start"], e["end"]) for e in entities}
+        # 正确偏移 + 表面搜索修复各一条，去重后恰好两条。
+        self.assertIn(("Vulnerability", 0, 14), spans)
+        self.assertIn(("Configuration", 18, 23), spans)
+        self.assertEqual(len(entities), 2)
+        self.assertEqual([e["id"] for e in entities], ["E1", "E2"])
+
 
 if __name__ == "__main__":
     unittest.main()
