@@ -424,6 +424,32 @@ def promote_protegi(
             )
     task_runtime = entity_task_runtime
 
+    # 5b. 窗口构造一致性：两 summary 必须相同，且等于冻结清单记录版本。
+    frozen_construction = (freeze_manifest.get("window_construction") or {}).get(
+        "version"
+    )
+    ent_construction = entity_summary.get("window_construction")
+    rel_construction = relation_summary.get("window_construction")
+    for label, value in (
+        ("Stage 1", ent_construction),
+        ("Stage 2", rel_construction),
+    ):
+        if not value:
+            raise ValueError(
+                f"{label} summary 缺少 window_construction 字段，禁止晋级！"
+            )
+    if ent_construction != rel_construction:
+        raise ValueError(
+            f"Stage 1 与 Stage 2 窗口构造 (window_construction) 不一致: "
+            f"{ent_construction!r} != {rel_construction!r}；"
+            "正式 P_E* 与 P_R* 必须在同一窗口构造下产生。"
+        )
+    if ent_construction != frozen_construction:
+        raise ValueError(
+            f"晋级窗口构造 (window_construction={ent_construction!r}) "
+            f"与冻结清单记录 ({frozen_construction!r}) 不一致，禁止晋级！"
+        )
+
     # 6. 校验实体缓存清单深度绑定（含 chain binding：prompt_scope + frozen runtime）
     for cache_name, cache_manifest_path in (
         ("train", entity_cache_train_manifest_path),
@@ -477,6 +503,12 @@ def promote_protegi(
                     f"({cached_runtime.get(field)!r}) 与最终冻结 Task Runtime "
                     f"({task_runtime[field]!r}) 不一致"
                 )
+        if cache_manifest.get("window_construction") != ent_construction:
+            raise ValueError(
+                f"{cache_name} 实体缓存 window_construction "
+                f"({cache_manifest.get('window_construction')!r}) 与晋级窗口构造 "
+                f"({ent_construction!r}) 不一致；窗口构造已变更，请重建缓存。"
+            )
 
     task_model = task_runtime["model"]
     optimizer_model = (
@@ -501,6 +533,7 @@ def promote_protegi(
         "relation_optimization_summary_path": _rel_path(relation_summary_path),
         "relation_optimization_summary_sha256": _sha256(relation_summary_path),
         "task_runtime": task_runtime,
+        "window_construction": ent_construction,
         "entity_config_sha256": entity_config_sha256,
         "relation_config_sha256": relation_config_sha256,
         "split_file": _rel_path(split_file_path),

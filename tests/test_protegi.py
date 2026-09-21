@@ -1093,6 +1093,7 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
         cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
         fm_data = json.loads(cls.freeze_manifest.read_text(encoding="utf-8"))
         cls.gold_agg_sha = fm_data["gold_aggregate_sha256"]
+        cls.window_construction = fm_data["window_construction"]["version"]
 
     def _create_valid_artifact_fixture(self, tmp_dir: Path) -> tuple[Path, dict]:
         ent_prompt = tmp_dir / "valid_entity_prompt.txt"
@@ -1115,6 +1116,7 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
             "entity_prompt_sha256": hashlib.sha256(ent_prompt.read_bytes()).hexdigest(),
             "relation_prompt_path": str(rel_prompt),
             "relation_prompt_sha256": hashlib.sha256(rel_prompt.read_bytes()).hexdigest(),
+            "window_construction": self.window_construction,
             "task_runtime": {
                 "model": "hy3",
                 "max_workers": 8,
@@ -1254,6 +1256,39 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
                 )
             self.assertIn("gold_aggregate_sha256", str(ctx.exception))
             self.assertIn("Gold 已变更，缓存自动失效", str(ctx.exception))
+
+    def test_entity_cache_rejected_on_window_construction_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            cache_mgr = EntityCacheManager(tmp)
+            (tmp / "entity_cache_dev.jsonl").write_text("{}\n", encoding="utf-8")
+            manifest = {
+                "entity_prompt_sha256": "abc",
+                "schema_version": "chapter3-no-capec-v1",
+                "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+                "boundary_contract_version": "chapter3-boundary-sync-v2",
+                "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+                "split_sha256": "valid_split",
+                "gold_aggregate_sha256": "valid_gold",
+                "dataset_freeze_manifest_sha256": "valid_freeze",
+                "window_construction": "window-split-v1",
+                "cache_file_sha256": hashlib.sha256(b"{}\n").hexdigest(),
+                "num_samples": 1,
+                "sample_ids_sha256": hashlib.sha256(b"unknown\0").hexdigest(),
+                "gold_relation_count": 0,
+            }
+            (tmp / "entity_cache_dev_manifest.json").write_text(
+                json.dumps(manifest), encoding="utf-8"
+            )
+            with self.assertRaises(ValueError) as ctx:
+                cache_mgr.load_cache(
+                    "dev",
+                    validate_freeze_binding=False,
+                    expected_window_construction=(
+                        "window-split-v2:dense25-1000-120-20-s100"
+                    ),
+                )
+            self.assertIn("window_construction", str(ctx.exception))
 
     def test_old_entity_cache_rejected_after_split_hash_change(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1608,6 +1643,7 @@ class TestProtegiFinalRuntime(unittest.TestCase):
         cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
         fm_data = json.loads(cls.freeze_manifest.read_text(encoding="utf-8"))
         cls.gold_agg_sha = fm_data["gold_aggregate_sha256"]
+        cls.window_construction = fm_data["window_construction"]["version"]
 
     def _valid_artifact(self, tmp: Path) -> tuple[Path, dict]:
         ent = tmp / "e.txt"
@@ -1627,6 +1663,7 @@ class TestProtegiFinalRuntime(unittest.TestCase):
             "entity_prompt_sha256": hashlib.sha256(ent.read_bytes()).hexdigest(),
             "relation_prompt_path": str(rel),
             "relation_prompt_sha256": hashlib.sha256(rel.read_bytes()).hexdigest(),
+            "window_construction": self.window_construction,
             "task_runtime": {
                 "model": "hy3",
                 "max_workers": 8,
@@ -1682,6 +1719,28 @@ class TestProtegiFinalRuntime(unittest.TestCase):
             with self.assertRaises(ValueError) as ctx:
                 load_protegi_final_artifact(path)
             self.assertIn("window", str(ctx.exception).lower())
+
+    def test_protegi_artifact_rejects_missing_window_construction(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path, artifact = self._valid_artifact(Path(tmpdir))
+            del artifact["window_construction"]
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(path)
+            self.assertIn("window_construction", str(ctx.exception))
+
+    def test_protegi_artifact_rejects_window_construction_mismatch(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path, artifact = self._valid_artifact(Path(tmpdir))
+            artifact["window_construction"] = "window-split-v999-nonexistent"
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(path)
+            self.assertIn("window_construction", str(ctx.exception))
 
     def test_predict_llm_protegi_uses_frozen_task_runtime(self):
         import llm_methods
@@ -1799,6 +1858,7 @@ class TestPromoteProvenance(unittest.TestCase):
         cls.freeze_sha = hashlib.sha256(cls.freeze_manifest.read_bytes()).hexdigest()
         fm_data = json.loads(cls.freeze_manifest.read_text(encoding="utf-8"))
         cls.gold_agg_sha = fm_data["gold_aggregate_sha256"]
+        cls.window_construction = fm_data["window_construction"]["version"]
 
     def _write_prompts(self, tmp: Path):
         from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
@@ -1863,6 +1923,7 @@ class TestPromoteProvenance(unittest.TestCase):
             "dry_run": False,
             "winner_prompt_sha256": compute_prompt_hash(ent_text),
             "winner_prompt_sha256_raw_bytes": ent_raw,
+            "window_construction": self.window_construction,
             "config": self._task_config(),
             "input_bindings": dict(base_bind),
         }
@@ -1875,6 +1936,7 @@ class TestPromoteProvenance(unittest.TestCase):
             "dry_run": False,
             "winner_prompt_sha256": compute_prompt_hash(rel_text),
             "winner_prompt_sha256_raw_bytes": rel_raw,
+            "window_construction": self.window_construction,
             "config": self._task_config(),
             "input_bindings": dict(base_bind),
         }
@@ -1907,6 +1969,7 @@ class TestPromoteProvenance(unittest.TestCase):
                 "task_max_workers": 8,
                 "window_chars": 3000,
                 "window_overlap": 400,
+                "window_construction": self.window_construction,
                 "document_abbreviation_context": False,
                 "vulnerability_anchored_backfill": False,
                 "task_runtime": dict(task_runtime),
@@ -2013,6 +2076,37 @@ class TestPromoteProvenance(unittest.TestCase):
             with self.assertRaises(ValueError) as ctx:
                 self._promote(paths)
             self.assertIn("experiment_pair_id", str(ctx.exception))
+
+    def test_promote_rejects_window_construction_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["relation_summary"].read_text(encoding="utf-8"))
+            data["window_construction"] = "window-split-v999-nonexistent"
+            paths["relation_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("window_construction", str(ctx.exception))
+
+    def test_promote_rejects_missing_window_construction(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            data = json.loads(paths["entity_summary"].read_text(encoding="utf-8"))
+            del data["window_construction"]
+            paths["entity_summary"].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("window_construction", str(ctx.exception))
+
+    def test_promote_rejects_cache_window_construction_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = self._make_valid_promote_fixture(Path(tmpdir))
+            for name in ("train_manifest", "dev_manifest"):
+                data = json.loads(paths[name].read_text(encoding="utf-8"))
+                data["window_construction"] = "window-split-v999-nonexistent"
+                paths[name].write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                self._promote(paths)
+            self.assertIn("window_construction", str(ctx.exception))
 
     def test_promote_rejects_summary_split_hash_mismatch(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -2480,6 +2574,86 @@ class TestEffectiveRuntime(unittest.TestCase):
             set(out["effective_task_runtime"].keys()), set(TASK_RUNTIME_FIELDS)
         )
 
+    def test_formal_arms_share_frozen_window_construction(self):
+        import yaml
+        from run_protegi import normalize_config_with_effective_runtime
+
+        names = [
+            "protegi_formal_muse.yaml",
+            "protegi_formal_constrained_muse.yaml",
+            "protegi_formal_unconstrained_muse.yaml",
+        ]
+        parsed = []
+        for name in names:
+            cfg = yaml.safe_load(
+                (V6_ROOT / "protegi" / "configs" / name).read_text(
+                    encoding="utf-8"
+                )
+            )
+            parsed.append(cfg)
+        # matched-budget：除 prompt_scope 外三臂完全一致。
+        stripped = [
+            {k: v for k, v in cfg.items() if k != "prompt_scope"}
+            for cfg in parsed
+        ]
+        self.assertEqual(stripped[0], stripped[1])
+        self.assertEqual(stripped[0], stripped[2])
+        # 冻结的窗口构造描述符。
+        out = normalize_config_with_effective_runtime(dict(parsed[0]))
+        self.assertTrue(out["dense_run_split"])
+        self.assertEqual(
+            out["window_construction"],
+            "window-split-v2:dense25-1000-120-20-s100",
+        )
+        self.assertEqual(out["window_chars"], 3000)
+        self.assertEqual(out["window_overlap"], 400)
+
+    def test_formal_preflight_accepts_frozen_construction(self):
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        version = manifest["window_construction"]["version"]
+        # 一致即通过（无返回值）。
+        validate_formal_window_construction(
+            {"window_construction": version}, manifest
+        )
+
+    def test_formal_preflight_rejects_provisional_construction(self):
+        import copy
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        provisional = copy.deepcopy(manifest)
+        provisional["window_construction"]["params_provisional"] = True
+        with self.assertRaises(RuntimeError) as ctx:
+            validate_formal_window_construction(
+                {"window_construction": "window-split-v2:dense25-1000-120-20-s100"},
+                provisional,
+            )
+        self.assertIn("params_provisional", str(ctx.exception))
+
+    def test_formal_preflight_rejects_construction_mismatch(self):
+        from run_protegi import validate_formal_window_construction
+
+        manifest = json.loads(
+            (V6_ROOT / "data" / "dataset_freeze_manifest_v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        with self.assertRaises(RuntimeError) as ctx:
+            validate_formal_window_construction(
+                {"window_construction": "window-split-v1"}, manifest
+            )
+        self.assertIn("window_construction", str(ctx.exception).lower())
+
     def test_promote_uses_recorded_effective_runtime(self):
         from protegi.entity_cache import compute_prompt_hash
         from protegi.prompts_p0 import ENTITY_PROMPT_P0, RELATION_PROMPT_P0
@@ -2492,6 +2666,9 @@ class TestEffectiveRuntime(unittest.TestCase):
         gold_agg = json.loads(freeze_file.read_text(encoding="utf-8"))[
             "gold_aggregate_sha256"
         ]
+        live_construction = json.loads(freeze_file.read_text(encoding="utf-8"))[
+            "window_construction"
+        ]["version"]
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             ent = tmp / "final_entity_prompt.txt"
@@ -2540,6 +2717,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                 "winner_prompt_sha256_raw_bytes": hashlib.sha256(
                     ent.read_bytes()
                 ).hexdigest(),
+                "window_construction": live_construction,
                 "config": ent_cfg, "input_bindings": dict(bind),
             }
             rel_sum = {
@@ -2552,6 +2730,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                 "winner_prompt_sha256_raw_bytes": hashlib.sha256(
                     rel.read_bytes()
                 ).hexdigest(),
+                "window_construction": live_construction,
                 "config": rel_cfg, "input_bindings": dict(bind),
             }
             ent_p = tmp / "ent_sum.json"
@@ -2567,6 +2746,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                         ).hexdigest(),
                         "prompt_scope": "constrained", "task_max_workers": 8,
                         "window_chars": 3000, "window_overlap": 400,
+                        "window_construction": live_construction,
                         "document_abbreviation_context": False,
                         "vulnerability_anchored_backfill": False,
                         "task_runtime": dict(eff),
@@ -2602,6 +2782,9 @@ class TestEffectiveRuntime(unittest.TestCase):
         gold_agg = json.loads(freeze_file.read_text(encoding="utf-8"))[
             "gold_aggregate_sha256"
         ]
+        live_construction = json.loads(freeze_file.read_text(encoding="utf-8"))[
+            "window_construction"
+        ]["version"]
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             ent = tmp / "final_entity_prompt.txt"
@@ -2665,6 +2848,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                         ).hexdigest(),
                         "prompt_scope": "constrained", "task_max_workers": 8,
                         "window_chars": 3000, "window_overlap": 400,
+                        "window_construction": live_construction,
                         "document_abbreviation_context": False,
                         "vulnerability_anchored_backfill": False,
                         "task_runtime": dict(eff),
@@ -2812,6 +2996,8 @@ class TestSearchStabilityOffline(unittest.TestCase):
                 raise ModelOutputBudgetExhaustedError(16, 16)
             if self.mode == "budget_on_bad" and "BAD" in prompt:
                 raise ModelOutputBudgetExhaustedError(16, 16)
+            if self.mode == "budget_from" and self.calls >= self.fail_on:
+                raise ModelOutputBudgetExhaustedError(16, 16)
             if self.mode == "transient_once" and self.calls >= self.fail_on:
                 raise RuntimeError("simulated 500 internal error")
             if self.mode == "transient_always":
@@ -2934,6 +3120,44 @@ class TestSearchStabilityOffline(unittest.TestCase):
             with self.assertRaises(RuntimeError) as ctx:
                 optimizer.run_optimization(self._samples(2), self._samples(1))
             self.assertIn("P0", str(ctx.exception))
+
+    def test_p0_round_parent_eval_budget_hard_fails(self):
+        """P0 在 round parent 评估（梯度 minibatch）持续超限 → 整 run 硬失败。
+
+        调用时序（已标定）：init 占 1 次调用，parent minibatch 恰为第 2 次。
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            client = self._TaskClient(mode="budget_from", fail_on=2)
+            optimizer = self._optimizer(tmp, client, self._OptClient())
+            with self.assertRaises(RuntimeError) as ctx:
+                optimizer.run_optimization(self._samples(4), self._samples(1))
+            self.assertIn("P0", str(ctx.exception))
+            self.assertIn("round=1", str(ctx.exception))
+            # init(1) + parent 首调/重试(2,3) 后即硬失败，未进入选择。
+            self.assertEqual(client.calls, 3)
+            where = [e["where"] for e in optimizer.stability["failure_log"]]
+            self.assertNotIn("round_selection_aborted", where)
+            self.assertFalse((tmp / "out" / "summary.json").exists())
+
+    def test_p0_ucb_eval_budget_hard_fails(self):
+        """P0 在 UCB 选择评估中持续超限 → 整 run 硬失败（非 abort 继续）。
+
+        调用时序（已标定）：init(1) + parent(2) 成功，第 4 次调用
+        （P0 的选择 pull）首调/重试(4,5)均超限。
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            client = self._TaskClient(mode="budget_from", fail_on=4)
+            optimizer = self._optimizer(tmp, client, self._OptClient())
+            with self.assertRaises(RuntimeError) as ctx:
+                optimizer.run_optimization(self._samples(4), self._samples(1))
+            self.assertIn("P0", str(ctx.exception))
+            self.assertIn("round=1", str(ctx.exception))
+            self.assertEqual(client.calls, 5)
+            where = [e["where"] for e in optimizer.stability["failure_log"]]
+            self.assertNotIn("round_selection_aborted", where)
+            self.assertFalse((tmp / "out" / "summary.json").exists())
 
     def test_http_retry_exhausted_writes_checkpoint(self):
         import protegi.evaluator as evaluator_module

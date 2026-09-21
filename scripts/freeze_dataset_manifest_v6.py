@@ -130,6 +130,21 @@ def main() -> None:
         action="store_true",
         help="校验现有冻结清单完整性，不重新生成或写入",
     )
+    parser.add_argument(
+        "--dense-run-split",
+        action="store_true",
+        help="用 WINDOW_SPLIT_V2 记录窗口清单（默认记录 v1 基线）",
+    )
+    parser.add_argument("--dense-min-ids", type=int, default=None)
+    parser.add_argument("--dense-min-span", type=int, default=None)
+    parser.add_argument("--dense-gap", type=int, default=None)
+    parser.add_argument("--dense-max-ids", type=int, default=None)
+    parser.add_argument("--dense-seam", type=int, default=None)
+    parser.add_argument(
+        "--params-final",
+        action="store_true",
+        help="声明本次记录的构造参数为已批准终值（默认暂定）",
+    )
     args = parser.parse_args()
 
     split = json.loads(SPLIT_FILE.read_text(encoding="utf-8"))
@@ -257,9 +272,17 @@ def main() -> None:
             "are not yet available"
         ),
         "window_construction": {
-            **compute_window_inventory(split),
+            **compute_window_inventory(
+                split,
+                dense_run_split=bool(args.dense_run_split),
+                dense_min_ids=args.dense_min_ids,
+                dense_min_span=args.dense_min_span,
+                dense_gap=args.dense_gap,
+                dense_max_ids=args.dense_max_ids,
+                dense_seam=args.dense_seam,
+            ),
             "computed_at_utc": now,
-            "params_provisional": True,
+            "params_provisional": not bool(args.params_final),
         },
         "base_manifest": {
             "path": "data/dataset_freeze_manifest_v5.json",
@@ -286,6 +309,11 @@ def main() -> None:
         "gold_document_count": manifest["gold_document_count"],
         "gold_aggregate_sha256": manifest["gold_aggregate_sha256"],
         "supporting_evidence": sorted(supporting),
+        "window_construction": manifest["window_construction"]["version"],
+        "window_counts": manifest["window_construction"]["window_counts"],
+        "params_provisional": manifest["window_construction"][
+            "params_provisional"
+        ],
     }, ensure_ascii=False, indent=2))
 
 

@@ -124,6 +124,7 @@ class EntityCacheManager:
         vulnerability_anchored_backfill: Optional[bool] = None,
         verified_gold_aggregate_sha256: Optional[str] = None,
         validate_formal_gold: bool = False,
+        window_construction: Optional[str] = None,
     ) -> Path:
         """使用冻结的 P_E* 离线生成并持久化指定切分的实体预测缓存。
 
@@ -314,6 +315,7 @@ class EntityCacheManager:
             "task_max_workers": getattr(evaluator, "max_workers", None),
             "window_chars": int(window_chars),
             "window_overlap": int(window_overlap),
+            "window_construction": window_construction,
             "document_abbreviation_context": bool(effective_abbreviation_context),
             "vulnerability_anchored_backfill": bool(effective_backfill),
             "task_runtime": task_runtime,
@@ -361,6 +363,7 @@ class EntityCacheManager:
         split_file_path: Optional[Path] = None,
         validate_freeze_binding: bool = True,
         expected_task_runtime: Optional[dict] = None,
+        expected_window_construction: Optional[str] = None,
     ) -> List[dict]:
         """加载固化的实体预测缓存，并在哈希不匹配或冻结绑定失效时严格阻断。"""
         cache_file = self.cache_dir / f"entity_cache_{split_name}.jsonl"
@@ -410,6 +413,14 @@ class EntityCacheManager:
                         f"({cached_runtime.get(field)!r}) 与期望冻结值 "
                         f"({expected_task_runtime.get(field)!r}) 不一致"
                     )
+        if expected_window_construction is not None:
+            if manifest.get("window_construction") != expected_window_construction:
+                raise ValueError(
+                    f"{split_name} 实体缓存 window_construction "
+                    f"({manifest.get('window_construction')!r}) 与期望冻结值 "
+                    f"({expected_window_construction!r}) 不一致；"
+                    "窗口构造已变更，缓存自动失效，请重建。"
+                )
 
         if validate_freeze_binding:
             freeze_p = freeze_manifest_path or DEFAULT_FREEZE_MANIFEST

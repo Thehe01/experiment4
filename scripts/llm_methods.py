@@ -770,6 +770,21 @@ def load_protegi_final_artifact(path: Path | str | None = None) -> dict:
     # 校验完整 Task Runtime（禁止缺字段时 fallback 到当前 API 环境）
     _validate_protegi_task_runtime(artifact.get("task_runtime"))
 
+    # 校验窗口构造：产物记录必须与冻结清单一致，否则窗 inventory 不可比。
+    frozen_construction = (freeze_manifest.get("window_construction") or {}).get(
+        "version"
+    )
+    if not artifact.get("window_construction"):
+        raise ValueError(
+            "ProTeGi 产物缺少 window_construction 字段，禁止用于正式运行！"
+        )
+    if artifact.get("window_construction") != frozen_construction:
+        raise ValueError(
+            f"ProTeGi 产物 window_construction "
+            f"({artifact.get('window_construction')!r}) "
+            f"与冻结清单 ({frozen_construction!r}) 不一致，禁止用于正式运行！"
+        )
+
     return artifact
 
 

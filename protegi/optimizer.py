@@ -758,6 +758,37 @@ class ProTeGiOptimizer:
         )
         self.lineage_tracker.register_candidate(candidate)
 
+    def _fail_p0_budget_exhausted(
+        self,
+        candidate: PromptCandidate,
+        error: CandidateBudgetExhaustedError,
+        *,
+        round_idx: Any = None,
+    ) -> "NoReturn":
+        """P0 任一路径持续预算耗尽：记 INVALID 留痕后整个 run hard fail。
+
+        P0 是全 run 的 viability 证明：init / round parent 评估 /
+        UCB 选择评估 / Dev 任一路径持续超限，都说明 frozen runtime 下
+        P0 不可用。此时禁止把 P0 当普通候选淘汰后继续搜索（继续出的
+        任何 winner 都失去基线意义），必须 loud hard fail。
+        """
+        self._mark_candidate_invalid(candidate, error, round_idx=round_idx)
+        raise RuntimeError(
+            f"P0 种子候选持续输出预算耗尽，整个 run hard fail "
+            f"(round={round_idx})：{error.failure_reason}"
+        ) from error
+
+    def _is_p0_candidate(
+        self,
+        candidate: PromptCandidate,
+        p0_candidate: Optional[PromptCandidate],
+    ) -> bool:
+        """按 candidate_id 认定 P0 身份（恢复前后 ID 稳定为 P_E0/P_R0）。"""
+        return (
+            p0_candidate is not None
+            and candidate.candidate_id == p0_candidate.candidate_id
+        )
+
     def _admit_or_reject_output_amplification(
         self,
         candidate: PromptCandidate,
@@ -1455,6 +1486,10 @@ class ProTeGiOptimizer:
                     _, errors = self._evaluate_candidate_batch(parent, minibatch, collect_errors=True)
                 except CandidateBudgetExhaustedError as exc:
                     self._sync_evaluator_counters()
+                    if self._is_p0_candidate(parent, p0_candidate):
+                        self._fail_p0_budget_exhausted(
+                            parent, exc, round_idx=r_idx
+                        )
                     self._mark_candidate_invalid(parent, exc, round_idx=r_idx)
                     beam = self._drop_invalid_from_beam(beam)
                     continue
@@ -1676,6 +1711,10 @@ class ProTeGiOptimizer:
                         res, _ = self._evaluate_candidate_batch(cand, eval_b, collect_errors=False)
                     except CandidateBudgetExhaustedError as exc:
                         self._sync_evaluator_counters()
+                        if self._is_p0_candidate(cand, p0_candidate):
+                            self._fail_p0_budget_exhausted(
+                                cand, exc, round_idx=r_idx
+                            )
                         self._mark_candidate_invalid(cand, exc, round_idx=r_idx)
                         raise RoundSelectionAborted(
                             invalid_candidate_id=cand.candidate_id,
@@ -2054,6 +2093,7 @@ class ProTeGiOptimizer:
             "winner_prompt_scope_audit": winner.metrics.get(
                 "prompt_scope_audit", {}
             ),
+            "window_construction": self.config.get("window_construction"),
             "initial_p0_metrics": p0_metrics or {},
             "total_candidates_registered": len(self.lineage_tracker.nodes),
             "call_stats": self.call_stats.to_dict(),

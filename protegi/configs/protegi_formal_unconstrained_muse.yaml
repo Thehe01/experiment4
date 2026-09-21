@@ -27,6 +27,17 @@ task_reasoning_effort: "none"
 task_top_p: 0.95
 task_max_tokens: 4096
 
+# 窗口构造 WINDOW_SPLIT_V2（已冻结参数）：拍扁高密 run 按记录边界切分。
+# window 预算不变（3000/400），只动切分位置；默认关闭的 legacy 行为作废。
+window_chars: 3000
+window_overlap: 400
+dense_run_split: true
+dense_min_ids: 25
+dense_min_span: 1000
+dense_gap: 120
+dense_max_ids: 20
+dense_seam: 100
+
 optimizer_model: "muse-spark-1.3-contributor"
 optimizer_temperature: 0.1
 optimizer_thinking: "disabled"

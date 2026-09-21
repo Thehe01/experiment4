@@ -108,6 +108,32 @@ def build_resume_bindings(
     }
 
 
+def validate_formal_window_construction(config: dict, freeze_manifest: dict) -> None:
+    """正式 preflight：窗口构造必须等于冻结清单记录的已批准版本。
+
+    纯函数，可被离线测试直接断言；失败一律抛 RuntimeError。
+    """
+    manifest_construction = freeze_manifest.get("window_construction")
+    if not isinstance(manifest_construction, dict) or not manifest_construction.get(
+        "version"
+    ):
+        raise RuntimeError(
+            "正式 ProTeGi 优化要求冻结清单记录 window_construction；"
+            "当前清单缺失该记录，拒绝运行。"
+        )
+    if manifest_construction.get("params_provisional", True):
+        raise RuntimeError(
+            "正式 ProTeGi 优化要求已批准的窗口构造参数 "
+            "(params_provisional=false)；当前冻结仍为暂定参数，拒绝运行。"
+        )
+    if config.get("window_construction") != manifest_construction.get("version"):
+        raise RuntimeError(
+            f"正式运行的 window_construction ({config.get('window_construction')}) "
+            f"与冻结清单 ({manifest_construction.get('version')}) 不一致，"
+            "拒绝运行。"
+        )
+
+
 def normalize_config_with_effective_runtime(config: dict) -> dict:
     """规范化 Task 字段并写回 effective runtime（单一记录来源）。
 
@@ -428,6 +454,8 @@ def main():
                 f"正式 ProTeGi 优化必须绑定当前冻结 Gold 数据目录："
                 f"gold_dir ({actual_gold_dir}) 与冻结目录 ({frozen_gold_dir}) 不符。"
             )
+        # 窗口构造门禁：正式运行必须使用冻结清单记录的已批准构造。
+        validate_formal_window_construction(config, freeze_manifest)
 
     config["formal_eligible"] = formal_eligible
 
@@ -518,6 +546,7 @@ def main():
             window_overlap=window_overlap,
             document_abbreviation_context=include_document_abbreviations,
             vulnerability_anchored_backfill=vulnerability_backfill_flag,
+            window_construction=config.get('window_construction'),
             verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
             validate_formal_gold=bool(formal_eligible),
         )
@@ -556,6 +585,7 @@ def main():
             window_overlap=window_overlap,
             document_abbreviation_context=include_document_abbreviations,
             vulnerability_anchored_backfill=vulnerability_backfill_flag,
+            window_construction=config.get('window_construction'),
             verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
             validate_formal_gold=bool(formal_eligible),
         )
@@ -653,6 +683,7 @@ def main():
             expected_prompt_scope=prompt_scope,
             expected_task_max_workers=int(config.get("task_max_workers", 8)),
             expected_task_runtime=expected_task_runtime,
+            expected_window_construction=config.get('window_construction'),
         )
         dev_samples = cache_manager.load_cache(
             "dev",
@@ -662,6 +693,7 @@ def main():
             expected_prompt_scope=prompt_scope,
             expected_task_max_workers=int(config.get("task_max_workers", 8)),
             expected_task_runtime=expected_task_runtime,
+            expected_window_construction=config.get('window_construction'),
         )
         print(f"成功加载上游冻结实体预测缓存: Train={len(train_samples)}, Dev={len(dev_samples)}")
 
