@@ -11,7 +11,7 @@
   "formal_experiment_ready": false,
   "formal_experiment_blocker": "verifiable human IAA results and a newly reserved unseen final test are not yet available",
   "window_construction": {
-    "version": "window-split-v2:dense25-1000-120-20-s100",
+    "version": "window-split-v3:dense25-1000-120-20-s100",
     "dense_run_split": true,
     "dense_params": {
       "dense_min_ids": 25,
@@ -22,13 +22,13 @@
     },
     "max_chars": 3000,
     "overlap": 400,
-    "inventory_sha256": "b94530630c2ac6a72c97c57bd0152b2242879b1918cb26d1fb0496bfa4f438ff",
+    "inventory_sha256": "ed990d953a9093b630aaf5e9611604bd61c26743cc4db64646eb574f3fdd4d5b",
     "window_counts": {
-      "train": 830,
+      "train": 831,
       "dev": 321,
       "test": 253
     },
-    "computed_at_utc": "2026-09-21T16:11:40.692553+00:00",
+    "computed_at_utc": "2026-09-21T17:44:28.364437+00:00",
     "params_provisional": false
   },
   "base_manifest": {
@@ -308,5 +308,5 @@
       "sha256": "41d8e19de59e920d3085330dfaaad518795d1d0be44887ac212e10f6f6c3e6ca"
     }
   },
-  "provenance_refreshed_at_utc": "2026-09-21T16:11:40.692553+00:00"
+  "provenance_refreshed_at_utc": "2026-09-21T17:44:28.364437+00:00"
 }

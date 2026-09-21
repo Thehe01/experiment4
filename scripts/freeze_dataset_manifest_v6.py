@@ -133,7 +133,7 @@ def main() -> None:
     parser.add_argument(
         "--dense-run-split",
         action="store_true",
-        help="用 WINDOW_SPLIT_V2 记录窗口清单（默认记录 v1 基线）",
+        help="用 WINDOW_SPLIT_V3 记录窗口清单（默认记录 v1 基线）",
     )
     parser.add_argument("--dense-min-ids", type=int, default=None)
     parser.add_argument("--dense-min-span", type=int, default=None)
