@@ -138,7 +138,7 @@ Full 和 APO_Full 当前技术—战术映射覆盖率均为 244/261，即 0.934
 | Gold 边界复裁 | MCPU v2 已完成并重新冻结 | 在 v1 复裁基础上全量审计 406 个 Configuration，修订 15 个跨度与 7 个普通版本 CPE |
 | 首次 ProTeGi Stage 1 | 审计失败、不得晋级 | 保留旧产物；修复版使用新空目录从 P0 重跑 |
 | 有约束 / 无约束 ProTeGi | 双分支代码与等预算配置已增加、依要求未运行 | 先执行静态/单元检查，再在相同小规模数据上配对运行 Stage 1 |
-| 双分支 Stage 1 pilot | 固定 4 篇 Train、4 篇 Dev，各 24 windows，四类实体均覆盖；Test 为空；尚未运行 | 使用 `run_protegi_scope_pilot.ps1` 受控执行并生成离线比较报告 |
+| 双分支 Stage 1 pilot | 固定 4 篇 Train、4 篇 Dev，按实际构造均为 25 windows，四类实体均覆盖；Test 为空；尚未运行 | 使用 `run_protegi_scope_pilot.ps1` 受控执行并生成离线比较报告 |
 | Full 组件级离线消融 | 待完成 | 增加可关闭组件的确定性回放入口 |
 | 独立映射 Gold / 人工核验 | 待完成 | 分层抽样并由人工独立判断映射是否正确 |
 | 人工 IAA | 阻断正式门禁 | 必须基于裁决前的两名独立标注结果计算，不能从最终 Gold 反造 |
@@ -152,8 +152,8 @@ Full 和 APO_Full 当前技术—战术映射覆盖率均为 244/261，即 0.934
 - Gold 边界迁移审计：`results/boundary_sync_audit_v1.json`
 - Configuration MCPU v2 审计：`results/configuration_boundary_mcpu_v2_audit.json`
 - 构图前候选：`results/chapter3_contract_review_v1/`
-- Full 映射评估：`results/v5_mapping_completion.json`
-- APO_Full 映射评估：`results/v5_apo_full_mapping_completion.json`
+- 当前 ProTeGi 映射评估（run10 后生成）：`results/v6_protegi_mapping_completion.json`
+- 历史 Full / APO_Full 映射评估：`results/v5_mapping_completion.json`、`results/v5_apo_full_mapping_completion.json`
 - 分篇映射输出：`results/mapping_completion_v1/`
-- 文档级配对 bootstrap：`results/paired_bootstrap_v5.json`
-- 冻结完整性：`data/baseline_methods_freeze_manifest_v1.json`
+- 文档级配对 bootstrap（run10 后生成）：`results/paired_bootstrap_v6.json`
+- 冻结完整性：`data/baseline_methods_freeze_manifest_v6.json`

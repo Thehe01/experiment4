@@ -28,7 +28,7 @@ GOLD_DIR = EXP_DIR / "data" / "annotations" / "gold"
 SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
 RESULTS_DIR = EXP_DIR / "results"
 DEFAULT_OUTPUT = RESULTS_DIR / "paired_bootstrap_v6.json"
-METHODS = ("rule", "multipass", "full", "apo", "apo_full")
+METHODS = ("rule", "multipass", "full", "protegi")
 METRICS = ("entity", "strict_relation", "normalized_fact")
 
 
@@ -107,13 +107,47 @@ def _interval(values: list[float]) -> list[float]:
     ]
 
 
+def _paired_randomization_p_value(
+    reference_counts: list[tuple[int, int, int]],
+    method_counts: list[tuple[int, int, int]],
+    *,
+    observed_difference: float,
+    resamples: int,
+    seed: int,
+) -> float:
+    """文档内随机交换方法标签，计算双侧配对随机化 p 值。"""
+    randomizer = random.Random(seed)
+    extreme = 0
+    threshold = abs(observed_difference)
+    for _ in range(resamples):
+        randomized_reference = []
+        randomized_method = []
+        for ref_count, method_count in zip(reference_counts, method_counts):
+            if randomizer.getrandbits(1):
+                randomized_reference.append(ref_count)
+                randomized_method.append(method_count)
+            else:
+                randomized_reference.append(method_count)
+                randomized_method.append(ref_count)
+        difference = _f1(_sum_counts(randomized_reference)) - _f1(
+            _sum_counts(randomized_method)
+        )
+        if abs(difference) >= threshold - 1e-15:
+            extreme += 1
+    return (extreme + 1) / (resamples + 1)
+
+
 def analyze(
     *,
     methods: tuple[str, ...] = METHODS,
-    reference: str = "full",
+    reference: str = "protegi",
     resamples: int = 10000,
     seed: int = 20260913,
 ) -> dict:
+    if resamples <= 0:
+        raise ValueError("resamples must be a positive integer")
+    if reference not in methods:
+        raise ValueError("reference method must be included in methods")
     if reference not in methods:
         raise ValueError("reference method must be included in methods")
     if resamples < 100:
@@ -209,14 +243,29 @@ def analyze(
             )
             strictly_greater = sum(diff > 0 for diff in differences)
             strictly_less = sum(diff < 0 for diff in differences)
-            p_value = 2 * min(strictly_greater, strictly_less) / resamples
+            ties = resamples - strictly_greater - strictly_less
+            randomization_seed = int.from_bytes(
+                hashlib.sha256(
+                    f"{seed}:{reference}:{method}:{metric}".encode("utf-8")
+                ).digest()[:8],
+                "big",
+            )
+            p_value = _paired_randomization_p_value(
+                per_document[reference][metric],
+                per_document[method][metric],
+                observed_difference=point_difference,
+                resamples=resamples,
+                seed=randomization_seed,
+            )
             comparisons[f"{reference}_minus_{method}"][metric] = {
                 "point_difference": round(point_difference, 6),
                 "bootstrap_95_ci": _interval(differences),
                 "p_value_two_sided": round(min(1.0, p_value), 6),
+                "p_value_method": "paired_document_label_randomization_plus_one",
                 "probability_reference_greater": round(
-                    strictly_greater / resamples, 6
+                    (strictly_greater + 0.5 * ties) / resamples, 6
                 ),
+                "bootstrap_tie_probability": round(ties / resamples, 6),
             }
 
     return {
@@ -242,7 +291,7 @@ def main() -> None:
         default=list(METHODS),
         choices=list(METHODS),
     )
-    parser.add_argument("--reference", default="full", choices=list(METHODS))
+    parser.add_argument("--reference", default="protegi", choices=list(METHODS))
     parser.add_argument("--resamples", type=int, default=10000)
     parser.add_argument("--seed", type=int, default=20260913)
     args = parser.parse_args()

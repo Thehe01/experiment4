@@ -197,19 +197,58 @@ def main() -> None:
         if not MANIFEST_FILE.is_file():
             raise FileNotFoundError(f"缺少冻结清单文件：{MANIFEST_FILE}")
         manifest = json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
+        expected_metadata = {
+            "schema_version": "chapter3-no-capec-v1",
+            "dataset_version": "v6-v5-gold-v9-mcpu-v2",
+            "annotation_protocol_version": "4.6-mcpu-mention-fact-dual-layer-v1",
+            "boundary_contract_version": "chapter3-boundary-sync-v2",
+            "cpe_normalization_contract_version": "cpe-gold-audit-v1",
+            "gate_status": "gate_passed",
+            "split_file": "data/train_dev_test_split_v7.json",
+            "gold_directory": "data/annotations/gold",
+        }
+        for field, expected in expected_metadata.items():
+            if manifest.get(field) != expected:
+                raise ValueError(
+                    f"冻结清单元数据 {field}={manifest.get(field)!r}，"
+                    f"预期 {expected!r}，冻结校验失败！"
+                )
+        if not str(manifest.get("status", "")).startswith("frozen_"):
+            raise ValueError("冻结清单 status 不是 frozen 状态，冻结校验失败！")
+        if manifest.get("gold_document_count") != len(hashes):
+            raise ValueError("Gold 文档数量与冻结清单不一致，冻结校验失败！")
+        recorded_doc_hashes = manifest.get("gold_document_sha256")
+        if not isinstance(recorded_doc_hashes, dict) or set(
+            recorded_doc_hashes
+        ) != set(hashes):
+            raise ValueError("Gold 文档 ID 集合与冻结清单不一致，冻结校验失败！")
+        if manifest.get("partition_stats") != partition_stats:
+            raise ValueError("分区统计与冻结清单不一致，冻结校验失败！")
         if manifest.get("gold_aggregate_sha256") != aggregate.hexdigest():
             raise ValueError("Gold 聚合哈希与当前标注不一致，冻结校验失败！")
         if manifest.get("split_sha256") != _sha256(SPLIT_FILE):
             raise ValueError("划分文件哈希与冻结清单不一致，冻结校验失败！")
         base_rec = manifest.get("base_manifest", {})
+        if base_rec.get("path") != "data/dataset_freeze_manifest_v5.json":
+            raise ValueError("基础清单路径与预期不一致，冻结校验失败！")
         if _sha256(BASE_MANIFEST) != base_rec.get("sha256"):
             raise ValueError("基础清单哈希与冻结清单不一致，冻结校验失败！")
         for doc_id, digest in hashes.items():
             if manifest.get("gold_document_sha256", {}).get(doc_id) != digest:
                 raise ValueError(f"Gold 文档哈希不一致 ({doc_id})，冻结校验失败！")
-        for name, expected_rec in manifest.get("supporting_evidence", {}).items():
-            ev_path = EXP_DIR / expected_rec["path"]
-            if not ev_path.is_file() or _sha256(ev_path) != expected_rec["sha256"]:
+        recorded_supporting = manifest.get("supporting_evidence")
+        if not isinstance(recorded_supporting, dict) or set(
+            recorded_supporting
+        ) != set(SUPPORTING_EVIDENCE):
+            raise ValueError("支持证据键集合不完整，冻结校验失败！")
+        for name, relative in SUPPORTING_EVIDENCE.items():
+            expected_rec = recorded_supporting[name]
+            if expected_rec.get("path") != relative:
+                raise ValueError(f"支持证据路径不一致 ({name})，冻结校验失败！")
+            ev_path = EXP_DIR / relative
+            if not ev_path.is_file() or _sha256(ev_path) != expected_rec.get(
+                "sha256"
+            ):
                 raise ValueError(f"支持证据哈希不一致 ({name})，冻结校验失败！")
         recorded_construction = manifest.get("window_construction")
         if not isinstance(recorded_construction, dict):
@@ -224,11 +263,23 @@ def main() -> None:
             dense_max_ids=recorded_params.get("dense_max_ids"),
             dense_seam=recorded_params.get("dense_seam"),
         )
-        for field in ("inventory_sha256", "window_counts", "version"):
+        for field in (
+            "inventory_sha256",
+            "window_counts",
+            "version",
+            "dense_run_split",
+            "dense_params",
+            "max_chars",
+            "overlap",
+        ):
             if live_inventory[field] != recorded_construction.get(field):
                 raise ValueError(
                     f"窗口清单 {field} 与冻结记录不一致，冻结校验失败！"
                 )
+        if recorded_construction.get("params_provisional") is not False:
+            raise ValueError(
+                "窗口构造参数尚未标记 params_provisional=false，冻结校验失败！"
+            )
         print(json.dumps({
             "dataset_version": manifest["dataset_version"],
             "gold_document_count": manifest["gold_document_count"],

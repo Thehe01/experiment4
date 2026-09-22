@@ -47,9 +47,9 @@ if (@($pilot.test).Count -ne 0) {
     throw "pilot manifest 的 test 必须为空"
 }
 foreach ($splitName in @("train", "dev")) {
-    $windowCount = [int]$pilot.audit_counts.$splitName.estimated_windows
-    if ($windowCount -le 0 -or $windowCount % 8 -ne 0) {
-        throw "pilot $splitName 窗口数不是正的 8 倍数: $windowCount"
+    $windowCount = [int]$pilot.audit_counts.$splitName.runtime_windows
+    if ($windowCount -le 0) {
+        throw "pilot $splitName 窗口数必须为正: $windowCount"
     }
 }
 foreach ($configPath in @($constrainedConfig, $unconstrainedConfig)) {
@@ -117,6 +117,7 @@ try {
         "--method", "protegi",
         "--config", $constrainedConfig,
         "--split-file", $pilotSplit,
+        "--allow-custom-split",
         "--output-dir", $constrainedOutput
     )
     & $PythonCommand @constrainedArgs
@@ -130,6 +131,7 @@ try {
         "--method", "protegi",
         "--config", $unconstrainedConfig,
         "--split-file", $pilotSplit,
+        "--allow-custom-split",
         "--output-dir", $unconstrainedOutput
     )
     & $PythonCommand @unconstrainedArgs

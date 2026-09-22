@@ -68,18 +68,19 @@ Muse 输入 token 可能更多，必须根据 `call_stats` 单独报告，而不
 
 - 固定清单：`data/protegi_prompt_scope_pilot_v1.json`；仅从官方 v7 Train/Dev 中按
   Gold 实体类型覆盖选取，不参考模型输出，`test=[]`。
-- Train：4 篇、预计 24 个窗口；Vulnerability/Configuration/Weakness/
+- Train：4 篇、实际 25 个窗口；Vulnerability/Configuration/Weakness/
   AttackTechnique 分别为 49/26/4/67 个提及。
-- Dev：4 篇、预计 24 个窗口；四类实体分别为 78/22/5/40 个提及。
+- Dev：4 篇、实际 25 个窗口；四类实体分别为 78/22/5/40 个提及。
 - 两臂统一参数：2 轮、Beam=2、每父代保留 1 个后继、minibatch=8、每轮 8 pulls、每次 8 windows、
   每候选至少 2 pulls、seed=42、hy3 任务模型 8 路并发。
-- Train 与 Dev 均恰好形成 3 个 8-window 批次，不保留不足 8 个窗口的尾批次。
+- Train 与 Dev 均形成 4 个批次（8/8/8/1），尾批次保留；
+  selector 按每批实际窗口数记录 `samples_seen`。
 - 配置：`protegi_pilot_constrained.yaml` 与 `protegi_pilot_unconstrained.yaml`。
 - 一键入口：`scripts/run_protegi_scope_pilot.ps1`。入口先核对官方划分哈希、文档归属、
   Test 为空、配置等预算和新输出目录；默认先运行纯逻辑测试，通过后才按顺序调用两臂。
 - 离线汇总：`scripts/compare_protegi_scope_pilot.py`。只有两臂均完成后才比较共同 P0、
   配置、split 哈希、总体和分类型指标、调用量及契约审计，并生成 JSON/Markdown。
 
-按当前上限估算，两臂合计最多约 464 次 hy3 窗口调用和 18 次 Muse 调用；实际调用量
-可能因没有错误样本、候选格式不合格或候选去重而下降。该规模只用于端到端可执行性与
+实际调用量以两臂 summary 中的 `call_stats` 和真实尾批次记录为准；它可能因没有错误样本、
+候选格式不合格或候选去重而下降。该规模只用于端到端可执行性与
 方向性信号判断，不能替代后续扩大样本、稳定性分析或冻结 Test 评价。

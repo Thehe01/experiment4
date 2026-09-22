@@ -118,6 +118,7 @@ def main() -> None:
     expected_config = {
         "prompt_scope": "constrained",
         "document_abbreviation_context": True,
+        "vulnerability_anchored_backfill": False,
         "selection_entity_type": "Configuration",
         "error_focus_entity_type": "Configuration",
         "final_selection_entity_type": "Configuration",

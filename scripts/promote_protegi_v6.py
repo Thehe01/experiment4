@@ -38,7 +38,11 @@ from schema import (
 )
 from protegi.contract_validator import PromptContractValidator
 from protegi.entity_cache import compute_prompt_hash
-from protegi.runtime_contract import TASK_RUNTIME_FIELDS, validate_task_runtime
+from protegi.runtime_contract import (
+    SELECTION_WINDOW_OWNERSHIP,
+    TASK_RUNTIME_FIELDS,
+    validate_task_runtime,
+)
 
 DEFAULT_FREEZE_MANIFEST = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 DEFAULT_SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
@@ -66,7 +70,7 @@ def _extract_task_runtime(summary: dict, label: str) -> dict:
 
     正式 artifact 只能冻结“运行时实际记录下来的 runtime”，而不是 promotion
     第二次推导出来的 runtime。因此优先读取
-    ``summary["config"]["effective_task_runtime"]`` 并要求 11 字段齐全。
+    ``summary["config"]["effective_task_runtime"]`` 并要求完整字段齐全。
     formal_eligible=true 的新 ProTeGi summary 缺失该字段即 hard fail；
     仅非 formal 历史产物才允许走旧推导路径（测试 fixture 按需更新）。
     """
@@ -74,23 +78,7 @@ def _extract_task_runtime(summary: dict, label: str) -> dict:
     effective = config.get("effective_task_runtime")
     if effective is not None:
         validate_task_runtime(effective, label=f"{label} effective_task_runtime")
-        return {
-            "model": str(effective["model"]),
-            "max_workers": int(effective["max_workers"]),
-            "temperature": float(effective["temperature"]),
-            "thinking": str(effective["thinking"]).strip().lower(),
-            "reasoning_effort": str(effective["reasoning_effort"]).strip().lower(),
-            "top_p": float(effective["top_p"]),
-            "max_tokens": int(effective["max_tokens"]),
-            "window_chars": int(effective["window_chars"]),
-            "window_overlap": int(effective["window_overlap"]),
-            "document_abbreviation_context": bool(
-                effective["document_abbreviation_context"]
-            ),
-            "vulnerability_anchored_backfill": bool(
-                effective["vulnerability_anchored_backfill"]
-            ),
-        }
+        return dict(effective)
     if summary.get("formal_eligible") is True:
         raise ValueError(
             f"{label} summary 缺少 config.effective_task_runtime 字段；"
@@ -449,6 +437,17 @@ def promote_protegi(
             f"晋级窗口构造 (window_construction={ent_construction!r}) "
             f"与冻结清单记录 ({frozen_construction!r}) 不一致，禁止晋级！"
         )
+    ent_ownership = entity_summary.get("selection_window_ownership")
+    rel_ownership = relation_summary.get("selection_window_ownership")
+    if (
+        ent_ownership != SELECTION_WINDOW_OWNERSHIP
+        or rel_ownership != SELECTION_WINDOW_OWNERSHIP
+    ):
+        raise ValueError(
+            "Stage 1/Stage 2 summary 必须同时绑定 "
+            f"selection_window_ownership={SELECTION_WINDOW_OWNERSHIP!r}；"
+            f"当前为 {ent_ownership!r}/{rel_ownership!r}。"
+        )
 
     # 6. 校验实体缓存清单深度绑定（含 chain binding：prompt_scope + frozen runtime）
     for cache_name, cache_manifest_path in (
@@ -509,6 +508,15 @@ def promote_protegi(
                 f"({cache_manifest.get('window_construction')!r}) 与晋级窗口构造 "
                 f"({ent_construction!r}) 不一致；窗口构造已变更，请重建缓存。"
             )
+        if (
+            cache_manifest.get("selection_window_ownership")
+            != SELECTION_WINDOW_OWNERSHIP
+        ):
+            raise ValueError(
+                f"{cache_name} 实体缓存未绑定 "
+                f"selection_window_ownership={SELECTION_WINDOW_OWNERSHIP!r}；"
+                "请用当前评价口径重建缓存。"
+            )
 
     task_model = task_runtime["model"]
     optimizer_model = (
@@ -534,6 +542,7 @@ def promote_protegi(
         "relation_optimization_summary_sha256": _sha256(relation_summary_path),
         "task_runtime": task_runtime,
         "window_construction": ent_construction,
+        "selection_window_ownership": SELECTION_WINDOW_OWNERSHIP,
         "entity_config_sha256": entity_config_sha256,
         "relation_config_sha256": relation_config_sha256,
         "split_file": _rel_path(split_file_path),

@@ -63,6 +63,47 @@ from schema import (
 )
 
 
+def _frozen_task_runtime(
+    *,
+    model: str = "hy3",
+    max_workers: int = 8,
+    max_tokens: int = 4096,
+    document_abbreviation_context: bool = False,
+    vulnerability_anchored_backfill: bool = False,
+    **overrides,
+) -> dict:
+    """完整正式 runtime fixture；缺字段必须由测试显式删除。"""
+    runtime = {
+        "model": model,
+        "provider": "opencode",
+        "base_url": "https://opencode.ai/zen/go/v1",
+        "endpoint": "/v1/chat/completions",
+        "max_workers": max_workers,
+        "temperature": 0.0,
+        "thinking": "disabled",
+        "reasoning_effort": "none",
+        "top_p": 0.95,
+        "max_tokens": max_tokens,
+        "max_escalated_tokens": max_tokens,
+        "request_timeout_seconds": 180.0,
+        "transport_max_retries": 0,
+        "transient_retry_max_attempts": 8,
+        "budget_exhaustion_retries": 1,
+        "window_chars": 3000,
+        "window_overlap": 400,
+        "dense_run_split": True,
+        "dense_min_ids": 25,
+        "dense_min_span": 1000,
+        "dense_gap": 120,
+        "dense_max_ids": 20,
+        "dense_seam": 100,
+        "document_abbreviation_context": document_abbreviation_context,
+        "vulnerability_anchored_backfill": vulnerability_anchored_backfill,
+    }
+    runtime.update(overrides)
+    return runtime
+
+
 class TestProTeGiCore(unittest.TestCase):
 
     def test_task_evaluator_uses_eight_way_window_concurrency(self):
@@ -238,6 +279,12 @@ class TestProTeGiCore(unittest.TestCase):
 
             samples = [{
                 "sample_id": "doc1_w0",
+                "doc_id": "doc1",
+                "window_index": 0,
+                "window_start": 0,
+                "window_end": 11,
+                "evaluation_start": 0,
+                "evaluation_end": 11,
                 "text": "text sample",
                 "gold_entities": [],
                 "gold_relations": [{"type": "affects", "head": "E1", "tail": "E2"}],
@@ -252,9 +299,12 @@ class TestProTeGiCore(unittest.TestCase):
                 expected_prompt_hash=compute_prompt_hash(prompt),
                 require_gold_relations=True,
                 expected_task_max_workers=8,
+                expected_selection_window_ownership="midpoint-partition-v1",
             )
             self.assertEqual(len(loaded), 1)
             self.assertEqual(loaded[0]["fixed_entities"][0]["id"], "E1")
+            self.assertEqual(loaded[0]["evaluation_start"], 0)
+            self.assertEqual(loaded[0]["evaluation_end"], 11)
 
             # Mismatched hash raises ValueError
             with self.assertRaises(ValueError):
@@ -1134,6 +1184,190 @@ class TestProTeGiCore(unittest.TestCase):
         self.assertEqual(updated[1][0]["_source"], "cve_anchored_backfill")
 
 
+class TestRun10Regression(unittest.TestCase):
+    def test_stage2_v3_samples_accept_dense_seam_and_match_frozen_inventory(self):
+        from protegi.optimizer import prepare_stage2_window_samples
+
+        samples = prepare_stage2_window_samples(
+            ["aa24-317a"],
+            V6_ROOT / "data" / "annotations" / "gold",
+            dense_run_split=True,
+            dense_min_ids=25,
+            dense_min_span=1000,
+            dense_gap=120,
+            dense_max_ids=20,
+            dense_seam=100,
+        )
+        self.assertEqual(len(samples), 20)
+
+    def test_stage1_overlap_mentions_have_single_metric_owner(self):
+        from protegi.optimizer import prepare_stage1_window_samples
+
+        gold_dir = V6_ROOT / "data" / "annotations" / "gold"
+        doc_ids = [
+            "aa23-289a",
+            "aa23-339a-coldfusion-cve-26360",
+            "fortios-sslvpn-rapid7-fortinet-targeting",
+            "aa25-266a",
+        ]
+        samples = prepare_stage1_window_samples(doc_ids, gold_dir)
+        window_gold_count = sum(
+            len(sample["gold_entities"]) for sample in samples
+        )
+        document_gold_count = sum(
+            len(
+                json.loads(
+                    (gold_dir / f"{doc_id}.json").read_text(encoding="utf-8")
+                )["entities"]
+            )
+            for doc_id in doc_ids
+        )
+        self.assertEqual(window_gold_count, document_gold_count)
+        self.assertTrue(
+            all(
+                "evaluation_start" in sample and "evaluation_end" in sample
+                for sample in samples
+            )
+        )
+
+    def test_stage2_overlap_relations_have_single_metric_owner(self):
+        from protegi.optimizer import prepare_stage2_window_samples
+
+        gold_dir = V6_ROOT / "data" / "annotations" / "gold"
+        split = json.loads(
+            (V6_ROOT / "data" / "train_dev_test_split_v7.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        doc_ids = split["train"] + split["dev"] + split["test"]
+        samples = prepare_stage2_window_samples(
+            doc_ids,
+            gold_dir,
+            dense_run_split=True,
+            dense_min_ids=25,
+            dense_min_span=1000,
+            dense_gap=120,
+            dense_max_ids=20,
+            dense_seam=100,
+        )
+        window_gold_count = sum(
+            len(sample["gold_relations"]) for sample in samples
+        )
+        document_gold_count = sum(
+            sum(
+                relation.get("type") in EXTRACTION_RELATION_TYPES
+                for relation in json.loads(
+                    (gold_dir / f"{doc_id}.json").read_text(encoding="utf-8")
+                )["relations"]
+            )
+            for doc_id in doc_ids
+        )
+        self.assertEqual(window_gold_count, document_gold_count)
+        self.assertEqual(window_gold_count, 681)
+        self.assertTrue(
+            all(
+                "evaluation_start" in sample and "evaluation_end" in sample
+                for sample in samples
+            )
+        )
+
+    def test_stage2_nonowner_prediction_is_not_counted_as_false_positive(self):
+        evaluator = TaskEvaluator(task_model="mock-model", task_client=None)
+        relation = {
+            "type": "affects",
+            "head": "E1",
+            "tail": "E2",
+            "evidence_start": 1,
+            "evidence_end": 4,
+        }
+        entities = [
+            {"id": "E1", "type": "Vulnerability", "start": 1, "end": 2},
+            {"id": "E2", "type": "Configuration", "start": 3, "end": 4},
+        ]
+        samples = [
+            {
+                "sample_id": "doc_w0",
+                "text": "0123456789",
+                "evaluation_start": 0,
+                "evaluation_end": 5,
+                "fixed_entities": entities,
+                "gold_entities": entities,
+                "gold_relations": [relation],
+            },
+            {
+                "sample_id": "doc_w1",
+                "text": "0123456789",
+                "evaluation_start": 5,
+                "evaluation_end": 10,
+                "fixed_entities": entities,
+                "gold_entities": entities,
+                "gold_relations": [],
+            },
+        ]
+        evaluator.predict_stage2_inputs = lambda *args, **kwargs: [
+            [dict(relation)],
+            [dict(relation)],
+        ]
+        result, _ = evaluator.evaluate_stage2_batch(samples, "prompt")
+        self.assertEqual((result.tp, result.fp, result.fn), (1, 0, 0))
+
+    def test_unparseable_task_output_is_observable(self):
+        class InvalidJsonClient:
+            config = {"max_tokens": 16}
+
+            @staticmethod
+            def call_fn(**kwargs):
+                return "not valid json"
+
+        evaluator = TaskEvaluator(task_client=InvalidJsonClient(), max_workers=1)
+        diagnostics = {}
+        entities = evaluator.predict_stage1_window(
+            "text",
+            "prompt",
+            parse_diagnostics=diagnostics,
+        )
+        self.assertEqual(entities, [])
+        self.assertEqual(diagnostics["parse_method"], "unparseable")
+
+    def test_selector_records_actual_tail_batch_size(self):
+        selector = UCBPromptSelector(
+            total_pull_budget_per_round=1,
+            batch_size=8,
+            min_pulls_per_candidate=1,
+        )
+        candidate = PromptCandidate(
+            candidate_id="P0",
+            prompt_text="prompt",
+        )
+
+        def evaluate(_candidate, _pull_index):
+            return aggregate_micro_f1(
+                1, 0, 0, details={"num_samples": 1, "sample_ids": ["d_w0"]}
+            )
+
+        selector.execute_evaluation_budget([candidate], evaluate)
+        self.assertEqual(candidate.samples_seen, 1)
+
+    def test_prediction_lineage_rejects_stale_raw_file(self):
+        from run_v6_experiment import _validate_prediction_lineage
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "doc.json"
+            path.write_text(
+                json.dumps({
+                    "run_lineage_sha256": "old",
+                    "source_gold_sha256": "gold",
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(RuntimeError, "lineage"):
+                _validate_prediction_lineage(
+                    path,
+                    expected_lineage_sha256="new",
+                    expected_gold_sha256="gold",
+                )
+
+
 class TestProTeGiFormalArtifactValidation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -1167,19 +1401,8 @@ class TestProTeGiFormalArtifactValidation(unittest.TestCase):
             "relation_prompt_path": str(rel_prompt),
             "relation_prompt_sha256": hashlib.sha256(rel_prompt.read_bytes()).hexdigest(),
             "window_construction": self.window_construction,
-            "task_runtime": {
-                "model": "hy3",
-                "max_workers": 8,
-                "temperature": 0.0,
-                "thinking": "disabled",
-                "reasoning_effort": "none",
-                "top_p": 0.95,
-                "max_tokens": 4096,
-                "window_chars": 3000,
-                "window_overlap": 400,
-                "document_abbreviation_context": False,
-                "vulnerability_anchored_backfill": False,
-            },
+            "selection_window_ownership": "midpoint-partition-v1",
+            "task_runtime": _frozen_task_runtime(),
             "frozen_for_test": True,
             "formal_eligible": True,
             "test_gold_loaded": False,
@@ -1714,19 +1937,8 @@ class TestProtegiFinalRuntime(unittest.TestCase):
             "relation_prompt_path": str(rel),
             "relation_prompt_sha256": hashlib.sha256(rel.read_bytes()).hexdigest(),
             "window_construction": self.window_construction,
-            "task_runtime": {
-                "model": "hy3",
-                "max_workers": 8,
-                "temperature": 0.0,
-                "thinking": "disabled",
-                "reasoning_effort": "none",
-                "top_p": 0.95,
-                "max_tokens": 4096,
-                "window_chars": 3000,
-                "window_overlap": 400,
-                "document_abbreviation_context": False,
-                "vulnerability_anchored_backfill": False,
-            },
+            "selection_window_ownership": "midpoint-partition-v1",
+            "task_runtime": _frozen_task_runtime(),
             "frozen_for_test": True,
             "formal_eligible": True,
             "test_gold_loaded": False,
@@ -1792,6 +2004,17 @@ class TestProtegiFinalRuntime(unittest.TestCase):
                 load_protegi_final_artifact(path)
             self.assertIn("window_construction", str(ctx.exception))
 
+    def test_protegi_artifact_requires_selection_window_ownership(self):
+        from llm_methods import load_protegi_final_artifact
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path, artifact = self._valid_artifact(Path(tmpdir))
+            del artifact["selection_window_ownership"]
+            path.write_text(json.dumps(artifact), encoding="utf-8")
+            with self.assertRaises(ValueError) as ctx:
+                load_protegi_final_artifact(path)
+            self.assertIn("归属口径", str(ctx.exception))
+
     def test_predict_llm_protegi_uses_frozen_task_runtime(self):
         import llm_methods
         from protegi import evaluator as evaluator_module
@@ -1805,8 +2028,8 @@ class TestProtegiFinalRuntime(unittest.TestCase):
                 "reasoning_effort": "none",
                 "top_p": 0.95,
                 "max_tokens": 4096,
-                "window_chars": 100,
-                "window_overlap": 10,
+                "window_chars": 3000,
+                "window_overlap": 400,
             })
             path.write_text(json.dumps(artifact), encoding="utf-8")
 
@@ -1816,6 +2039,7 @@ class TestProtegiFinalRuntime(unittest.TestCase):
             def spy_windows(text, max_chars=3000, overlap=400, **kwargs):
                 captured["window_chars"] = max_chars
                 captured["window_overlap"] = overlap
+                captured.update(kwargs)
                 return orig_windows(text, max_chars=max_chars, overlap=overlap, **kwargs)
 
             class SpyEvaluator:
@@ -1826,10 +2050,10 @@ class TestProtegiFinalRuntime(unittest.TestCase):
                         "vulnerability_anchored_backfill", False
                     )
 
-                def predict_stage1_window(self, text, prompt, document_abbreviations=None):
+                def predict_stage1_window(self, text, prompt, document_abbreviations=None, **kwargs):
                     return []
 
-                def predict_stage2_window(self, text, entities, prompt):
+                def predict_stage2_window(self, text, entities, prompt, **kwargs):
                     return []
 
             orig_evaluator = evaluator_module.TaskEvaluator
@@ -1845,8 +2069,10 @@ class TestProtegiFinalRuntime(unittest.TestCase):
             self.assertEqual(captured.get("task_temperature"), 0.0)
             self.assertEqual(captured.get("task_thinking"), "disabled")
             self.assertEqual(captured.get("task_reasoning_effort"), "none")
-            self.assertEqual(captured.get("window_chars"), 100)
-            self.assertEqual(captured.get("window_overlap"), 10)
+            self.assertEqual(captured.get("window_chars"), 3000)
+            self.assertEqual(captured.get("window_overlap"), 400)
+            self.assertTrue(captured.get("dense_run_split"))
+            self.assertEqual(captured.get("dense_seam"), 100)
 
     def test_predict_llm_protegi_does_not_use_environment_runtime(self):
         import llm_methods
@@ -1878,10 +2104,10 @@ class TestProtegiFinalRuntime(unittest.TestCase):
                         "vulnerability_anchored_backfill", False
                     )
 
-                def predict_stage1_window(self, text, prompt, document_abbreviations=None):
+                def predict_stage1_window(self, text, prompt, document_abbreviations=None, **kwargs):
                     return []
 
-                def predict_stage2_window(self, text, entities, prompt):
+                def predict_stage2_window(self, text, entities, prompt, **kwargs):
                     return []
 
             orig_evaluator = evaluator_module.TaskEvaluator
@@ -1935,19 +2161,23 @@ class TestPromoteProvenance(unittest.TestCase):
             "vulnerability_anchored_backfill": False,
         }
         cfg.update(overrides)
-        cfg["effective_task_runtime"] = {
-            "model": cfg["task_model"],
-            "max_workers": cfg["task_max_workers"],
-            "temperature": cfg["task_temperature"],
-            "thinking": cfg["task_thinking"],
-            "reasoning_effort": cfg["task_reasoning_effort"],
-            "top_p": cfg["task_top_p"],
-            "max_tokens": cfg["task_max_tokens"],
-            "window_chars": cfg["window_chars"],
-            "window_overlap": cfg["window_overlap"],
-            "document_abbreviation_context": cfg["document_abbreviation_context"],
-            "vulnerability_anchored_backfill": cfg["vulnerability_anchored_backfill"],
-        }
+        cfg["effective_task_runtime"] = _frozen_task_runtime(
+            model=cfg["task_model"],
+            max_workers=cfg["task_max_workers"],
+            max_tokens=cfg["task_max_tokens"],
+            temperature=cfg["task_temperature"],
+            thinking=cfg["task_thinking"],
+            reasoning_effort=cfg["task_reasoning_effort"],
+            top_p=cfg["task_top_p"],
+            window_chars=cfg["window_chars"],
+            window_overlap=cfg["window_overlap"],
+            document_abbreviation_context=cfg[
+                "document_abbreviation_context"
+            ],
+            vulnerability_anchored_backfill=cfg[
+                "vulnerability_anchored_backfill"
+            ],
+        )
         return cfg
 
     def _make_valid_promote_fixture(self, tmp: Path):
@@ -1974,6 +2204,7 @@ class TestPromoteProvenance(unittest.TestCase):
             "winner_prompt_sha256": compute_prompt_hash(ent_text),
             "winner_prompt_sha256_raw_bytes": ent_raw,
             "window_construction": self.window_construction,
+            "selection_window_ownership": "midpoint-partition-v1",
             "config": self._task_config(),
             "input_bindings": dict(base_bind),
         }
@@ -1987,6 +2218,7 @@ class TestPromoteProvenance(unittest.TestCase):
             "winner_prompt_sha256": compute_prompt_hash(rel_text),
             "winner_prompt_sha256_raw_bytes": rel_raw,
             "window_construction": self.window_construction,
+            "selection_window_ownership": "midpoint-partition-v1",
             "config": self._task_config(),
             "input_bindings": dict(base_bind),
         }
@@ -1998,19 +2230,7 @@ class TestPromoteProvenance(unittest.TestCase):
         rel_summary_path.write_text(
             json.dumps(rel_summary, ensure_ascii=False, indent=2), encoding="utf-8"
         )
-        task_runtime = {
-            "model": "hy3",
-            "max_workers": 8,
-            "temperature": 0.0,
-            "thinking": "disabled",
-            "reasoning_effort": "none",
-            "top_p": 0.95,
-            "max_tokens": 4096,
-            "window_chars": 3000,
-            "window_overlap": 400,
-            "document_abbreviation_context": False,
-            "vulnerability_anchored_backfill": False,
-        }
+        task_runtime = _frozen_task_runtime()
         for name in ("train", "dev"):
             manifest = {
                 "split_name": name,
@@ -2020,6 +2240,7 @@ class TestPromoteProvenance(unittest.TestCase):
                 "window_chars": 3000,
                 "window_overlap": 400,
                 "window_construction": self.window_construction,
+                "selection_window_ownership": "midpoint-partition-v1",
                 "document_abbreviation_context": False,
                 "vulnerability_anchored_backfill": False,
                 "task_runtime": dict(task_runtime),
@@ -2233,13 +2454,7 @@ class TestAllowCustomSplitNeverFormal(unittest.TestCase):
                 "dataset_freeze_manifest_sha256_raw_bytes": freeze_sha,
                 "config_file_sha256_raw_bytes": hashlib.sha256(b"c").hexdigest(),
             }
-            eff = {
-                "model": "hy3", "max_workers": 8, "temperature": 0.0,
-                "thinking": "disabled", "reasoning_effort": "none",
-                "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
-                "window_overlap": 400, "document_abbreviation_context": False,
-                "vulnerability_anchored_backfill": False,
-            }
+            eff = _frozen_task_runtime()
             # 即使路径全是 canonical，custom run 的 summary 仍 formal_eligible=false
             ent_sum = {
                 "stage": "entity", "prompt_scope": "constrained",
@@ -2477,13 +2692,7 @@ class TestPromoteCanonicalHashRequired(unittest.TestCase):
         rel = tmp / "final_relation_prompt.txt"
         ent.write_text(ENTITY_PROMPT_P0, encoding="utf-8")
         rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
-        eff = {
-            "model": "hy3", "max_workers": 8, "temperature": 0.0,
-            "thinking": "disabled", "reasoning_effort": "none",
-            "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
-            "window_overlap": 400, "document_abbreviation_context": False,
-            "vulnerability_anchored_backfill": False,
-        }
+        eff = _frozen_task_runtime()
         bind = {
             "split_file_sha256_raw_bytes": self.split_sha,
             "dataset_freeze_manifest_sha256_raw_bytes": self.freeze_sha,
@@ -2838,13 +3047,7 @@ class TestEffectiveRuntime(unittest.TestCase):
             rel.write_text(RELATION_PROMPT_P0, encoding="utf-8")
             # recorded effective 一致（0.0），顶层 task_temperature 故意分歧：
             # 若 promotion 用重推导会误判，用 recorded 则应通过。
-            eff = {
-                "model": "hy3", "max_workers": 8, "temperature": 0.0,
-                "thinking": "disabled", "reasoning_effort": "none",
-                "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
-                "window_overlap": 400, "document_abbreviation_context": False,
-                "vulnerability_anchored_backfill": False,
-            }
+            eff = _frozen_task_runtime()
             bind = {
                 "split_file_sha256_raw_bytes": split_sha,
                 "dataset_freeze_manifest_sha256_raw_bytes": freeze_sha,
@@ -2879,6 +3082,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                     ent.read_bytes()
                 ).hexdigest(),
                 "window_construction": live_construction,
+                "selection_window_ownership": "midpoint-partition-v1",
                 "config": ent_cfg, "input_bindings": dict(bind),
             }
             rel_sum = {
@@ -2892,6 +3096,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                     rel.read_bytes()
                 ).hexdigest(),
                 "window_construction": live_construction,
+                "selection_window_ownership": "midpoint-partition-v1",
                 "config": rel_cfg, "input_bindings": dict(bind),
             }
             ent_p = tmp / "ent_sum.json"
@@ -2908,6 +3113,7 @@ class TestEffectiveRuntime(unittest.TestCase):
                         "prompt_scope": "constrained", "task_max_workers": 8,
                         "window_chars": 3000, "window_overlap": 400,
                         "window_construction": live_construction,
+                        "selection_window_ownership": "midpoint-partition-v1",
                         "document_abbreviation_context": False,
                         "vulnerability_anchored_backfill": False,
                         "task_runtime": dict(eff),
@@ -2993,13 +3199,7 @@ class TestEffectiveRuntime(unittest.TestCase):
             rel_p = tmp / "rel_sum.json"
             ent_p.write_text(json.dumps(ent_sum), encoding="utf-8")
             rel_p.write_text(json.dumps(rel_sum), encoding="utf-8")
-            eff = {
-                "model": "hy3", "max_workers": 8, "temperature": 0.0,
-                "thinking": "disabled", "reasoning_effort": "none",
-                "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
-                "window_overlap": 400, "document_abbreviation_context": False,
-                "vulnerability_anchored_backfill": False,
-            }
+            eff = _frozen_task_runtime()
             for name in ("train", "dev"):
                 (tmp / f"{name}_m.json").write_text(
                     json.dumps({
@@ -3037,13 +3237,7 @@ class TestEffectiveRuntime(unittest.TestCase):
     def test_stage1_stage2_effective_runtime_must_match(self):
         from promote_protegi_v6 import _extract_task_runtime
 
-        eff_a = {
-            "model": "hy3", "max_workers": 8, "temperature": 0.0,
-            "thinking": "disabled", "reasoning_effort": "none",
-            "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
-            "window_overlap": 400, "document_abbreviation_context": False,
-            "vulnerability_anchored_backfill": False,
-        }
+        eff_a = _frozen_task_runtime()
         eff_b = dict(eff_a)
         eff_b["temperature"] = 0.7
         ra = _extract_task_runtime(
@@ -3058,13 +3252,7 @@ class TestEffectiveRuntime(unittest.TestCase):
     def test_stage1_stage2_effective_runtime_must_match(self):
         from promote_protegi_v6 import _extract_task_runtime
 
-        eff_a = {
-            "model": "hy3", "max_workers": 8, "temperature": 0.0,
-            "thinking": "disabled", "reasoning_effort": "none",
-            "top_p": 0.95, "max_tokens": 4096, "window_chars": 3000,
-            "window_overlap": 400, "document_abbreviation_context": False,
-            "vulnerability_anchored_backfill": False,
-        }
+        eff_a = _frozen_task_runtime()
         eff_b = dict(eff_a)
         eff_b["temperature"] = 0.7
         ra = _extract_task_runtime(
@@ -3080,13 +3268,12 @@ class TestSearchStabilityOffline(unittest.TestCase):
     """Stage 1 运行稳定性：纯离线测试，不调用真实模型。"""
 
     def _runtime(self, **overrides):
-        rt = {
-            "model": "mock-task", "max_workers": 1, "temperature": 0.0,
-            "thinking": "disabled", "reasoning_effort": "none",
-            "top_p": 0.95, "max_tokens": 16, "window_chars": 3000,
-            "window_overlap": 400, "document_abbreviation_context": False,
-            "vulnerability_anchored_backfill": False,
-        }
+        rt = _frozen_task_runtime(
+            model="mock-task",
+            max_workers=1,
+            max_tokens=16,
+            dense_run_split=False,
+        )
         rt.update(overrides)
         return rt
 
@@ -4191,5 +4378,3 @@ class TestOutputContractV2Diagnostic(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

@@ -36,7 +36,10 @@ from protegi.document_context import (
 )
 from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
 from protegi.evaluator import TaskEvaluator, focus_entity_error_examples
-from protegi.runtime_contract import validate_task_runtime
+from protegi.runtime_contract import (
+    SELECTION_WINDOW_OWNERSHIP,
+    validate_task_runtime,
+)
 from protegi.output_expansion_guard import OutputExpansionGuard
 from protegi.output_expansion_guard import REASON as EXPANSION_REASON
 from protegi.search_stability import (
@@ -96,6 +99,38 @@ def load_split_doc_ids(split_file: Path) -> Dict[str, List[str]]:
     }
 
 
+def _window_evaluation_regions(windows: List[dict], text_length: int) -> List[tuple[int, int]]:
+    """把重叠窗口划成互斥评价区，避免同一 mention 被重复计分。"""
+    if not windows:
+        return []
+    boundaries = [0]
+    for previous, current in zip(windows, windows[1:]):
+        overlap_left = int(current["start"])
+        overlap_right = int(previous["end"])
+        boundary = (
+            (overlap_left + overlap_right) // 2
+            if overlap_left < overlap_right
+            else overlap_left
+        )
+        boundaries.append(boundary)
+    boundaries.append(text_length)
+    return [
+        (
+            max(int(window["start"]), boundaries[index]),
+            min(int(window["end"]), boundaries[index + 1]),
+        )
+        for index, window in enumerate(windows)
+    ]
+
+
+def _span_owned_by_region(
+    start: int, end: int, region_start: int, region_end: int
+) -> bool:
+    """按 span 中点把 mention 唯一分配给一个互斥评价区。"""
+    midpoint_twice = start + end
+    return 2 * region_start <= midpoint_twice < 2 * region_end
+
+
 def prepare_stage1_window_samples(
     doc_ids: List[str],
     gold_dir: Path,
@@ -153,9 +188,11 @@ def prepare_stage1_window_samples(
             dense_max_ids=dense_max_ids,
             dense_seam=dense_seam,
         )
+        evaluation_regions = _window_evaluation_regions(windows, len(full_text))
         for w_idx, win in enumerate(windows):
             w_start, w_end = win["start"], win["end"]
             w_text = win["text"]
+            evaluation_start, evaluation_end = evaluation_regions[w_idx]
 
             # 过滤落在当前窗口内的实体并转换为窗口相对偏移
             local_entities = []
@@ -163,7 +200,16 @@ def prepare_stage1_window_samples(
                 e_start = e.get("start")
                 e_end = e.get("end")
                 if e_start is not None and e_end is not None:
-                    if e_start >= w_start and e_end <= w_end:
+                    if (
+                        e_start >= w_start
+                        and e_end <= w_end
+                        and _span_owned_by_region(
+                            e_start,
+                            e_end,
+                            evaluation_start,
+                            evaluation_end,
+                        )
+                    ):
                         rel_e = dict(e)
                         rel_e["start"] = e_start - w_start
                         rel_e["end"] = e_end - w_start
@@ -175,6 +221,8 @@ def prepare_stage1_window_samples(
                 "window_index": w_idx,
                 "window_start": w_start,
                 "window_end": w_end,
+                "evaluation_start": evaluation_start - w_start,
+                "evaluation_end": evaluation_end - w_start,
                 "text": w_text,
                 "gold_entities": local_entities,
             }
@@ -200,6 +248,7 @@ def prepare_stage2_window_samples(
     dense_min_span: Optional[int] = None,
     dense_gap: Optional[int] = None,
     dense_max_ids: Optional[int] = None,
+    dense_seam: Optional[int] = None,
 ) -> List[dict]:
     """为 Stage 2 准备带有固定实体输入的窗口样本。
 
@@ -250,8 +299,13 @@ def prepare_stage2_window_samples(
             dense_max_ids=dense_max_ids,
             dense_seam=dense_seam,
         )
-        for w_idx, win in enumerate(windows):
+        evaluation_regions = _window_evaluation_regions(windows, len(full_text))
+        entity_by_id = {entity["id"]: entity for entity in gold_entities}
+        for w_idx, (win, evaluation_region) in enumerate(
+            zip(windows, evaluation_regions)
+        ):
             w_start, w_end = win["start"], win["end"]
+            evaluation_start, evaluation_end = evaluation_region
             w_text = win["text"]
             sample_id = f"{doc_id}_w{w_idx}"
 
@@ -275,15 +329,39 @@ def prepare_stage2_window_samples(
                     or relation.get("tail") not in local_ent_ids
                 ):
                     continue
+                head = entity_by_id.get(relation.get("head"))
+                tail = entity_by_id.get(relation.get("tail"))
+                if head is None or tail is None:
+                    continue
+                # 关系归属仅由端点 mention 决定；这与预测端可观测的
+                # 信息一致，也避免较长 Gold 证据跨过窗口 seam 时丢标签。
+                ownership_start = min(head["start"], tail["start"])
+                ownership_end = max(head["end"], tail["end"])
+                if not _span_owned_by_region(
+                    ownership_start,
+                    ownership_end,
+                    evaluation_start,
+                    evaluation_end,
+                ):
+                    continue
                 local_relation = dict(relation)
                 evidence_start = relation.get("evidence_start")
                 evidence_end = relation.get("evidence_end")
                 if isinstance(evidence_start, int) and isinstance(evidence_end, int):
-                    # 关系 Gold 只进入能够完整承载证据的窗口，并转换为窗口坐标。
-                    if evidence_start < w_start or evidence_end > w_end:
-                        continue
-                    local_relation["evidence_start"] = evidence_start - w_start
-                    local_relation["evidence_end"] = evidence_end - w_start
+                    local_evidence_start = max(evidence_start, w_start)
+                    local_evidence_end = min(evidence_end, w_end)
+                    local_relation["evidence_start"] = local_evidence_start - w_start
+                    local_relation["evidence_end"] = local_evidence_end - w_start
+                    local_relation["evidence"] = full_text[
+                        local_evidence_start:local_evidence_end
+                    ]
+                    if (
+                        local_evidence_start != evidence_start
+                        or local_evidence_end != evidence_end
+                    ):
+                        local_relation["evidence_window_truncated"] = True
+                        local_relation["original_evidence_start"] = evidence_start
+                        local_relation["original_evidence_end"] = evidence_end
                 local_gold_rels.append(local_relation)
 
             # 固定的前序实体输入。禁止静默使用 Gold 实体冒充 Stage 1 预测。
@@ -299,6 +377,8 @@ def prepare_stage2_window_samples(
                 "window_index": w_idx,
                 "window_start": w_start,
                 "window_end": w_end,
+                "evaluation_start": evaluation_start - w_start,
+                "evaluation_end": evaluation_end - w_start,
                 "text": w_text,
                 "fixed_entities": fixed_ents,
                 "gold_entities": local_gold_ents,
@@ -2094,6 +2174,9 @@ class ProTeGiOptimizer:
                 "prompt_scope_audit", {}
             ),
             "window_construction": self.config.get("window_construction"),
+            "selection_window_ownership": self.config.get(
+                "selection_window_ownership", SELECTION_WINDOW_OWNERSHIP
+            ),
             "initial_p0_metrics": p0_metrics or {},
             "total_candidates_registered": len(self.lineage_tracker.nodes),
             "call_stats": self.call_stats.to_dict(),

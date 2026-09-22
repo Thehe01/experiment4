@@ -34,7 +34,10 @@ from protegi.entity_cache import EntityCacheManager, compute_prompt_hash
 from protegi.contract_validator import PromptContractValidator
 from protegi.evaluator import TaskEvaluator
 from protegi.gold_integrity import verify_frozen_gold_integrity
-from protegi.runtime_contract import build_effective_task_runtime
+from protegi.runtime_contract import (
+    SELECTION_WINDOW_OWNERSHIP,
+    build_effective_task_runtime,
+)
 from protegi.optimizer import (
     ProTeGiOptimizer,
     load_split_doc_ids,
@@ -164,13 +167,14 @@ def normalize_config_with_effective_runtime(config: dict) -> dict:
     输入为 YAML 解析后的 config dict；返回同一 dict（就地更新），新增：
     window_chars / window_overlap / document_abbreviation_context /
     vulnerability_anchored_backfill（规范化后）与
-    effective_task_runtime（11 字段，见 protegi.runtime_contract），
-    以及 window_construction（窗口构造版本描述符，只做记录，不进
-    11 字段契约）。
+    effective_task_runtime（完整字段见 protegi.runtime_contract），
+    以及 window_construction（窗口构造版本描述符）。
     optimizer summary 的 "config" 即实际执行 runtime。
     不调用任何模型，可被离线测试直接断言。
     """
-    from llm_methods import window_split_version
+    from llm_methods import runtime_config, window_split_version
+
+    environment_runtime = runtime_config()
 
     include_document_abbreviations = bool(
         config.get("document_abbreviation_context", False)
@@ -189,12 +193,20 @@ def normalize_config_with_effective_runtime(config: dict) -> dict:
             f"window_overlap 必须满足 0 <= overlap < window_chars，"
             f"当前 overlap={window_overlap!r}, chars={window_chars!r}"
         )
-    dense_run_split = bool(config.get("dense_run_split", False))
-    dense_min_ids = config.get("dense_min_ids")
-    dense_min_span = config.get("dense_min_span")
-    dense_gap = config.get("dense_gap")
-    dense_max_ids = config.get("dense_max_ids")
-    dense_seam = config.get("dense_seam")
+    dense_run_split = bool(
+        config.get("dense_run_split", environment_runtime["dense_run_split"])
+    )
+    dense_min_ids = config.get(
+        "dense_min_ids", environment_runtime["dense_min_ids"]
+    )
+    dense_min_span = config.get(
+        "dense_min_span", environment_runtime["dense_min_span"]
+    )
+    dense_gap = config.get("dense_gap", environment_runtime["dense_gap"])
+    dense_max_ids = config.get(
+        "dense_max_ids", environment_runtime["dense_max_ids"]
+    )
+    dense_seam = config.get("dense_seam", environment_runtime["dense_seam"])
     if dense_min_ids is not None and int(dense_min_ids) <= 0:
         raise ValueError(f"dense_min_ids 必须为正整数，当前={dense_min_ids!r}")
     if dense_min_span is not None and int(dense_min_span) <= 0:
@@ -225,6 +237,7 @@ def normalize_config_with_effective_runtime(config: dict) -> dict:
         config["dense_max_ids"],
         config["dense_seam"],
     )
+    config["selection_window_ownership"] = SELECTION_WINDOW_OWNERSHIP
     config["task_model"] = str(config["task_model"])
     config["task_max_workers"] = int(config["task_max_workers"])
     config["task_temperature"] = float(config["task_temperature"])
@@ -240,14 +253,40 @@ def normalize_config_with_effective_runtime(config: dict) -> dict:
     config["vulnerability_anchored_backfill"] = bool(vulnerability_backfill_flag)
     config["effective_task_runtime"] = build_effective_task_runtime(
         model=config["task_model"],
+        provider=environment_runtime["provider"],
+        base_url=environment_runtime["base_url"],
+        endpoint=(
+            "/v1/responses"
+            if "muse-spark" in config["task_model"].casefold()
+            and "contributor" in config["task_model"].casefold()
+            else "/v1/chat/completions"
+        ),
         max_workers=config["task_max_workers"],
         temperature=config["task_temperature"],
         thinking=config["task_thinking"],
         reasoning_effort=config["task_reasoning_effort"],
         top_p=config["task_top_p"],
         max_tokens=config["task_max_tokens"],
+        max_escalated_tokens=max(
+            config["task_max_tokens"],
+            int(environment_runtime["max_escalated_tokens"]),
+        ),
+        request_timeout_seconds=environment_runtime[
+            "request_timeout_seconds"
+        ],
+        transport_max_retries=environment_runtime[
+            "transport_max_retries"
+        ],
+        transient_retry_max_attempts=8,
+        budget_exhaustion_retries=1,
         window_chars=config["window_chars"],
         window_overlap=config["window_overlap"],
+        dense_run_split=config["dense_run_split"],
+        dense_min_ids=config["dense_min_ids"],
+        dense_min_span=config["dense_min_span"],
+        dense_gap=config["dense_gap"],
+        dense_max_ids=config["dense_max_ids"],
+        dense_seam=config["dense_seam"],
         document_abbreviation_context=config["document_abbreviation_context"],
         vulnerability_anchored_backfill=config[
             "vulnerability_anchored_backfill"
@@ -573,6 +612,7 @@ def main():
             window_construction=config.get('window_construction'),
             verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
             validate_formal_gold=bool(formal_eligible),
+            effective_task_runtime=config["effective_task_runtime"],
         )
 
         print("正在为 Dev 集生成冻结实体预测缓存...")
@@ -612,6 +652,7 @@ def main():
             window_construction=config.get('window_construction'),
             verified_gold_aggregate_sha256=verified_gold_aggregate_sha256,
             validate_formal_gold=bool(formal_eligible),
+            effective_task_runtime=config["effective_task_runtime"],
         )
         print(f"实体缓存构建完成，保存在: {cache_dir}")
         return
@@ -708,6 +749,9 @@ def main():
             expected_task_max_workers=int(config.get("task_max_workers", 8)),
             expected_task_runtime=expected_task_runtime,
             expected_window_construction=config.get('window_construction'),
+            expected_selection_window_ownership=config.get(
+                'selection_window_ownership'
+            ),
         )
         dev_samples = cache_manager.load_cache(
             "dev",
@@ -718,6 +762,9 @@ def main():
             expected_task_max_workers=int(config.get("task_max_workers", 8)),
             expected_task_runtime=expected_task_runtime,
             expected_window_construction=config.get('window_construction'),
+            expected_selection_window_ownership=config.get(
+                'selection_window_ownership'
+            ),
         )
         print(f"成功加载上游冻结实体预测缓存: Train={len(train_samples)}, Dev={len(dev_samples)}")
 

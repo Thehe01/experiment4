@@ -5,7 +5,7 @@ experiment_pair_id: "protegi-configuration-pilot-v1"
 
 # Fixed input context shared identically by P0 and every generated candidate.
 document_abbreviation_context: true
-vulnerability_anchored_backfill: true
+vulnerability_anchored_backfill: false
 
 # Train search and gradient input are both Configuration-specific.
 selection_entity_type: "Configuration"

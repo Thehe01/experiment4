@@ -25,7 +25,7 @@
     "train": {
       "documents": 4,
       "source_characters": 58307,
-      "estimated_windows": 24,
+      "runtime_windows": 25,
       "entities": {
         "Vulnerability": 49,
         "Configuration": 26,
@@ -36,7 +36,7 @@
     "dev": {
       "documents": 4,
       "source_characters": 58594,
-      "estimated_windows": 24,
+      "runtime_windows": 25,
       "entities": {
         "Vulnerability": 78,
         "Configuration": 22,

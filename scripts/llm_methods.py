@@ -64,7 +64,7 @@ POSTPROCESS_VERSION = "chapter3-no-capec-v1-mcpu-postprocess-v2"
 WINDOW_CHARS = int(os.environ.get("V3_LLM_WINDOW_CHARS", "3000"))
 WINDOW_OVERLAP = int(os.environ.get("V3_LLM_WINDOW_OVERLAP", "400"))
 LLM_MAX_WORKERS = max(1, int(os.environ.get("V3_LLM_MAX_WORKERS", "8")))
-# 拍扁高密 run 切分（WINDOW_SPLIT_V2）：默认关闭，关闭时构造行为与
+# 拍扁高密 run 切分（WINDOW_SPLIT_V3）：默认关闭，关闭时构造行为与
 # window-split-v1 逐字节一致。 raw-text 正则只看 CVE/CWE/T-code 表面
 # 模式，永不读取 Gold 标签，构造侧无泄漏。
 DENSE_RUN_SPLIT = os.environ.get("V3_LLM_DENSE_RUN_SPLIT", "0").strip().lower() in {
@@ -85,26 +85,10 @@ FREEZE_MANIFEST_FILE = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 PROTEGI_FINAL_DIR = EXP_DIR / "results" / "protegi_final"
 PROTEGI_FINAL_ARTIFACT = PROTEGI_FINAL_DIR / "protegi_final_artifact.json"
 
-try:
-    from protegi.runtime_contract import (
-        TASK_RUNTIME_FIELDS as PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS,
-    )
-    from protegi.runtime_contract import validate_task_runtime as _shared_validate
-except ImportError:  # 回退：保持字段集合一致
-    PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS = (
-        "model",
-        "max_workers",
-        "temperature",
-        "thinking",
-        "reasoning_effort",
-        "top_p",
-        "max_tokens",
-        "window_chars",
-        "window_overlap",
-        "document_abbreviation_context",
-        "vulnerability_anchored_backfill",
-    )
-    _shared_validate = None
+from protegi.runtime_contract import (
+    SELECTION_WINDOW_OWNERSHIP,
+    validate_task_runtime as _shared_validate,
+)
 
 
 def _validate_protegi_task_runtime(runtime: object) -> dict:
@@ -113,81 +97,16 @@ def _validate_protegi_task_runtime(runtime: object) -> dict:
     禁止缺字段时 fallback 到当前 API 环境（API_TEMPERATURE 等）。
     字段集合唯一来源为 protegi.runtime_contract.TASK_RUNTIME_FIELDS。
     """
-    if _shared_validate is not None:
-        try:
-            return _shared_validate(runtime, label="ProTeGi 产物 task_runtime")
-        except ValueError as exc:
-            # 统一为 artifact 语境的错误前缀，禁止 fallback 语义不变。
-            msg = str(exc)
-            if "ProTeGi 产物 task_runtime" not in msg:
-                raise ValueError(
-                    f"ProTeGi 产物 task_runtime 校验失败: {msg}，"
-                    "禁止 fallback 到当前 API 环境！"
-                ) from exc
-            raise
-    if not isinstance(runtime, dict):
-        raise ValueError(
-            "ProTeGi 产物缺少 task_runtime 字段，禁止 fallback 到当前 API 环境！"
-        )
-    for field in PROTEGI_TASK_RUNTIME_REQUIRED_FIELDS:
-        if field not in runtime:
+    try:
+        return _shared_validate(runtime, label="ProTeGi 产物 task_runtime")
+    except ValueError as exc:
+        msg = str(exc)
+        if "ProTeGi 产物 task_runtime" not in msg:
             raise ValueError(
-                f"ProTeGi 产物 task_runtime 缺少必需字段 {field}，"
+                f"ProTeGi 产物 task_runtime 校验失败: {msg}，"
                 "禁止 fallback 到当前 API 环境！"
-            )
-    model = runtime["model"]
-    max_workers = runtime["max_workers"]
-    temperature = runtime["temperature"]
-    thinking = runtime["thinking"]
-    reasoning_effort = runtime["reasoning_effort"]
-    top_p = runtime["top_p"]
-    max_tokens = runtime["max_tokens"]
-    window_chars = runtime["window_chars"]
-    window_overlap = runtime["window_overlap"]
-    abbrev = runtime["document_abbreviation_context"]
-    backfill = runtime["vulnerability_anchored_backfill"]
-    if not isinstance(model, str) or not model.strip():
-        raise ValueError("ProTeGi 产物 task_runtime.model 必须为非空字符串")
-    if not isinstance(max_workers, int) or isinstance(max_workers, bool):
-        raise ValueError("ProTeGi 产物 task_runtime.max_workers 必须为 int")
-    if not isinstance(temperature, (int, float)) or isinstance(
-        temperature, bool
-    ):
-        raise ValueError("ProTeGi 产物 task_runtime.temperature 类型非法")
-    if not isinstance(thinking, str):
-        raise ValueError("ProTeGi 产物 task_runtime.thinking 必须为字符串")
-    if not isinstance(reasoning_effort, str):
-        raise ValueError(
-            "ProTeGi 产物 task_runtime.reasoning_effort 必须为字符串"
-        )
-    if not isinstance(top_p, (int, float)) or isinstance(top_p, bool):
-        raise ValueError("ProTeGi 产物 task_runtime.top_p 类型非法")
-    if not isinstance(max_tokens, int) or isinstance(max_tokens, bool):
-        raise ValueError("ProTeGi 产物 task_runtime.max_tokens 必须为 int")
-    if not isinstance(window_chars, int) or isinstance(window_chars, bool):
-        raise ValueError("ProTeGi 产物 task_runtime.window_chars 必须为 int")
-    if not isinstance(window_overlap, int) or isinstance(
-        window_overlap, bool
-    ):
-        raise ValueError("ProTeGi 产物 task_runtime.window_overlap 必须为 int")
-    if not isinstance(abbrev, bool):
-        raise ValueError(
-            "ProTeGi 产物 task_runtime.document_abbreviation_context 必须为 bool"
-        )
-    if not isinstance(backfill, bool):
-        raise ValueError(
-            "ProTeGi 产物 task_runtime.vulnerability_anchored_backfill 必须为 bool"
-        )
-    if not max_workers > 0:
-        raise ValueError("ProTeGi 产物 task_runtime.max_workers 必须 > 0")
-    if not window_chars > 0:
-        raise ValueError("ProTeGi 产物 task_runtime.window_chars 必须 > 0")
-    if not 0 <= window_overlap < window_chars:
-        raise ValueError(
-            "ProTeGi 产物 task_runtime 窗口参数非法: "
-            f"window_chars={window_chars}, window_overlap={window_overlap}"
-        )
-    return runtime
+            ) from exc
+        raise
 
 _APO_FORBIDDEN_TERMS = (
     "attackpattern",
@@ -460,6 +379,12 @@ def runtime_config() -> dict:
         "boundary_contract_version": BOUNDARY_CONTRACT_VERSION,
         "window_chars": WINDOW_CHARS,
         "window_overlap": WINDOW_OVERLAP,
+        "dense_run_split": DENSE_RUN_SPLIT,
+        "dense_min_ids": DENSE_MIN_IDS,
+        "dense_min_span": DENSE_MIN_SPAN,
+        "dense_gap": DENSE_GAP,
+        "dense_max_ids": DENSE_MAX_IDS,
+        "dense_seam": DENSE_SEAM,
         "window_split": window_split_version(),
         "max_workers": LLM_MAX_WORKERS,
     }
@@ -768,7 +693,35 @@ def load_protegi_final_artifact(path: Path | str | None = None) -> dict:
         raise ValueError("ProTeGi 产物显示在晋级前已生成 test 预测，违反测试隔离红线！")
 
     # 校验完整 Task Runtime（禁止缺字段时 fallback 到当前 API 环境）
-    _validate_protegi_task_runtime(artifact.get("task_runtime"))
+    task_runtime = _validate_protegi_task_runtime(artifact.get("task_runtime"))
+
+    # Provider/transport 由 artifact 冻结；当前进程必须与之完全一致，
+    # 否则 make_extractor 会在同一 artifact 下连接到不同服务端。
+    live_runtime = runtime_config()
+    live_transport = {
+        "provider": live_runtime["provider"],
+        "base_url": str(live_runtime["base_url"]).rstrip("/"),
+        "endpoint": (
+            "/v1/responses"
+            if "muse-spark" in task_runtime["model"].casefold()
+            and "contributor" in task_runtime["model"].casefold()
+            else "/v1/chat/completions"
+        ),
+        "max_escalated_tokens": max(
+            task_runtime["max_tokens"], live_runtime["max_escalated_tokens"]
+        ),
+        "request_timeout_seconds": live_runtime["request_timeout_seconds"],
+        "transport_max_retries": live_runtime["transport_max_retries"],
+        "transient_retry_max_attempts": 8,
+        "budget_exhaustion_retries": 1,
+    }
+    for field, live_value in live_transport.items():
+        artifact_value = task_runtime[field]
+        if artifact_value != live_value:
+            raise ValueError(
+                f"ProTeGi 产物冻结 runtime[{field}]={artifact_value!r}，"
+                f"当前环境为 {live_value!r}；拒绝在漂移 runtime 下执行。"
+            )
 
     # 校验窗口构造：产物记录必须与冻结清单一致，否则窗 inventory 不可比。
     frozen_construction = (freeze_manifest.get("window_construction") or {}).get(
@@ -784,6 +737,29 @@ def load_protegi_final_artifact(path: Path | str | None = None) -> dict:
             f"({artifact.get('window_construction')!r}) "
             f"与冻结清单 ({frozen_construction!r}) 不一致，禁止用于正式运行！"
         )
+    if artifact.get("selection_window_ownership") != SELECTION_WINDOW_OWNERSHIP:
+        raise ValueError(
+            "ProTeGi 产物缺少或不匹配冻结的重叠窗口评价归属口径："
+            f"期望 {SELECTION_WINDOW_OWNERSHIP!r}。"
+        )
+    frozen_window = freeze_manifest.get("window_construction") or {}
+    frozen_dense = frozen_window.get("dense_params") or {}
+    window_runtime_expectations = {
+        "window_chars": frozen_window.get("max_chars"),
+        "window_overlap": frozen_window.get("overlap"),
+        "dense_run_split": frozen_window.get("dense_run_split"),
+        "dense_min_ids": frozen_dense.get("dense_min_ids"),
+        "dense_min_span": frozen_dense.get("dense_min_span"),
+        "dense_gap": frozen_dense.get("dense_gap"),
+        "dense_max_ids": frozen_dense.get("dense_max_ids"),
+        "dense_seam": frozen_dense.get("dense_seam"),
+    }
+    for field, expected in window_runtime_expectations.items():
+        if task_runtime[field] != expected:
+            raise ValueError(
+                f"ProTeGi 产物 task_runtime[{field}]={task_runtime[field]!r} "
+                f"与冻结窗口参数 {expected!r} 不一致，禁止用于正式运行！"
+            )
 
     return artifact
 
@@ -1802,7 +1778,7 @@ def build_text_windows(
         snap_sentence_boundary: 若为 True，窗口左边界向最近的 CVE 标题、段落首或句首吸附，
             彻底消除无主语的断头句。默认 False 保留历史预注册审计兼容性。
         dense_run_split: 若为 True，对含拍扁高密标识符 run 的基窗按记录边界
-            切分子窗（WINDOW_SPLIT_V2）。None 时取环境默认值，默认关闭；
+            切分子窗（WINDOW_SPLIT_V3）。None 时取环境默认值，默认关闭；
             关闭时返回与 window-split-v1 逐字节一致的窗口。
         dense_min_ids / dense_min_span / dense_gap / dense_max_ids /
         dense_seam: 拍扁 run 判定、分块与接缝参数，None 时取环境默认值。
@@ -1874,50 +1850,6 @@ def build_text_windows(
             max_chars=max_chars,
         ))
     return widened
-    """按段落/句子边界构造重叠窗口，并保留全局字符偏移。
-
-    Args:
-        text: 待切分长文本。
-        max_chars: 窗口最大字符数。
-        overlap: 窗口间重叠目标字符数。
-        snap_sentence_boundary: 若为 True，窗口左边界向最近的 CVE 标题、段落首或句首吸附，
-            彻底消除无主语的断头句。默认 False 保留历史预注册审计兼容性。
-    """
-    if max_chars <= 0 or len(text) <= max_chars:
-        return [{"start": 0, "end": len(text), "text": text}]
-    if not 0 <= overlap < max_chars:
-        raise ValueError("window overlap 必须满足 0 <= overlap < max_chars")
-
-    windows = []
-    start = 0
-    while start < len(text):
-        hard_end = min(len(text), start + max_chars)
-        end = hard_end
-        if hard_end < len(text):
-            floor = start + max_chars // 2
-            candidates = []
-            for delimiter in ("\n\n", "\n", "。", ". "):
-                position = text.rfind(delimiter, floor, hard_end)
-                if position >= 0:
-                    candidates.append(position + len(delimiter))
-            if candidates:
-                end = max(candidates)
-        if end <= start:
-            end = hard_end
-        windows.append({"start": start, "end": end, "text": text[start:end]})
-        if end >= len(text):
-            break
-        raw_start = max(start + 1, end - overlap)
-        if snap_sentence_boundary and raw_start < end:
-            raw_start = snap_to_sentence_boundary(
-                text,
-                raw_start,
-                min_start=start + 1,
-                max_start=min(end - 50, raw_start + 150),
-                radius=250,
-            )
-        start = raw_start
-    return windows
 
 
 def _offset_prediction(prediction: dict, offset: int) -> dict:
@@ -1997,22 +1929,28 @@ def merge_window_predictions(predictions: list[dict]) -> dict:
     }
 
 
-def _loose_json(output: str) -> dict:
-    cands = [output]
+def _loose_json_with_status(output: str) -> tuple[dict, str]:
+    """宽松解析并显式返回解析路径；失败不再对诊断层不可见。"""
+    candidates = [(output, "direct_json")]
     m = re.search(r"```(?:json)?\s*\n?(.*?)\n?```", output, re.DOTALL)
     if m:
-        cands.append(m.group(1))
+        candidates.append((m.group(1), "fenced_json"))
     a, b = output.find("{"), output.rfind("}")
     if a != -1 and b != -1 and b > a:
-        cands.append(output[a:b + 1])
-    for c in cands:
+        candidates.append((output[a:b + 1], "braced_json"))
+    for candidate, method in candidates:
         try:
-            d = json.loads(c)
+            d = json.loads(candidate)
             if isinstance(d, dict):
-                return d
+                return d, method
         except json.JSONDecodeError:
             continue
-    return {"entities": [], "relations": []}
+    return {"entities": [], "relations": []}, "unparseable"
+
+
+def _loose_json(output: str) -> dict:
+    parsed, _ = _loose_json_with_status(output)
+    return parsed
 
 
 def _call_with_retries(extractor, prompt, system_prompt, max_retries=3):
@@ -3735,6 +3673,12 @@ def predict_llm_protegi(
         text,
         max_chars=runtime["window_chars"],
         overlap=runtime["window_overlap"],
+        dense_run_split=runtime["dense_run_split"],
+        dense_min_ids=runtime["dense_min_ids"],
+        dense_min_span=runtime["dense_min_span"],
+        dense_gap=runtime["dense_gap"],
+        dense_max_ids=runtime["dense_max_ids"],
+        dense_seam=runtime["dense_seam"],
     )
 
     # 与优化阶段完全相同的 abbreviation context 逻辑：整篇文档一次性抽取，
@@ -3751,7 +3695,7 @@ def predict_llm_protegi(
         abbreviation_context = format_abbreviation_context(abbreviation_pairs)
 
     stage1_window_entities: list[list[dict]] = []
-    for window in windows:
+    for window_index, window in enumerate(windows):
         win_text = window["text"]
         pred_entities = evaluator.predict_stage1_window(
             win_text,
@@ -3761,6 +3705,7 @@ def predict_llm_protegi(
                 if runtime["document_abbreviation_context"]
                 else None
             ),
+            sample_id=f"{doc_id}_w{window_index}",
         )
         stage1_window_entities.append(pred_entities)
 
@@ -3784,10 +3729,15 @@ def predict_llm_protegi(
         )
 
     window_predictions = []
-    for window, pred_entities in zip(windows, stage1_window_entities):
+    for window_index, (window, pred_entities) in enumerate(
+        zip(windows, stage1_window_entities)
+    ):
         win_text = window["text"]
         pred_relations = evaluator.predict_stage2_window(
-            win_text, pred_entities, relation_prompt
+            win_text,
+            pred_entities,
+            relation_prompt,
+            sample_id=f"{doc_id}_w{window_index}",
         )
         local_pred = {
             "entities": pred_entities,
@@ -3807,6 +3757,11 @@ def predict_llm_protegi(
             "entity_prompt_sha256": artifact.get("entity_prompt_sha256"),
             "relation_prompt_sha256": artifact.get("relation_prompt_sha256"),
             "task_runtime": dict(runtime),
+            "window_construction": artifact.get("window_construction"),
+            "selection_window_ownership": artifact.get(
+                "selection_window_ownership"
+            ),
+            "window_count": len(windows),
         },
         "_resource": {
             "protegi_artifact": str(artifact_file),
@@ -3817,4 +3772,3 @@ def predict_llm_protegi(
             "task_runtime": dict(runtime),
         },
     }
-

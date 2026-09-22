@@ -22,6 +22,17 @@ from protegi.metrics import aggregate_micro_f1
 from protegi.models import EvaluationResult, PromptCandidate
 
 
+def _actual_sample_count(result: EvaluationResult, fallback: int) -> int:
+    """尾批不足 batch_size 时记录真实暴露窗口数。"""
+    value = result.details.get("num_samples")
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value
+    sample_ids = result.details.get("sample_ids")
+    if isinstance(sample_ids, list):
+        return len(sample_ids)
+    return fallback
+
+
 def selection_counts_from_result(
     eval_result: EvaluationResult,
     objective_entity_type: Optional[str],
@@ -146,7 +157,9 @@ class UCBPromptSelector:
         for local_pull_idx in range(self.min_pulls_per_candidate):
             for cand in candidates:
                 eval_res = eval_batch_fn(cand, local_pull_idx)
-                self.update_candidate_with_batch(cand, eval_res, self.batch_size)
+                self.update_candidate_with_batch(
+                    cand, eval_res, _actual_sample_count(eval_res, self.batch_size)
+                )
                 pulls_executed += 1
                 history.append({
                     "type": "initial_pull",
@@ -164,7 +177,9 @@ class UCBPromptSelector:
             arm = self.select_next_arm_to_evaluate(candidates, total_t)
             local_pull_idx = arm.num_evaluations
             eval_res = eval_batch_fn(arm, local_pull_idx)
-            self.update_candidate_with_batch(arm, eval_res, self.batch_size)
+            self.update_candidate_with_batch(
+                arm, eval_res, _actual_sample_count(eval_res, self.batch_size)
+            )
             pulls_executed += 1
             total_t += 1
             history.append({
@@ -265,7 +280,9 @@ class UniformPromptSelector:
             cand = candidates[cand_idx]
             local_pull_idx = cand.num_evaluations
             eval_res = eval_batch_fn(cand, local_pull_idx)
-            self.update_candidate_with_batch(cand, eval_res, self.batch_size)
+            self.update_candidate_with_batch(
+                cand, eval_res, _actual_sample_count(eval_res, self.batch_size)
+            )
             pulls_executed += 1
             history.append({
                 "type": "uniform_pull",

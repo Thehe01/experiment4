@@ -26,7 +26,11 @@ from schema import (
     BOUNDARY_CONTRACT_VERSION,
     SCHEMA_VERSION,
 )
-from protegi.runtime_contract import TASK_RUNTIME_FIELDS
+from protegi.runtime_contract import (
+    SELECTION_WINDOW_OWNERSHIP,
+    TASK_RUNTIME_FIELDS,
+    validate_task_runtime,
+)
 
 DEFAULT_FREEZE_MANIFEST = ROOT / "data" / "dataset_freeze_manifest_v6.json"
 DEFAULT_SPLIT_FILE = ROOT / "data" / "train_dev_test_split_v7.json"
@@ -60,7 +64,7 @@ def _build_task_runtime_from_evaluator(
     vulnerability_anchored_backfill: bool | None,
     samples: list | None = None,
 ) -> dict:
-    """从 evaluator + 显式参数构造完整的 Task Runtime（11 字段）。"""
+    """从 evaluator + 显式参数构造完整的 Task Runtime（兼容非正式测试）。"""
     client_config = dict(
         getattr(getattr(evaluator, "client", None), "config", {}) or {}
     )
@@ -77,16 +81,47 @@ def _build_task_runtime_from_evaluator(
         vulnerability_anchored_backfill = bool(
             getattr(evaluator, "vulnerability_anchored_backfill", False)
         )
+    from llm_methods import runtime_config
+
+    environment_runtime = runtime_config()
+    model = client_config.get("model")
     return {
-        "model": client_config.get("model"),
+        "model": model,
+        "provider": environment_runtime["provider"],
+        "base_url": str(
+            client_config.get("base_url") or environment_runtime["base_url"]
+        ).rstrip("/"),
+        "endpoint": client_config.get("endpoint") or (
+            "/v1/responses"
+            if "muse-spark" in str(model).casefold()
+            and "contributor" in str(model).casefold()
+            else "/v1/chat/completions"
+        ),
         "max_workers": getattr(evaluator, "max_workers", None),
         "temperature": client_config.get("temperature"),
         "thinking": client_config.get("thinking"),
         "reasoning_effort": client_config.get("reasoning_effort"),
         "top_p": client_config.get("top_p"),
         "max_tokens": client_config.get("max_tokens"),
+        "max_escalated_tokens": client_config.get(
+            "max_escalated_tokens", client_config.get("max_tokens")
+        ),
+        "request_timeout_seconds": client_config.get(
+            "timeout", environment_runtime["request_timeout_seconds"]
+        ),
+        "transport_max_retries": client_config.get(
+            "max_retries", environment_runtime["transport_max_retries"]
+        ),
+        "transient_retry_max_attempts": 8,
+        "budget_exhaustion_retries": 1,
         "window_chars": int(window_chars),
         "window_overlap": int(window_overlap),
+        "dense_run_split": environment_runtime["dense_run_split"],
+        "dense_min_ids": environment_runtime["dense_min_ids"],
+        "dense_min_span": environment_runtime["dense_min_span"],
+        "dense_gap": environment_runtime["dense_gap"],
+        "dense_max_ids": environment_runtime["dense_max_ids"],
+        "dense_seam": environment_runtime["dense_seam"],
         "document_abbreviation_context": bool(document_abbreviation_context),
         "vulnerability_anchored_backfill": bool(
             vulnerability_anchored_backfill
@@ -125,6 +160,7 @@ class EntityCacheManager:
         verified_gold_aggregate_sha256: Optional[str] = None,
         validate_formal_gold: bool = False,
         window_construction: Optional[str] = None,
+        effective_task_runtime: Optional[dict] = None,
     ) -> Path:
         """使用冻结的 P_E* 离线生成并持久化指定切分的实体预测缓存。
 
@@ -236,14 +272,19 @@ class EntityCacheManager:
             )
         else:
             effective_backfill = bool(vulnerability_anchored_backfill)
-        task_runtime = _build_task_runtime_from_evaluator(
-            evaluator,
-            window_chars=window_chars,
-            window_overlap=window_overlap,
-            document_abbreviation_context=effective_abbreviation_context,
-            vulnerability_anchored_backfill=effective_backfill,
-            samples=samples,
-        )
+        if effective_task_runtime is not None:
+            task_runtime = validate_task_runtime(
+                dict(effective_task_runtime), label="entity cache task_runtime"
+            )
+        else:
+            task_runtime = _build_task_runtime_from_evaluator(
+                evaluator,
+                window_chars=window_chars,
+                window_overlap=window_overlap,
+                document_abbreviation_context=effective_abbreviation_context,
+                vulnerability_anchored_backfill=effective_backfill,
+                samples=samples,
+            )
 
         texts = [sample["text"] for sample in samples]
         abbreviation_contexts = None
@@ -294,6 +335,12 @@ class EntityCacheManager:
 
                 record = {
                     "sample_id": sample_id,
+                    "doc_id": s.get("doc_id"),
+                    "window_index": s.get("window_index"),
+                    "window_start": s.get("window_start"),
+                    "window_end": s.get("window_end"),
+                    "evaluation_start": s.get("evaluation_start"),
+                    "evaluation_end": s.get("evaluation_end"),
                     "text": text,
                     "fixed_entities": pred_entities,
                     "gold_entities": s.get("gold_entities", s.get("entities", [])),
@@ -316,6 +363,16 @@ class EntityCacheManager:
             "window_chars": int(window_chars),
             "window_overlap": int(window_overlap),
             "window_construction": window_construction,
+            "selection_window_ownership": (
+                SELECTION_WINDOW_OWNERSHIP
+                if samples
+                and all(
+                    isinstance(sample.get("evaluation_start"), int)
+                    and isinstance(sample.get("evaluation_end"), int)
+                    for sample in samples
+                )
+                else None
+            ),
             "document_abbreviation_context": bool(effective_abbreviation_context),
             "vulnerability_anchored_backfill": bool(effective_backfill),
             "task_runtime": task_runtime,
@@ -364,6 +421,7 @@ class EntityCacheManager:
         validate_freeze_binding: bool = True,
         expected_task_runtime: Optional[dict] = None,
         expected_window_construction: Optional[str] = None,
+        expected_selection_window_ownership: Optional[str] = None,
     ) -> List[dict]:
         """加载固化的实体预测缓存，并在哈希不匹配或冻结绑定失效时严格阻断。"""
         cache_file = self.cache_dir / f"entity_cache_{split_name}.jsonl"
@@ -420,6 +478,15 @@ class EntityCacheManager:
                     f"({manifest.get('window_construction')!r}) 与期望冻结值 "
                     f"({expected_window_construction!r}) 不一致；"
                     "窗口构造已变更，缓存自动失效，请重建。"
+                )
+        if expected_selection_window_ownership is not None:
+            cached_ownership = manifest.get("selection_window_ownership")
+            if cached_ownership != expected_selection_window_ownership:
+                raise ValueError(
+                    f"{split_name} 实体缓存 selection_window_ownership "
+                    f"({cached_ownership!r}) 与期望值 "
+                    f"({expected_selection_window_ownership!r}) 不一致；"
+                    "评价归属口径已变更，请重建缓存。"
                 )
 
         if validate_freeze_binding:

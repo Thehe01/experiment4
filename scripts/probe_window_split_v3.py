@@ -103,9 +103,11 @@ def main() -> int:
         for sample in children:
             for trial in range(1, trials + 1):
                 try:
+                    parse_diagnostics = {}
                     entities = evaluator.predict_stage1_window(
                         sample["text"], ENTITY_PROMPT_P0,
                         sample_id=sample["sample_id"],
+                        parse_diagnostics=parse_diagnostics,
                     )
                     row = {"budget_exhausted": False,
                            "pred_count": len(entities)}
@@ -127,7 +129,7 @@ def main() -> int:
                     "gold_local_count": len(sample["gold_entities"]),
                     "parse_method": (
                         "none" if row["budget_exhausted"]
-                        else "evaluator_path"
+                        else parse_diagnostics.get("parse_method", "unparseable")
                     ),
                     "duplicate_spans": dup,
                     "strict": {"tp": tp, "fp": fp, "fn": fn,
@@ -168,7 +170,7 @@ def main() -> int:
             "unparseable": sum(
                 1 for r in records
                 if not r["budget_exhausted"]
-                and r["parse_method"] not in ("evaluator_path",)),
+                and r["parse_method"] == "unparseable"),
             "total_duplicates": sum(
                 r.get("duplicate_spans") or 0 for r in records),
             "max_pred_to_gold_ratio": max(

@@ -27,7 +27,7 @@ task_reasoning_effort: "none"
 task_top_p: 0.95
 task_max_tokens: 4096
 
-# 窗口构造 WINDOW_SPLIT_V2（已冻结参数）：拍扁高密 run 按记录边界切分。
+# 窗口构造 WINDOW_SPLIT_V3（已冻结参数）：拍扁高密 run 按记录边界切分。
 # window 预算不变（3000/400），只动切分位置；默认关闭的 legacy 行为作废。
 window_chars: 3000
 window_overlap: 400

@@ -29,7 +29,7 @@ EVALUATION_STATUS_VALID = "valid"
 CHECKPOINT_VERSION = "protegi-search-checkpoint-v1"
 CHECKPOINT_FILENAME = "search_checkpoint.json"
 EVAL_CACHE_FILENAME = "eval_cache.json"
-EVAL_CACHE_VERSION = "protegi-eval-cache-v1"
+EVAL_CACHE_VERSION = "protegi-eval-cache-v2"
 EVAL_CACHE_MAX_ENTRIES = 5000
 
 # 检查点绑定的实现文件集合（与 optimizer summary 的实现清单保持一致，

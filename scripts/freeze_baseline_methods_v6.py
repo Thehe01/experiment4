@@ -26,7 +26,7 @@ SPLIT_FILE = EXP_DIR / "data" / "train_dev_test_split_v7.json"
 DATASET_MANIFEST = EXP_DIR / "data" / "dataset_freeze_manifest_v6.json"
 STATUS_FILE = EXP_DIR / "data" / "review_status.json"
 BASELINE_FREEZE_MANIFEST = (
-    EXP_DIR / "data" / "baseline_methods_freeze_manifest_v1.json"
+    EXP_DIR / "data" / "baseline_methods_freeze_manifest_v6.json"
 )
 FROZEN_METHODS = ("rule", "multipass", "full")
 DEPENDENCIES = (
@@ -36,6 +36,7 @@ DEPENDENCIES = (
     "scripts/provider_config.py",
     "scripts/rule_baseline.py",
     "scripts/llm_methods.py",
+    "scripts/llm_extractor.py",
     "scripts/eval_metrics.py",
     "scripts/schema.py",
     "scripts/prompts/multipass_prompts.py",
@@ -74,6 +75,11 @@ def _validate_completed_outputs(test_ids: list[str]) -> dict:
     entity_types = set(EXTRACTION_ENTITY_TYPES)
     relation_types = set(EXTRACTION_RELATION_TYPES)
     gold_dir = EXP_DIR / "data" / "annotations" / "gold"
+    split_sha256 = _sha256(SPLIT_FILE)
+    freeze_sha256 = _sha256(DATASET_MANIFEST)
+    frozen_gold_sha256 = _load_json(DATASET_MANIFEST).get(
+        "gold_aggregate_sha256"
+    )
 
     def filt(record: dict) -> tuple[list[dict], list[dict]]:
         entities = [
@@ -107,6 +113,38 @@ def _validate_completed_outputs(test_ids: list[str]) -> dict:
             raise ValueError(f"invalid document count: {result_path}")
         if result.get("schema_ready") is not True:
             raise ValueError(f"schema gate did not pass: {result_path}")
+        lineage = result.get("run_lineage")
+        if not isinstance(lineage, dict):
+            raise ValueError(f"missing run_lineage: {result_path}")
+        lineage_sha256 = lineage.get("lineage_sha256")
+        if not isinstance(lineage_sha256, str) or not lineage_sha256:
+            raise ValueError(f"invalid run lineage hash: {result_path}")
+        lineage_payload = dict(lineage)
+        lineage_payload.pop("lineage_sha256", None)
+        computed_lineage_sha256 = hashlib.sha256(
+            json.dumps(
+                lineage_payload,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        if lineage_sha256 != computed_lineage_sha256:
+            raise ValueError(f"run lineage content hash mismatch: {result_path}")
+        expected_lineage = {
+            "method": method,
+            "split": "test",
+            "split_sha256": split_sha256,
+            "dataset_freeze_manifest_sha256": freeze_sha256,
+            "gold_aggregate_sha256": frozen_gold_sha256,
+        }
+        for field, expected in expected_lineage.items():
+            if lineage.get(field) != expected:
+                raise ValueError(
+                    f"{method} run_lineage[{field}] does not match freeze input"
+                )
+        if result.get("runtime_config") != lineage.get("runtime_config"):
+            raise ValueError(f"{method} result/runtime lineage mismatch")
 
         entity_metrics = []
         relation_metrics = []
@@ -114,6 +152,16 @@ def _validate_completed_outputs(test_ids: list[str]) -> dict:
         for doc_id in test_ids:
             prediction = _load_json(prediction_dir / f"{doc_id}.json")
             gold = _load_json(gold_dir / f"{doc_id}.json")
+            if prediction.get("run_lineage_sha256") != lineage_sha256:
+                raise ValueError(
+                    f"{method}/{doc_id} prediction lineage mismatch"
+                )
+            if prediction.get("source_gold_sha256") != _sha256(
+                gold_dir / f"{doc_id}.json"
+            ):
+                raise ValueError(
+                    f"{method}/{doc_id} prediction Gold binding mismatch"
+                )
             pred_entities, pred_relations = filt(prediction)
             gold_entities, gold_relations = filt(gold)
             entity_metrics.append(
@@ -319,6 +367,8 @@ def verify_freeze() -> tuple[bool, str]:
         return False, "baseline freeze manifest is missing"
     try:
         manifest = _load_json(BASELINE_FREEZE_MANIFEST)
+        if manifest.get("manifest_version") != "v6-baseline-methods-freeze-v1":
+            return False, "manifest version is not the v6 baseline freeze"
         if manifest.get("status") != "frozen":
             return False, "manifest status is not frozen"
         if tuple(manifest.get("scope", {}).get("methods", [])) != FROZEN_METHODS:
@@ -360,7 +410,11 @@ def frozen_methods() -> set[str]:
         return set()
     try:
         manifest = _load_json(BASELINE_FREEZE_MANIFEST)
-        if manifest.get("status") != "frozen":
+        if (
+            manifest.get("status") != "frozen"
+            or manifest.get("manifest_version")
+            != "v6-baseline-methods-freeze-v1"
+        ):
             return set()
         return set(manifest.get("scope", {}).get("methods", []))
     except (json.JSONDecodeError, OSError, TypeError):

@@ -127,6 +127,9 @@ def _method_runtime_config(method: str) -> dict:
     config = runtime_config()
     if method == "protegi":
         artifact = load_protegi_final_artifact()
+        frozen_runtime = dict(artifact["task_runtime"])
+        config.update(frozen_runtime)
+        config["window_split"] = artifact["window_construction"]
         config["protegi"] = {
             "artifact": str(PROTEGI_FINAL_ARTIFACT),
             "artifact_sha256": hashlib.sha256(
@@ -138,6 +141,11 @@ def _method_runtime_config(method: str) -> dict:
             "optimizer_model": artifact.get("optimizer_model"),
             "entity_prompt_sha256": artifact.get("entity_prompt_sha256"),
             "relation_prompt_sha256": artifact.get("relation_prompt_sha256"),
+            "window_construction": artifact.get("window_construction"),
+            "selection_window_ownership": artifact.get(
+                "selection_window_ownership"
+            ),
+            "task_runtime": frozen_runtime,
         }
     elif method in {"apo", "apo_full"}:
         artifact = load_apo_prompt_artifact()
@@ -156,6 +164,104 @@ def _method_runtime_config(method: str) -> dict:
             "formal_validity": "historical only; not valid as current ProTeGi formal artifact",
         }
     return config
+
+
+def _public_runtime_for_method(method: str, split_file: Path) -> dict:
+    """返回写入结果和 lineage 的同一份公开 runtime 描述。"""
+    if method == "rule":
+        return {
+            "extractor": "deterministic-rule-baseline",
+            "lexicon_source": (
+                "frozen train+dev annotations only "
+                "(development-fitted rule baseline)"
+            ),
+            "split_file": split_file.name,
+            "uses_document_topic": False,
+        }
+    return _method_runtime_config(method)
+
+
+def _canonical_json_sha256(payload: dict) -> str:
+    encoded = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _build_run_lineage(method: str, split: str, split_file: Path) -> dict:
+    """绑定预测批次的输入、runtime 与实现；不包含时间戳。"""
+    if not split_file.is_file():
+        raise FileNotFoundError(split_file)
+    if not FREEZE_MANIFEST_FILE.is_file():
+        raise FileNotFoundError(FREEZE_MANIFEST_FILE)
+    freeze = json.loads(FREEZE_MANIFEST_FILE.read_text(encoding="utf-8"))
+    implementation_files = [
+        SCRIPT_DIR / "run_v6_experiment.py",
+        SCRIPT_DIR / "llm_methods.py",
+        SCRIPT_DIR / "llm_extractor.py",
+        SCRIPT_DIR / "eval_metrics.py",
+        SCRIPT_DIR / "schema.py",
+    ]
+    if method == "rule":
+        implementation_files.append(SCRIPT_DIR / "rule_baseline.py")
+    if method == "protegi":
+        implementation_files.extend([
+            EXP_DIR / "protegi" / "evaluator.py",
+            EXP_DIR / "protegi" / "runtime_contract.py",
+            EXP_DIR / "protegi" / "document_context.py",
+            EXP_DIR / "protegi" / "entity_backfill.py",
+        ])
+    implementation = {
+        path.relative_to(EXP_DIR).as_posix(): hashlib.sha256(
+            path.read_bytes()
+        ).hexdigest()
+        for path in implementation_files
+    }
+    payload = {
+        "lineage_version": "v6-prediction-lineage-v1",
+        "method": method,
+        "split": split,
+        "schema_version": SCHEMA_VERSION,
+        "split_file": split_file.name,
+        "split_sha256": hashlib.sha256(split_file.read_bytes()).hexdigest(),
+        "dataset_freeze_manifest": FREEZE_MANIFEST_FILE.relative_to(
+            EXP_DIR
+        ).as_posix(),
+        "dataset_freeze_manifest_sha256": hashlib.sha256(
+            FREEZE_MANIFEST_FILE.read_bytes()
+        ).hexdigest(),
+        "gold_aggregate_sha256": freeze.get("gold_aggregate_sha256"),
+        "runtime_config": _public_runtime_for_method(method, split_file),
+        "implementation_sha256": implementation,
+    }
+    payload["lineage_sha256"] = _canonical_json_sha256(payload)
+    return payload
+
+
+def _validate_prediction_lineage(
+    path: Path,
+    *,
+    expected_lineage_sha256: str,
+    expected_gold_sha256: str,
+) -> None:
+    """拒绝把旧预测静默包装成当前运行结果。"""
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"预测文件不可解析：{path}") from exc
+    if record.get("run_lineage_sha256") != expected_lineage_sha256:
+        raise RuntimeError(
+            f"预测文件 lineage 与当前运行不一致：{path}。"
+            "请使用新的结果目录，或在未冻结方法上显式 --force 重跑；"
+            "禁止静默复用旧预测。"
+        )
+    if record.get("source_gold_sha256") != expected_gold_sha256:
+        raise RuntimeError(
+            f"预测文件绑定的 Gold 文档哈希不一致：{path}，拒绝复用。"
+        )
 
 
 def _aggregate_by_type(per_doc, metric_name):
@@ -363,17 +469,30 @@ def run(method, split="test", force=False, eval_only=False, split_file=SPLIT_FIL
         load_apo_prompt_artifact()
     predict = PREDICTORS[method]
     docs = load_docs(split, split_file=split_file)
+    run_lineage = _build_run_lineage(method, split, split_file)
+    run_lineage_sha256 = run_lineage["lineage_sha256"]
     pred_dir = RESULTS / "raw_predictions" / f"v6_{method}"
     pred_dir.mkdir(parents=True, exist_ok=True)
 
     def process_doc(args):
         i, path = args
         out_path = pred_dir / path.name
+        gold_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
         if eval_only:
             if not out_path.exists():
                 raise FileNotFoundError(f"缺少预测文件：{out_path}")
+            _validate_prediction_lineage(
+                out_path,
+                expected_lineage_sha256=run_lineage_sha256,
+                expected_gold_sha256=gold_sha256,
+            )
             return f"  [{i}/{len(docs)}] {path.stem}: 读取已有预测"
         if out_path.exists() and not force:
+            _validate_prediction_lineage(
+                out_path,
+                expected_lineage_sha256=run_lineage_sha256,
+                expected_gold_sha256=gold_sha256,
+            )
             return f"  [{i}/{len(docs)}] {path.stem}: 已存在，跳过"
         gold = json.loads(path.read_text(encoding="utf-8"))
         start = time.time()
@@ -382,6 +501,8 @@ def run(method, split="test", force=False, eval_only=False, split_file=SPLIT_FIL
             "doc_id": path.stem,
             "text": gold["text"],
             "schema_version": SCHEMA_VERSION,
+            "run_lineage_sha256": run_lineage_sha256,
+            "source_gold_sha256": gold_sha256,
             "entities": prediction.get("entities", []),
             "relations": prediction.get("relations", []),
             "trace": prediction.get("_trace"),
@@ -488,16 +609,8 @@ def run(method, split="test", force=False, eval_only=False, split_file=SPLIT_FIL
         "method": method,
         "schema_version": SCHEMA_VERSION,
         "run_at_utc": datetime.now(timezone.utc).isoformat(),
-        "runtime_config": (
-            _method_runtime_config(method)
-            if method in {"llm_manual", "multipass", "apo", "apo_full", "full", "protegi"}
-            else {
-                "extractor": "deterministic-rule-baseline",
-                "lexicon_source": "frozen train+dev annotations only (development-fitted rule baseline)",
-                "split_file": split_file.name,
-                "uses_document_topic": False,
-            }
-        ),
+        "runtime_config": run_lineage["runtime_config"],
+        "run_lineage": run_lineage,
         "split": split,
         "split_file": split_file.name,
         "num_docs": len(docs),

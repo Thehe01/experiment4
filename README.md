@@ -9,6 +9,7 @@
 - **Gold 标注**：`data/annotations/gold/` 中的 105 篇保留人工复标与分歧裁决来源；406 个 Configuration mention 已完成 MCPU v2 全量审计，修订 15 个跨度和 7 个普通版本 CPE。本次任务严格遵循“零修改 Gold 标注”原则。
 - **划分**：`data/train_dev_test_split_v7.json`，63/21/21 篇开发划分。
 - **冻结清单**：`data/dataset_freeze_manifest_v6.json`，绑定 Gold 聚合哈希、划分文件哈希及全部审计证据。
+- **窗口口径**：`window-split-v3:dense25-1000-120-20-s100`，Train/Dev/Test 为 831/321/253 windows；优化评价用 `midpoint-partition-v1` 将重叠区实体和关系唯一归属。
 - **最终测试门禁（Fail-Closed）**：`controlled_test_rerun_ready` 严格保持 `false`。`scripts/run_v6_experiment.py` 在 `split in {"test", "all"}` 时最先触发 `_assert_run_allowed` 门禁并立即阻断（Predictor 实际调用次数恒为 0）。在人类 IAA 复核完成且新预留未见测试集冻结前，严禁对 test 执行任何推理与评估。
 - **旧 APO 产物隔离**：APO (`apo`, `apo_full`) 明确标记为历史遗留基线方法，严禁通过重命名或封装冒充 ProTeGi。`promote_protegi_v6.py` 和 `load_protegi_final_artifact` 设置了严格的反向探查与签名校验。
 - **两阶段 ProTeGi 架构**：Stage 1 优化实体提示词 $P_E^*$；使用 $P_E^*$ 固化 Train/Dev 实体预测缓存（深度绑定 Freeze Manifest 和 Split 哈希）；Stage 2 优化关系提示词 $P_R^*$，严格以缓存预测实体作为输入，绝对禁止回退到 Gold entities。
@@ -60,13 +61,13 @@ python -X utf8 tests/test_protegi.py
 # 或使用 pytest:
 pytest -q
 
-# 3. ProTeGi Stage 1: 实体提示词优化 (在 Dev 集搜索最优 P_E*)
+# 3. ProTeGi Stage 1: 实体提示词优化 (Train 搜索，Dev 仅做最终候选选择)
 # 有约束实验臂 (constrained, 仅优化 guidance):
 python -X utf8 scripts/run_protegi.py --stage entity --method protegi --config protegi/configs/protegi_formal_constrained_muse.yaml --output-dir results/protegi_optimization/entity_protegi_constrained
 # 或无约束实验臂 (unconstrained, 优化完整语义提示):
 python -X utf8 scripts/run_protegi.py --stage entity --method protegi --config protegi/configs/protegi_formal_unconstrained_muse.yaml --output-dir results/protegi_optimization/entity_protegi_unconstrained
 
-# 4. 构建与固化实体预测缓存 (使用胜出的 P_E*，深度绑定冻结清单与当前划分哈希)
+# 4. 构建与固化实体预测缓存 (使用胜出的 P_E*，绑定冻结清单、划分、完整 runtime 与窗口归属口径)
 python -X utf8 scripts/run_protegi.py --stage build_entity_cache --method protegi --config protegi/configs/protegi_formal_constrained_muse.yaml --entity-prompt-file results/protegi_optimization/entity_protegi_constrained/final_entity_prompt.txt --entity-cache-dir results/protegi_optimization/entity_cache_constrained
 
 # 5. ProTeGi Stage 2: 关系提示词优化 (在 Dev 集以冻结实体缓存为输入搜索最优 P_R*，严禁 Gold 回退)
@@ -90,4 +91,3 @@ python -X utf8 scripts/promote_protegi_v6.py `
 # python -X utf8 scripts/paired_bootstrap_v6.py
 # python -X utf8 scripts/audit_chapter3_experiment_alignment.py
 ```
-

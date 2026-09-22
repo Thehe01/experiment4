@@ -1,4 +1,4 @@
-"""审计 v5 是否落实第三章的两层实验边界。
+"""审计 v6 是否落实第三章的两层实验边界。
 
 该脚本只读取冻结预测和结果，不改写任何方法输出。它把不满足直接证据
 契约的预测关系单独导出为复核候选，因此候选统计不会改变既有 F1。
@@ -27,7 +27,7 @@ from schema import (
 EXP_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = EXP_DIR / "results" / "chapter3_experiment_alignment_v1.json"
 DEFAULT_CANDIDATES = EXP_DIR / "results" / "chapter3_contract_review_v1"
-METHODS = ("rule", "multipass", "full", "apo", "apo_full")
+METHODS = ("rule", "multipass", "full", "protegi")
 EXPLOIT_TRIGGER = re.compile(
     r"\b(?:exploit(?:ed|ing|s|ation)?|leverag(?:e|ed|ing)|trigger(?:ed|ing|s)?)\b|"
     r"利用|漏洞利用|触发",
@@ -309,8 +309,8 @@ def _audit_document(
 
 
 def _audit_method(method: str, candidates_root: Path | None) -> dict:
-    prediction_dir = EXP_DIR / "results" / "raw_predictions" / f"v5_{method}"
-    result_path = EXP_DIR / "results" / f"v5_{method}_test.json"
+    prediction_dir = EXP_DIR / "results" / "raw_predictions" / f"v6_{method}"
+    result_path = EXP_DIR / "results" / f"v6_{method}_test.json"
     if not prediction_dir.is_dir() or not result_path.is_file():
         raise FileNotFoundError(
             f"缺少 {method} 的预测目录或测试结果：{prediction_dir}, {result_path}"
@@ -463,8 +463,7 @@ def build_report(
         },
         "interpretation": {
             "reported_f1": (
-                "保留旧冻结结果用于追溯，不因本审计回写；边界复裁后必须在"
-                "新冻结 Gold 上重新评价。"
+                "只读取 v6 冻结预测并复算契约统计，不因本审计回写或改变 F1。"
             ),
             "review_candidates": (
                 "证据区间无效、超过200字符或包含多个同类型端点的预测关系；"

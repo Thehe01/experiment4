@@ -70,6 +70,7 @@ try {
         "--method", "protegi",
         "--config", $config,
         "--split-file", $manifest,
+        "--allow-custom-split",
         "--output-dir", $output
     )
     & $PythonCommand @runArgs

@@ -1,5 +1,4 @@
 """单独评价第四章映射补全层，不把查表边计入文本抽取 F1。"""
-
 from __future__ import annotations
 
 import argparse
@@ -20,8 +19,8 @@ from complete_bron_layer import (
 
 
 EXP_DIR = Path(__file__).resolve().parents[1]
-DEFAULT_INPUT = EXP_DIR / "results" / "raw_predictions" / "v5_full"
-DEFAULT_OUTPUT = EXP_DIR / "results" / "v5_mapping_completion.json"
+DEFAULT_INPUT = EXP_DIR / "results" / "raw_predictions" / "v6_protegi"
+DEFAULT_OUTPUT = EXP_DIR / "results" / "v6_protegi_mapping_completion.json"
 
 
 def _sha256(path: Path) -> str:
@@ -357,4 +356,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -19,7 +19,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 from llm_methods import (
-    _loose_json,
+    _loose_json_with_status,
     parse_entity_mentions,
     parse_relations,
     make_extractor,
@@ -49,6 +49,42 @@ def _is_budget_exhausted(exc: Exception) -> bool:
         return isinstance(exc, ModelOutputBudgetExhaustedError)
     except Exception:
         return False
+
+
+def _relation_owned_by_evaluation_region(
+    relation: dict,
+    entities: List[dict],
+    region_start: int,
+    region_end: int,
+) -> bool:
+    """Assign a relation to one overlap-partition region by endpoint midpoint."""
+    entity_by_id = {entity.get("id"): entity for entity in entities}
+    head = entity_by_id.get(relation.get("head") or relation.get("source"))
+    tail = entity_by_id.get(relation.get("tail") or relation.get("target"))
+    if head is not None and tail is not None:
+        head_start, head_end = head.get("start"), head.get("end")
+        tail_start, tail_end = tail.get("start"), tail.get("end")
+        if not all(
+            isinstance(value, int) and not isinstance(value, bool)
+            for value in (head_start, head_end, tail_start, tail_end)
+        ):
+            return False
+        ownership_start = min(head_start, tail_start)
+        ownership_end = max(head_end, tail_end)
+    else:
+        evidence_start = relation.get("evidence_start")
+        evidence_end = relation.get("evidence_end")
+        if not (
+            isinstance(evidence_start, int)
+            and not isinstance(evidence_start, bool)
+            and isinstance(evidence_end, int)
+            and not isinstance(evidence_end, bool)
+            and evidence_start < evidence_end
+        ):
+            return False
+        ownership_start, ownership_end = evidence_start, evidence_end
+    midpoint_twice = ownership_start + ownership_end
+    return 2 * region_start <= midpoint_twice < 2 * region_end
 
 
 def focus_entity_error_examples(
@@ -224,6 +260,7 @@ class TaskEvaluator:
         full_entity_prompt: str,
         document_abbreviations: Optional[str] = None,
         sample_id: Optional[str] = None,
+        parse_diagnostics: Optional[dict] = None,
     ) -> List[dict]:
         """使用完整的 Entity Prompt 在单窗口文本上抽取实体。
 
@@ -251,7 +288,9 @@ class TaskEvaluator:
             full_prompt_for_hash=full_entity_prompt,
         )
 
-        parsed = _loose_json(raw_output)
+        parsed, parse_method = _loose_json_with_status(raw_output)
+        if parse_diagnostics is not None:
+            parse_diagnostics["parse_method"] = parse_method
         raw_entities = parsed.get("entities", [])
         if not isinstance(raw_entities, list):
             raw_entities = []
@@ -306,6 +345,7 @@ class TaskEvaluator:
         entities: List[dict],
         full_relation_prompt: str,
         sample_id: Optional[str] = None,
+        parse_diagnostics: Optional[dict] = None,
     ) -> List[dict]:
         """使用完整的 Relation Prompt 和固定的实体列表在单窗口文本上抽取关系。
 
@@ -335,7 +375,9 @@ class TaskEvaluator:
             full_prompt_for_hash=full_relation_prompt,
         )
 
-        parsed = _loose_json(raw_output)
+        parsed, parse_method = _loose_json_with_status(raw_output)
+        if parse_diagnostics is not None:
+            parse_diagnostics["parse_method"] = parse_method
         raw_relations = parsed.get("relations", [])
         if not isinstance(raw_relations, list):
             raw_relations = []
@@ -410,6 +452,20 @@ class TaskEvaluator:
         for sample, pred_entities in zip(samples, predictions):
             sample_id = sample.get("sample_id") or sample.get("id") or "unknown"
             text = sample["text"]
+            evaluation_start = sample.get("evaluation_start")
+            evaluation_end = sample.get("evaluation_end")
+            if isinstance(evaluation_start, int) and isinstance(
+                evaluation_end, int
+            ):
+                pred_entities = [
+                    entity
+                    for entity in pred_entities
+                    if isinstance(entity.get("start"), int)
+                    and isinstance(entity.get("end"), int)
+                    and 2 * evaluation_start
+                    <= entity["start"] + entity["end"]
+                    < 2 * evaluation_end
+                ]
             gold_entities = sample.get("gold_entities", sample.get("entities", []))
             tp, fp, fn = calc_strict_entity_sample_counts(pred_entities, gold_entities)
 
@@ -578,6 +634,18 @@ class TaskEvaluator:
             fixed_entities = sample["fixed_entities"]
             gold_entities = sample.get("gold_entities", sample.get("entities", []))
             gold_relations = sample.get("gold_relations", sample.get("relations", []))
+            evaluation_start = sample.get("evaluation_start", 0)
+            evaluation_end = sample.get("evaluation_end", len(text))
+            pred_relations = [
+                relation
+                for relation in pred_relations
+                if _relation_owned_by_evaluation_region(
+                    relation,
+                    fixed_entities,
+                    evaluation_start,
+                    evaluation_end,
+                )
+            ]
             tp, fp, fn = calc_strict_relation_sample_counts(
                 fixed_entities, pred_relations, gold_entities, gold_relations
             )

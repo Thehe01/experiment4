@@ -23,7 +23,7 @@ GOLD = PACKAGE / "data" / "annotations" / "gold"
 SPLIT = PACKAGE / "data" / "train_dev_test_split_v7.json"
 MANIFEST = PACKAGE / "data" / "dataset_freeze_manifest_v6.json"
 STATUS = PACKAGE / "data" / "review_status.json"
-BASELINE_FREEZE = PACKAGE / "data" / "baseline_methods_freeze_manifest_v1.json"
+BASELINE_FREEZE = PACKAGE / "data" / "baseline_methods_freeze_manifest_v6.json"
 PILOT_SPLIT = PACKAGE / "data" / "protegi_prompt_scope_pilot_v1.json"
 PILOT_CONSTRAINED = PACKAGE / "protegi" / "configs" / "protegi_pilot_constrained.yaml"
 PILOT_UNCONSTRAINED = PACKAGE / "protegi" / "configs" / "protegi_pilot_unconstrained.yaml"
@@ -135,6 +135,10 @@ class V6PackageTest(unittest.TestCase):
 
         self.assertEqual(config["prompt_scope"], "constrained")
         self.assertTrue(config["document_abbreviation_context"])
+        self.assertFalse(config["vulnerability_anchored_backfill"])
+        self.assertFalse(
+            manifest["document_context"]["automatic_entity_backfill"]
+        )
         self.assertEqual(config["selection_entity_type"], "Configuration")
         self.assertEqual(config["error_focus_entity_type"], "Configuration")
         self.assertEqual(config["final_selection_entity_type"], "Configuration")
@@ -144,6 +148,8 @@ class V6PackageTest(unittest.TestCase):
         self.assertEqual(config["optimizer_model"], "muse-spark-1.3-contributor")
 
     def test_prompt_scope_pilot_is_matched_and_test_free(self):
+        from protegi.optimizer import prepare_stage1_window_samples
+
         official = json.loads(SPLIT.read_text(encoding="utf-8"))
         pilot = json.loads(PILOT_SPLIT.read_text(encoding="utf-8"))
         self.assertEqual(pilot["manifest_version"], "protegi-prompt-scope-pilot-v1")
@@ -163,18 +169,12 @@ class V6PackageTest(unittest.TestCase):
                 "AttackTechnique": 0,
             }
             source_characters = 0
-            estimated_windows = 0
             for doc_id in pilot[split_name]:
                 document = json.loads(
                     (GOLD / f"{doc_id}.json").read_text(encoding="utf-8")
                 )
                 text_length = len(document.get("text", ""))
                 source_characters += text_length
-                estimated_windows += (
-                    1
-                    if text_length <= 3000
-                    else ((text_length - 3000 + 2599) // 2600) + 1
-                )
                 for entity in document.get("entities", []):
                     if entity.get("type") in type_counts:
                         type_counts[entity["type"]] += 1
@@ -187,11 +187,13 @@ class V6PackageTest(unittest.TestCase):
                 source_characters,
                 pilot["audit_counts"][split_name]["source_characters"],
             )
-            self.assertEqual(
-                estimated_windows,
-                pilot["audit_counts"][split_name]["estimated_windows"],
+            runtime_windows = len(
+                prepare_stage1_window_samples(pilot[split_name], GOLD)
             )
-            self.assertEqual(estimated_windows % 8, 0)
+            self.assertEqual(
+                runtime_windows,
+                pilot["audit_counts"][split_name]["runtime_windows"],
+            )
 
         constrained = yaml.safe_load(PILOT_CONSTRAINED.read_text(encoding="utf-8"))
         unconstrained = yaml.safe_load(PILOT_UNCONSTRAINED.read_text(encoding="utf-8"))
@@ -687,4 +689,3 @@ class V6PackageTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

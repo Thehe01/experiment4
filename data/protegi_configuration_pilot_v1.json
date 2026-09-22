@@ -52,10 +52,10 @@
         "AttackTechnique": 67
       },
       "window_entities": {
-        "Vulnerability": 53,
-        "Configuration": 29,
+        "Vulnerability": 49,
+        "Configuration": 26,
         "Weakness": 4,
-        "AttackTechnique": 75
+        "AttackTechnique": 67
       },
       "explicit_abbreviation_pairs": 46
     },
@@ -75,10 +75,10 @@
         "AttackTechnique": 62
       },
       "window_entities": {
-        "Vulnerability": 90,
-        "Configuration": 25,
-        "Weakness": 8,
-        "AttackTechnique": 71
+        "Vulnerability": 79,
+        "Configuration": 20,
+        "Weakness": 7,
+        "AttackTechnique": 62
       },
       "explicit_abbreviation_pairs": 40
     }
